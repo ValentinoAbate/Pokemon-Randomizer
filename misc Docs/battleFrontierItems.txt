@@ -1,0 +1,65 @@
+start @ 5cecb0
+
+00	nothing
+01	king's rock
+02	sitrus berry
+03	oran berry	8b
+04	chesto berry	86
+05	hard stone	cc
+06	focus band	c4
+07	persim berry	8c
+08	miracle seed	cd
+09	berry juice	
+0a	macho brace
+0b	silver powder
+0c	cheri berry
+0d	black glasses
+0e	black belt
+0f	
+10	choice band
+11	magnet
+12	silk scarf
+13	white herb
+14	deepseascale
+15	
+16	mystic water
+17	sharp beak
+18	quick claw
+19	leftovers
+1a	rawst berry
+1b	
+1c	poison barb
+1d	nevermeltice
+1e	aspear berry
+1f	
+20	brightpowder
+21	leppa berry
+22	scope lens
+23	twistedspoon
+24	
+25	mental herb
+26	charcoal
+27	pecha berry
+28	soft sand
+29	lum berry
+2a	
+2b	
+2c	
+2d	
+2e	
+2f	shell bell
+30	salac berry
+31	
+32	
+33	
+34	liechi berry
+35	stick
+36	lax incense
+37	
+38	
+39	
+3a	
+3b	metal powder	df
+3c	petaya berry	ab
+3d	lucky punch
+3e	ganlon berry

@@ -1,0 +1,232 @@
+0001 - Master Ball
+0002 - Ultra Ball
+0003 - Great Ball
+0004 - Poké Ball
+0005 - Safari Ball
+0006 - Net Ball
+0007 - Dive Ball
+0008 - Nest Ball
+0009 - Repeat Ball
+000a - Timer Ball
+000b - Luxury Ball
+000c - Premier Ball
+000d - Potion
+000e - Antidote
+000f - Burn Heal
+0010 - Ice Heal
+0011 - Awakening
+0012 - Parlyz Heal
+0013 - Full Restore
+0014 - Max Potion
+0015 - Hyper Potion
+0016 - Super Potion
+0017 - Full Heal
+0018 - Revive
+0019 - Max Revive
+001a - Fresh Water
+001b - Soda Pop
+001c - Lemonade
+001d - Moomoo Milk
+001e - Energypowder
+001f - Energy Root
+0020 - Heal Powder
+0021 - Revival Herb
+0022 - Ether
+0023 - Max Ether
+0024 - Elixir
+0025 - Max Elixir
+0026 - Lava Cookie
+0027 - Blue Flute
+0028 - Yellow Flute
+0029 - Red Flute
+002a - Black Flute
+002b - White Flute
+002c - Berry Juice
+002d - Sacred Ash
+002e - Shoal Salt
+002f - Shoal Shell
+0030 - Red Shard
+0031 - Blue Shard
+0032 - Yellow Shard
+0033 - Green Shard
+003f - HP Up
+0040 - Protein
+0041 - Iron
+0042 - Carbos
+0043 - Calcium
+0044 - Rare Candy
+0045 - PP Up
+0046 - Zinc
+0047 - PP Max
+0049 - Guard Spec.
+004a - Dire Hit
+004b - X Attack
+004c - X Defend
+004d - X Speed
+004e - X Accuracy
+004f - X Special
+0050 - Poké Doll
+0051 - Fluffy Tail
+0053 - Super Repel
+0054 - Max Repel
+0055 - Escape Rope
+0056 - Repel
+005d - Sun Stone
+005e - Moon Stone
+005f - Fire Stone
+0060 - ThunderStone
+0061 - Water Stone
+0062 - Leaf Stone
+0067 - TinyMushroom
+0068 - Big Mushroom
+006a - Pearl
+006b - Big Pearl
+006c - Stardust
+006d - Star Piece
+006e - Nugget
+006f - Heart Scale
+0085 - Cheri Berry
+0086 - Chesto Berry
+0087 - Pecha Berry
+0088 - Rawst Berry
+0089 - Aspear Berry
+008a - Leppa Berry
+008b - Oran Berry
+008c - Persim Berry
+008d - Lum Berry
+008e - Sitrus Berry
+008f - Figy Berry
+0090 - Wiki Berry
+0091 - Mago Berry
+0092 - Aguav Berry
+0093 - Iapapa Berry
+0094 - Razz Berry
+0095 - Bluk Berry
+0096 - Nanab Berry
+0097 - Wepear Berry
+0098 - Pinap Berry
+0099 - Pomeg Berry
+009a - Kelpsy Berry
+009b - Qualot Berry
+009c - Hondew Berry
+009d - Grepa Berry
+009e - Tamato Berry
+009f - Cornn Berry
+00a0 - Magost Berry
+00a1 - Rabuta Berry
+00a2 - Nomel Berry
+00a3 - Spelon Berry
+00a4 - Pamtre Berry
+00a5 - Watmel Berry
+00a6 - Durin Berry
+00a7 - Belue Berry
+00a8 - Liechi Berry
+00a9 - Ganlon Berry
+00aa - Salac Berry
+00ab - Petaya Berry
+00ac - Apicot Berry
+00ad - Lansat Berry
+00ae - Starf Berry
+00af - Enigma Berry
+00b3 - BrightPowder
+00b4 - White Herb
+00b5 - Macho Brace
+00b6 - Exp. Share
+00b7 - Quick Claw
+00b8 - Soothe Bell
+00b9 - Mental Herb
+00ba - Choice Band
+00bb - King's Rock
+00bc - Silverpowder
+00bd - Amulet Coin
+00be - Cleanse Tag
+00bf - Soul Dew
+00c0 - DeepSeaTooth
+00c1 - DeepSeaScale
+00c2 - Smoke Ball
+00c3 - Everstone
+00c4 - Focus Band
+00c5 - Lucky Egg
+00c6 - Scope Lens
+00c7 - Metal Coat
+00c8 - Leftovers
+00c9 - Dragon Scale
+00ca - Light Ball
+00cb - Soft Sand
+00cc - Hard Stone
+00cd - Miracle Seed
+00ce - BlackGlasses
+00cf - Black Belt
+00d0 - Magnet
+00d1 - Mystic Water
+00d2 - Sharp Beak
+00d3 - Poison Barb
+00d4 - NeverMeltIce
+00d5 - Spell Tag
+00d6 - TwistedSpoon
+00d7 - Charcoal
+00d8 - Dragon Fang
+00d9 - Silk Scarf
+00da - Up-grade
+00db - Shell Bell
+00dc - Sea Incense
+00dd - Lax Incense
+00de - Lucky Punch
+00df - Metal Powder
+00e0 - Thick Club
+00e1 - Stick
+00fe - Red Scarf
+00ff - Blue Scarf
+0100 - Pink Scarf
+0101 - Green Scarf
+0102 - Yellow Scarf
+0121 - TM01
+0122 - TM02
+0123 - TM03
+0124 - TM04
+0125 - TM05
+0126 - TM06
+0127 - TM07
+0128 - TM08
+0129 - TM09
+012a - TM10
+012b - TM11
+012c - TM12
+012d - TM13
+012e - TM14
+012f - TM15
+0130 - TM16
+0131 - TM17
+0132 - TM18
+0133 - TM19
+0134 - TM20
+0135 - TM21
+0136 - TM22
+0137 - TM23
+0138 - TM24
+0139 - TM25
+013a - TM26
+013b - TM27
+013c - TM28
+013d - TM29
+013e - TM30
+013f - TM31
+0140 - TM32
+0141 - TM33
+0142 - TM34
+0143 - TM35
+0144 - TM36
+0145 - TM37
+0146 - TM38
+0147 - TM39
+0148 - TM40
+0149 - TM41
+014a - TM42
+014b - TM43
+014c - TM44
+014d - TM45
+014e - TM46
+014f - TM47
+0150 - TM48
+0151 - TM49
+0152 - TM50

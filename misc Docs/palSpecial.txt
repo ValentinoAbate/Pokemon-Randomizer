@@ -1,0 +1,369 @@
+castform - 1179, 00e28ed8 pal (?), e271e8 and e27cf0 sprites
+--------------------------------
+normal:	184B 4B29 F95E 7C6F	DE77 0000 FF7F 7B7B	0000 0000 0000 0000	524A 4925 FF7F 630C
+rain:	184B 072D CC5D 2E6A	D266 0000 B97B 166F	316F D062 8A41 1863	524A 4925 FF7F 630C 
+sun:	
+hail:	
+
+norm	5,4,3,2/7,8
+rain	5,4,3,2/7,8/9,10,11
+sun	5,4,3,2/7,8/9,10,11
+hail	5,4,3,11/7,8/12,9,10,13,2
+
+starts @ e27c70  (starts with 10800000 instead of 10200000)
+00				normal
+184B 4B29 F95E 7C6F
+00
+DE77 0000 FF7F 7B7B
+20
+0000 3001 524A 4925 FF
+00
+7F 630C 			end normal
+        184B CC14 79		sunny
+00
+25 FD25 7F22 0000 DF
+00
+37 5C37 7F32 1A26 72
+01
+21 3A73 0000			end sunny (skipped last 3)
+             6B29 301F		???
+00				???
+072D CC5D 2E6A D266		rain (skipped 1st color)
+00
+0000 B97B 166F 316F
+00
+D062 8A41 1863			end rain (skipped last 4 colors)
+               324A		???
+81				???
+501F				???
+     451D 4F5D D169 101F	hail (skipped 1st color)
+00
+D87E 7362 3157 8E46
+02
+2C39 9773 			end hail (skipped last 4 colors) (4925)
+          CA35 305F		???
+000000100020003F0000F001F001F001F001F001F001FF
+
+
+
+
+
+shiny - start @ e286ac (starts with 10800000 instead of 10200000)
+00
+184B 6C2D 995E 1C6F
+00
+7F7F 0000 DF23 DC12
+20
+0000 3001 524A 4925 FF
+00
+7F 630C 			end normal
+        184B CC14 79		sunny
+04
+25 FD25 7F22 001F 375C
+00
+377F 321A 2672 213A 
+04
+73 0000				end sunny (skipped last 3)
+        6B29 301F		???
+                  072D		rain (skipped 1st color)
+00
+CC5D 2E6A D266 0000
+00
+B97B 166F 316F D062
+02
+8A41 1863 			end rain (skipped last 4 colors)
+          324A 501F		???
+		    45		hail (skipped 1st color)
+04
+1D 4F5D D169 101F D87E
+00
+7362 3157 8E46 2C39
+08
+9773				end hail (skipped last 4 colors) (4925)
+     CA35 305F			???
+
+
+
+3001	add 3 to colorPtr
+301f	add 4 to colorPtr
+501f	add 1 to colorPtr
+305f	add 4 to colorPtr
+
+
+
+-----------------------------------------------------
+
+
+#x => break in between -- catch in parse error
+0 => 00
+
+1f7c 80####
+     08
+
+starts with 10200000##
+                    ^ this number is the first indicator. If not 00, then spacer exists in next block
+
+abra: 2 colors, skip code, CC00100B, 1 color normally, 00, 4 colors normally
+
+
+
+
+first byte = repetitions
+second byte = action
+
+1f7c => skip? 	1001 = 2 follow 20,08
+		3001 = 3 follow	20
+		5001 = 4 follow 02
+		7001 = 5 follow 08
+		9001 = 6 follow
+		B001 = 7 follow
+		100B = 2 additional (??)
+		1009 = next 2 are copied (slots 6 and 7, from 0 start)
+		0003 = next is slot 0, then byte FF (inserts 3 bytes: first color, then 0xFF)
+		1007 = next 2 are copied (slots 6 and 7, from 0 start)
+		1005 = next 2 are copied (slots 5 and 6, from 0 start)
+		5011 = next 4 are skipped
+		300F = next 3 are skipped
+
+if in list wth no tabs, agrees
+
+odd: abra, gastly, kangaskhan, goldeen, scyther, ditto, steelix
+
+pikachu,nidoking,ninetales,oddish,psyduck,growlithe,poliwag,poliwhirl,poliwrath,geodude,graveler,ponyta,doduo
+haunter,gengar,onix,drowzee,hypno,krabby,voltorb,electrode,exeggcute,chansey,horsea,pinsir,eevee,flareon,kabutops,
+aerodactyl,dratini,mew,togetic,espeon,unown,pineco,remoraid
+
+
+
+02	00000010
+08	00001000
+20	00100000	byte #3 starts the skip code
+80	10000000
+
+
+skip code spot , # colors to skip, # colors before broken color
+
+pikachu
+9,2,1
+
+name		addy	spr#	dex#
+--------------------------------------
+pikachu		d408b4	507	25
+nidoking	d46ee4	525	34
+abra		d5a840	583	63
+gastly		d6f080	641	92
+kangaskhan	d7f694	687	115
+goldeen		d81834	693	118
+scyther		d85154	703	123
+ditto 		d8bca4	721	132
+igglybuff	da884c	805
+steelix		dbec20	873	208
+pupatar		-dd9e68	952
+	
+
+
+
+
+
+
+
+
+Steelix:
+10200000 
+08
+3957 1f7c   1001  e728 69
+01
+3d 7056 3763 9b6f  300f
+00
+1f7c 5a21 4208 ff7f
+
+
+
+
+Ditto:
+10200000 
+08
+5a5f e07f   3001  1e77 7d
+01
+6a da51 5641 ae2c  5011
+00
+c618 ff7f
+
+
+
+Scyther:
+10200000 
+00
+5a63 ff7f 7b6f f75e	1,2,3,4
+00
+ce39 9e3f 192f ff57	5.6.7.8
+80
+1005  331a f73b 7327 ec 11.12.13.14
+00
+12 a911 4208		14.15.16
+
+
+
+Goldeen:
+10200000 
+00
+5a5f 7b73 f762 314a
+00
+8c35 1f3f fd21 1a09
+08
+d600 5000   1007   a852 a0 
+00
+31 4208 ff7f 0000 1000
+
+
+
+Kangaskhan:
+10200000 
+08
+5a6b ff7f   0003   4b 3d37
+00
+770c 4208 db6a b245
+00
+b43e 5132 ad29 fa42 
+00
+9736 f321 0a09
+
+
+
+
+Abra:
+10200000
+08
+DE7B 1F7C --3001-- DA2A 15	0,1,5,6
+04
+16 B209 CC00 ===100B=== FF3F	6,7,8,11
+00
+BF17 DA02 9101 4208		12,13,14,15
+
+
+
+
+Pikachu:
+10200000
+00
+395B FF7F B572 6B61		0,1,2,3
+00
+2150 0038 001C 1F7C		4,5,6,7
+80
+1001
+ -- 1D57 7911 8904 AD		10,11,12,13.5
+00
+35 4208 1F7C			13.5,14,15
+
+
+Nidoking:
+10200000
+00
+E07F FF7F 9C6B 1853
+08
+CE2D 1F7C -- 1001 -- 234F 80
+00
+3A 4021 5F7F 7C6A 97
+00
+5D B140 4208
+
+
+
+pikachu
+1,2,3,4,0,5,6,7,8,0,0,11,12,13,14x,15,16
+nidoking
+1,2,3,4,0,5,6,0,0,9,10x,11,12,13,14x,15,16
+ninetales
+1,2,3,4,0,5,6,0,0,12,13x,14,15,16
+oddish
+1,2,3,4,0,5,6,7,8,0,9,0,0,12,13,14x,15,16
+psyduck
+1,2,3,4,0,5,6,7,8,0,9,0,0,12,13,14x,15,16
+growlithe
+1,2,3,4,0,5,0,0,8,9,10x,11,12,13,14x,15,16
+poliwag
+1,2,3,4,0,5,6,0,0,9,10x,11,12,13,14x,15,16
+poliwhirl
+1,2,3,4,0,5,6,0,0,9,10x,11,12,13,14x,15,16
+poliwrath
+1,2,3,4,0,5,6,0,0,9,10x,11,12,13,14x,15,16
+abra
+1,2,0,0,0,6,7x,8,9,0,0,12x,13,14,15,16x
+geodude
+1,2,3,4,0,0,0,12,13,14,15x,16
+graveler
+1,2,3,4,0,5,6,0,0,13,14x,15,16
+ponyta
+1,2,3,4,5,6,7,0,0,10x,11,12,13,14x,15,16
+doduo
+1,2,0,0,6,7x,8,9,10,11x,12,13,14,15x,16
+gastly -- colors 12 and 13 are derived exactly from colors 7 and 8
+1,2,3,4,0,5,6,7,8,0,9,10,11,0,0,14,15,16
+haunter
+1,2,3,4,0,5,6,0,0,10,11x,12,13,14,15x,16
+gengar
+1,2,3,4,0,5,6,7,8,0,0,12,13,14,15x,16
+onix
+1,2,3,0,0,11x,12,13,14,15x,16
+drowzee
+1,2,3,0,0,8x,9,10,11,12x,13,14,15,16x
+hypno
+1,2,3,4,0,5,6,7,8,0,9,0,0,13,14,15x,16
+krabby
+1,2,3,4,0,5,6,7,8,0,9,0,0,12,13,14x,15,16
+voltorb
+1,2,3,4,0,5,6,0,0,11,12x,13,14,15,16x
+electrode
+1,2,3,4,0,5,6,7,0,0,11x,12,13,14,15x,16
+exeggcute
+1,2,3,4,0,5,6,7,0,0,12x,13,14,15,16x
+chansey
+1,2,3,4,0,0,0,8,9,10,11x,12,13,14,15x,16
+kangaskhan
+1,2,0,0,0,5,0,6,7,8,9,0,10,11,12,13,0,14,15,16
+horsea
+1,2,0,0,5,6x,7,8,9,10x,11,12,13,14x,15,16
+goldeen -- colors 11 and 12 derived from 7 and 8
+1,2,3,4,0,5,6,7,8,0,9,10,0,0,13,14x,15,16
+scyther -- 9 and 10 are 6 and 7
+1,2,3,4,0,5,6,7,8,0,0,0,11,12,13,14x,15,16
+pinsir
+1,2,3,4,0,5,6,7,0,0,12x,13,14,15,16x
+ditto
+1,2,0,0,6,7x,8,9,10,0,0,0,15,16
+eevee
+1,2,3,4,0,5,6,7,0,0,11x,12,13,14,15x,16
+flareon
+1,2,3,4,0,5,6,7,0,0,10x,11,12,13,14x,15,16
+kabutops
+1,2,3,4,0,5,6,7,0,0,12x,13,14,15,16x
+aerodactyl
+1,2,0,0,5,6x,7,8,9,10x,11,12,13,14x,15,16
+dratini
+1,2,3,4,0,5,6,0,0,11,12x,13,14,15,16x
+mew
+1,2,3,4,0,5,6,0,0,11,12x,13,14,15,16x
+togetic
+1,2,3,4,0,5,6,7,8,0,0,0,11,12,13,14x,15,16
+espeon
+1,2,0,0,6,7x,8,9,10,11x,12,13,14,15x,16
+unown
+1,2,0,0,5,6x,7,8,9,10x
+pineco
+1,2,3,0,0,7x,8,9,10,11x,12,13,0,0,16
+steelix
+1,2,0,0,5,6x,7,8,9,0,0,0,13,14,15,16
+remoraid
+1,2,3,4,0,5,6,7,8,0,9,0,0,11,12,13x,14,15,16
+
+
+
+
+
+
+
+
+
+
+
+
