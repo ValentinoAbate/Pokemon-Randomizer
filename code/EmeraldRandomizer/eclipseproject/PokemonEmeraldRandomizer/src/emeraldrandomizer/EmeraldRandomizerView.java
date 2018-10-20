@@ -55,11 +55,11 @@ public class EmeraldRandomizerView extends FrameView {
     @Action
     public void showAboutBox() {
         if (aboutBox == null) {
-            JFrame mainFrame = EmeraldRandomizerApp.getApplication().getMainFrame();
+            JFrame mainFrame = EmeraldRandomizerAppOld.getApplication().getMainFrame();
             aboutBox = new EmeraldRandomizerAboutBox(mainFrame);
             aboutBox.setLocationRelativeTo(mainFrame);
         }
-        EmeraldRandomizerApp.getApplication().show(aboutBox);
+        EmeraldRandomizerAppOld.getApplication().show(aboutBox);
     }
 
     @SuppressWarnings("unchecked")
@@ -168,7 +168,7 @@ public class EmeraldRandomizerView extends FrameView {
         pStarter.setName("pStarter"); // NOI18N
         pStarter.setPreferredSize(new java.awt.Dimension(250, 199));
 
-        org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(emeraldrandomizer.EmeraldRandomizerApp.class).getContext().getResourceMap(EmeraldRandomizerView.class);
+        org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(emeraldrandomizer.EmeraldRandomizerAppOld.class).getContext().getResourceMap(EmeraldRandomizerView.class);
         lStarters.setText(resourceMap.getString("lStarters.text")); // NOI18N
         lStarters.setName("lStarters"); // NOI18N
 
@@ -1092,7 +1092,7 @@ public class EmeraldRandomizerView extends FrameView {
         jSeparator1.setName("jSeparator1"); // NOI18N
         fileMenu.add(jSeparator1);
 
-        javax.swing.ActionMap actionMap = org.jdesktop.application.Application.getInstance(emeraldrandomizer.EmeraldRandomizerApp.class).getContext().getActionMap(EmeraldRandomizerView.class, this);
+        javax.swing.ActionMap actionMap = org.jdesktop.application.Application.getInstance(emeraldrandomizer.EmeraldRandomizerAppOld.class).getContext().getActionMap(EmeraldRandomizerView.class, this);
         miExit.setAction(actionMap.get("quit")); // NOI18N
         miExit.setName("miExit"); // NOI18N
         miExit.addActionListener(new java.awt.event.ActionListener() {

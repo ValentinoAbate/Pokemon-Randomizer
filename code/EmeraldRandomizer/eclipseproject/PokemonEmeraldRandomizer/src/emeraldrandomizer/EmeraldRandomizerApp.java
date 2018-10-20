@@ -1,44 +1,31 @@
-/*
- * EmeraldRandomizerApp.java
- */
-
 package emeraldrandomizer;
 
-import org.jdesktop.application.Application;
-import org.jdesktop.application.SingleFrameApplication;
+import javafx.application.Application;
+import javafx.stage.Stage;
 
-/**
- * The main class of the application.
- */
-public class EmeraldRandomizerApp extends SingleFrameApplication {
-
-    /**
-     * At startup create and show the main frame of the application.
-     */
-    @Override protected void startup() {
-        show(new EmeraldRandomizerView(this));
+public class EmeraldRandomizerApp extends Application {
+	public static void main(String[] args)
+	{
+		launch(args);
+	}
+	
+	@Override
+    public void init() throws Exception {
+        super.init();
+        System.out.println("Initialize");
     }
-
-    /**
-     * This method is to initialize the specified window by injecting resources.
-     * Windows shown in our application come fully initialized from the GUI
-     * builder, so this additional configuration is not needed.
-     */
-    @Override protected void configureWindow(java.awt.Window root) {
+	
+	@Override
+    public void start(Stage primaryStage) throws Exception {
+		EmeraldRandomizerGUI GUI = new EmeraldRandomizerGUI();
+        primaryStage.setTitle("Pokemon Emerald Randomizer");
+        primaryStage.setScene(GUI.getScene(1280, 720));
+        primaryStage.show();
     }
-
-    /**
-     * A convenient static getter for the application instance.
-     * @return the instance of EmeraldRandomizerApp
-     */
-    public static EmeraldRandomizerApp getApplication() {
-        return Application.getInstance(EmeraldRandomizerApp.class);
-    }
-
-    /**
-     * Main method launching the application.
-     */
-    public static void main(String[] args) {
-        launch(EmeraldRandomizerApp.class, args);
-    }
+	
+	@Override
+	public void stop() throws Exception {
+		super.stop();
+		System.out.println("Cleanup");
+	}
 }
