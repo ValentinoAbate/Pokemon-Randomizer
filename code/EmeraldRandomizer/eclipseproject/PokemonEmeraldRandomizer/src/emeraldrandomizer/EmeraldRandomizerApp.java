@@ -17,7 +17,7 @@ public class EmeraldRandomizerApp extends Application {
 	
 	@Override
     public void start(Stage primaryStage) throws Exception {
-		EmeraldRandomizerGUI GUI = new EmeraldRandomizerGUI();
+		EmeraldRandomizerGUI GUI = new EmeraldRandomizerGUI(primaryStage);
         primaryStage.setTitle("Pokemon Emerald Randomizer");
         primaryStage.setScene(GUI.getScene(1280, 720));
         primaryStage.show();
