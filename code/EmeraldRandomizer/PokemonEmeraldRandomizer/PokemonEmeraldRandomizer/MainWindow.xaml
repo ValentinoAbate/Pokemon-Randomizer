@@ -1,0 +1,57 @@
+﻿<Window x:Class="PokemoneEmeraldRandomizer.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:PokemoneEmeraldRandomizer"
+        mc:Ignorable="d"
+        Title="Pokemon Enemarld Randomizer" Height="450" Width="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Name="Toolbar" Height="Auto" ></RowDefinition>
+            <RowDefinition Name="TabSelector" Height="*" ></RowDefinition>
+            <RowDefinition Name="Msg" Height="Auto"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <!--<ColumnDefinition  Name="TabSelectorCol" Width="Auto"></ColumnDefinition>
+            <ColumnDefinition Name="RomButtons" Width="*"></ColumnDefinition>-->
+        </Grid.ColumnDefinitions>
+        <Menu Grid.Row="0">
+            <MenuItem Header="_File">
+                <MenuItem Header="_Open ROM" Click="Open_ROM"/>
+                <MenuItem Header="_Save ROM" />
+                <MenuItem Header="_Generate Info" />
+                <Separator />
+                <MenuItem Header="_Exit" />
+            </MenuItem>
+            <MenuItem Header="Presets">
+
+            </MenuItem>
+        </Menu>
+        <TabControl Grid.Row="1">
+            <TabItem Header="General Settings">
+                <StackPanel>
+                    <TextBlock>Enter some text</TextBlock>
+                    <TextBox Name="textBox1" Width="50"/>
+                </StackPanel>
+            </TabItem>
+            <TabItem Header="Pokemon Settings">
+                <!--Bind TextBlock.Text to the TextBox on the first TabItem.-->
+                <TextBlock Text="{Binding ElementName=textBox1, Path=Text}"/>
+            </TabItem>
+            <TabItem Header="Starter Pokemon">
+
+            </TabItem>
+            <TabItem Header="Wild Pokemon">
+
+            </TabItem>
+            <TabItem Header="Trainers">
+
+            </TabItem>
+            <TabItem Header="Items">
+
+            </TabItem>
+        </TabControl>
+        <Label Name="MessageBox" Grid.Row="2" Content="Message Box!" Height="80"></Label>
+    </Grid>
+</Window>

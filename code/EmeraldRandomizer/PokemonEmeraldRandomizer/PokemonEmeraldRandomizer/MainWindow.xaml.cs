@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,6 +24,15 @@ namespace PokemoneEmeraldRandomizer
         public MainWindow()
         {
             InitializeComponent();
+        }
+
+        private void Open_ROM(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Filter = "GBA ROM files|*.gba";
+            openFileDialog.Title = "Open ROM";
+            if (openFileDialog.ShowDialog() == true)
+                Backend.ROMLoader.LoadROM(openFileDialog.FileName);
         }
     }
 }
