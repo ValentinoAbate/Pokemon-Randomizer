@@ -15,7 +15,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.IO;
 
-namespace PokemoneEmeraldRandomizer
+namespace PokemonEmeraldRandomizer
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -45,11 +45,22 @@ namespace PokemoneEmeraldRandomizer
         private void Save_ROM(object sender, RoutedEventArgs e)
         {
             SaveFileDialog saveFileDialog = new SaveFileDialog();
-            saveFileDialog.Filter = "GBA ROM files|*.gba";
+            saveFileDialog.Filter = "GBA ROM|*.gba";
             saveFileDialog.Title = "Save ROM";
             if (saveFileDialog.ShowDialog() == true)
             {
-                File.WriteAllBytes(saveFileDialog.FileName, Backend.ROMGenerator.GenerateROM(Data));
+                File.WriteAllBytes(saveFileDialog.FileName, Backend.ROMCreator.GenerateROM(Data));
+            }
+        }
+
+        private void Generate_Info_Doc(object sender, RoutedEventArgs e)
+        {
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Filter = "txt file|*.txt";
+            saveFileDialog.Title = "Generate Info Docs";
+            if (saveFileDialog.ShowDialog() == true)
+            {
+                File.WriteAllText(saveFileDialog.FileName, Data.ToString());
             }
         }
     }

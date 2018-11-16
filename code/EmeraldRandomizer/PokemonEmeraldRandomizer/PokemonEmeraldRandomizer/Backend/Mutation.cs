@@ -4,9 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PokemoneEmeraldRandomizer.Backend
+namespace PokemonEmeraldRandomizer.Backend
 {
-    public class TrainerPokemon
+    public class Mutation
     {
+        public static Random Rand = new Random();
     }
 }

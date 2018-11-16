@@ -3,15 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.IO;
 
-namespace PokemoneEmeraldRandomizer.Backend
+namespace PokemonEmeraldRandomizer.Backend
 {
-    //This class takes a modified ROMData object and applies the changes made to
-    public static class ROMGenerator
+    //This class does the actualmutation and randomizing by creating a mutated copy 
+    //of the original ROM data
+    public static class ROMDataMutator
     {
-        public static byte[] GenerateROM(ROMData data)
+        //Apply mutations based on program settings.
+        public static ROMData mutate(ROMData orig, MainWindow window)
         {
+            ROMData mut = new ROMData(orig.RawROM);
             //changeStarters(); //must come before trainers
             //changeTMs();      //must come before trainers
             //randomizePokeData(); //must come before trainers
@@ -27,7 +29,7 @@ namespace PokemoneEmeraldRandomizer.Backend
             //metronomeHyperdrive();
             //changeItems();
             //changeDex();
-            return data.RawROM;
+            return mut;
         }
     }
 }

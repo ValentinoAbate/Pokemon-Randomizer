@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.IO;
 using System.Security.Cryptography;
 
-namespace PokemoneEmeraldRandomizer.Backend
+namespace PokemonEmeraldRandomizer.Backend
 {
     public static class ROMParser
     {
@@ -23,11 +23,11 @@ namespace PokemoneEmeraldRandomizer.Backend
             //data.Trainers = ReadTrainers(rawROM);
             return data;
         }
-        private static TrainerPokemon[] ReadStarters(byte[] rawROM)
+        private static Pokemon[] ReadStarters(byte[] rawROM)
         {
             throw new System.NotImplementedException();
         }
-        private static List<Pokemon> ReadPokemon(byte[] rawROM)
+        private static List<PokemonDefinition> ReadPokemon(byte[] rawROM)
         {
             throw new System.NotImplementedException();
         }

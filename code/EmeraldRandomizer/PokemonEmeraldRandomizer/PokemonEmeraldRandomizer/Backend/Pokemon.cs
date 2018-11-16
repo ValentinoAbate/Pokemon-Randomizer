@@ -4,10 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PokemoneEmeraldRandomizer.Backend
+namespace PokemonEmeraldRandomizer.Backend
 {
     public class Pokemon
     {
-
     }
 }

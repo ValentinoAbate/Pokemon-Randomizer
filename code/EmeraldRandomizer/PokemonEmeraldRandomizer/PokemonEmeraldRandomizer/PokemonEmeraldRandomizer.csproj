@@ -6,8 +6,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{EEB32B39-A5EC-46CD-A659-00F562926DDC}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>PokemoneEmeraldRandomizer</RootNamespace>
-    <AssemblyName>PokemoneEmeraldRandomizer</AssemblyName>
+    <RootNamespace>PokemonEmeraldRandomizer</RootNamespace>
+    <AssemblyName>PokemonEmeraldRandomizer</AssemblyName>
     <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -63,13 +63,15 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Backend\Pokemon.cs" />
-    <Compile Include="Backend\RandomExtensions.cs" />
+    <Compile Include="Backend\Item.cs" />
+    <Compile Include="Backend\PokemonDefinition.cs" />
+    <Compile Include="Backend\Mutation.cs" />
     <Compile Include="Backend\ROMData.cs" />
-    <Compile Include="Backend\ROMGenerator.cs" />
+    <Compile Include="Backend\ROMCreator.cs" />
+    <Compile Include="Backend\ROMDataMutator.cs" />
     <Compile Include="Backend\ROMParser.cs" />
     <Compile Include="Backend\Trainer.cs" />
-    <Compile Include="Backend\TrainerPokemon.cs" />
+    <Compile Include="Backend\Pokemon.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
