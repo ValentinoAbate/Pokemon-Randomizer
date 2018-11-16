@@ -13,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.IO;
 
 namespace PokemoneEmeraldRandomizer
 {
@@ -21,6 +22,8 @@ namespace PokemoneEmeraldRandomizer
     /// </summary>
     public partial class MainWindow : Window
     {
+        private Backend.ROMData Data { get; set; }
+
         public MainWindow()
         {
             InitializeComponent();
@@ -32,7 +35,22 @@ namespace PokemoneEmeraldRandomizer
             openFileDialog.Filter = "GBA ROM files|*.gba";
             openFileDialog.Title = "Open ROM";
             if (openFileDialog.ShowDialog() == true)
-                Backend.ROMLoader.LoadROM(openFileDialog.FileName);
+            {
+                byte[] rawROM = File.ReadAllBytes(openFileDialog.FileName);
+                Data = Backend.ROMParser.Parse(rawROM);
+            }
+
+        }
+
+        private void Save_ROM(object sender, RoutedEventArgs e)
+        {
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Filter = "GBA ROM files|*.gba";
+            saveFileDialog.Title = "Save ROM";
+            if (saveFileDialog.ShowDialog() == true)
+            {
+                File.WriteAllBytes(saveFileDialog.FileName, Backend.ROMGenerator.GenerateROM(Data));
+            }
         }
     }
 }

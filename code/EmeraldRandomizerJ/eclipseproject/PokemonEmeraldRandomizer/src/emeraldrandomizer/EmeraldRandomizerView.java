@@ -2414,7 +2414,7 @@ public class EmeraldRandomizerView extends FrameView {
 
             //change the Wally battle
             if (wallyStart <= 255){
-                writeToROM(wallyBattlePtr,new int[]{wallyStart,33,28,0}); // ##21c000
+                writeToROM(wallyBattlePtr,new int[]{wallyStart,33,28,0}); // ##21c00
             } else if(wallyStart > 255+256){
                 JOptionPane.showMessageDialog(null, "Error setting Wally's starter battle.\n"
                         + "No change was made.");

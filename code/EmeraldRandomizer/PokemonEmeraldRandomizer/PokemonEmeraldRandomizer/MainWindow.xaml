@@ -19,7 +19,7 @@
         <Menu Grid.Row="0">
             <MenuItem Header="_File">
                 <MenuItem Header="_Open ROM" Click="Open_ROM"/>
-                <MenuItem Header="_Save ROM" />
+                <MenuItem Header="_Save ROM" Click="Save_ROM"/>
                 <MenuItem Header="_Generate Info" />
                 <Separator />
                 <MenuItem Header="_Exit" />
@@ -52,6 +52,10 @@
 
             </TabItem>
         </TabControl>
-        <Label Name="MessageBox" Grid.Row="2" Content="Message Box!" Height="80"></Label>
+        <StatusBar Name="MessageBox" Grid.Row="2" Height="50">
+            <StatusBarItem>
+                <Label Content="Message Box!"></Label>
+            </StatusBarItem>
+        </StatusBar>
     </Grid>
 </Window>

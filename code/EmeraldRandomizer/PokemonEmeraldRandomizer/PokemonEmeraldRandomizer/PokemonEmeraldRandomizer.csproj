@@ -63,8 +63,13 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Backend\Pokemon.cs" />
+    <Compile Include="Backend\RandomExtensions.cs" />
     <Compile Include="Backend\ROMData.cs" />
-    <Compile Include="Backend\ROMLoader.cs" />
+    <Compile Include="Backend\ROMGenerator.cs" />
+    <Compile Include="Backend\ROMParser.cs" />
+    <Compile Include="Backend\Trainer.cs" />
+    <Compile Include="Backend\TrainerPokemon.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
