@@ -31,23 +31,23 @@ namespace PokemonEmeraldRandomizer.Backend
     }
     public enum Ability
     {
-        NONE, Stench, Drizzle, SpeedBoost, BattleArmor,
-        Sturdy, Damp, Limber, SandVeil, Static, VoltAbsorb, WaterAbsorb, Oblivious, CloudNine,
-        Compoundeyes, Insomnia, ColorChange, Immunity, FlashFire, ShieldDust, OwnTempo, SuctionCups,
-        Intimidate, ShadowTag, RoughSkin, WonderGuard, Levitate, EffectSpore, Synchronize, ClearBody,
-        NaturalCure, Lightningrod, SereneGrace, SwiftSwim, Chlorophyll, Illuminate, Trace, HugePower,
-        PoisonPoint, InnerFocus, MagmaArmor, WaterVeil, MagnetPull, Soundproof, RainDish,
-        SandStream, Pressure, ThickFat, EarlyBird, FlameBody, RunAway, KeenEye, HyperCutter,
-        Pickup, Truant, Hustle, CuteCharm, Plus, Minus, Forecast, StickyHold, ShedSkin, Guts,
-        MarvelScale, LiquidOoze, Overgrow, Blaze, Torrent, Swarm, RockHead, Drought, ArenaTrap,
-        VitalSpirit, WhiteSmoke, PurePower, ShellArmor, Cacophony, AirLock
+        NONE, Stench, Drizzle, Speed_Boost, Battle_Armor,
+        Sturdy, Damp, Limber, Sand_Veil, Static, Volt_Absorb, Water_Absorb, Oblivious, Cloud_Nine,
+        Compoundeyes, Insomnia, Color_Change, Immunity, Flash_Fire, Shield_Dust, Own_Tempo, Suction_Cups,
+        Intimidate, Shadow_Tag, Rough_Skin, Wonder_Guard, Levitate, Effect_Spore, Synchronize, Clear_Body,
+        Natural_Cure, Lightningrod, Serene_Grace, Swift_Swim, Chlorophyll, Illuminate, Trace, Huge_Power,
+        Poison_Point, Inner_Focus, Magma_Armor, Water_Veil, Magnet_Pull, Soundproof, Rain_Dish,
+        Sand_Stream, Pressure, Thick_Fat, Early_Bird, Flame_Body, Run_Away, Keen_Eye, Hyper_Cutter,
+        Pickup, Truant, Hustle, Cute_Charm, Plus, Minus, Forecast, Sticky_Hold, Shed_Skin, Guts,
+        Marvel_Scale, Liquid_Ooze, Overgrow, Blaze, Torrent, Swarm, Rock_Head, Drought, Arena_Trap,
+        Vital_Spirit, White_Smoke, Pure_Power, Shell_Armor, Cacophony, Air_Lock
     }
     public enum Attack
     {
         None,POUND,KARATE_CHOP,DOUBLESLAP,COMET_PUNCH,MEGA_PUNCH,PAY_DAY,FIRE_PUNCH,
         ICE_PUNCH,THUNDERPUNCH,SCRATCH,VICEGRIP,GUILLOTINE,RAZOR_WIND,SWORDS_DANCE,CUT,GUST,WING_ATTACK,
-        WHIRLWIND,FLY,BIND,SLAM,VINE_WHIP,STOMP,DOUBLE_KICK,MEGA_KICK,JUMP_KICK,ROLLING_KICK,SANDᅳATTACK,
-        HEADBUTT,HORN_ATTACK,FURY_ATTACK,HORN_DRILL,TACKLE,BODY_SLAM,WRAP,TAKE_DOWN,THRASH,DOUBLEᅳEDGE,
+        WHIRLWIND,FLY,BIND,SLAM,VINE_WHIP,STOMP,DOUBLE_KICK,MEGA_KICK,JUMP_KICK,ROLLING_KICK,SANDーATTACK,
+        HEADBUTT,HORN_ATTACK,FURY_ATTACK,HORN_DRILL,TACKLE,BODY_SLAM,WRAP,TAKE_DOWN,THRASH,DOUBLEーEDGE,
         TAIL_WHIP,POISON_STING,TWINEEDLE,PIN_MISSILE,LEER,BITE,GROWL,ROAR,SING,SUPERSONIC,SONICBOOM,
         DISABLE,ACID,EMBER,FLAMETHROWER,MIST,WATER_GUN,HYDRO_PUMP,SURF,ICE_BEAM,BLIZZARD,PSYBEAM,
         BUBBLEBEAM,AURORA_BEAM,HYPER_BEAM,PECK,DRILL_PECK,SUBMISSION,LOW_KICK,COUNTER,SEISMIC_TOSS,STRENGTH,
@@ -62,14 +62,14 @@ namespace PokemonEmeraldRandomizer.Backend
         CRABHAMMER,EXPLOSION,FURY_SWIPES,BONEMERANG,REST,ROCK_SLIDE,HYPER_FANG,SHARPEN,CONVERSION,TRI_ATTACK,
         SUPER_FANG,SLASH,SUBSTITUTE,STRUGGLE,SKETCH,TRIPLE_KICK,THIEF,SPIDER_WEB,MIND_READER,NIGHTMARE,
         FLAME_WHEEL,SNORE,CURSE,FLAIL,CONVERSION_2,AEROBLAST,COTTON_SPORE,REVERSAL,SPITE,POWDER_SNOW,PROTECT,
-        MACH_PUNCH,SCARY_FACE,FAINT_ATTACK,SWEET_KISS,BELLY_DRUM,SLUDGE_BOMB,MUDᅳSLAP,OCTAZOOKA,SPIKES,
-        ZAP_CANNON,FORESIGHT,DESTINY_BOND,PERISH_SONG,ICY_WIND,DETECT,BONE_RUSH,LOCKᅳON,OUTRAGE,SANDSTORM,
+        MACH_PUNCH,SCARY_FACE,FAINT_ATTACK,SWEET_KISS,BELLY_DRUM,SLUDGE_BOMB,MUDーSLAP,OCTAZOOKA,SPIKES,
+        ZAP_CANNON,FORESIGHT,DESTINY_BOND,PERISH_SONG,ICY_WIND,DETECT,BONE_RUSH,LOCKーON,OUTRAGE,SANDSTORM,
         GIGA_DRAIN,ENDURE,CHARM,ROLLOUT,FALSE_SWIPE,SWAGGER,MILK_DRINK,SPARK,FURY_CUTTER,STEEL_WING,MEAN_LOOK,
         ATTRACT,SLEEP_TALK,HEAL_BELL,RETURN,PRESENT,FRUSTRATION,SAFEGUARD,PAIN_SPLIT,SACRED_FIRE,MAGNITUDE,
         DYNAMICPUNCH,MEGAHORN,DRAGONBREATH,BATON_PASS,ENCORE,PURSUIT,RAPID_SPIN,SWEET_SCENT,IRON_TAIL,METAL_CLAW,
         VITAL_THROW,MORNING_SUN,SYNTHESIS,MOONLIGHT,HIDDEN_POWER,CROSS_CHOP,TWISTER,RAIN_DANCE,SUNNY_DAY,CRUNCH,
         MIRROR_COAT,PSYCH_UP,EXTREMESPEED,ANCIENTPOWER,SHADOW_BALL,FUTURE_SIGHT,ROCK_SMASH,WHIRLPOOL,BEAT_UP,
-        FAKE_OUT,UPROAR,STOCKPILE,SPIT_UP,SWALLOW,HEAT_WAVE,HAIL,TORMENT,FLATTER,WILLᅳOᅳWISP,MEMENTO,FACADE,
+        FAKE_OUT,UPROAR,STOCKPILE,SPIT_UP,SWALLOW,HEAT_WAVE,HAIL,TORMENT,FLATTER,WILLーOーWISP,MEMENTO,FACADE,
         FOCUS_PUNCH,SMELLINGSALT,FOLLOW_ME,NATURE_POWER,CHARGE,TAUNT,HELPING_HAND,TRICK,ROLE_PLAY,WISH,ASSIST,
         INGRAIN,SUPERPOWER,MAGIC_COAT,RECYCLE,REVENGE,BRICK_BREAK,YAWN,KNOCK_OFF,ENDEAVOR,ERUPTION,SKILL_SWAP,
         IMPRISON,REFRESH,GRUDGE,SNATCH,SECRET_POWER,DIVE,ARM_THRUST,CAMOUFLAGE,TAIL_GLOW,LUSTER_PURGE,MIST_BALL,
@@ -83,7 +83,6 @@ namespace PokemonEmeraldRandomizer.Backend
     }
     public class PokemonDefinition
     {
-        private static char enumDashChar = 'ᅳ';
         public PokemonType[] types = new PokemonType[] { PokemonType.None, PokemonType.None };
         public Ability[] abilities = new Ability[] { Ability.NONE, Ability.NONE };
         public Item[] heldItems = new Item[] { Item.None, Item.None };
@@ -151,13 +150,13 @@ namespace PokemonEmeraldRandomizer.Backend
                 }
             }
             sb.Append("  | ");
-            sb.Append(types[0].ToString());
+            sb.Append(types[0].ToDisplayString());
             if (types[0] == types[1])
                 sb.Append("     |  ");
             else
-                sb.Append("/" + types[1].ToString() + " |  ");
+                sb.Append("/" + types[1].ToDisplayString() + " |  ");
             foreach (Ability ability in abilities){
-                string abil = ability == Ability.NONE ? "---" : ability.ToString();
+                string abil = ability == Ability.NONE ? "---" : ability.ToDisplayString();
                 sb.Append(abil);
                 for (int i = abil.Length; i <= 12; i++)
                 {
@@ -165,7 +164,7 @@ namespace PokemonEmeraldRandomizer.Backend
                 } sb.Append(" | ");
             }
             foreach (Item item in heldItems){
-                string itemText = item == Item.None ? "---" : item.ToString();
+                string itemText = item == Item.None ? "---" : item.ToDisplayString();
                 sb.Append(item);
                 for (int i=itemText.Length;i<=12;i++){
                     sb.Append(" ");
