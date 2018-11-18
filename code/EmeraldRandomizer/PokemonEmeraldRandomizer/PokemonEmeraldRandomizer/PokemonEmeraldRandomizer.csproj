@@ -65,9 +65,11 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Backend\AddressUtils.cs" />
     <Compile Include="Backend\EnumUtils.cs" />
     <Compile Include="Backend\Item.cs" />
-    <Compile Include="Backend\PokemonDefinition.cs" />
+    <Compile Include="Backend\PokedexUtils.cs" />
+    <Compile Include="Backend\PokemonBaseStats.cs" />
     <Compile Include="Backend\Mutation.cs" />
     <Compile Include="Backend\ROMData.cs" />
     <Compile Include="Backend\ROMCreator.cs" />

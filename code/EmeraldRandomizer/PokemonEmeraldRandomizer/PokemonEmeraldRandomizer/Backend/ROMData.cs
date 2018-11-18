@@ -10,17 +10,42 @@ namespace PokemonEmeraldRandomizer.Backend
     {
         public byte[] RawROM { get; }
         public Pokemon[] Starters { get; set; }
-        public List<PokemonDefinition> Pokemon { get; set; }
+        public List<PokemonBaseStats> Pokemon { get; set; }
+        public List<PokemonBaseStats> PokemonDexOrder
+        {
+            get
+            {
+                List<PokemonBaseStats> shallowClone = new List<PokemonBaseStats>(Pokemon);
+                shallowClone.Sort((x, y) => x.DexIndex.CompareTo(y.DexIndex));
+                return shallowClone;
+            }
+        }
         public List<Trainer> Trainers { get; set; }
         public ROMData(byte[] rawROM)
         {
             RawROM = rawROM;
         }
-        public override string ToString()
+        //Create string array to write to info file
+        public string[] ToStringArray()
         {
             const string divider = "=======================================================================" +
                                    "========================================================================";
             List<string> outLs = new List<string>();
+
+            #region Print Pokemon Definitions
+            outLs.Add(divider);
+            outLs.Add("   Pokémon Info List");
+            outLs.Add(divider);
+            outLs.Add(("Pkmn Name      |  HP  AT  DF  SP  SA  SD   |    EV Yields   |" +
+                " Type(s) |  Ability 1     | Ability 2     | Held Item 1   | Held Item 2   | "));
+            outLs.Add(("---------------------------------------------------------" +
+                      "----------------------------------------------------------------------------"));
+            var pkmnSorted = PokemonDexOrder;
+            foreach (PokemonBaseStats pkmn in pkmnSorted)
+                outLs.Add(pkmn.ToString());
+            #endregion
+
+            #region TODO
             //String[] pkmn = ak.getPokemonListGameOrder();
 
             //String[] arPkmn = new ArrayKeeper().getPokemonListGameOrder();
@@ -167,12 +192,9 @@ namespace PokemonEmeraldRandomizer.Backend
             //    outLs.Add("   3% - " + pickup[i + 8]);
             //    outLs.Add("   1% - " + pickup[i + 18] + ", " + pickup[i + 19]);
             //}
-            string ret = string.Empty;
-            foreach(string line in outLs)
-            {
-                ret += (line + "\n");
-            }
-            return ret;
+            #endregion
+
+            return outLs.ToArray();
         }
     }
 }

@@ -19,7 +19,7 @@ namespace PokemonEmeraldRandomizer.Backend
             checkHash(rawROM);
             ROMData data = new ROMData(rawROM);
             //data.Starters = ReadStarters(rawROM);
-            //data.Pokemon = ReadPokemon(rawROM);
+            data.Pokemon = ReadPokemon(rawROM);
             //data.Trainers = ReadTrainers(rawROM);
             return data;
         }
@@ -27,9 +27,26 @@ namespace PokemonEmeraldRandomizer.Backend
         {
             throw new System.NotImplementedException();
         }
-        private static List<PokemonDefinition> ReadPokemon(byte[] rawROM)
+        private static List<PokemonBaseStats> ReadPokemon(byte[] rawROM)
         {
-            throw new System.NotImplementedException();
+            List<PokemonBaseStats> pokemon = new List<PokemonBaseStats>();
+            int ptr = AddressUtils.pokemonDefinitionStartAddy;
+            byte[] curr_block = new byte[28];
+            for (int i = 0; i < 411; i++, ptr += 28)//, TMptr += 8, tutorPtr += 4)
+            {
+                if (i >= 251 && i < 276)
+                {
+                    //skip 25 empty slots
+                    i += 25;
+                    ptr += (25 * 28);
+                    //atkPtr += 4;
+                }
+                //family = false;
+                //preevo = false;
+                Array.ConstrainedCopy(rawROM, ptr, curr_block, 0, 28);
+                pokemon.Add(new PokemonBaseStats(curr_block, (PokemonSpecies)i));
+            }
+            return pokemon;
         }
         private static List<Trainer> ReadTrainers(byte[] rawROM)
         {

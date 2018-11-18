@@ -60,7 +60,7 @@ namespace PokemonEmeraldRandomizer
             saveFileDialog.Title = "Generate Info Docs";
             if (saveFileDialog.ShowDialog() == true)
             {
-                File.WriteAllText(saveFileDialog.FileName, Data.ToString());
+                File.WriteAllLines(saveFileDialog.FileName, Data.ToStringArray());
             }
         }
     }
