@@ -68,6 +68,7 @@
     <Compile Include="Backend\AddressUtils.cs" />
     <Compile Include="Backend\EnumUtils.cs" />
     <Compile Include="Backend\Item.cs" />
+    <Compile Include="Backend\MoveSet.cs" />
     <Compile Include="Backend\PokedexUtils.cs" />
     <Compile Include="Backend\PokemonBaseStats.cs" />
     <Compile Include="Backend\Mutation.cs" />

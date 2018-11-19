@@ -70,6 +70,7 @@ namespace PokemonEmeraldRandomizer.Backend
         DRG, //Dragon
         DRK, //Dark
     }
+    //All of the pokemon abilities
     public enum Ability
     {
         NONE, Stench, Drizzle, Speed_Boost, Battle_Armor,
@@ -83,7 +84,8 @@ namespace PokemonEmeraldRandomizer.Backend
         Marvel_Scale, Liquid_Ooze, Overgrow, Blaze, Torrent, Swarm, Rock_Head, Drought, Arena_Trap,
         Vital_Spirit, White_Smoke, Pure_Power, Shell_Armor, Cacophony, Air_Lock
     }
-    public enum Attack
+    //All of the pokemon moves
+    public enum Move
     {
         None, POUND, KARATE_CHOP, DOUBLESLAP, COMET_PUNCH, MEGA_PUNCH, PAY_DAY, FIRE_PUNCH,
         ICE_PUNCH, THUNDERPUNCH, SCRATCH, VICEGRIP, GUILLOTINE, RAZOR_WIND, SWORDS_DANCE, CUT, GUST, WING_ATTACK,
@@ -122,6 +124,7 @@ namespace PokemonEmeraldRandomizer.Backend
         VOLT_TACKLE, MAGICAL_LEAF, WATER_SPORT, CALM_MIND, LEAF_BLADE, DRAGON_DANCE, ROCK_BLAST, SHOCK_WAVE, WATER_PULSE,
         DOOM_DESIRE, PSYCHO_BOOST
     }
+    //All of the pokemon exp growth curves
     public enum ExpGrowthType
     {
         //for more info on curves, see https://bulbapedia.bulbagarden.net/wiki/Experience
@@ -147,18 +150,24 @@ namespace PokemonEmeraldRandomizer.Backend
         public byte SpAttack { get { return stats[4]; } set { stats[4] = value; } }
         public byte SpDefense { get { return stats[5]; } set { stats[5] = value; } }
         #endregion
-        //How many evs you get when you defeat this pokemon
-        private byte[] evYields = new byte[6];
+        private byte[] evYields = new byte[6]; //How many evs you get when you defeat this pokemon
         public PokemonType[] types = new PokemonType[] { PokemonType.None, PokemonType.None };
         public Ability[] abilities = new Ability[] { Ability.NONE, Ability.NONE };
         public Item[] heldItems = new Item[] { Item.None, Item.None };
         public ExpGrowthType growthType;
+        public MoveSet moveSet;
 
         public PokemonBaseStats(byte[] data, PokemonSpecies species)
         {
             //statSwaps = new int[] { 0, 1, 2, 3, 4, 5 };
             //TMcompat = new int[] { 0, 0, 0, 0, 0, 0, 0, 0 };
-            //tutorCompat = new int[] { 0, 0, 0, 0 };
+            //tutorCompat = new int[] { 0, 0, 0, 0 };     
+#if DEBUG
+            if (data.Length < 28)
+                throw new System.Exception("Error parsing Pokemon Data: Expected 28 bytes, got " + data.Length);
+#endif
+            #region Base Stats Data Structure
+
             #region Data structure documentation
             //Base HP             byte    0
             //Base Attack         byte    1
@@ -185,10 +194,6 @@ namespace PokemonEmeraldRandomizer.Backend
             //Color and Flip      byte    25
             //Padding*            word    26.
             #endregion
-#if DEBUG
-            if (data.Length < 28)
-                throw new System.Exception("Error parsing Pokemon Data: Expected 28 bytes, got " + data.Length);
-#endif
             //Set species
             this.species = species;
             //fill in stats (hp/at/df/sp/sa/sd)
@@ -196,7 +201,6 @@ namespace PokemonEmeraldRandomizer.Backend
             //fill in types
             types[0] = (PokemonType)data[6];
             types[1] = (PokemonType)data[7];
-
             //fill in ev yields (stored in the first 12 bits of data[10-11])
             for (int i = 0; i < 6; i++)
                 evYields[i] = (byte)((data[10 + i / 4] >> ((i * 2) % 8)) & 3);
@@ -206,6 +210,16 @@ namespace PokemonEmeraldRandomizer.Backend
             //fill in abilities
             abilities[0] = (Ability)data[22];
             abilities[1] = (Ability)data[23];
+            #endregion
+
+            #region Moveset
+            #endregion
+
+            #region TM Compatibility
+            #endregion
+
+            #region Tutor Compatibility
+            #endregion
         }
         public override string ToString()
         {
@@ -242,22 +256,28 @@ namespace PokemonEmeraldRandomizer.Backend
                 sb.Append("     |  ");
             else
                 sb.Append("/" + types[1].ToDisplayString() + " |  ");
-            foreach (Ability ability in abilities){
+            foreach (Ability ability in abilities)
+            {
                 string abil = ability == Ability.NONE ? "---" : ability.ToDisplayString();
                 sb.Append(abil);
                 for (int i = abil.Length; i <= 12; i++)
                 {
                     sb.Append(" ");
-                } sb.Append(" | ");
+                }
+                sb.Append(" | ");
             }
-            foreach (Item item in heldItems){
+            foreach (Item item in heldItems)
+            {
                 string itemText = item == Item.None ? "---" : item.ToDisplayString();
                 sb.Append(itemText);
-                for (int i=itemText.Length;i<=12;i++){
+                for (int i = itemText.Length; i <= 12; i++)
+                {
                     sb.Append(" ");
-                } sb.Append(" | ");
+                }
+                sb.Append(" | ");
             }
             return sb.ToString();
         }
+
     }
 }
