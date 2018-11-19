@@ -183,7 +183,7 @@ namespace PokemonEmeraldRandomizer.Backend
         {
             //statSwaps = new int[] { 0, 1, 2, 3, 4, 5 };
             //TMcompat = new int[] { 0, 0, 0, 0, 0, 0, 0, 0 };
-            //tutorCompat = new int[] { 0, 0, 0, 0 };     
+            //tutorCompat = new int[] { 0, 0, 0, 0 };
 #if DEBUG
             if (data.Length < 28)
                 throw new System.Exception("Error parsing Pokemon Data: Expected 28 bytes, got " + data.Length);
@@ -230,7 +230,7 @@ namespace PokemonEmeraldRandomizer.Backend
             heldItems[1] = (Item)(data[15] * 256 + data[14]);
             eggCycles = data[17];
             growthType = (ExpGrowthType)data[19];
-            //fille in egg groups
+            //fill in egg groups
             eggGroups[0] = (EggGroup)data[20];
             eggGroups[1] = (EggGroup)data[21];
             //fill in abilities
