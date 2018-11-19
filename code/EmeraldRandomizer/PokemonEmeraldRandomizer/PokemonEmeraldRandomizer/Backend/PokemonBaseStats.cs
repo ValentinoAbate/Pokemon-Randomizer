@@ -136,6 +136,26 @@ namespace PokemonEmeraldRandomizer.Backend
         Fast,            //800,000
         Slow, 	         //1,250,000
     }
+    //All of the pokemon Egg groups
+    public enum EggGroup
+    {
+        Monster = 1,
+        Water_1,
+        Bug,
+        Flying,
+        Field,
+        Fairy,
+        Grass,
+        HumanーLike,
+        Water_3,
+        Mineral,
+        Amorphous,
+        Water_2,
+        Ditto,
+        Dragon,
+        Undiscovered,
+    }
+
 
     public class PokemonBaseStats
     {
@@ -155,6 +175,8 @@ namespace PokemonEmeraldRandomizer.Backend
         public Ability[] abilities = new Ability[] { Ability.NONE, Ability.NONE };
         public Item[] heldItems = new Item[] { Item.None, Item.None };
         public ExpGrowthType growthType;
+        public EggGroup[] eggGroups = new EggGroup[2];
+        public byte eggCycles; //How many cycles it takes for eggs to hatch (256 steps per cycle)
         public MoveSet moveSet;
 
         public PokemonBaseStats(byte[] data, PokemonSpecies species)
@@ -206,7 +228,11 @@ namespace PokemonEmeraldRandomizer.Backend
                 evYields[i] = (byte)((data[10 + i / 4] >> ((i * 2) % 8)) & 3);
             heldItems[0] = (Item)(data[13] * 256 + data[12]);
             heldItems[1] = (Item)(data[15] * 256 + data[14]);
+            eggCycles = data[17];
             growthType = (ExpGrowthType)data[19];
+            //fille in egg groups
+            eggGroups[0] = (EggGroup)data[20];
+            eggGroups[1] = (EggGroup)data[21];
             //fill in abilities
             abilities[0] = (Ability)data[22];
             abilities[1] = (Ability)data[23];
