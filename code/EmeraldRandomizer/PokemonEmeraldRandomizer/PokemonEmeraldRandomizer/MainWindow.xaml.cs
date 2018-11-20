@@ -49,7 +49,7 @@ namespace PokemonEmeraldRandomizer
             saveFileDialog.Title = "Save ROM";
             if (saveFileDialog.ShowDialog() == true)
             {
-                File.WriteAllBytes(saveFileDialog.FileName, Backend.ROMCreator.GenerateROM(Data));
+                File.WriteAllBytes(saveFileDialog.FileName, Backend.ROMWriter.GenerateROM(Data));
             }
         }
 

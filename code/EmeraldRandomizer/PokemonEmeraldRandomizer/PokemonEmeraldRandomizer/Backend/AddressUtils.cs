@@ -6,12 +6,18 @@ using System.Threading.Tasks;
 
 namespace PokemonEmeraldRandomizer.Backend
 {
-    public static class AddressUtils
+    public static class AddyUtils
     {
         #region Special Addresses
+        //The address where the TM move mappings start
+        public const int TMMovesAddy = 0x615b94;
+        //The address where the HM move mappings start
+        public const int HHMovesAddy = 0x615bf8;
+        //The address where the move tutor move mappings start
+        public const int moveTutorMovesAddy = 0x61500c; 
         //The address where pokemon definitions start
         public const int pokemonBaseStatsAddy = 0x3203e8;
-        //The address where pokemon TM compatiblilties start
+        //The address where pokemon TM and HM compatiblilties start
         public const int TMCompatAddy = 0x31e8a0;
         //The address where pokemon move tutor compats starts
         public const int tutorCompatAddy = 0x61504c;

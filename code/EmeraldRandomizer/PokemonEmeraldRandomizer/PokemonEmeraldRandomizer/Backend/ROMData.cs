@@ -8,22 +8,38 @@ namespace PokemonEmeraldRandomizer.Backend
 {
     public class ROMData
     {
-        public byte[] RawROM { get; }
+        #region Public Max Constants
+        public const int numTMs = 50;
+        public const int numHMs = 8;
+        public const int numTMHMs = numTMs + numHMs;
+        public const int numMoveTutors = 30;
+        #endregion
+
+        public byte[] ROM { get; }
         public Pokemon[] Starters { get; set; }
-        public List<PokemonBaseStats> Pokemon { get; set; }
-        public List<PokemonBaseStats> PokemonDexOrder
+        public PokemonBaseStats[] Pokemon { get; set; }
+        public PokemonBaseStats[] PokemonDexOrder
         {
             get
             {
-                List<PokemonBaseStats> shallowClone = new List<PokemonBaseStats>(Pokemon);
-                shallowClone.Sort((x, y) => x.DexIndex.CompareTo(y.DexIndex));
+                PokemonBaseStats[] shallowClone = Pokemon.Clone() as PokemonBaseStats[];
+                Array.Sort(shallowClone, (x, y) => x.DexIndex.CompareTo(y.DexIndex));
                 return shallowClone;
             }
         }
-        public List<Trainer> Trainers { get; set; }
-        public ROMData(byte[] rawROM)
+        public Trainer[] Trainers { get; set; }
+
+        #region TM, HM, and tutor move definition arrays
+        public Move[] TMMoves;
+        public Move[] HMMoves;
+        public Move[] tutorMoves;
+        #endregion
+
+        public bool NationalDexUnlocked = false;
+
+        public ROMData(byte[] rom)
         {
-            RawROM = rawROM;
+            ROM = rom;
         }
         //Create string array to write to info file
         public string[] ToStringArray()
@@ -42,7 +58,30 @@ namespace PokemonEmeraldRandomizer.Backend
                       "----------------------------------------------------------------------------"));
             var pkmnSorted = PokemonDexOrder;
             foreach (PokemonBaseStats pkmn in pkmnSorted)
+            {
                 outLs.Add(pkmn.ToString());
+                #region TM/HM/MT compat printing (Make prettier)
+                //string compatStr = "TM Compat: ";
+                //for (int i = 0; i < pkmn.TMCompat.Length; ++i)
+                //{
+                //    if (pkmn.TMCompat[i])
+                //        compatStr += (i + 1) + ": " + TMMoves[i].ToDisplayString() + ", ";
+                //}
+                //compatStr += "||| HM Compat: ";
+                //for (int i = 0; i < pkmn.HMCompat.Length; ++i)
+                //{
+                //    if (pkmn.HMCompat[i])
+                //        compatStr += (i + 1) + ": " + HMMoves[i].ToDisplayString() + ", ";
+                //}
+                //compatStr += "||| Tutor Compat: ";
+                //for (int i = 0; i < pkmn.moveTutorCompat.Length; ++i)
+                //{
+                //    if (pkmn.moveTutorCompat[i])
+                //        compatStr += tutorMoves[i].ToDisplayString() + ", ";
+                //}
+                //outLs.Add(compatStr);
+                #endregion
+            }
             #endregion
 
             #region TODO

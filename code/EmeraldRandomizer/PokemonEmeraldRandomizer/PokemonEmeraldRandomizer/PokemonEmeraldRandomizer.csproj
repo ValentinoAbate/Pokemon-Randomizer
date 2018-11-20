@@ -73,7 +73,7 @@
     <Compile Include="Backend\PokemonBaseStats.cs" />
     <Compile Include="Backend\Mutation.cs" />
     <Compile Include="Backend\ROMData.cs" />
-    <Compile Include="Backend\ROMCreator.cs" />
+    <Compile Include="Backend\ROMWriter.cs" />
     <Compile Include="Backend\ROMDataMutator.cs" />
     <Compile Include="Backend\ROMParser.cs" />
     <Compile Include="Backend\Trainer.cs" />

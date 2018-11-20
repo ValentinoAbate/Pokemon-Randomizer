@@ -13,7 +13,7 @@ namespace PokemonEmeraldRandomizer.Backend
         //Apply mutations based on program settings.
         public static ROMData mutate(ROMData orig, MainWindow window)
         {
-            ROMData mut = new ROMData(orig.RawROM);
+            ROMData mut = new ROMData(orig.ROM);
             //changeStarters(); //must come before trainers
             //changeTMs();      //must come before trainers
             //randomizePokeData(); //must come before trainers

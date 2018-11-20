@@ -156,11 +156,40 @@ namespace PokemonEmeraldRandomizer.Backend
         Undiscovered,
     }
 
-
     public class PokemonBaseStats
     {
         public readonly PokemonSpecies species;
         public int DexIndex { get { return PokedexUtils.PokedexIndex(species); } }
+
+        #region Basic 28 byte Data Structure
+
+        #region Data structure documentation
+        //Base HP             byte    0
+        //Base Attack         byte    1
+        //Base Defense        byte    2
+        //Base Speed          byte    3
+        //Base Sp. Attack     byte    4
+        //Base Sp. Defense    byte    5
+        //Type 1              byte    6
+        //Type 2              byte    7
+        //Catch rate          byte    8
+        //Base Exp. yield     byte    9
+        //Effort yield        word    10
+        //Item 1              word    12
+        //Item 2              word    14
+        //Gender              byte    16
+        //Egg cycles          byte    17
+        //Base friendship     byte    18
+        //Level - up type     byte    19
+        //Egg Group 1         byte    20
+        //Egg Group 2         byte    21
+        //Ability 1           byte    22
+        //Ability 2           byte    23
+        //Safari Zone rate    byte    24
+        //Color and Flip      byte    25
+        //Padding*            word    26.
+        #endregion
+
         #region Stats
         private byte[] stats = new byte[6];
         public byte Hp { get { return stats[0]; } set { stats[0] = value; } }
@@ -170,6 +199,7 @@ namespace PokemonEmeraldRandomizer.Backend
         public byte SpAttack { get { return stats[4]; } set { stats[4] = value; } }
         public byte SpDefense { get { return stats[5]; } set { stats[5] = value; } }
         #endregion
+
         private byte[] evYields = new byte[6]; //How many evs you get when you defeat this pokemon
         public PokemonType[] types = new PokemonType[] { PokemonType.None, PokemonType.None };
         public Ability[] abilities = new Ability[] { Ability.NONE, Ability.NONE };
@@ -177,45 +207,21 @@ namespace PokemonEmeraldRandomizer.Backend
         public ExpGrowthType growthType;
         public EggGroup[] eggGroups = new EggGroup[2];
         public byte eggCycles; //How many cycles it takes for eggs to hatch (256 steps per cycle)
+        #endregion
+
+        #region Move Data (TM, HM, Tutor compatibility)
         public MoveSet moveSet;
+        public BitArray TMCompat; //Compatibility with TMs 01-50 (index maps to ROMData.TMMoves)
+        public BitArray HMCompat; //Compatibility with HMs 01-08 (index maps to ROMData.HMMoves)
+        public BitArray moveTutorCompat; //Compatibility with moveTutors (index maps to ROMData.tutorMoves)
+        #endregion
 
         public PokemonBaseStats(byte[] data, PokemonSpecies species)
         {
-            //statSwaps = new int[] { 0, 1, 2, 3, 4, 5 };
-            //TMcompat = new int[] { 0, 0, 0, 0, 0, 0, 0, 0 };
-            //tutorCompat = new int[] { 0, 0, 0, 0 };
 #if DEBUG
             if (data.Length < 28)
                 throw new System.Exception("Error parsing Pokemon Data: Expected 28 bytes, got " + data.Length);
 #endif
-            #region Base Stats Data Structure
-
-            #region Data structure documentation
-            //Base HP             byte    0
-            //Base Attack         byte    1
-            //Base Defense        byte    2
-            //Base Speed          byte    3
-            //Base Sp. Attack     byte    4
-            //Base Sp. Defense    byte    5
-            //Type 1              byte    6
-            //Type 2              byte    7
-            //Catch rate          byte    8
-            //Base Exp. yield     byte    9
-            //Effort yield        word    10
-            //Item 1              word    12
-            //Item 2              word    14
-            //Gender              byte    16
-            //Egg cycles          byte    17
-            //Base friendship     byte    18
-            //Level - up type     byte    19
-            //Egg Group 1         byte    20
-            //Egg Group 2         byte    21
-            //Ability 1           byte    22
-            //Ability 2           byte    23
-            //Safari Zone rate    byte    24
-            //Color and Flip      byte    25
-            //Padding*            word    26.
-            #endregion
             //Set species
             this.species = species;
             //fill in stats (hp/at/df/sp/sa/sd)
@@ -236,16 +242,6 @@ namespace PokemonEmeraldRandomizer.Backend
             //fill in abilities
             abilities[0] = (Ability)data[22];
             abilities[1] = (Ability)data[23];
-            #endregion
-
-            #region Moveset
-            #endregion
-
-            #region TM Compatibility
-            #endregion
-
-            #region Tutor Compatibility
-            #endregion
         }
         public override string ToString()
         {
@@ -302,8 +298,8 @@ namespace PokemonEmeraldRandomizer.Backend
                 }
                 sb.Append(" | ");
             }
+            sb.Append("\n" + moveSet.ToString());
             return sb.ToString();
         }
-
     }
 }
