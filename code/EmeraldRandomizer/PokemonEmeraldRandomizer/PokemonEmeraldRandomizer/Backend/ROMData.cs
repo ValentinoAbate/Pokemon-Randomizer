@@ -8,7 +8,7 @@ namespace PokemonEmeraldRandomizer.Backend
 {
     public class ROMData
     {
-        #region Public Max Constants
+        #region Public Constants
         public const int numTMs = 50;
         public const int numHMs = 8;
         public const int numTMHMs = numTMs + numHMs;

@@ -200,13 +200,17 @@ namespace PokemonEmeraldRandomizer.Backend
         public byte SpDefense { get { return stats[5]; } set { stats[5] = value; } }
         #endregion
 
-        private byte[] evYields = new byte[6]; //How many evs you get when you defeat this pokemon
+        private byte[] evYields = new byte[6]; // How many evs you get when you defeat this pokemon
         public PokemonType[] types = new PokemonType[] { PokemonType.None, PokemonType.None };
         public Ability[] abilities = new Ability[] { Ability.NONE, Ability.NONE };
         public Item[] heldItems = new Item[] { Item.None, Item.None };
+        public byte genderRatio; // The gender ratio (0 is always male, 254 is always female, 255 is none)
         public ExpGrowthType growthType;
         public EggGroup[] eggGroups = new EggGroup[2];
-        public byte eggCycles; //How many cycles it takes for eggs to hatch (256 steps per cycle)
+        public byte eggCycles; // How many cycles it takes for eggs to hatch (256 steps per cycle)
+        public byte catchRate; // how easy it is to catch the pokemon (higher is easier)
+        public byte baseExpYield; // base exp gained if defeated (max 255, higher is more)
+        public byte safariZoneRunRate;
         #endregion
 
         #region Move Data (TM, HM, Tutor compatibility)
@@ -222,26 +226,30 @@ namespace PokemonEmeraldRandomizer.Backend
             if (data.Length < 28)
                 throw new System.Exception("Error parsing Pokemon Data: Expected 28 bytes, got " + data.Length);
 #endif
-            //Set species
+            // Set species
             this.species = species;
-            //fill in stats (hp/at/df/sp/sa/sd)
+            // fill in stats (hp/at/df/sp/sa/sd)
             Array.ConstrainedCopy(data, 0, stats, 0, 6);
-            //fill in types
+            // fill in types
             types[0] = (PokemonType)data[6];
             types[1] = (PokemonType)data[7];
-            //fill in ev yields (stored in the first 12 bits of data[10-11])
+            catchRate = data[8];
+            baseExpYield = data[9];
+            // fill in ev yields (stored in the first 12 bits of data[10-11])
             for (int i = 0; i < 6; i++)
                 evYields[i] = (byte)((data[10 + i / 4] >> ((i * 2) % 8)) & 3);
             heldItems[0] = (Item)(data[13] * 256 + data[12]);
             heldItems[1] = (Item)(data[15] * 256 + data[14]);
+            genderRatio = data[16];
             eggCycles = data[17];
             growthType = (ExpGrowthType)data[19];
-            //fill in egg groups
+            // fill in egg groups
             eggGroups[0] = (EggGroup)data[20];
             eggGroups[1] = (EggGroup)data[21];
-            //fill in abilities
+            // fill in abilities
             abilities[0] = (Ability)data[22];
             abilities[1] = (Ability)data[23];
+            safariZoneRunRate = data[24];
         }
         public override string ToString()
         {
