@@ -23,6 +23,7 @@ namespace PokemonEmeraldRandomizer
     public partial class MainWindow : Window
     {
         private Backend.ROMData Data { get; set; }
+        private Backend.ROMData RandomizedData { get; set; }
 
         public MainWindow()
         {
@@ -38,6 +39,7 @@ namespace PokemonEmeraldRandomizer
             {
                 byte[] rawROM = File.ReadAllBytes(openFileDialog.FileName);
                 Data = Backend.ROMParser.Parse(rawROM);
+                RandomizedData = Data;
             }
 
         }
@@ -49,7 +51,8 @@ namespace PokemonEmeraldRandomizer
             saveFileDialog.Title = "Save ROM";
             if (saveFileDialog.ShowDialog() == true)
             {
-                File.WriteAllBytes(saveFileDialog.FileName, Backend.ROMWriter.GenerateROM(Data));
+                RandomizedData = Backend.ROMDataMutator.Mutate(Data, this);
+                File.WriteAllBytes(saveFileDialog.FileName, Backend.ROMWriter.Write(RandomizedData));
             }
         }
 
@@ -60,8 +63,13 @@ namespace PokemonEmeraldRandomizer
             saveFileDialog.Title = "Generate Info Docs";
             if (saveFileDialog.ShowDialog() == true)
             {
-                File.WriteAllLines(saveFileDialog.FileName, Data.ToStringArray());
+                File.WriteAllLines(saveFileDialog.FileName, RandomizedData.ToStringArray());
             }
+        }
+
+        private void SeedCheckBox_Changed(object sender, RoutedEventArgs e)
+        {
+            tbSeed.Visibility = (bool)cbSeed.IsChecked ? Visibility.Visible : Visibility.Collapsed;
         }
     }
 }

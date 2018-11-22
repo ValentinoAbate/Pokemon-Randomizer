@@ -11,9 +11,20 @@ namespace PokemonEmeraldRandomizer.Backend
     public static class ROMDataMutator
     {
         //Apply mutations based on program settings.
-        public static ROMData mutate(ROMData orig, MainWindow window)
+        public static ROMData Mutate(ROMData orig, MainWindow window)
         {
-            ROMData mut = new ROMData(orig.ROM);
+            ROMData copy = ROMParser.Parse(orig.ROM);
+            Mutator mut = (bool)window.cbSeed.IsChecked ? new Mutator(window.tbSeed.Text) : new Mutator();
+            foreach(PokemonBaseStats pkmn in copy.Pokemon)
+            {
+                if(pkmn.IsSingleTyped)
+                    pkmn.types[0] = pkmn.types[1] = mut.RandomChoice(orig.Metrics.typeRatiosPrimary);
+                else
+                {
+                    pkmn.types[0] = mut.RandomChoice(orig.Metrics.typeRatiosPrimary);
+                    pkmn.types[1] = mut.RandomChoice(orig.Metrics.typeRatiosSecondary);
+                }
+            }
             //changeStarters(); //must come before trainers
             //changeTMs();      //must come before trainers
             //randomizePokeData(); //must come before trainers
@@ -29,7 +40,8 @@ namespace PokemonEmeraldRandomizer.Backend
             //metronomeHyperdrive();
             //changeItems();
             //changeDex();
-            return mut;
+            copy.CalculateMetrics();
+            return copy;
         }
     }
 }

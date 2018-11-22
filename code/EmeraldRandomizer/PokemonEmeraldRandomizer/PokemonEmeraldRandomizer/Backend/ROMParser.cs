@@ -26,7 +26,7 @@ namespace PokemonEmeraldRandomizer.Backend
         public static ROMData Parse(byte[] rom)
         {
 
-            //checkHash(rom); TURNED OFF FOR DEBUG
+            // checkHash(rom); TURNED OFF FOR DEBUG
             ROMData data = new ROMData(rom);
 
             #region Move Mappings (TMs/HMs/Tutors)
@@ -38,10 +38,12 @@ namespace PokemonEmeraldRandomizer.Backend
             data.tutorMoves = ReadMoveMappings(rom, AddyUtils.moveTutorMovesAddy, ROMData.numMoveTutors);
             #endregion
 
-            //Read the pokemon base stats from the ROM
+            // Read the pokemon base stats from the ROM
             data.Pokemon = ReadPokemonBaseStats(rom);
             //data.Starters = ReadStarters(rom);
             //data.Trainers = ReadTrainers(rom);
+            // Calculate the balance metrics from the loaded data
+            data.CalculateMetrics();
             return data;
         }
         //Read TM, HM, or Move tutor definitions from the rom (depending on args)

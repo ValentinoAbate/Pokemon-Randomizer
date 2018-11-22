@@ -11,7 +11,7 @@ namespace PokemonEmeraldRandomizer.Backend
     //to write to a file
     public static class ROMWriter
     {
-        public static byte[] GenerateROM(ROMData data)
+        public static byte[] Write(ROMData data)
         {
             //Unlock National pokedex
             //if (data.NationalDexUnlocked)

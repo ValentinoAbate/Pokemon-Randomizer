@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace PokemonEmeraldRandomizer.Backend
 {
-    //Every valid species of pokemon. Some names are modified to be in the enum
+    // Every valid species of pokemon. Some names are modified to be in the enum
     public enum PokemonSpecies
     {
         BULBASAUR = 1, IVYSAUR, VENUSAUR, CHARMANDER, CHARMELEON, CHARIZARD, SQUIRTLE, WARTORTLE,
@@ -47,7 +47,7 @@ namespace PokemonEmeraldRandomizer.Backend
         RALTS, KIRLIA, GARDEVOIR, BAGON, SHELGON, SALAMENCE, BELDUM, METANG, METAGROSS, REGIROCK, REGICE,
         REGISTEEL, KYOGRE, GROUDON, RAYQUAZA, LATIAS, LATIOS, JIRACHI, DEOXYS, CHIMECHO
     }
-    //All of the pokemon types. These should map integer wise to the game-defined types
+    // All of the pokemon types. These should map integer wise to the game-defined types
     public enum PokemonType
     {
         None = -1,
@@ -70,7 +70,7 @@ namespace PokemonEmeraldRandomizer.Backend
         DRG, //Dragon
         DRK, //Dark
     }
-    //All of the pokemon abilities
+    // All of the pokemon abilities
     public enum Ability
     {
         NONE, Stench, Drizzle, Speed_Boost, Battle_Armor,
@@ -84,7 +84,7 @@ namespace PokemonEmeraldRandomizer.Backend
         Marvel_Scale, Liquid_Ooze, Overgrow, Blaze, Torrent, Swarm, Rock_Head, Drought, Arena_Trap,
         Vital_Spirit, White_Smoke, Pure_Power, Shell_Armor, Cacophony, Air_Lock
     }
-    //All of the pokemon moves
+    // All of the pokemon moves
     public enum Move
     {
         None, POUND, KARATE_CHOP, DOUBLESLAP, COMET_PUNCH, MEGA_PUNCH, PAY_DAY, FIRE_PUNCH,
@@ -124,7 +124,7 @@ namespace PokemonEmeraldRandomizer.Backend
         VOLT_TACKLE, MAGICAL_LEAF, WATER_SPORT, CALM_MIND, LEAF_BLADE, DRAGON_DANCE, ROCK_BLAST, SHOCK_WAVE, WATER_PULSE,
         DOOM_DESIRE, PSYCHO_BOOST
     }
-    //All of the pokemon exp growth curves
+    // All of the pokemon exp growth curves
     public enum ExpGrowthType
     {
         //for more info on curves, see https://bulbapedia.bulbagarden.net/wiki/Experience
@@ -136,7 +136,7 @@ namespace PokemonEmeraldRandomizer.Backend
         Fast,            //800,000
         Slow, 	         //1,250,000
     }
-    //All of the pokemon Egg groups
+    // All of the pokemon Egg groups
     public enum EggGroup
     {
         Monster = 1,
@@ -160,34 +160,35 @@ namespace PokemonEmeraldRandomizer.Backend
     {
         public readonly PokemonSpecies species;
         public int DexIndex { get { return PokedexUtils.PokedexIndex(species); } }
+        public bool IsSingleTyped { get { return types[0] == types[1]; } }
 
         #region Basic 28 byte Data Structure
 
         #region Data structure documentation
-        //Base HP             byte    0
-        //Base Attack         byte    1
-        //Base Defense        byte    2
-        //Base Speed          byte    3
-        //Base Sp. Attack     byte    4
-        //Base Sp. Defense    byte    5
-        //Type 1              byte    6
-        //Type 2              byte    7
-        //Catch rate          byte    8
-        //Base Exp. yield     byte    9
-        //Effort yield        word    10
-        //Item 1              word    12
-        //Item 2              word    14
-        //Gender              byte    16
-        //Egg cycles          byte    17
-        //Base friendship     byte    18
-        //Level - up type     byte    19
-        //Egg Group 1         byte    20
-        //Egg Group 2         byte    21
-        //Ability 1           byte    22
-        //Ability 2           byte    23
-        //Safari Zone rate    byte    24
-        //Color and Flip      byte    25
-        //Padding*            word    26.
+        // Base HP             byte    0
+        // Base Attack         byte    1
+        // Base Defense        byte    2
+        // Base Speed          byte    3
+        // Base Sp. Attack     byte    4
+        // Base Sp. Defense    byte    5
+        // Type 1              byte    6
+        // Type 2              byte    7
+        // Catch rate          byte    8
+        // Base Exp. yield     byte    9
+        // Effort yield        word    10
+        // Item 1              word    12
+        // Item 2              word    14
+        // Gender              byte    16
+        // Egg cycles          byte    17
+        // Base friendship     byte    18
+        // Level - up type     byte    19
+        // Egg Group 1         byte    20
+        // Egg Group 2         byte    21
+        // Ability 1           byte    22
+        // Ability 2           byte    23
+        // Safari Zone rate    byte    24
+        // Color and Flip      byte    25
+        // Padding*            word    26.
         #endregion
 
         #region Stats

@@ -30,10 +30,17 @@
         </Menu>
         <TabControl Grid.Row="1">
             <TabItem Header="General Settings">
-                <StackPanel>
-                    <TextBlock>Enter some text</TextBlock>
-                    <TextBox Name="textBox1" Width="50"/>
-                </StackPanel>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition  Width="20"></ColumnDefinition>
+                        <ColumnDefinition  Width="Auto"></ColumnDefinition>
+                        <ColumnDefinition Width="Auto"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="1" Orientation="Vertical">
+                    <CheckBox Name="cbSeed" Checked="SeedCheckBox_Changed" Unchecked="SeedCheckBox_Changed">Use Randomizer Seed</CheckBox>
+                        <TextBox Name="tbSeed" Visibility="Collapsed" Text="Enter a seed"/>
+                    </StackPanel>
+                </Grid>
             </TabItem>
             <TabItem Header="Pokemon Settings">
                 <!--Bind TextBlock.Text to the TextBox on the first TabItem.-->
