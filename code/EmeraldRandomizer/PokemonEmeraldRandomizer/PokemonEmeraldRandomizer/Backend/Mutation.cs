@@ -9,15 +9,18 @@ namespace PokemonEmeraldRandomizer.Backend
 {
     public class Mutator
     {
-        private Random Rand;
+        private Random _rand;
         public Mutator()
         {
-            Rand = new Random();
+            _rand = new Random();
         }
         public Mutator(string seed)
         {
-            Rand = new Random(seed.GetHashCode());
+            _rand = new Random(seed.GetHashCode());
         }
+
+        public int RandomInt(int min, int max) => _rand.Next(min, max);
+        public double RandomDouble() => _rand.NextDouble(); 
 
         public T RandomChoice<T>(T[] items, int[] weights, bool isAbsolute)
         {
@@ -27,7 +30,7 @@ namespace PokemonEmeraldRandomizer.Backend
             if (isAbsolute && weights.Aggregate((a, b) => a + b) != 1)
                 throw new Exception("Absolute weights do not add up to 100%! Items: " + items.ToString() + " Weights: " + weights.ToString());
 #endif
-            int randomNumber = Rand.Next(totalWeight);
+            int randomNumber = _rand.Next(totalWeight);
             for (int i = 0; i < items.Length; ++i)
             {
                 if (randomNumber < weights[i])

@@ -9,8 +9,10 @@ namespace PokemonEmeraldRandomizer.Backend
     public class WeightedSet<T>
     {
         private Dictionary<T, int> _items = new Dictionary<T, int>();
-        public T[] Items { get { return _items.Keys.ToArray(); } }
-        public int[] Weights { get { return _items.Values.ToArray(); } }
+        public T[] Items { get => _items.Keys.ToArray(); }
+        public int[] Weights { get => _items.Values.ToArray(); }
+        public int Count { get => _items.Count; }
+
         public void AddWeight(T item, int weight = 1)
         {
             if (_items.ContainsKey(item))

@@ -18,11 +18,16 @@ namespace PokemonEmeraldRandomizer.Backend
             foreach(PokemonBaseStats pkmn in copy.Pokemon)
             {
                 if(pkmn.IsSingleTyped)
-                    pkmn.types[0] = pkmn.types[1] = mut.RandomChoice(orig.Metrics.typeRatiosPrimary);
+                {
+                    if (mut.RandomDouble() < 0.05)
+                        pkmn.types[0] = pkmn.types[1] = mut.RandomChoice(orig.Metrics.TypeRatiosSingle);
+                }
                 else
                 {
-                    pkmn.types[0] = mut.RandomChoice(orig.Metrics.typeRatiosPrimary);
-                    pkmn.types[1] = mut.RandomChoice(orig.Metrics.typeRatiosSecondary);
+                    if (mut.RandomDouble() < 0.05)
+                        pkmn.types[0] = mut.RandomChoice(orig.Metrics.TypeRatiosDualPrimary);
+                    if (mut.RandomDouble() < 0.05)
+                        pkmn.types[1] = mut.RandomChoice(orig.Metrics.TypeRatiosDualSecondary);
                 }
             }
             //changeStarters(); //must come before trainers
@@ -41,6 +46,7 @@ namespace PokemonEmeraldRandomizer.Backend
             //changeItems();
             //changeDex();
             copy.CalculateMetrics();
+
             return copy;
         }
     }
