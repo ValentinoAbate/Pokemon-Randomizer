@@ -12,17 +12,23 @@ namespace PokemonEmeraldRandomizer.Backend
     public static class ROMParser
     {
         #region Symbolic Constants
-        //The MD5 Hash of the ROM this code was designed for
+        // The MD5 Hash of the ROM this code was designed for
         private const string targetROMHash = "7b058a7aea5bfbb352026727ebd87e17";
-        //Number of bytes in the pokemon base stats data structure
+        // Number of bytes in the pokemon base stats data structure
         private const int pkmnBaseStatBytes = 28;
-        //Number of bytes in a pokemon's TM/HM compat chunk
+        // Number of bytes in a pokemon's TM/HM compat chunk
         private const int TMHMCompatBytes = 8;
-        //Number of bytes in a pokemon's tutor compat chunk
+        // Number of bytes in a pokemon's tutor compat chunk
         private const int tutorCompatBytes = 4;
+        // Number of bytes in a pokemon's evoltion definitions data structure
+        private const int evolutionBytes = 8;
+        // Number of evoltion definitions a pokemon has
+        private const int numEvoltionsPerPokemon = 5;
+        // Number of total evolution bytes per pokemon
+        private const int evolutionBlockBytes = evolutionBytes * numEvoltionsPerPokemon;
         #endregion
 
-        //Parse the ROM bytes into a ROMData object
+        // Parse the ROM bytes into a ROMData object
         public static ROMData Parse(byte[] rom)
         {
 
@@ -40,13 +46,13 @@ namespace PokemonEmeraldRandomizer.Backend
 
             // Read the pokemon base stats from the ROM
             data.Pokemon = ReadPokemonBaseStats(rom);
-            //data.Starters = ReadStarters(rom);
-            //data.Trainers = ReadTrainers(rom);
+            // data.Starters = ReadStarters(rom);
+            // data.Trainers = ReadTrainers(rom);
             // Calculate the balance metrics from the loaded data
             data.CalculateMetrics();
             return data;
         }
-        //Read TM, HM, or Move tutor definitions from the rom (depending on args)
+        // Read TM, HM, or Move tutor definitions from the rom (depending on args)
         private static Move[] ReadMoveMappings(byte[] rom, int ptr, int numToRead)
         {
             Move[] moves = new Move[numToRead];
@@ -58,7 +64,7 @@ namespace PokemonEmeraldRandomizer.Backend
         }
 
         #region Read Pokemon Base Stats
-        //Read the Pokemon base stat definitions from the ROM
+        // Read the Pokemon base stat definitions from the ROM
         private static PokemonBaseStats[] ReadPokemonBaseStats(byte[] rom)
         {
             List<PokemonBaseStats> pokemon = new List<PokemonBaseStats>();
@@ -66,30 +72,32 @@ namespace PokemonEmeraldRandomizer.Backend
             int TMPtr = AddyUtils.TMCompatAddy;
             int tutorPtr = AddyUtils.tutorCompatAddy;
             int movePtr = AddyUtils.movesetAddy;
+            int evolutionPtr = AddyUtils.evolutionAddy;
             byte[] curr_block = new byte[pkmnBaseStatBytes];
-            for (int i = 0; i < 411; i++, pkmnPtr += pkmnBaseStatBytes, TMPtr += TMHMCompatBytes, tutorPtr += tutorCompatBytes)
+            for (int i = 0; i < 411; i++, pkmnPtr += pkmnBaseStatBytes, TMPtr += TMHMCompatBytes, tutorPtr += tutorCompatBytes, evolutionPtr += evolutionBlockBytes )
             {
                 if (i >= 251 && i < 276) //skip 25 empty slots
                 {    
                     i += 25;
-                    pkmnPtr += 700; //pkmnBaseStatBytes * 25;
-                    movePtr += 100; //4 * 25 (don't know why this is 4, cuz move segments are variable lengths);
-                    TMPtr += 200; //TMHMCompatBytes * 25
-                    tutorPtr += 100; //tutorCompatBytes * 25
+                    pkmnPtr += 700; // pkmnBaseStatBytes * 25;
+                    movePtr += 100; // 4 * 25 (don't know why this is 4, cuz move segments are variable lengths);
+                    TMPtr += 200; // TMHMCompatBytes * 25
+                    tutorPtr += 100; // tutorCompatBytes * 25
+                    evolutionPtr += 1000; // evolutionBlockBytes * 25
                 }
-                //family = false;
-                //preevo = false;
-                //Create Pokemon
+                // Create Pokemon
                 Array.ConstrainedCopy(rom, pkmnPtr, curr_block, 0, pkmnBaseStatBytes); 
                 PokemonBaseStats pkmn = new PokemonBaseStats(curr_block, (PokemonSpecies)(i + 1));
                 movePtr = ReadAttacks(rom, movePtr, out pkmn.moveSet);
                 ReadTMHMCompat(rom, TMPtr, out pkmn.TMCompat, out pkmn.HMCompat);
                 ReadTutorCompat(rom, tutorPtr, out pkmn.moveTutorCompat);
+                ReadEvolutions(rom, evolutionPtr, out pkmn.evolutions);
                 pokemon.Add(pkmn);
             }
             return pokemon.ToArray();
         }
-        //Read the attacks starting at atkPtr (returns the index after completion)
+
+        // Read the attacks starting at atkPtr (returns the index after completion)
         private static int ReadAttacks(byte[] rom, int movePtr, out MoveSet moves)
         {
             moves = new MoveSet();
@@ -103,7 +111,7 @@ namespace PokemonEmeraldRandomizer.Backend
             movePtr += 2;    //pass final FFFF
             return movePtr;
         }
-        //Read the TMcompat and HM compat BitArrays starting at ptr
+        // Read the TMcompat and HM compat BitArrays starting at ptr
         private static void ReadTMHMCompat(byte[] rom, int ptr, out BitArray TMCompat, out BitArray HMCompat)
         {
             TMCompat = new BitArray(ROMData.numTMs);
@@ -119,7 +127,7 @@ namespace PokemonEmeraldRandomizer.Backend
                 mask = mask << 1;
             }
         }
-        //Read the move tutor compatibility BitArray at tutPtr
+        // Read the move tutor compatibility BitArray at tutPtr
         private static void ReadTutorCompat(byte[] rom, int tutPtr, out BitArray tutCompat)
         {
             tutCompat = new BitArray(ROMData.numMoveTutors);
@@ -133,19 +141,31 @@ namespace PokemonEmeraldRandomizer.Backend
                 mask = mask << 1;
             }
         }
+        // Read all five evolutions (Research stage, needs improvement)
+        private static void ReadEvolutions(byte[] rom, int evolutionPtr , out Evolution[] evolutions)
+        {
+            evolutions = new Evolution[numEvoltionsPerPokemon];
+            byte[] data = new byte[evolutionBytes]; 
+            for(int i = 0; i < evolutions.Length; ++i, evolutionPtr += evolutionBytes)
+            {
+                Array.ConstrainedCopy(rom, evolutionPtr, data, 0, evolutionBytes);
+                evolutions[i] = new Evolution(data);
+            }
+
+        }
         #endregion
 
-        //Read the starter pokemon (TODO)
+        // Read the starter pokemon (TODO)
         private static Pokemon[] ReadStarters(byte[] rom)
         {
             throw new System.NotImplementedException();
         }
-        //Read the Trainers (TODO)
+        // Read the Trainers (TODO)
         private static List<Trainer> ReadTrainers(byte[] rom)
         {
             throw new System.NotImplementedException();
         }
-        //Checks the hash of the rom to see if its the right version
+        // Checks the hash of the rom to see if its the right version
         private static void checkHash(byte[] rawRom)
         {
             MD5 mD5 = MD5.Create();

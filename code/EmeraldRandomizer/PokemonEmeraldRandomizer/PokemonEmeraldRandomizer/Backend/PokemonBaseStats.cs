@@ -221,6 +221,8 @@ namespace PokemonEmeraldRandomizer.Backend
         public BitArray moveTutorCompat; //Compatibility with moveTutors (index maps to ROMData.tutorMoves)
         #endregion
 
+        public Evolution[] evolutions;
+
         public PokemonBaseStats(byte[] data, PokemonSpecies species)
         {
 #if DEBUG

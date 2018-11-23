@@ -23,6 +23,8 @@ namespace PokemonEmeraldRandomizer.Backend
         public const int tutorCompatAddy = 0x61504c;
         // The address where pokemon movesets start
         public const int movesetAddy = 0x3230dc;
+        // The address where pokemon evolution definitions start
+        public const int evolutionAddy = 0x325344;
         #endregion
 
         //Converts and address' hex string to an integer

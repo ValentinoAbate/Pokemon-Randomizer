@@ -68,12 +68,14 @@
     <Compile Include="Backend\AddressUtils.cs" />
     <Compile Include="Backend\BalanceMetrics.cs" />
     <Compile Include="Backend\EnumUtils.cs" />
+    <Compile Include="Backend\Evolution.cs" />
     <Compile Include="Backend\Item.cs" />
     <Compile Include="Backend\MoveSet.cs" />
     <Compile Include="Backend\PokedexUtils.cs" />
     <Compile Include="Backend\PokemonBaseStats.cs" />
     <Compile Include="Backend\Mutation.cs" />
     <Compile Include="Backend\ROMData.cs" />
+    <Compile Include="Backend\ROMUtils.cs" />
     <Compile Include="Backend\ROMWriter.cs" />
     <Compile Include="Backend\ROMDataMutator.cs" />
     <Compile Include="Backend\ROMParser.cs" />
