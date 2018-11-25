@@ -65,7 +65,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Backend\AddressUtils.cs" />
+    <Compile Include="Backend\AddyUtils.cs" />
     <Compile Include="Backend\BalanceMetrics.cs" />
     <Compile Include="Backend\EnumUtils.cs" />
     <Compile Include="Backend\Evolution.cs" />
@@ -81,6 +81,7 @@
     <Compile Include="Backend\ROMParser.cs" />
     <Compile Include="Backend\Trainer.cs" />
     <Compile Include="Backend\Pokemon.cs" />
+    <Compile Include="Backend\TypeEffectivenessChart.cs" />
     <Compile Include="Backend\WeightedSet.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>

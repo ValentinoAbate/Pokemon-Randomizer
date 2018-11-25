@@ -60,7 +60,7 @@ namespace PokemonEmeraldRandomizer.Backend
         BUG, //Bug (the best type)
         GHO, //Ghost
         STL, //Steel
-        Invalid, //Question (???). I think this is curse's type?
+        Unknown, //Question (???). I think this is curse's type?
         FIR, //Fire
         WAT, //Water
         GRS, //Grass

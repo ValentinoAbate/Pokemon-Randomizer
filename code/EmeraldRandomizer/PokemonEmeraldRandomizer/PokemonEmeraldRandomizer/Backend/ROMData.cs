@@ -31,6 +31,7 @@ namespace PokemonEmeraldRandomizer.Backend
             }
         }
         public Trainer[] Trainers { get; set; }
+        public TypeEffectivenessChart TypeDefinitions { get; set; }
 
         #region TM, HM, and tutor move definition arrays
         public Move[] TMMoves;

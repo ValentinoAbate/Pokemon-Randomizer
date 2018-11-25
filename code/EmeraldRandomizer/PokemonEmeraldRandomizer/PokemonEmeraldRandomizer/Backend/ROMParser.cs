@@ -49,6 +49,7 @@ namespace PokemonEmeraldRandomizer.Backend
             // data.Starters = ReadStarters(rom);
             // data.Trainers = ReadTrainers(rom);
             // Calculate the balance metrics from the loaded data
+            data.TypeDefinitions = ReadTypeEffectivenessData(rom);
             data.CalculateMetrics();
             return data;
         }
@@ -96,7 +97,6 @@ namespace PokemonEmeraldRandomizer.Backend
             }
             return pokemon.ToArray();
         }
-
         // Read the attacks starting at atkPtr (returns the index after completion)
         private static int ReadAttacks(byte[] rom, int movePtr, out MoveSet moves)
         {
@@ -165,6 +165,30 @@ namespace PokemonEmeraldRandomizer.Backend
         {
             throw new System.NotImplementedException();
         }
+
+        // Read Type Effectiveness data
+        private static TypeEffectivenessChart ReadTypeEffectivenessData(byte[] rom)
+        {
+            TypeEffectivenessChart ret = new TypeEffectivenessChart();
+            int ptr = AddyUtils.typeEffectivenessAddy;
+            bool ignoreAfterForesight = false;
+            while (rom[ptr] != 0xff)
+            {
+                // Skip the ignoreAfterForesight separator (0xfe 0xfe 0x00)
+                if (rom[ptr] == 0xfe)
+                {
+                    ignoreAfterForesight = true;
+                    ptr += 3;
+                }
+                PokemonType attackingType = (PokemonType)rom[ptr];
+                PokemonType defendingType = (PokemonType)rom[ptr + 1];
+                TypeEffectiveness ae = (TypeEffectiveness)rom[ptr + 2];
+                ret.Add(attackingType, defendingType, ae, ignoreAfterForesight);
+                ptr += 3;
+            }
+            return ret;
+        }
+
         // Checks the hash of the rom to see if its the right version
         private static void checkHash(byte[] rawRom)
         {

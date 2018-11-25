@@ -31,6 +31,11 @@ namespace PokemonEmeraldRandomizer.Backend
     public class Evolution
     {
         public EvolutionType Type { get; set; }
+        // The parameter to the evolution function (dependend on evolution type)
+        // For LevelUp evoltion types, the parameter is the evolution level
+        // For Item-related evolution types, the parameter is the Item needed
+        // For the Beauty type, the parameter is the beauty threshold (0-255)
+        // On any other types the parameter does not apply
         public int parameter;
         public PokemonSpecies EvolvesTo { get; set; }
         public Evolution(byte[] data)
