@@ -9,7 +9,7 @@ namespace PokemonEmeraldRandomizer.Backend
     public static class AddyUtils
     {
         #region Special Addresses
-        // The address where the Type Effectiveness
+        // The address where the Type Effectiveness chart starts
         public const int typeEffectivenessAddy = 0x31ace8;
         // The address where the TM move mappings start
         public const int TMMovesAddy = 0x615b94;
@@ -27,6 +27,8 @@ namespace PokemonEmeraldRandomizer.Backend
         public const int movesetAddy = 0x3230dc;
         // The address where pokemon evolution definitions start
         public const int evolutionAddy = 0x325344;
+        // The address where the trainer definitions start
+        public const int trainerAddy = 0x310030;
         #endregion
 
         //Converts and address' hex string to an integer

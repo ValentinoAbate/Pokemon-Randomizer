@@ -11,7 +11,7 @@ namespace PokemonEmeraldRandomizer.Backend
 {
     public static class ROMParser
     {
-        #region Symbolic Constants
+        #region Symbolic Constants (MOVE THESE TO A ROM/OFFSET INFO LOC LATER)
         // The MD5 Hash of the ROM this code was designed for
         private const string targetROMHash = "7b058a7aea5bfbb352026727ebd87e17";
         // Number of bytes in the pokemon base stats data structure
@@ -22,10 +22,14 @@ namespace PokemonEmeraldRandomizer.Backend
         private const int tutorCompatBytes = 4;
         // Number of bytes in a pokemon's evoltion definitions data structure
         private const int evolutionBytes = 8;
-        // Number of evoltion definitions a pokemon has
+        // Number of evolution definitions a pokemon has
         private const int numEvoltionsPerPokemon = 5;
         // Number of total evolution bytes per pokemon
         private const int evolutionBlockBytes = evolutionBytes * numEvoltionsPerPokemon;
+        // Number of total trainers in the base game
+        private const int numTrainers = 854;
+        // number of bytes in a trainer definition struct
+        private const int trainerBytes = 40;
         #endregion
 
         // Parse the ROM bytes into a ROMData object
@@ -47,7 +51,7 @@ namespace PokemonEmeraldRandomizer.Backend
             // Read the pokemon base stats from the ROM
             data.Pokemon = ReadPokemonBaseStats(rom);
             // data.Starters = ReadStarters(rom);
-            // data.Trainers = ReadTrainers(rom);
+            data.Trainers = ReadTrainers(rom);
             // Calculate the balance metrics from the loaded data
             data.TypeDefinitions = ReadTypeEffectivenessData(rom);
             data.CalculateMetrics();
@@ -160,10 +164,13 @@ namespace PokemonEmeraldRandomizer.Backend
         {
             throw new System.NotImplementedException();
         }
-        // Read the Trainers (TODO)
-        private static List<Trainer> ReadTrainers(byte[] rom)
+        // Read the Trainers
+        private static Trainer[] ReadTrainers(byte[] rom)
         {
-            throw new System.NotImplementedException();
+            List<Trainer> ret = new List<Trainer>();
+            for (int i = 0; i < numTrainers; ++i)
+                ret.Add(new Trainer(rom, AddyUtils.trainerAddy + (i * trainerBytes)));
+            return ret.ToArray();
         }
 
         // Read Type Effectiveness data
