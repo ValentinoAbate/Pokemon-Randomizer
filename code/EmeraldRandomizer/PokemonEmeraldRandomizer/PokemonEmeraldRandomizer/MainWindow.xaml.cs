@@ -13,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.ComponentModel;
 using System.IO;
 
 namespace PokemonEmeraldRandomizer
@@ -20,15 +21,37 @@ namespace PokemonEmeraldRandomizer
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow : Window, INotifyPropertyChanged
     {
+        private bool _isROMLoaded;
+        public bool IsROMLoaded
+        {
+            get => _isROMLoaded;
+            private set
+            {
+                _isROMLoaded = value;
+                OnPropertyChanged("IsROMLoaded");
+            }
+        }
         private Backend.ROMData Data { get; set; }
         private Backend.ROMData RandomizedData { get; set; }
 
         public MainWindow()
         {
+            IsROMLoaded = false;
             InitializeComponent();
+            this.DataContext = this;
         }
+
+        #region INotifyPropertyChanged Implementation
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        private void OnPropertyChanged(string prop)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
+        }
+
+        #endregion
 
         private void Open_ROM(object sender, RoutedEventArgs e)
         {
@@ -40,8 +63,8 @@ namespace PokemonEmeraldRandomizer
                 byte[] rawROM = File.ReadAllBytes(openFileDialog.FileName);
                 Data = Backend.ROMParser.Parse(rawROM);
                 RandomizedData = Data;
+                IsROMLoaded = true;
             }
-
         }
 
         private void Save_ROM(object sender, RoutedEventArgs e)
@@ -65,6 +88,18 @@ namespace PokemonEmeraldRandomizer
             {
                 File.WriteAllLines(saveFileDialog.FileName, RandomizedData.ToStringArray());
             }
+        }
+
+        private void Convert_Table(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Filter = ".csv files|*.csv";
+            openFileDialog.Title = "Convert csv";
+            if (openFileDialog.ShowDialog() == true)
+            {
+                Backend.TableReader.TableToDictFormat(openFileDialog.FileName, ',', 15);
+            }
+
         }
 
         private void SeedCheckBox_Changed(object sender, RoutedEventArgs e)

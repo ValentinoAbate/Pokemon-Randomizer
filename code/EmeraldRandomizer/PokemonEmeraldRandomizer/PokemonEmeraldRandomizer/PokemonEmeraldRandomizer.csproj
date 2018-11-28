@@ -79,6 +79,7 @@
     <Compile Include="Backend\ROMWriter.cs" />
     <Compile Include="Backend\ROMDataMutator.cs" />
     <Compile Include="Backend\ROMParser.cs" />
+    <Compile Include="Backend\TableReader.cs" />
     <Compile Include="Backend\Trainer.cs" />
     <Compile Include="Backend\Pokemon.cs" />
     <Compile Include="Backend\TrainerPokemon.cs" />

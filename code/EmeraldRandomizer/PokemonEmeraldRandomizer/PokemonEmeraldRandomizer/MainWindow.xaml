@@ -19,8 +19,9 @@
         <Menu Grid.Row="0">
             <MenuItem Header="_File">
                 <MenuItem Header="_Open ROM" Click="Open_ROM"/>
-                <MenuItem Header="_Save ROM" Click="Save_ROM"/>
-                <MenuItem Header="_Generate Info" Click="Generate_Info_Doc" />
+                <MenuItem Name="menuSaveROM" IsEnabled="{Binding IsROMLoaded}" Header="_Save ROM" Click="Save_ROM"/>
+                <MenuItem Name="menuGenerateInfoDoc" IsEnabled="{Binding IsROMLoaded}" Header="_Generate Info" Click="Generate_Info_Doc" />
+                <MenuItem Visibility="Collapsed" Header="_Convert Table" Click="Convert_Table" />
                 <Separator />
                 <MenuItem Header="_Exit" />
             </MenuItem>
@@ -28,7 +29,7 @@
 
             </MenuItem>
         </Menu>
-        <TabControl Grid.Row="1">
+        <TabControl IsEnabled="{Binding IsROMLoaded}" Grid.Row="1">
             <TabItem Header="General Settings">
                 <Grid>
                     <Grid.ColumnDefinitions>
@@ -61,7 +62,7 @@
         </TabControl>
         <StatusBar Name="MessageBox" Grid.Row="2" Height="50">
             <StatusBarItem>
-                <Label Content="Message Box!"></Label>
+                <Label Name="lblMessageBoxContent" Content="Please open a ROM! use file->Open ROM."></Label>
             </StatusBarItem>
         </StatusBar>
     </Grid>

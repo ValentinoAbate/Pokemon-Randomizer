@@ -68,6 +68,18 @@ namespace PokemonEmeraldRandomizer.Backend
             return moves;
         }
 
+        //private void loadPokemonNames()
+        //{
+        //    int offs = romEntry.getValue("PokemonNames");
+        //    int nameLen = romEntry.getValue("PokemonNameLength");
+        //    int numInternalPokes = romEntry.getValue("PokemonCount");
+        //    pokeNames = new String[numInternalPokes + 1];
+        //    for (int i = 1; i <= numInternalPokes; i++)
+        //    {
+        //        pokeNames[i] = readFixedLengthString(offs + i * nameLen, nameLen);
+        //    }
+        //}
+
         #region Read Pokemon Base Stats
         // Read the Pokemon base stat definitions from the ROM
         private static PokemonBaseStats[] ReadPokemonBaseStats(byte[] rom)

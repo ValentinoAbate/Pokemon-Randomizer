@@ -91,8 +91,7 @@ namespace PokemonEmeraldRandomizer.Backend
             trainerClass = (TrainerClass)rom[offset + 1];
             // What is in bytes 2-3?
             // TODO: Read name (I think bytes 4 - 15?)
-            // name name = rom.readVariableLengthString(offset + 4);
-
+            name = rom.readString(offset + 4);
             // Read items (bytes 16-24)
             for (int i = 0; i < 4; ++i)
                 useItems[i] = (Item)rom.ReadWord(offset + 16 + (i * 2));
@@ -101,7 +100,7 @@ namespace PokemonEmeraldRandomizer.Backend
             // What is in bytes 33-35?
             int pokemonPtr = rom.ReadPointer(offset + 36);
 
-            // Read pokemon from location at pointer
+            #region Read pokemon from pokemonPtr
             pokemon = new TrainerPokemon[numPokemon];
             // The pokemon data structures will be either 8 or 16 bits depending on the dataType of the trainer
             int pkmnDataBytes = (dataType == TrainerPokemon.DataType.Basic || dataType == TrainerPokemon.DataType.HeldItem) ? 8 : 16;
@@ -110,7 +109,7 @@ namespace PokemonEmeraldRandomizer.Backend
                 TrainerPokemon p = new TrainerPokemon();
                 int ptr = pokemonPtr + (i * pkmnDataBytes);
                 p.dataType = dataType;
-                //TODO: fin out what these AI flags mean
+                //TODO: find out what these AI flags mean
                 //Reference: https://www.pokecommunity.com/showthread.php?t=333767
                 p.AIFlags = new BitArray(new int[]{ rom.ReadWord(ptr) });
                 p.level = rom.ReadWord(ptr + 2);
@@ -125,6 +124,7 @@ namespace PokemonEmeraldRandomizer.Backend
                 }
                 pokemon[i] = p;
             }
+            #endregion
         }
 
         //Commented code below from Dabomstew's Universal Randomizer source. Thanks Dabomstew!
