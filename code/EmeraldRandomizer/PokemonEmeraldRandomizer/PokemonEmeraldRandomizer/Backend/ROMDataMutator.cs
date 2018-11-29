@@ -17,7 +17,9 @@ namespace PokemonEmeraldRandomizer.Backend
             Mutator mut = (bool)window.cbSeed.IsChecked ? new Mutator(window.tbSeed.Text) : new Mutator();
             foreach(PokemonBaseStats pkmn in copy.Pokemon)
             {
-                if(pkmn.IsSingleTyped)
+                if (pkmn.species == PokemonSpecies.TREECKO)
+                    pkmn.types[0] = pkmn.types[1] = PokemonType.Unknown;
+                if (pkmn.IsSingleTyped)
                 {
                     if (mut.RandomDouble() < 0.05)
                         pkmn.types[0] = pkmn.types[1] = mut.RandomChoice(orig.Metrics.TypeRatiosSingle);
@@ -30,6 +32,16 @@ namespace PokemonEmeraldRandomizer.Backend
                         pkmn.types[1] = mut.RandomChoice(orig.Metrics.TypeRatiosDualSecondary);
                 }
             }
+            foreach(PokemonType t in EnumUtils.GetValues<PokemonType>())
+            {
+                TypeEffectiveness te = mut.RandomChoice(orig.Metrics.TypeEffectivenessRatios);
+                if (te != TypeEffectiveness.Normal)
+                    copy.TypeDefinitions.Add(t, PokemonType.Unknown, te, t == PokemonType.NRM || t == PokemonType.FTG);
+                te = mut.RandomChoice(orig.Metrics.TypeEffectivenessRatios);
+                if (te != TypeEffectiveness.Normal)
+                    copy.TypeDefinitions.Add(PokemonType.Unknown, t, te, t == PokemonType.GHO);
+            }
+            copy.TypeDefinitions.Set(PokemonType.NRM, PokemonType.Unknown, TypeEffectiveness.NoEffect);
             //changeStarters(); //must come before trainers
             //changeTMs();      //must come before trainers
             //randomizePokeData(); //must come before trainers

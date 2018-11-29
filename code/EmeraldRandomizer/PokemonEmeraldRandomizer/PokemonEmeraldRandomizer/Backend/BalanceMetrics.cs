@@ -14,6 +14,7 @@ namespace PokemonEmeraldRandomizer.Backend
         public WeightedSet<PokemonType> TypeRatiosDualPrimary { get; }
         public WeightedSet<PokemonType> TypeRatiosDualSecondary { get; }
         public float DualTypePercentage { get; }
+        public WeightedSet<TypeEffectiveness> TypeEffectivenessRatios { get; }
 
         // Calculates the balancing metrics based on the given data
         public BalanceMetrics(ROMData data)
@@ -30,18 +31,25 @@ namespace PokemonEmeraldRandomizer.Backend
                 // if pkmn is single-typed
                 if(pkmn.IsSingleTyped)
                 {
-                    TypeRatiosAll.AddWeight(pkmn.types[0]);
-                    TypeRatiosSingle.AddWeight(pkmn.types[0]);
+                    TypeRatiosAll.Add(pkmn.types[0]);
+                    TypeRatiosSingle.Add(pkmn.types[0]);
                 }
                 else
                 {
-                    TypeRatiosAll.AddWeight(pkmn.types[0]);
-                    TypeRatiosAll.AddWeight(pkmn.types[1]);
-                    TypeRatiosDualPrimary.AddWeight(pkmn.types[0]);
-                    TypeRatiosDualSecondary.AddWeight(pkmn.types[1]);
+                    TypeRatiosAll.Add(pkmn.types[0]);
+                    TypeRatiosAll.Add(pkmn.types[1]);
+                    TypeRatiosDualPrimary.Add(pkmn.types[0]);
+                    TypeRatiosDualSecondary.Add(pkmn.types[1]);
                 }
             }
             DualTypePercentage = data.Pokemon.Length / TypeRatiosDualPrimary.Count;
+            #endregion
+
+            #region Type Effectiveness Metrics
+            TypeEffectivenessRatios = new WeightedSet<TypeEffectiveness>();
+            foreach(var atkType in EnumUtils.GetValues<PokemonType>())
+                foreach (var defType in EnumUtils.GetValues<PokemonType>())
+                    TypeEffectivenessRatios.Add(data.TypeDefinitions.GetEffectiveness(atkType, defType));
             #endregion
             #endregion
         }

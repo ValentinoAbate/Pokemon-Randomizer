@@ -50,7 +50,6 @@ namespace PokemonEmeraldRandomizer.Backend
     // All of the pokemon types. These should map integer wise to the game-defined types
     public enum PokemonType
     {
-        None = -1,
         NRM, //Normal
         FTG, //Fighting
         FLY, //Flying
@@ -202,7 +201,7 @@ namespace PokemonEmeraldRandomizer.Backend
         #endregion
 
         private byte[] evYields = new byte[6]; // How many evs you get when you defeat this pokemon
-        public PokemonType[] types = new PokemonType[] { PokemonType.None, PokemonType.None };
+        public PokemonType[] types = new PokemonType[2];
         public Ability[] abilities = new Ability[] { Ability.NONE, Ability.NONE };
         public Item[] heldItems = new Item[] { Item.None, Item.None };
         public byte genderRatio; // The gender ratio (0 is always male, 254 is always female, 255 is none)

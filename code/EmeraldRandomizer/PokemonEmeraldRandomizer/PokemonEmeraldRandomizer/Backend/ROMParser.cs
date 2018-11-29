@@ -205,6 +205,7 @@ namespace PokemonEmeraldRandomizer.Backend
                 ret.Add(attackingType, defendingType, ae, ignoreAfterForesight);
                 ptr += 3;
             }
+            ret.InitCount = ret.Count;
             return ret;
         }
 

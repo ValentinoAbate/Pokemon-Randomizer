@@ -8,11 +8,12 @@ namespace PokemonEmeraldRandomizer.Backend
 {
     public class ROMData
     {
-        #region Public Constants
+        #region Public Constants (read these from the roms later for hacking support)
         public const int numTMs = 50;
         public const int numHMs = 8;
         public const int numTMHMs = numTMs + numHMs;
         public const int numMoveTutors = 30;
+        public const int numTypes = 18;
         #endregion
 
         // The original ROM the data was loaded from. Used by ROMWriter to write the data to a file.
