@@ -40,9 +40,9 @@ namespace PokemonEmeraldRandomizer.Backend
         public PokemonSpecies EvolvesTo { get; set; }
         public Evolution(byte[] data)
         {
-            Type = (EvolutionType)data.ReadWord(0);
-            parameter = data.ReadWord(2);
-            EvolvesTo = (PokemonSpecies)data.ReadWord(4);
+            Type = (EvolutionType)data.ReadUInt16(0);
+            parameter = data.ReadUInt16(2);
+            EvolvesTo = (PokemonSpecies)data.ReadUInt16(4);
         }
     }
 }

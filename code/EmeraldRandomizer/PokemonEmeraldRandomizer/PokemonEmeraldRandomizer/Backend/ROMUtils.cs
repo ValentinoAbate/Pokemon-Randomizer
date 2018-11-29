@@ -8,15 +8,29 @@ namespace PokemonEmeraldRandomizer.Backend
 {
     public static class ROMUtils
     {
-        // Reads a word from the rom (a 16-bit number)
-        public static int ReadWord(this byte[] rom, int offset)
+        // Reads a UInt of specified number of bytes.
+        // The number of bits in the resulting int is numBytes * 8
+        private static int ReadUInt(byte[] rom, int offset, int numBytes)
         {
-            return rom[offset] + (rom[offset + 1] << 8);
+            int ret = 0;
+            for (int i = 0; i < numBytes; ++i)
+                ret += (rom[offset + i] << (i * 8));
+            return ret;
+        }
+        // Reads a Unit32 (4 bytes)
+        public static int ReadUInt32(this byte[] rom, int offset)
+        {
+            return ReadUInt(rom, offset, 4);
+        }
+        // Reads a Unit16 (2 bytes)
+        public static int ReadUInt16(this byte[] rom, int offset)
+        {
+            return ReadUInt(rom, offset, 2);
         }
         // Reads a pointer from the rom (a 24-bit number)
         public static int ReadPointer(this byte[] rom, int offset)
         {
-            return rom[offset] + (rom[offset + 1] << 8) + (rom[offset + 2] << 16);
+            return ReadUInt(rom, offset, 3);
         }
 
         #region Text Decoding Constants

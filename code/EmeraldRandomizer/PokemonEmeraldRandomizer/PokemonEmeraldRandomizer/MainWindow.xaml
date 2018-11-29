@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PokemonEmeraldRandomizer"
         mc:Ignorable="d"
-        Title="Pokemon Enemarld Randomizer" Height="450" Width="800">
+        Title="Pokemon Emerald Randomizer" Height="450" Width="800">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Name="Toolbar" Height="Auto" ></RowDefinition>

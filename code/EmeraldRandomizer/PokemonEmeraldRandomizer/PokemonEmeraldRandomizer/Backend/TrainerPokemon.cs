@@ -23,6 +23,6 @@ namespace PokemonEmeraldRandomizer.Backend
         public Item heldItem = Item.None;
         public Move[] moves = new Move[4];
         public int level;
-        public BitArray AIFlags = new BitArray(32);
+        public int IVLevel;
     }
 }
