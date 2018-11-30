@@ -19,6 +19,8 @@ namespace PokemonEmeraldRandomizer.Backend
 
     public class TypeEffectivenessChart
     {
+        public static readonly byte[] endSequence = { 0xFF, 0xFF, 0x00 };
+        public static readonly byte[] separatorSequence = { 0xFE, 0xFE, 0x00 };
         public int Count { get => typeRelations.Count + ignoreAfterForesight.Count; }
         public int InitCount { get; set; }
         // All of the type relations except for those ignored after foresight is used
@@ -55,11 +57,13 @@ namespace PokemonEmeraldRandomizer.Backend
                 return ignoreAfterForesight[tPair];
             return TypeEffectiveness.Normal;
         }
+        // Returns true if this type relation is in the chart (i.e. it is not normal damage)
         public bool ContainsRelation(PokemonType atType, PokemonType dfType)
         {
             var tPair = new TypePair(atType, dfType);
             return typeRelations.ContainsKey(tPair) || ignoreAfterForesight.ContainsKey(tPair);
         }
+        // Returns true if the relation is ignored after FORESIGHT/ODEUR SLEUTH is used
         public bool IgnoredAfterForesight(PokemonType atType, PokemonType dfType)
         {
             return ignoreAfterForesight.ContainsKey(new TypePair(atType, dfType));

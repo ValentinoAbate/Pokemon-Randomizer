@@ -191,6 +191,7 @@ namespace PokemonEmeraldRandomizer.Backend
             TypeEffectivenessChart ret = new TypeEffectivenessChart();
             int ptr = AddyUtils.typeEffectivenessAddy;
             bool ignoreAfterForesight = false;
+            // Run until the end of structure sequence (0xff 0xff 0x00)
             while (rom[ptr] != 0xff)
             {
                 // Skip the ignoreAfterForesight separator (0xfe 0xfe 0x00)

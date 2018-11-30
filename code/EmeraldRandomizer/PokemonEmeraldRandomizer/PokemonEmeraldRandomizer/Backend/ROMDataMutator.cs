@@ -36,7 +36,7 @@ namespace PokemonEmeraldRandomizer.Backend
             {
                 TypeEffectiveness te = mut.RandomChoice(orig.Metrics.TypeEffectivenessRatios);
                 if (te != TypeEffectiveness.Normal)
-                    copy.TypeDefinitions.Add(t, PokemonType.Unknown, te, t == PokemonType.NRM || t == PokemonType.FTG);
+                    copy.TypeDefinitions.Add(t, PokemonType.Unknown, te, (t == PokemonType.NRM || t == PokemonType.FTG) && te == TypeEffectiveness.NoEffect);
                 te = mut.RandomChoice(orig.Metrics.TypeEffectivenessRatios);
                 if (te != TypeEffectiveness.Normal)
                     copy.TypeDefinitions.Add(PokemonType.Unknown, t, te, t == PokemonType.GHO);

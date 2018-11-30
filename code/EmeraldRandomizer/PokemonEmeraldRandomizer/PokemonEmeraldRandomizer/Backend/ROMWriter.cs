@@ -19,6 +19,10 @@ namespace PokemonEmeraldRandomizer.Backend
             //    writeText(addy("e40004"), "[3172016732AC1F083229610825F00129E40825F30116CD40010003]");
             //    writeText(addy("1fa301"), "[0400e4]");
             //}
+            if(data.TypeDefinitions.Count > data.TypeDefinitions.InitCount)
+            {
+
+            }
             return data.ROM;
         }
     }
