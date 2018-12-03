@@ -157,7 +157,7 @@ namespace PokemonEmeraldRandomizer.Backend
                 mask = mask << 1;
             }
         }
-        // Read all five evolutions (Research stage, needs improvement)
+        // Read all five evolutions
         private static void ReadEvolutions(byte[] rom, int evolutionPtr , out Evolution[] evolutions)
         {
             evolutions = new Evolution[numEvoltionsPerPokemon];

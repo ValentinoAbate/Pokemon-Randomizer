@@ -43,9 +43,20 @@
                     </StackPanel>
                 </Grid>
             </TabItem>
-            <TabItem Header="Pokemon Settings">
-                <!--Bind TextBlock.Text to the TextBox on the first TabItem.-->
-                <TextBlock Text="{Binding ElementName=textBox1, Path=Text}"/>
+            <TabItem Header="Pokemon Types">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition  Width="20"></ColumnDefinition>
+                        <ColumnDefinition  Width="Auto"></ColumnDefinition>
+                        <ColumnDefinition Width="Auto"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="1" Orientation="Vertical">
+                        <ComboBox Width="100">
+                            <ComboBoxItem IsSelected="True">Unchanged</ComboBoxItem>
+                            <ComboBoxItem>Mutate</ComboBoxItem>
+                        </ComboBox>
+                    </StackPanel>
+                </Grid>
             </TabItem>
             <TabItem Header="Starter Pokemon">
 
