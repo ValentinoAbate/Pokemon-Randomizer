@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace PokemonEmeraldRandomizer.Backend
 {
     // Every valid species of pokemon. Some names are modified to be in the enum
-    public enum PokemonSpecies
+    public enum PokemonSpecies : ushort
     {
         BULBASAUR = 1, IVYSAUR, VENUSAUR, CHARMANDER, CHARMELEON, CHARIZARD, SQUIRTLE, WARTORTLE,
         BLASTOISE, CATERPIE, METAPOD, BUTTERFREE, WEEDLE, KAKUNA, BEEDRILL, PIDGEY, PIDGEOTTO, PIDGEOT, RATTATA,
@@ -48,7 +48,7 @@ namespace PokemonEmeraldRandomizer.Backend
         REGISTEEL, KYOGRE, GROUDON, RAYQUAZA, LATIAS, LATIOS, JIRACHI, DEOXYS, CHIMECHO
     }
     // All of the pokemon types. These should map integer wise to the game-defined types
-    public enum PokemonType
+    public enum PokemonType : byte
     {
         NRM, //Normal
         FTG, //Fighting
@@ -70,7 +70,7 @@ namespace PokemonEmeraldRandomizer.Backend
         DRK, //Dark
     }
     // All of the pokemon abilities
-    public enum Ability
+    public enum Ability : byte
     {
         NONE, Stench, Drizzle, Speed_Boost, Battle_Armor,
         Sturdy, Damp, Limber, Sand_Veil, Static, Volt_Absorb, Water_Absorb, Oblivious, Cloud_Nine,
@@ -84,7 +84,7 @@ namespace PokemonEmeraldRandomizer.Backend
         Vital_Spirit, White_Smoke, Pure_Power, Shell_Armor, Cacophony, Air_Lock
     }
     // All of the pokemon moves
-    public enum Move
+    public enum Move : ushort
     {
         None, POUND, KARATE_CHOP, DOUBLESLAP, COMET_PUNCH, MEGA_PUNCH, PAY_DAY, FIRE_PUNCH,
         ICE_PUNCH, THUNDERPUNCH, SCRATCH, VICEGRIP, GUILLOTINE, RAZOR_WIND, SWORDS_DANCE, CUT, GUST, WING_ATTACK,
@@ -124,7 +124,7 @@ namespace PokemonEmeraldRandomizer.Backend
         DOOM_DESIRE, PSYCHO_BOOST
     }
     // All of the pokemon exp growth curves
-    public enum ExpGrowthType
+    public enum ExpGrowthType : byte
     {
         //for more info on curves, see https://bulbapedia.bulbagarden.net/wiki/Experience
         //Name           //Lv100 Exp
@@ -136,7 +136,7 @@ namespace PokemonEmeraldRandomizer.Backend
         Slow, 	         //1,250,000
     }
     // All of the pokemon Egg groups
-    public enum EggGroup
+    public enum EggGroup : byte
     {
         Monster = 1,
         Water_1,
@@ -153,6 +153,20 @@ namespace PokemonEmeraldRandomizer.Backend
         Ditto,
         Dragon,
         Undiscovered,
+    }
+    // All of the search colors
+    public enum SearchColor : byte
+    {
+        Red,
+        Blue,
+        Yellow,
+        Green,
+        Black,
+        Brown,
+        Purple,
+        Gray,
+        White,
+        Pink,
     }
 
     public class PokemonBaseStats
@@ -211,6 +225,8 @@ namespace PokemonEmeraldRandomizer.Backend
         public byte catchRate; // how easy it is to catch the pokemon (higher is easier)
         public byte baseExpYield; // base exp gained if defeated (max 255, higher is more)
         public byte safariZoneRunRate;
+        public bool flip;
+        public SearchColor searchColor;
         #endregion
 
         #region Move Data (TM, HM, Tutor compatibility)
@@ -240,8 +256,8 @@ namespace PokemonEmeraldRandomizer.Backend
             // fill in ev yields (stored in the first 12 bits of data[10-11])
             for (int i = 0; i < 6; i++)
                 evYields[i] = (byte)((data[10 + i / 4] >> ((i * 2) % 8)) & 3);
-            heldItems[0] = (Item)(data[13] * 256 + data[12]);
-            heldItems[1] = (Item)(data[15] * 256 + data[14]);
+            heldItems[0] = (Item)data.ReadUInt16(12); // (data[13] * 256 + data[12]);
+            heldItems[1] = (Item)data.ReadUInt16(14); // (data[15] * 256 + data[14]);
             genderRatio = data[16];
             eggCycles = data[17];
             growthType = (ExpGrowthType)data[19];
@@ -252,6 +268,41 @@ namespace PokemonEmeraldRandomizer.Backend
             abilities[0] = (Ability)data[22];
             abilities[1] = (Ability)data[23];
             safariZoneRunRate = data[24];
+            // read color
+            searchColor = (SearchColor)((data[25] & 0b1111_1110) >> 1);
+            // read flip
+            flip = (data[25] & 0b0000_0001) == 1;
+        }
+        public byte[] ToByteArray()
+        {
+            byte[] data = new byte[28];
+            // fill in stats (hp/at/df/sp/sa/sd)
+            Array.ConstrainedCopy(stats, 0, data, 0, 6);
+            // fill in types
+            data[6] = (byte) types[0];
+            data[7] = (byte) types[1];
+            data[8] = catchRate;
+            data[9] = baseExpYield;
+            // TEMPORARY put EV yields later
+            data[10] = 0x00;
+            data[11] = 0x00;
+            data.WriteUInt16(12, (int)heldItems[0]);
+            data.WriteUInt16(14, (int)heldItems[1]);
+            data[16] = genderRatio;
+            data[17] = eggCycles;
+            data[19] = (byte)growthType;
+            // fill in egg groups
+            data[20] = (byte)eggGroups[0];
+            data[21] = (byte)eggGroups[1];
+            // fill in abilities
+            data[22] = (byte)abilities[0];
+            data[23] = (byte)abilities[1];
+            data[24] = safariZoneRunRate;
+            data[25] = (byte)(((byte)searchColor << 1) + Convert.ToByte(flip));
+            // Padding
+            data[26] = 0x00;
+            data[27] = 0x00;
+            return data;
         }
         public override string ToString()
         {

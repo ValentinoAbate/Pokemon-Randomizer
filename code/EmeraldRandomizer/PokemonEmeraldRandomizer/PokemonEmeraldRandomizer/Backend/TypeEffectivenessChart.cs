@@ -19,10 +19,18 @@ namespace PokemonEmeraldRandomizer.Backend
 
     public class TypeEffectivenessChart
     {
+        // The byte sequence that marks the end of the data structure
         public static readonly byte[] endSequence = { 0xFF, 0xFF, 0x00 };
+        // The byte sequence that marks the end of the non-ignoreAfterForesight relations
         public static readonly byte[] separatorSequence = { 0xFE, 0xFE, 0x00 };
+        // The current amount of typerelations
         public int Count { get => typeRelations.Count + ignoreAfterForesight.Count; }
+        // The amount of relations when read from the ROM (set manually)
         public int InitCount { get; set; }
+        // A list of the type pairings (not including the ones ignored after foresight)
+        public List<TypePair> Keys { get => typeRelations.Keys.ToList(); }
+        // A list of the type pairings ignored after foresight
+        public List<TypePair> KeysIgnoreAfterForesight { get => ignoreAfterForesight.Keys.ToList(); }
         // All of the type relations except for those ignored after foresight is used
         private Dictionary<TypePair, TypeEffectiveness> typeRelations = new Dictionary<TypePair, TypeEffectiveness>();
         // The type relations that are ignored after foresight is used
@@ -48,14 +56,19 @@ namespace PokemonEmeraldRandomizer.Backend
             else
                 dict.Add(tPair, e);
         }
-        public TypeEffectiveness GetEffectiveness(PokemonType atType, PokemonType dfType)
+        // Return the effectiveness of one type attacking another
+        public TypeEffectiveness GetEffectiveness(TypePair tPair)
         {
-            var tPair = new TypePair(atType, dfType);
             if (typeRelations.ContainsKey(tPair))
                 return typeRelations[tPair];
             if (ignoreAfterForesight.ContainsKey(tPair))
                 return ignoreAfterForesight[tPair];
             return TypeEffectiveness.Normal;
+        }
+        // Return the effectiveness of one type attacking another
+        public TypeEffectiveness GetEffectiveness(PokemonType atType, PokemonType dfType)
+        {
+            return GetEffectiveness(new TypePair(atType, dfType));
         }
         // Returns true if this type relation is in the chart (i.e. it is not normal damage)
         public bool ContainsRelation(PokemonType atType, PokemonType dfType)
@@ -68,7 +81,7 @@ namespace PokemonEmeraldRandomizer.Backend
         {
             return ignoreAfterForesight.ContainsKey(new TypePair(atType, dfType));
         }
- 
+        // A class for storing a pairing of two types. Is hashable
         public class TypePair : IEquatable<TypePair>
         {
             public PokemonType attackingType;

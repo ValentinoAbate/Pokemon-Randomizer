@@ -93,7 +93,7 @@ namespace PokemonEmeraldRandomizer.Backend
             byte[] curr_block = new byte[pkmnBaseStatBytes];
             for (int i = 0; i < 411; i++, pkmnPtr += pkmnBaseStatBytes, TMPtr += TMHMCompatBytes, tutorPtr += tutorCompatBytes, evolutionPtr += evolutionBlockBytes )
             {
-                if (i >= 251 && i < 276) //skip 25 empty slots
+                if (i == 251) //skip 25 empty slots
                 {    
                     i += 25;
                     pkmnPtr += 700; // pkmnBaseStatBytes * 25;

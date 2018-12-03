@@ -123,7 +123,7 @@ namespace PokemonEmeraldRandomizer.Backend
             {
                 if (ReadUInt(rom, i, 4) == ptr)
                     // Write a pointer (faster private version - same as ReadPointer())
-                    WriteUInt(rom, i, newOffset, 3);
+                    WriteUInt(rom, i, 0x08000000  + newOffset, 4);
             }
         }
         // Set block to certain byte

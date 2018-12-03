@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PokemonEmeraldRandomizer.Backend
 {
-    public enum Item
+    public enum Item : ushort
     {
         None, Master_Ball, Ultra_Ball, Great_Ball, Poké_Ball, Safari_Ball, Net_Ball,
         Dive_Ball, Nest_Ball, Repeat_Ball, Timer_Ball, Luxury_Ball, Premier_Ball, Potion, Antidote, Burn_Heal,

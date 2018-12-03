@@ -18,7 +18,10 @@ namespace PokemonEmeraldRandomizer.Backend
             foreach(PokemonBaseStats pkmn in copy.Pokemon)
             {
                 if (pkmn.species == PokemonSpecies.TREECKO)
+                {
                     pkmn.types[0] = pkmn.types[1] = PokemonType.Unknown;
+                    continue;
+                }
                 if (pkmn.IsSingleTyped)
                 {
                     if (mut.RandomDouble() < 0.05)
@@ -41,7 +44,7 @@ namespace PokemonEmeraldRandomizer.Backend
                 if (te != TypeEffectiveness.Normal)
                     copy.TypeDefinitions.Add(PokemonType.Unknown, t, te, t == PokemonType.GHO);
             }
-            copy.TypeDefinitions.Set(PokemonType.NRM, PokemonType.Unknown, TypeEffectiveness.NoEffect);
+            copy.TypeDefinitions.Set(PokemonType.NRM, PokemonType.Unknown, TypeEffectiveness.SuperEffective);
             //changeStarters(); //must come before trainers
             //changeTMs();      //must come before trainers
             //randomizePokeData(); //must come before trainers
