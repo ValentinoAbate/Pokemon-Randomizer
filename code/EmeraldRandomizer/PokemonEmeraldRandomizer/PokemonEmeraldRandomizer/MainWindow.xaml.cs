@@ -53,6 +53,25 @@ namespace PokemonEmeraldRandomizer
 
         #endregion
 
+        #region Routed Commands
+        // ExecutedRoutedEventHandler for the custom command.
+        private void AddMutationTargetCmdExecuted(object sender, ExecutedRoutedEventArgs e)
+        {
+            var target = e.Source as TreeViewItem;
+            if (target != null)
+            {
+                target.Items.Add(new TreeViewItem() { Header="new item"});
+                System.Windows.MessageBox.Show();
+            }
+        }
+
+        // CanExecuteRoutedEventHandler for the custom command.
+        private void AddMutationTargetCmdCanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = e.Source is TreeViewItem;
+        }
+        #endregion
+
         private void Open_ROM(object sender, RoutedEventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
@@ -106,5 +125,9 @@ namespace PokemonEmeraldRandomizer
         {
             tbSeed.Visibility = (bool)cbSeed.IsChecked ? Visibility.Visible : Visibility.Collapsed;
         }
+    }
+    public static class Commands
+    {
+        public static readonly RoutedCommand addMutationTarget = new RoutedCommand();
     }
 }
