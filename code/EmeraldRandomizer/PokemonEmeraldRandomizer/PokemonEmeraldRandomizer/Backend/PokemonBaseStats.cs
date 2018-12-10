@@ -168,6 +168,19 @@ namespace PokemonEmeraldRandomizer.Backend
         White,
         Pink,
     }
+    // All of the pokemon Habitats (used by the Fire Red/Leaf Green Pokedex)
+    public enum Habitat
+    {
+        Grassland,
+        Forest,
+        WatersーEdge,
+        Sea,
+        Cave,
+        Mountain,
+        RoughーTerrain,
+        Urban,
+        Rare,
+    }
 
     public class PokemonBaseStats
     {

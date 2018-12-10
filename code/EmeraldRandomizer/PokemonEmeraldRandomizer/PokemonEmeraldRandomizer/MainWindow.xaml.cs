@@ -15,6 +15,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.ComponentModel;
 using System.IO;
+using PokemonEmeraldRandomizer.CultureUtils;
 
 namespace PokemonEmeraldRandomizer
 {
@@ -23,6 +24,7 @@ namespace PokemonEmeraldRandomizer
     /// </summary>
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
+        #region XAML Properties for bindings
         private bool _isROMLoaded;
         public bool IsROMLoaded
         {
@@ -33,6 +35,8 @@ namespace PokemonEmeraldRandomizer
                 OnPropertyChanged("IsROMLoaded");
             }
         }
+        #endregion
+
         private Backend.ROMData Data { get; set; }
         private Backend.ROMData RandomizedData { get; set; }
 
@@ -55,14 +59,28 @@ namespace PokemonEmeraldRandomizer
 
         #region Routed Commands
         // ExecutedRoutedEventHandler for the custom command.
-        private void AddMutationTargetCmdExecuted(object sender, ExecutedRoutedEventArgs e)
+        private void CmdAddTreeItem(object sender, ExecutedRoutedEventArgs e)
         {
-            var target = e.Source as TreeViewItem;
+            var target = e.Source as ItemsControl;
             if (target != null)
             {
-                target.Items.Add(new TreeViewItem() { Header="new item"});
-                System.Windows.MessageBox.Show();
+                var add = new TreeViewItem()
+                {
+                    Header = "Group " + (target.Items.Count + 1),
+                    Style = e.Parameter as Style
+                };
+                target.Items.Add(add);
+                add.IsSelected = true;
             }
+        }
+
+        // ExecutedRoutedEventHandler for the custom command.
+        private void CmdRmTreeItem(object sender, ExecutedRoutedEventArgs e)
+        {
+            //var target = (e.Parameter as ContextMenu)?.PlacementTarget as TreeViewItem;
+            var target = e.Source as TreeViewItem;
+            if (target != null)
+                (target.Parent as ItemsControl).Items.Remove(target);
         }
 
         // CanExecuteRoutedEventHandler for the custom command.
@@ -83,6 +101,7 @@ namespace PokemonEmeraldRandomizer
                 Data = Backend.ROMParser.Parse(rawROM);
                 RandomizedData = Data;
                 IsROMLoaded = true;
+                lblMessageBoxContent.Content = "Pokemon Emerald ROM opened";
             }
         }
 
@@ -125,9 +144,34 @@ namespace PokemonEmeraldRandomizer
         {
             tbSeed.Visibility = (bool)cbSeed.IsChecked ? Visibility.Visible : Visibility.Collapsed;
         }
+
+        private void Select_On_Right_Click(object sender, RoutedEventArgs e)
+        {
+            var item = sender as TreeViewItem;
+            item.IsSelected = true;
+        }
     }
     public static class Commands
     {
-        public static readonly RoutedCommand addMutationTarget = new RoutedCommand();
+        public static readonly RoutedCommand addTreeItem = new RoutedCommand();
+        public static readonly RoutedCommand rmTreeItem = new RoutedCommand();
+    }
+
+    class PercentConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            if (value != null)
+            {
+                float fltValue = System.Convert.ToSingle(value);
+                return string.Format("{0:P1}",fltValue);
+            }
+            return 0;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            return float.Parse((value as string).RemovePercent()) / 100;
+        }
     }
 }

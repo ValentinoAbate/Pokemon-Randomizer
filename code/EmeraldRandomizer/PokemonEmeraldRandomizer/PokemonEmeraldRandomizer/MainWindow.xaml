@@ -4,12 +4,17 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PokemonEmeraldRandomizer"
-        xmlns:this="clr-namespace:PokemonEmeraldRandomizer.Properties"
         mc:Ignorable="d"
         Title="Pokemon Emerald Randomizer" Height="450" Width="800">
-    <Window.CommandBindings>
-        <CommandBinding Command="{x:Static local:Commands.addMutationTarget}" Executed="AddMutationTargetCmdExecuted" />
-    </Window.CommandBindings>
+    
+    <!--Main Window Resources-->
+    
+    <Window.Resources>
+        <local:PercentConverter x:Key="PercentConverter" />
+    </Window.Resources>
+    
+    <!--Main Grid-->
+    
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Name="Toolbar" Height="Auto" ></RowDefinition>
@@ -33,49 +38,161 @@
 
             </MenuItem>
         </Menu>
+        
+        <!--Tabs-->
+        
         <TabControl IsEnabled="{Binding IsROMLoaded}" Grid.Row="1">
-            <TabItem Header="General Settings">
+            <TabItem Header="General">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition  Width="10"></ColumnDefinition>
+                        <ColumnDefinition  Width="Auto"></ColumnDefinition>
+                        <ColumnDefinition Width="Auto"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="10"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <StackPanel Grid.Column="1" Grid.Row="1" Orientation="Vertical">
+                        <CheckBox Name="cbSeed" Checked="SeedCheckBox_Changed" Unchecked="SeedCheckBox_Changed">Use Randomizer Seed</CheckBox>
+                        <TextBox Name="tbSeed" Visibility="Collapsed" Text="Enter a seed"/>
+                    </StackPanel>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Evolution">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition  Width="20"></ColumnDefinition>
                         <ColumnDefinition  Width="Auto"></ColumnDefinition>
                         <ColumnDefinition Width="Auto"></ColumnDefinition>
                     </Grid.ColumnDefinitions>
-                    <StackPanel Grid.Column="1" Orientation="Vertical">
-                    <CheckBox Name="cbSeed" Checked="SeedCheckBox_Changed" Unchecked="SeedCheckBox_Changed">Use Randomizer Seed</CheckBox>
-                        <TextBox Name="tbSeed" Visibility="Collapsed" Text="Enter a seed"/>
-                    </StackPanel>
                 </Grid>
             </TabItem>
-            <TabItem Header="Pokemon Types">
+            <TabItem Header="Type Traits">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition  Width="10"></ColumnDefinition>
+                        <ColumnDefinition  Width="Auto"></ColumnDefinition>
+                        <ColumnDefinition Width="Auto"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="10"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Border Grid.Row="1" Grid.Column="1"  BorderThickness="1" BorderBrush="Black">
+                        <StackPanel Orientation="Vertical"  Grid.ColumnSpan="3">
+                            <CheckBox Content="Randomize ??? type traits" VerticalAlignment="Center"/>
+
+                        </StackPanel>
+                    </Border>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Pkmn Types">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition  Width="Auto"></ColumnDefinition>
                         <ColumnDefinition  Width="Auto"></ColumnDefinition>
                         <ColumnDefinition Width="Auto"></ColumnDefinition>
                     </Grid.ColumnDefinitions>
-                    <StackPanel Grid.Column="0" Orientation="Vertical">
-                        <TreeView Width="160" MinHeight="320">
-                            <TreeViewItem  Name="AddMutTargetPkmnTypes">
-                                <TreeViewItem.Header>
-                                    <StackPanel Orientation="Horizontal">
-                                        <TextBlock Text="Mutation Targets  " />
-                                        <Button 
-                                            Command="{x:Static local:Commands.addMutationTarget}" 
-                                            CommandTarget="{Binding ElementName=AddMutTargetPkmnTypes}" 
-                                            CommandParameter="PokemonTypes" 
-                                            Height="18" FontSize="11" Content="Add"/>
-                                    </StackPanel>
-                                </TreeViewItem.Header>
-                            </TreeViewItem>
-                        </TreeView>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <StackPanel Orientation="Horizontal" Grid.Column="0" Grid.Row="0">
+                            <StackPanel.Resources>
+                                <ContextMenu x:Key="TopLevelMenu">
+                                    <MenuItem Header="New Scale..."/>
+                                </ContextMenu>
+                                <ContextMenu x:Key="PkmnMutGroupMenu">
+                                    <MenuItem Header="Add">
+                                        <MenuItem Header="By Group">
+                                            <MenuItem Header="All"/>
+                                            <MenuItem Header="Gen I"/>
+                                            <MenuItem Header="Gen II"/>
+                                            <MenuItem Header="Gen III"/>
+                                            <MenuItem Header="Gen IV" IsEnabled="False"/>
+                                        </MenuItem>
+                                        <MenuItem Header="By Tag">
+                                            <MenuItem Header="Legendaries"/>
+                                            <MenuItem Header="Starters"/>
+                                        </MenuItem>
+                                        <MenuItem Header="By Type">
+
+                                        </MenuItem>
+                                        <MenuItem Header="By Species"/>
+                                        <MenuItem Header="By Habitat">
+
+                                        </MenuItem>
+                                    </MenuItem>
+                                    <MenuItem Header="Delete" 
+                                              Command="{x:Static local:Commands.rmTreeItem}"
+                                              CommandTarget="{Binding RelativeSource={RelativeSource Self}, Path=Parent}"
+                                              CommandParameter="{Binding RelativeSource={RelativeSource Self}, Path=Parent}"
+                                    />
+                                </ContextMenu>
+                                <Style x:Key="PkmnMutGroupStyle" TargetType="{x:Type TreeViewItem}">
+                                    <Setter Property="ContextMenu" Value="{StaticResource PkmnMutGroupMenu}"/>
+                                    <EventSetter Event="MouseRightButtonDown" Handler="Select_On_Right_Click"/>
+                                </Style>
+                            </StackPanel.Resources>
+                            <Label Margin="0,0,0,0" Content="Mutation Groups" />
+                            <Button 
+                                Command="{x:Static local:Commands.addTreeItem}" 
+                                CommandTarget="{Binding ElementName=MutGroupsPkmnTypes}" 
+                                CommandParameter="{StaticResource PkmnMutGroupStyle}" 
+                                Height="17" Width="50" FontSize="11" Content="Add" Margin="0,0,0,1">
+                            </Button>
+                        </StackPanel>
+                    <TreeView Name="MutGroupsPkmnTypes" Grid.Column="0" Grid.Row="1" Width="160" Height="295" Margin="0,0,5,0">
+                        <TreeView.CommandBindings>
+                            <CommandBinding Command="{x:Static local:Commands.addTreeItem}" Executed="CmdAddTreeItem" />
+                            <CommandBinding Command="{x:Static local:Commands.rmTreeItem}" Executed="CmdRmTreeItem" />
+                        </TreeView.CommandBindings>
+                    </TreeView>
+                    <Label Grid.Column="1" Grid.Row="0" HorizontalContentAlignment="Center" Content="Basic Type Randomization"></Label>
+                    <StackPanel  Grid.Column="1" Grid.Row="1" Orientation="Vertical">
+
+                        <Separator/>
+                        <Border BorderThickness="0.5" BorderBrush="Black">
+                            <StackPanel Orientation="Vertical">
+                                <Label Content="Single Type Randomization" HorizontalContentAlignment="Center"/>
+                                <StackPanel Orientation="Horizontal">
+                                    <Label Content="Mutation Rate"/>
+                                    <Slider Name="slSingleType" Margin="3,4,0,0" Maximum="1" TickFrequency="0.01" IsSnapToTickEnabled="True" Width="120"/>
+                                    <TextBox Text="{Binding ElementName=slSingleType, Path=Value, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource PercentConverter}}" 
+                                             Margin="3,3,3,3" Width="45" />
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <Label Content="Weighting"></Label>
+                                    <ComboBox Width="185" Height="20" FontSize="11"  Margin="0,1,3,1">
+                                        <ComboBoxItem FontSize="11" ToolTip="Each type has an equal chance of being picked">
+                                            None
+                                        </ComboBoxItem>
+                                        <ComboBoxItem FontSize="11" ToolTip="Each type's weight is its number of occurences as a single, primary, or secondary type in the base ROM">
+                                            Type Occurence (Any)
+                                        </ComboBoxItem>
+                                        <ComboBoxItem IsSelected="True" FontSize="11" ToolTip="Each type's weight is its number of occurences as a single type in the base ROM">
+                                            Type Occurence (Single)
+                                        </ComboBoxItem>
+                                        <ComboBoxItem FontSize="11" ToolTip="Each type's weight is its number of occurences as a primary type (the first type on a dual-typed pokemon) in the base ROM">
+                                            Type Occurence (Primary)
+                                        </ComboBoxItem>
+                                        <ComboBoxItem FontSize="11" ToolTip="Each type's weight is its number of occurences as a secondary type (the second type on a dual-typed pokemon) in the base ROM">
+                                            Type Occurence (Secondary)
+                                        </ComboBoxItem>
+                                    </ComboBox>
+                                </StackPanel>
+                            </StackPanel>
+                    </Border>
                     </StackPanel>
                 </Grid>
             </TabItem>
-            <TabItem Header="Starter Pokemon">
+            <TabItem Header="Starter Pkmn">
 
             </TabItem>
-            <TabItem Header="Wild Pokemon">
+            <TabItem Header="Wild Pkmn">
 
             </TabItem>
             <TabItem Header="Trainers">
@@ -85,9 +202,12 @@
 
             </TabItem>
         </TabControl>
-        <StatusBar Name="MessageBox" Grid.Row="2" Height="50">
+        
+        <!--Message Box-->
+        
+        <StatusBar Name="MessageBox" Grid.Row="2" Height="45">
             <StatusBarItem>
-                <Label Name="lblMessageBoxContent" Content="Please open a ROM! use file->Open ROM."></Label>
+                <Label Name="lblMessageBoxContent" Content="Please open a ROM! use file->Open ROM."/>
             </StatusBarItem>
         </StatusBar>
     </Grid>

@@ -13,7 +13,7 @@ namespace PokemonEmeraldRandomizer.Backend
         {
             return e.ToString().Replace('_', ' ').Replace(enumDashChar, '-');
         }
-        public static IEnumerable<T> GetValues<T>()
+        public static IEnumerable<T> GetValues<T>() where T : Enum
         {
             return (T[])Enum.GetValues(typeof(T));
         }
