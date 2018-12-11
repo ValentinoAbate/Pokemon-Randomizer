@@ -35,6 +35,39 @@ namespace PokemonEmeraldRandomizer
                 OnPropertyChanged("IsROMLoaded");
             }
         }
+
+        public CompositeCollection TypeTraitWeightDropDown
+        {
+            get => new CompositeCollection
+            {
+                new ComboBoxItem() {Content="None", ToolTip="The type has an equal chance of being normally effective, not very effective, super effect, or no effect vs any given type (and vice versa)"},
+                new Separator(),
+                new ComboBoxItem() {Content="Weak", ToolTip="Like average, but less likely to be super effective, more likely to be not very effective or have no effect. Less likely to resist or negate other types"},
+                new ComboBoxItem() {Content="Average", ToolTip="The type's chance of being a certain effectivess vs a type is the average occurence of that effectiveness in the Base ROM"},
+                new ComboBoxItem() {Content="Powerful", ToolTip="Like average, but more likely to be super effective, less likely to be not very effective or have no effect. More likely to resist or negate other types"},
+                new ComboBoxItem() {Content="Arceus-Like", ToolTip="Like powerful, but ridiculous. Use with caution"},
+                new Separator(),
+                new ComboBoxItem() {Content="Glass Cannon", ToolTip="Likely to be super effective versus other types, but also likely to be weak against other types"},
+                new ComboBoxItem() {Content="Tank", ToolTip="Likely to resist/negate other types, but not likely to be super effective"},
+                new Separator(),
+                new ComboBoxItem() {Content="Average (per type)", ToolTip="More likely to be strong against types that already have many weaknesses, more likely to be weak to types that already have many strengths"},
+                new ComboBoxItem() {Content="Per type (inverted)", ToolTip="More likely to be weak to types that already have many weaknesses, more likely to be strong against types that already have many strengths"},
+                new Separator(),
+                new ComboBoxItem() {Content="Dynamic", IsEnabled=false, ToolTip="Ranomly choose a weighting (by another weighting)"},
+                new ComboBoxItem() {Content="Custom", IsEnabled=false, ToolTip="Make your own weighting!" }
+            };
+        }
+        public CompositeCollection TypeWeightDropDown
+        {
+            get => new CompositeCollection
+            {
+                new ComboBoxItem() { Content="None", ToolTip="Each type has an equal chance of being picked" },
+                new ComboBoxItem() { Content="Type Occurence (Any)", ToolTip="Each type's weight is its number of occurences as a single, primary, or secondary type in the base ROM" },
+                new ComboBoxItem() { Content="Type Occurence (Single)", IsSelected=true, ToolTip="Each type's weight is its number of occurences as a single type in the base ROM" },
+                new ComboBoxItem() { Content="Type Occurence (Primary)", ToolTip="Each type's weight is its number of occurences as a primary type (the first type on a dual-typed pokemon) in the base ROM" },
+                new ComboBoxItem() { Content="Type Occurence (Secondary)", ToolTip="Each type's weight is its number of occurences as a secondary type (the second type on a dual-typed pokemon) in the base ROM" },
+            };
+        }
         #endregion
 
         private Backend.ROMData Data { get; set; }
@@ -45,6 +78,16 @@ namespace PokemonEmeraldRandomizer
             IsROMLoaded = false;
             InitializeComponent();
             this.DataContext = this;
+            OpenTestROM("C:\\Users\\valen\\Desktop\\Pokemon - Emerald Version (U).gba");
+        }
+
+        private void OpenTestROM(string path)
+        {
+            byte[] rawROM = File.ReadAllBytes(path);
+            Data = Backend.ROMParser.Parse(rawROM);
+            RandomizedData = Data;
+            IsROMLoaded = true;
+            lblMessageBoxContent.Content = "Pokemon Emerald ROM opened";
         }
 
         #region INotifyPropertyChanged Implementation

@@ -5,12 +5,25 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PokemonEmeraldRandomizer"
         mc:Ignorable="d"
-        Title="Pokemon Emerald Randomizer" Height="450" Width="800">
+        Title="Pokemon Emerald Randomizer" Height="480" Width="800">
     
     <!--Main Window Resources-->
     
     <Window.Resources>
         <local:PercentConverter x:Key="PercentConverter" />
+        <ControlTemplate x:Key="templatePercentSlider">
+            <StackPanel Orientation="Horizontal">
+                <Slider Name="slMutRate" Margin="3,4,0,0" Maximum="1" TickFrequency="0.01" IsSnapToTickEnabled="True" Width="120"/>
+                <TextBox Text="{Binding ElementName=slMutRate, Path=Value, UpdateSourceTrigger=PropertyChanged, 
+                         Converter={StaticResource PercentConverter}}" Margin="3,3,3,3" Width="45" />
+            </StackPanel>
+        </ControlTemplate>
+        <ControlTemplate x:Key="templateMutationRate">
+            <StackPanel Orientation="Horizontal">
+                <Label Content="Mutation Rate" FontSize="11"/>
+                <Control Template="{StaticResource templatePercentSlider}"/>
+            </StackPanel>
+        </ControlTemplate>
     </Window.Resources>
     
     <!--Main Grid-->
@@ -42,6 +55,9 @@
         <!--Tabs-->
         
         <TabControl IsEnabled="{Binding IsROMLoaded}" Grid.Row="1">
+            
+            <!--General Settings-->
+            
             <TabItem Header="General">
                 <Grid>
                     <Grid.ColumnDefinitions>
@@ -60,6 +76,9 @@
                     </StackPanel>
                 </Grid>
             </TabItem>
+            
+            <!--Evolution Settings-->
+            
             <TabItem Header="Evolution">
                 <Grid>
                     <Grid.ColumnDefinitions>
@@ -69,26 +88,112 @@
                     </Grid.ColumnDefinitions>
                 </Grid>
             </TabItem>
+            
+            <!--Type Traits-->
+            
             <TabItem Header="Type Traits">
                 <Grid>
+                    <!--Row and Column Definitions-->
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition  Width="10"></ColumnDefinition>
                         <ColumnDefinition  Width="Auto"></ColumnDefinition>
                         <ColumnDefinition Width="Auto"></ColumnDefinition>
+                        <ColumnDefinition Width="10"></ColumnDefinition>
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="10"/>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
-                    <Border Grid.Row="1" Grid.Column="1"  BorderThickness="1" BorderBrush="Black">
-                        <StackPanel Orientation="Vertical"  Grid.ColumnSpan="3">
-                            <CheckBox Content="Randomize ??? type traits" VerticalAlignment="Center"/>
 
+                    <StackPanel Grid.Column="1" Grid.Row="1">
+                    <!--General Type Trait Randomization-->                    
+                    <Border BorderThickness="0.5" BorderBrush="Black">
+                        <StackPanel Orientation="Vertical" Margin="3">
+                            <CheckBox Name="cbRandomizeTypeMatchupsTyping" Content="Randomize Type Matchups (Typing)" VerticalAlignment="Center"/>
+                            <Separator/>
+                            <StackPanel IsEnabled="{Binding ElementName=cbRandomizeTypeMatchupsTyping, Path=IsChecked}">
+                                <Control Template="{StaticResource templateMutationRate}" />
+                                <StackPanel Orientation="Horizontal">
+                                    <Label Content="Weighting" FontSize="11"/>
+                                    <ComboBox Width="185" Height="20" FontSize="11"  Margin="3,1,3,1" ItemsSource="{Binding TypeWeightDropDown}" SelectedIndex="3"/>
+                                </StackPanel>
+                            </StackPanel>
                         </StackPanel>
                     </Border>
+
+                    <!--General Type Trait Randomization-->
+                    <Border BorderThickness="0.5" BorderBrush="Black">
+                        <StackPanel Orientation="Vertical"  Margin="3">
+                            <CheckBox Name="cbRandomizeTypeMatchupsEffectiveness" Content="Randomize Type Matchups (Effectiveness)" VerticalAlignment="Center"/>
+                            <Separator/>
+                            <StackPanel IsEnabled="{Binding ElementName=cbRandomizeTypeMatchupsEffectiveness, Path=IsChecked}">
+                                <Control Template="{StaticResource templateMutationRate}" />
+                                <StackPanel Orientation="Horizontal">
+                                    <Label Content="Weighting" FontSize="11"/>
+                                    <ComboBox Width="185" Height="20" FontSize="11"  Margin="3,1,3,1" ItemsSource="{Binding TypeTraitWeightDropDown}" SelectedIndex="3"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+
+                    <!--??? Type Modification-->                  
+                    <Border Grid.Row="2" Grid.Column="1"  BorderThickness="0.5" BorderBrush="Black" Margin="0,2,0,0">
+                        <StackPanel Orientation="Vertical"  Grid.ColumnSpan="3" Margin="3">
+                            <CheckBox Name="cbModifyUnknownType" Content="Modify ??? type" VerticalAlignment="Center" 
+                                      ToolTip="Generate type relations for the ??? type. to have pokemon and moves of this type, you must set the appropriate settings in the Moves and Pkmn Types tabs &#10;WARNING: Will relocate type definitions on the ROM"/>
+                            <Separator/>
+                            <StackPanel Orientation="Vertical" IsEnabled="{Binding ElementName=cbModifyUnknownType, Path=IsChecked}">
+                                <StackPanel Orientation="Horizontal" >
+                                    <Label Content="Effectiveness Weighting" FontSize="11"/>
+                                    <ComboBox Width="125" Height="20" FontSize="11"  Margin="3,1,3,1" ItemsSource="{Binding TypeTraitWeightDropDown}" SelectedIndex="3"/>
+                                </StackPanel>
+                                
+                                <CheckBox Content="Reinforce strengths and weaknesses" ToolTip="Makes the type more likely to resist types it's super effective against, etc."
+                                          Margin="1,3"  VerticalAlignment="Center" FontSize="11" 
+                                          IsEnabled="{Binding ElementName=cbModifyUnknownType, Path=IsChecked}"/>
+                                    
+                                <!--Ignore After Foresight Settings-->
+                                <Border BorderThickness="0.5" BorderBrush="Black">
+                                    <StackPanel Orientation="Vertical" Margin="3">
+                                        <Label Content="Ignore After Foresight Settings" FontSize="11" />
+                                        <Separator/>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Label Content="Chance" Width="120" FontSize="11" ToolTip="The percentage chance that any type relation in this category will be ingored after foresight (or a similar move) is used"/>
+                                            <ComboBox Width="125" Height="20" FontSize="11"  Margin="5,1,3,1">
+                                                <ComboBoxItem ToolTip="The chance of a type relation being ignored after foresight in the Base ROM (across all type relations)">
+                                                    Base ROM %
+                                                </ComboBoxItem>
+                                                <ComboBoxItem IsSelected="True" ToolTip="The chance of a type relation being ignored after foresight in the base ROM for the specific type in this relation (mostly 0%)">
+                                                    ROM % (per type)
+                                                </ComboBoxItem>
+                                                <Separator></Separator>
+                                                <ComboBoxItem>
+                                                    0%
+                                                </ComboBoxItem>
+                                                <ComboBoxItem IsEnabled="False">
+                                                    Custom %
+                                                </ComboBoxItem>
+                                            </ComboBox>
+                                        </StackPanel>
+                                        <CheckBox Name="cbRestrictForesightToGhostUnknown" Content="Restrict to vs GHOST type" 
+                                                  FontSize="11" VerticalAlignment="Center" Margin="1,2"
+                                                  ToolTip="Only Type Relations that target ghost type will be ignored after foresight"/>
+                                        <CheckBox Name="cbRestrictFiresightToNoEffectUnknown" Content="Restrict to no effect (x0 damage) relations" 
+                                                  FontSize="11" VerticalAlignment="Center" Margin="1,2"
+                                                  ToolTip="Only Type Relations that would have no effect will be ignored after foresight"/>
+                                    </StackPanel>
+                                </Border>
+                                    
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                    </StackPanel>
                 </Grid>
             </TabItem>
+            
+            <!--Pokemon Types-->
+            
             <TabItem Header="Pkmn Types">
                 <Grid>
                     <Grid.ColumnDefinitions>
@@ -132,11 +237,11 @@
                                               CommandParameter="{Binding RelativeSource={RelativeSource Self}, Path=Parent}"
                                     />
                                 </ContextMenu>
-                                <Style x:Key="PkmnMutGroupStyle" TargetType="{x:Type TreeViewItem}">
-                                    <Setter Property="ContextMenu" Value="{StaticResource PkmnMutGroupMenu}"/>
-                                    <EventSetter Event="MouseRightButtonDown" Handler="Select_On_Right_Click"/>
-                                </Style>
-                            </StackPanel.Resources>
+                            <Style x:Key="PkmnMutGroupStyle" TargetType="{x:Type TreeViewItem}">
+                                <Setter Property="ContextMenu" Value="{StaticResource PkmnMutGroupMenu}"/>
+                                <EventSetter Event="MouseRightButtonDown" Handler="Select_On_Right_Click"/>
+                            </Style>
+                        </StackPanel.Resources>
                             <Label Margin="0,0,0,0" Content="Mutation Groups" />
                             <Button 
                                 Command="{x:Static local:Commands.addTreeItem}" 
@@ -145,53 +250,74 @@
                                 Height="17" Width="50" FontSize="11" Content="Add" Margin="0,0,0,1">
                             </Button>
                         </StackPanel>
-                    <TreeView Name="MutGroupsPkmnTypes" Grid.Column="0" Grid.Row="1" Width="160" Height="295" Margin="0,0,5,0">
+                    <TreeView Name="MutGroupsPkmnTypes" Grid.Column="0" Grid.Row="1" Width="160" Margin="0,5,5,5">
                         <TreeView.CommandBindings>
                             <CommandBinding Command="{x:Static local:Commands.addTreeItem}" Executed="CmdAddTreeItem" />
                             <CommandBinding Command="{x:Static local:Commands.rmTreeItem}" Executed="CmdRmTreeItem" />
                         </TreeView.CommandBindings>
                     </TreeView>
                     <Label Grid.Column="1" Grid.Row="0" HorizontalContentAlignment="Center" Content="Basic Type Randomization"></Label>
-                    <StackPanel  Grid.Column="1" Grid.Row="1" Orientation="Vertical">
-
-                        <Separator/>
-                        <Border BorderThickness="0.5" BorderBrush="Black">
+                    <StackPanel  Grid.Column="1" Grid.Row="1" Margin="0,4,0,0"  Orientation="Vertical">
+                        <Border BorderThickness="0.5" Margin="0,0,0,0" BorderBrush="Black">
                             <StackPanel Orientation="Vertical">
                                 <Label Content="Single Type Randomization" HorizontalContentAlignment="Center"/>
+                                <Control Template="{StaticResource templateMutationRate}" />
                                 <StackPanel Orientation="Horizontal">
-                                    <Label Content="Mutation Rate"/>
-                                    <Slider Name="slSingleType" Margin="3,4,0,0" Maximum="1" TickFrequency="0.01" IsSnapToTickEnabled="True" Width="120"/>
-                                    <TextBox Text="{Binding ElementName=slSingleType, Path=Value, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource PercentConverter}}" 
-                                             Margin="3,3,3,3" Width="45" />
+                                    <Label Content="Weighting" FontSize="11"></Label>
+                                    <ComboBox Width="185" Height="20" FontSize="11"  Margin="0,1,3,1" ItemsSource="{Binding TypeWeightDropDown}" SelectedIndex="2"/>
                                 </StackPanel>
-                                <StackPanel Orientation="Horizontal">
-                                    <Label Content="Weighting"></Label>
-                                    <ComboBox Width="185" Height="20" FontSize="11"  Margin="0,1,3,1">
-                                        <ComboBoxItem FontSize="11" ToolTip="Each type has an equal chance of being picked">
-                                            None
-                                        </ComboBoxItem>
-                                        <ComboBoxItem FontSize="11" ToolTip="Each type's weight is its number of occurences as a single, primary, or secondary type in the base ROM">
-                                            Type Occurence (Any)
-                                        </ComboBoxItem>
-                                        <ComboBoxItem IsSelected="True" FontSize="11" ToolTip="Each type's weight is its number of occurences as a single type in the base ROM">
-                                            Type Occurence (Single)
-                                        </ComboBoxItem>
-                                        <ComboBoxItem FontSize="11" ToolTip="Each type's weight is its number of occurences as a primary type (the first type on a dual-typed pokemon) in the base ROM">
-                                            Type Occurence (Primary)
-                                        </ComboBoxItem>
-                                        <ComboBoxItem FontSize="11" ToolTip="Each type's weight is its number of occurences as a secondary type (the second type on a dual-typed pokemon) in the base ROM">
-                                            Type Occurence (Secondary)
-                                        </ComboBoxItem>
-                                    </ComboBox>
+                                <StackPanel Orientation="Horizontal" IsEnabled="{Binding ElementName=cbModifyUnknownType, Path=IsChecked}">
+                                    <Label Content="??? Chance" FontSize="11" ToolTip="The chance that type will mutate to the ??? type (only enabled if 'Modify ??? type' is checked in the Type Traits Tab)"/>
+                                    <Slider Name="slSingleUnknown" Value="0.01" Margin="19,4,0,0" Maximum="1" TickFrequency="0.01" IsSnapToTickEnabled="True" Width="120"/>
+                                    <TextBox Text="{Binding ElementName=slSingleUnknown, Path=Value, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource PercentConverter}}"
+                                             Margin="3,3,3,3" Width="45" />
                                 </StackPanel>
                             </StackPanel>
                     </Border>
+                        <Border BorderThickness="0.5" Margin="0,2,0,0" BorderBrush="Black">
+                            <StackPanel Orientation="Vertical">
+                                <Label Content="Primary Type Randomization" HorizontalContentAlignment="Center"/>
+                                <Control Template="{StaticResource templateMutationRate}" />
+                                <StackPanel Orientation="Horizontal">
+                                    <Label Content="Weighting" FontSize="11"/>
+                                    <ComboBox Width="185" Height="20" FontSize="11"  Margin="0,1,3,1" ItemsSource="{Binding TypeWeightDropDown}" SelectedIndex="3"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" IsEnabled="{Binding ElementName=cbModifyUnknownType, Path=IsChecked}">
+                                    <Label Content="??? Chance" FontSize="11" ToolTip="The chance that type will mutate to the ??? type (only enabled if 'Modify ??? type' is checked in the Type Traits Tab)"/>
+                                    <Slider Name="slPrimaryUnknown" Value="0.005" Margin="19,4,0,0" Maximum="1" TickFrequency="0.01" IsSnapToTickEnabled="True" Width="120"/>
+                                    <TextBox Text="{Binding ElementName=slPrimaryUnknown, Path=Value, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource PercentConverter}}"
+                                             Margin="3,3,3,3" Width="45" />
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+                        <Border BorderThickness="0.5" Margin="0,2,0,0" BorderBrush="Black">
+                            <StackPanel Orientation="Vertical">
+                                <Label Content="Secondary Type Randomization" HorizontalContentAlignment="Center"/>
+                                <Control Template="{StaticResource templateMutationRate}" />
+                                <StackPanel Orientation="Horizontal">
+                                    <Label Content="Weighting" FontSize="11"/>
+                                    <ComboBox Width="185" Height="20" FontSize="11"  Margin="0,1,3,1" ItemsSource="{Binding TypeWeightDropDown}" SelectedIndex="4"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" IsEnabled="{Binding ElementName=cbModifyUnknownType, Path=IsChecked}">
+                                    <Label Content="??? Chance" FontSize="11" ToolTip="The chance that type will mutate to the ??? type (only enabled if 'Modify ??? type' is checked in the Type Traits Tab)"/>
+                                    <Slider Name="slSecondaryUnknown" Value="0.02" Margin="19,4,0,0" Maximum="1" TickFrequency="0.01" IsSnapToTickEnabled="True" Width="120"/>
+                                    <TextBox Text="{Binding ElementName=slSecondaryUnknown, Path=Value, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource PercentConverter}}"
+                                             Margin="3,3,3,3" Width="45" />
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
                     </StackPanel>
                 </Grid>
             </TabItem>
+            
+            <!--Starter Pokemon-->
+            
             <TabItem Header="Starter Pkmn">
 
             </TabItem>
+            
+            <!--Wild Pokemon-->
+
             <TabItem Header="Wild Pkmn">
 
             </TabItem>
@@ -211,4 +337,5 @@
             </StatusBarItem>
         </StatusBar>
     </Grid>
+    
 </Window>
