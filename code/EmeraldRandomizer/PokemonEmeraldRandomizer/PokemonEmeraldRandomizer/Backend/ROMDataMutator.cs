@@ -61,14 +61,10 @@ namespace PokemonEmeraldRandomizer.Backend
                 // Set Pokemon Tags (legendary, etc)
                 // Mutate low-consequence base stats
                 // Mutate Pokemon Type
-                if (pkmn.species == PokemonSpecies.TREECKO)
-                {
-                    pkmn.types[0] = pkmn.types[1] = PokemonType.Unknown;
-                    continue;
-                }
                 if (pkmn.IsSingleTyped)
                 {
-                    if (mut.RandomDouble() < 0.05)
+                    var rate = window.mutSlSingleType.Value;
+                    if (mut.RandomDouble() < rate)
                         pkmn.types[0] = pkmn.types[1] = mut.RandomChoice(orig.Metrics.TypeRatiosSingle);
                 }
                 else
@@ -80,7 +76,6 @@ namespace PokemonEmeraldRandomizer.Backend
                 }
                 // Mutate battle states and EVs
                 // Mutate Learn Sets
-
             }
             // Mutate Starter Pokemon
             // Mutate Trainers

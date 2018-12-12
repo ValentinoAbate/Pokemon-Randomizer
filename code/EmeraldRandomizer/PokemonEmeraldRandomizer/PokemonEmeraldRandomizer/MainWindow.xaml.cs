@@ -199,22 +199,4 @@ namespace PokemonEmeraldRandomizer
         public static readonly RoutedCommand addTreeItem = new RoutedCommand();
         public static readonly RoutedCommand rmTreeItem = new RoutedCommand();
     }
-
-    class PercentConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            if (value != null)
-            {
-                float fltValue = System.Convert.ToSingle(value);
-                return string.Format("{0:P1}",fltValue);
-            }
-            return 0;
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-        {
-            return float.Parse((value as string).RemovePercent()) / 100;
-        }
-    }
 }

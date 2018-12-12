@@ -4,26 +4,15 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PokemonEmeraldRandomizer"
+        xmlns:control="clr-namespace:PokemonEmeraldRandomizer.UserControls"
+        xmlns:converter="clr-namespace:PokemonEmeraldRandomizer.Converters"
         mc:Ignorable="d"
         Title="Pokemon Emerald Randomizer" Height="480" Width="800">
     
     <!--Main Window Resources-->
     
     <Window.Resources>
-        <local:PercentConverter x:Key="PercentConverter" />
-        <ControlTemplate x:Key="templatePercentSlider">
-            <StackPanel Orientation="Horizontal">
-                <Slider Name="slMutRate" Margin="3,4,0,0" Maximum="1" TickFrequency="0.01" IsSnapToTickEnabled="True" Width="120"/>
-                <TextBox Text="{Binding ElementName=slMutRate, Path=Value, UpdateSourceTrigger=PropertyChanged, 
-                         Converter={StaticResource PercentConverter}}" Margin="3,3,3,3" Width="45" />
-            </StackPanel>
-        </ControlTemplate>
-        <ControlTemplate x:Key="templateMutationRate">
-            <StackPanel Orientation="Horizontal">
-                <Label Content="Mutation Rate" FontSize="11"/>
-                <Control Template="{StaticResource templatePercentSlider}"/>
-            </StackPanel>
-        </ControlTemplate>
+        <converter:PercentConverter x:Key="PercentConverter" />
     </Window.Resources>
     
     <!--Main Grid-->
@@ -113,7 +102,7 @@
                             <CheckBox Name="cbRandomizeTypeMatchupsTyping" Content="Randomize Type Matchups (Typing)" VerticalAlignment="Center"/>
                             <Separator/>
                             <StackPanel IsEnabled="{Binding ElementName=cbRandomizeTypeMatchupsTyping, Path=IsChecked}">
-                                <Control Template="{StaticResource templateMutationRate}" />
+                                <control:MutationRateSlider/>
                                 <StackPanel Orientation="Horizontal">
                                     <Label Content="Weighting" FontSize="11"/>
                                     <ComboBox Width="185" Height="20" FontSize="11"  Margin="3,1,3,1" ItemsSource="{Binding TypeWeightDropDown}" SelectedIndex="3"/>
@@ -128,7 +117,7 @@
                             <CheckBox Name="cbRandomizeTypeMatchupsEffectiveness" Content="Randomize Type Matchups (Effectiveness)" VerticalAlignment="Center"/>
                             <Separator/>
                             <StackPanel IsEnabled="{Binding ElementName=cbRandomizeTypeMatchupsEffectiveness, Path=IsChecked}">
-                                <Control Template="{StaticResource templateMutationRate}" />
+                                <control:MutationRateSlider/>
                                 <StackPanel Orientation="Horizontal">
                                     <Label Content="Weighting" FontSize="11"/>
                                     <ComboBox Width="185" Height="20" FontSize="11"  Margin="3,1,3,1" ItemsSource="{Binding TypeTraitWeightDropDown}" SelectedIndex="3"/>
@@ -261,7 +250,7 @@
                         <Border BorderThickness="0.5" Margin="0,0,0,0" BorderBrush="Black">
                             <StackPanel Orientation="Vertical">
                                 <Label Content="Single Type Randomization" HorizontalContentAlignment="Center"/>
-                                <Control Template="{StaticResource templateMutationRate}" />
+                                <control:MutationRateSlider x:Name="mutSlSingleType"/>
                                 <StackPanel Orientation="Horizontal">
                                     <Label Content="Weighting" FontSize="11"></Label>
                                     <ComboBox Width="185" Height="20" FontSize="11"  Margin="0,1,3,1" ItemsSource="{Binding TypeWeightDropDown}" SelectedIndex="2"/>
@@ -277,7 +266,7 @@
                         <Border BorderThickness="0.5" Margin="0,2,0,0" BorderBrush="Black">
                             <StackPanel Orientation="Vertical">
                                 <Label Content="Primary Type Randomization" HorizontalContentAlignment="Center"/>
-                                <Control Template="{StaticResource templateMutationRate}" />
+                                <control:MutationRateSlider/>
                                 <StackPanel Orientation="Horizontal">
                                     <Label Content="Weighting" FontSize="11"/>
                                     <ComboBox Width="185" Height="20" FontSize="11"  Margin="0,1,3,1" ItemsSource="{Binding TypeWeightDropDown}" SelectedIndex="3"/>
@@ -293,7 +282,7 @@
                         <Border BorderThickness="0.5" Margin="0,2,0,0" BorderBrush="Black">
                             <StackPanel Orientation="Vertical">
                                 <Label Content="Secondary Type Randomization" HorizontalContentAlignment="Center"/>
-                                <Control Template="{StaticResource templateMutationRate}" />
+                                <control:MutationRateSlider/>
                                 <StackPanel Orientation="Horizontal">
                                     <Label Content="Weighting" FontSize="11"/>
                                     <ComboBox Width="185" Height="20" FontSize="11"  Margin="0,1,3,1" ItemsSource="{Binding TypeWeightDropDown}" SelectedIndex="4"/>
