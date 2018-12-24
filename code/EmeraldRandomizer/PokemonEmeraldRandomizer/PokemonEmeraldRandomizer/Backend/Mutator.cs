@@ -22,6 +22,11 @@ namespace PokemonEmeraldRandomizer.Backend
         public int RandomInt(int min, int max) => _rand.Next(min, max);
         public double RandomDouble() => _rand.NextDouble(); 
 
+        // Returns an unweighted random choice from the given array
+        public T RandomChoice<T>(T[] items)
+        {
+            return items[_rand.Next(0, items.Length)];
+        }
         public T RandomChoice<T>(T[] items, int[] weights, bool isAbsolute)
         {
             // totalWeight is the sum of all weights, or 1 if absolute
@@ -43,17 +48,6 @@ namespace PokemonEmeraldRandomizer.Backend
         public T RandomChoice<T>(WeightedSet<T> items, bool isAbsolute = false)
         {
             return RandomChoice<T>(items.Items, items.Weights, isAbsolute);
-        }
-
-        public delegate T MappingFunc<T>(T input);
-        public delegate T[] MappingFuncWeighted<T>(T input);
-        public static T Map<T>(T item, Dictionary<T, T> map)
-        {
-#if DEBUG
-            if (!map.ContainsKey(item))
-                throw new System.Exception("Key not found in map: " + item.ToString());
-#endif
-            return map[item];
         }
     }
 }

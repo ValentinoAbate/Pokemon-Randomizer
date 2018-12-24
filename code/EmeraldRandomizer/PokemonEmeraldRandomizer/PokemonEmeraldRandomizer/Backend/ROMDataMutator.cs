@@ -65,7 +65,7 @@ namespace PokemonEmeraldRandomizer.Backend
                 {
                     var rate = window.mutSlSingleType.Value;
                     if (mut.RandomDouble() < rate)
-                        pkmn.types[0] = pkmn.types[1] = mut.RandomChoice(orig.Metrics.TypeRatiosSingle);
+                        pkmn.types[0] = pkmn.types[1] = randomType(mut, copy.Metrics, "None");
                 }
                 else
                 {
@@ -102,6 +102,24 @@ namespace PokemonEmeraldRandomizer.Backend
             #endregion
             copy.CalculateMetrics();
             return copy;
+        }
+        private static PokemonType randomType(Mutator mut, BalanceMetrics metrics, string metric)
+        {
+            switch (metric)
+            {
+                case "None":
+                    return mut.RandomChoice(metrics.TypeRatiosAll.Items);
+                case "Type Occurence (Any)":
+                    return mut.RandomChoice(metrics.TypeRatiosAll);
+                case "Type Occurence (Single)":
+                    return mut.RandomChoice(metrics.TypeRatiosSingle);
+                case "Type Occurence (Primary)":
+                    return mut.RandomChoice(metrics.TypeRatiosDualPrimary);
+                case "Type Occurence (Secondary)":
+                    return mut.RandomChoice(metrics.TypeRatiosDualSecondary);
+                default:
+                    throw new System.NotImplementedException(metric + " is not a valid metric.");
+            }
         }
     }
 }

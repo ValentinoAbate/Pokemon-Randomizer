@@ -76,7 +76,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Converters\Class1.cs" />
+    <Compile Include="Converters\PercentConverter.cs" />
     <Compile Include="CultureUtils\CultureUtils.cs" />
     <Compile Include="Collections\MultiSet.cs" />
     <Compile Include="UserControls\MutationRateSlider.xaml.cs">

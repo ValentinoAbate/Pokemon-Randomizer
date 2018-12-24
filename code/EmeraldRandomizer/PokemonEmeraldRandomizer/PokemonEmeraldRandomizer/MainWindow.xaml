@@ -253,7 +253,7 @@
                                 <control:MutationRateSlider x:Name="mutSlSingleType"/>
                                 <StackPanel Orientation="Horizontal">
                                     <Label Content="Weighting" FontSize="11"></Label>
-                                    <ComboBox Width="185" Height="20" FontSize="11"  Margin="0,1,3,1" ItemsSource="{Binding TypeWeightDropDown}" SelectedIndex="2"/>
+                                    <ComboBox Name="comSingleTypeWeight" Width="185" Height="20" FontSize="11"  Margin="0,1,3,1" ItemsSource="{Binding TypeWeightDropDown}" SelectedIndex="2"/>
                                 </StackPanel>
                                 <StackPanel Orientation="Horizontal" IsEnabled="{Binding ElementName=cbModifyUnknownType, Path=IsChecked}">
                                     <Label Content="??? Chance" FontSize="11" ToolTip="The chance that type will mutate to the ??? type (only enabled if 'Modify ??? type' is checked in the Type Traits Tab)"/>

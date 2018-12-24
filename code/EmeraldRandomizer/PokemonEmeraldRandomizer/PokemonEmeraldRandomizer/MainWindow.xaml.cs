@@ -63,7 +63,7 @@ namespace PokemonEmeraldRandomizer
             {
                 new ComboBoxItem() { Content="None", ToolTip="Each type has an equal chance of being picked" },
                 new ComboBoxItem() { Content="Type Occurence (Any)", ToolTip="Each type's weight is its number of occurences as a single, primary, or secondary type in the base ROM" },
-                new ComboBoxItem() { Content="Type Occurence (Single)", IsSelected=true, ToolTip="Each type's weight is its number of occurences as a single type in the base ROM" },
+                new ComboBoxItem() { Content="Type Occurence (Single)", ToolTip="Each type's weight is its number of occurences as a single type in the base ROM" },
                 new ComboBoxItem() { Content="Type Occurence (Primary)", ToolTip="Each type's weight is its number of occurences as a primary type (the first type on a dual-typed pokemon) in the base ROM" },
                 new ComboBoxItem() { Content="Type Occurence (Secondary)", ToolTip="Each type's weight is its number of occurences as a secondary type (the second type on a dual-typed pokemon) in the base ROM" },
             };
