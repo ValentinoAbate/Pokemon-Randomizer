@@ -148,7 +148,7 @@ namespace PokemonEmeraldRandomizer.Backend
             // -------> Effects discouraged:
             // -------> If self HP High : EXPLOSION, RESTORE_HP, REST, DESTINY_BOND, FLAIL, ENDURE, MORNING_SUN, SYNTHESIS, MOONLIGHT, SOFTBOILED, MEMENTO, GRUDGE, OVERHEAT
             // -------> If self HP med  : Any stat up/down 1/2 lvls, EXPLOSION, BIDE, CONVERSION, LIGHT_SCREEN, MIST, FOCUS_ENERGY, CONVERSION_2, SAFEGUARD, BELLY_DRUM, TICKLE, COSMIC_POWER, BULK_UP, CALM_MIND, DRAGON_DANCE
-            // -------> If self HP low  : seld HP med list - EXPLOSION + RAGE, LOCK_ON, PSYCH_UP, MIRROR_COAT, SOLARBEAM, ERUPTION
+            // -------> If self HP low  : self HP med list - EXPLOSION + RAGE, LOCK_ON, PSYCH_UP, MIRROR_COAT, SOLARBEAM, ERUPTION
             // -------> If enemy HP high: None
             // -------> If enemy HP med : Any stat up/down 1/2 lvls, MIST, FOCUS_ENERGY, POISON, PAIN_SPLIT, PERISH_SONG, SAFEGUARD, TICKLE, COSMIC_POWER, BULK_UP, CALM_MIND, DRAGON_DANCE
             // -------> If enemy HP low : enemy HP med list + All special conditions (icl TOXIC), EXPLOSION, BIDE, CONVERSION, LIGHT_SCREEN, OHKO, SUPER_FANG, MIST, FOCUS_ENERGY
