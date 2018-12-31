@@ -110,7 +110,7 @@ namespace PokemonEmeraldRandomizer.Backend
             // Read sprite index (byte 3)
             spriteIndex = rom[offset + 3];
             // Read name (I think bytes 4 - 15?)
-            name = rom.readString(offset + 4, 12);
+            name = rom.ReadString(offset + 4, 12);
             // Read items (bytes 16-23)
             for (int i = 0; i < 4; ++i)
                 useItems[i] = (Item)rom.ReadUInt16(offset + 16 + (i * 2));

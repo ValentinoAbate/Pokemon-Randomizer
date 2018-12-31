@@ -57,6 +57,8 @@ namespace PokemonEmeraldRandomizer.Backend
             Info.SetSearchRoot("versionInfo"); 
             initMetaData();
             Info.SetSearchRoot(Code + Version.ToString());
+            RomUtils.FreeSpaceByte = (byte)Info.HexAttr("freeSpace", "byte");
+            RomUtils.SearchStartOffset = Info.HexAttr("freeSpace", "startAddy");
         }
         // set the Rom generation (from the file size)
         private void initGeneration()

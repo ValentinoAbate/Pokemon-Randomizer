@@ -6,115 +6,95 @@ using System.Threading.Tasks;
 
 namespace PokemonEmeraldRandomizer.Backend
 {
+    /// <summary>A class of byte[] extension methods to help process rom files</summary>
     public static class RomUtils
     {
-        // Read a block of bytes at the given offset
+        /// <summary>Read a block of bytes at the given offset</summary>
         public static byte[] ReadBlock(this byte[] rom, int offset, int length)
         {
             byte[] block = new byte[length];
             System.Array.ConstrainedCopy(rom, offset, block, 0, length);
             return block;
         }
-        // Write a block of bytes to the given offset
+        /// <summary>Write a block of bytes to the given offset</summary>
         public static void WriteBlock(this byte[] rom, int offset, byte[] data)
         {
             Array.ConstrainedCopy(data, 0, rom, offset, data.Length);
         }
 
         #region Free Space and Hacking Utils
-        // Most of Emerald's free space is in 0x00! (Thanks Sky0fBlades)
-        // Reference: http://pokemonhackersonline.com/archive/index.php/t-5742.html
-        // 0x00 Free Space (over a million bytes in total)
-        // 0x9C0B20 to 0xAFFFFF
-        // 0xB98B30 to 0xBFFFFF
-        // 0xD3CEA0 to 0xD437EF
-        // 0xDE4018 to 0xE3CF48
-        // 0xE3CF64 to the End
-        private const byte freeSpace = 0x00;
-        // The offset where it becoms safe to seach for free space
-        private const int safeToStartSeaching = 0x9C0B20;
-        // Scans the rom and returns all free space blocks above a certain size (in bytes)
-        // Don't search anywhere before 0x9C0B20 or something might get corrupted
-        public static MemoryBlock[] scanAllFreeSpace(this byte[] rom, int minSize = 10000, int startLooking = safeToStartSeaching)
+        /// <summary>The byte that WriteInFreeSpace(this byte[] rom, byte[] data) considers free space </summary>
+        public static byte FreeSpaceByte { get; set; }
+        /// <summary>The offset that WriteInFreeSpace(this byte[] rom, byte[] data) starts searching at </summary>
+        public static int SearchStartOffset { get; set; }
+        /// <summary>Scans the rom and returns all free space blocks above a certain size (in bytes)</summary> 
+        public static MemoryBlock[] ScanAllFreeSpace(this byte[] rom, byte freeSpace, int startAddy, int minSize = 10000)
         {
             List<MemoryBlock> blocks = new List<MemoryBlock>();
-            int start = startLooking;
-            bool inBlock = false;
-            for(int offset = startLooking; offset < rom.Length; ++offset)
+            for (int offset = startAddy; offset < rom.Length; ++offset)
             {
-                if (rom[offset] == freeSpace && !inBlock)
-                {
-                    inBlock = true;
-                    start = offset;
-                }
-                if (rom[offset] != freeSpace && inBlock)
-                {
-                    inBlock = false;
-                    int length = offset - start;
-                    if(length >= minSize)
-                        blocks.Add(new MemoryBlock(start, length));
-                }
+                if (rom[offset] != freeSpace)
+                    continue;
+                int start = offset;
+                while (++offset < rom.Length && rom[offset] == freeSpace)
+                    continue;
+                if (offset - start >= minSize)
+                    blocks.Add(new MemoryBlock(start, offset - start));
             }
             return blocks.ToArray();
         }
-        // Scans for the first open block of free space above a certain size (in bytes)
-        // Returns null if no big enough block is found
-        // Don't search anywhere before 0x9C0B20 or something might get corrupted
-        public static MemoryBlock scanForFreeSpace(this byte[] rom, int minSize = 10000, int startLooking = safeToStartSeaching)
+        /// <summary>Scans for the first open block of free space above a certain size (in bytes).
+        /// Returns null if no big enough block is found</summary> 
+        public static MemoryBlock ScanForFreeSpace(this byte[] rom, byte freeSpace, int startAddy, int minSize = 10000)
         {
-            int start = startLooking;
-            bool inBlock = false;
-            for (int offset = startLooking; offset < rom.Length; ++offset)
+            for (int offset = startAddy; offset < rom.Length; ++offset)
             {
-                if (rom[offset] == freeSpace && !inBlock)
-                {
-                    inBlock = true;
-                    start = offset;
-                }
-                if (rom[offset] != freeSpace && inBlock)
-                {
-                    inBlock = false;
-                    int length = offset - start;
-                    if (length >= minSize)
-                        return new MemoryBlock(start, length);
-                }
+                if (rom[offset] != freeSpace)
+                    continue;
+                int start = offset;
+                while (++offset < rom.Length && rom[offset] == freeSpace)
+                    if (offset - start >= minSize)
+                        return new MemoryBlock(start, offset - start);
             }
             return null;
         }
         // Scans for the first open block of free space above a certain size (in bytes)
         // Returns null if no big enough block is found, else returns the offset of the block
-        private static int? scanForFreeSpaceOffset(byte[] rom, int minSize = 10000, int startLooking = safeToStartSeaching)
+        private static int? ScanForFreeSpaceOffset(byte[] rom, byte freeSpace, int startAddy, int minSize = 10000)
         {
-            int start = startLooking;
-            bool inBlock = false;
-            for (int offset = startLooking; offset < rom.Length; ++offset)
+            for (int offset = startAddy; offset < rom.Length; ++offset)
             {
-                if (rom[offset] == freeSpace && !inBlock)
-                {
-                    inBlock = true;
-                    start = offset;
-                }
-                if (rom[offset] != freeSpace && inBlock)
-                {
-                    inBlock = false;
-                    int length = offset - start;
-                    if (length >= minSize)
+                if (rom[offset] != freeSpace)
+                    continue;
+                int start = offset;
+                while(++offset < rom.Length && rom[offset] == freeSpace)
+                    if (offset - start >= minSize)
                         return start;
-                }
             }
             return null;
         }
-        // Write a chunk of data into the first availible block of free space
-        // Returns null if no big enough block is found, else returns the offset of the block
-        public static int? WriteInFreeSpace(this byte[] rom, byte[] data)
+        /// <summary> Write a chunk of data into the first availible block of free space.
+        /// Returns null if no big enough block is found, else returns the offset of the block </summary>
+        public static int? WriteInFreeSpace(this byte[] rom, byte[] data, byte freeSpace, int startAddy)
         {
-            int? blockOffset = scanForFreeSpaceOffset(rom, data.Length);
+            int? blockOffset = ScanForFreeSpaceOffset(rom, freeSpace, startAddy, data.Length);
             if (blockOffset == null)
                 return null;
             System.Array.ConstrainedCopy(data, 0, rom, (int)blockOffset, data.Length);
             return blockOffset;
         }
-        // Repoint all pointers to an offset to a target offset
+        /// <summary> <para>Write a chunk of data into the first availible block of free space. </para>
+        /// <para>Uses the static address "RomUtils.StartAddy" and the static byte "RomUtils.FreeSpaceByte" which are set in the RomData constructor</para> 
+        /// Returns null if no big enough block is found, else returns the offset of the block </summary>
+        public static int? WriteInFreeSpace(this byte[] rom, byte[] data)
+        {
+            int? blockOffset = ScanForFreeSpaceOffset(rom, FreeSpaceByte, SearchStartOffset, data.Length);
+            if (blockOffset == null)
+                return null;
+            System.Array.ConstrainedCopy(data, 0, rom, (int)blockOffset, data.Length);
+            return blockOffset;
+        }
+        /// <summary> Repoint all pointers to an offset to a target offset </summary>
         public static void Repoint(this byte[] rom, int originalOffset, int newOffset)
         {
             //The offset with the 0x08000000 component
@@ -126,12 +106,12 @@ namespace PokemonEmeraldRandomizer.Backend
                     WriteUInt(rom, i, 0x08000000  + newOffset, 4);
             }
         }
-        // Set block to certain byte
-        public static void wipeBlock(this byte[] rom, int offset, int length, byte setTo = freeSpace)
+        /// <summary> Set entire block to a given byte value </summary>
+        public static void WipeBlock(this byte[] rom, int offset, int length, byte setTo)
         {
             Array.ConstrainedCopy(Enumerable.Repeat(setTo, length).ToArray(), 0, rom, offset, length);
         }
-        // A class to hold an address in memory with a length
+        ///.<summary>A simple class to hold an address in memory with a length</summary>
         public class MemoryBlock
         {
             public int offset;
@@ -149,8 +129,8 @@ namespace PokemonEmeraldRandomizer.Backend
         #endregion
 
         #region Number Reading and Writing (UInt16, 32, etc)
-        // Reads a UInt of specified number of bytes.
-        // The number of bits in the resulting int is numBytes * 8
+        /// <summary>Reads a UInt of specified number of bytes.
+        /// The number of bits in the resulting int is numBytes * 8</summary>
         private static int ReadUInt(byte[] rom, int offset, int numBytes)
         {
             int ret = 0;
@@ -158,23 +138,23 @@ namespace PokemonEmeraldRandomizer.Backend
                 ret += (rom[offset + i] << (i * 8));
             return ret;
         }
-        // Reads a Unit32 (4 bytes)
+        /// <summary>Reads a Unit32 (4 bytes)</summary>
         public static int ReadUInt32(this byte[] rom, int offset)
         {
             return ReadUInt(rom, offset, 4);
         }
-        // Reads a Unit16 (2 bytes)
+        /// <summary>Reads a Unit16 (2 bytes)</summary>
         public static int ReadUInt16(this byte[] rom, int offset)
         {
             return ReadUInt(rom, offset, 2);
         }
-        // Reads a pointer from the rom (a 24-bit number)
+        /// <summary>Reads a pointer from the rom (a 24-bit number)</summary>
         public static int ReadPointer(this byte[] rom, int offset)
         {
             return ReadUInt(rom, offset, 3);
         }
-        // Writes a UInt of specified number of bytes.
-        // The number of bits written is numBytes * 8
+        /// <summary>Writes a UInt of specified number of bytes.
+        /// The number of bits written is numBytes * 8</summary>
         private static void WriteUInt(byte[] rom, int offset, int value, int numBytes)
         {
             for (int i = 0; i < numBytes; i++)
@@ -183,17 +163,17 @@ namespace PokemonEmeraldRandomizer.Backend
                 value = value >> 8;
             }
         }
-        // Writes a Unit32 (4 bytes)
+        /// <summary>Writes a Unit32 (4 bytes)</summary>
         public static void WriteUInt32(this byte[] rom, int offset, int value)
         {
             WriteUInt(rom, offset, value, 4);
         }
-        // Writes a Unit16 (2 bytes)
+        /// <summary>Writes a Unit16 (2 bytes)</summary>
         public static void WriteUInt16(this byte[] rom, int offset, int value)
         {
             WriteUInt(rom, offset, value, 2);
         }
-        // Writes a pointer to the rom (a 24-bit number)
+        /// <summary>Writes a pointer to the rom (a 24-bit number)</summary>
         public static void WritePointer(this byte[] rom, int offset, int value)
         {
             WriteUInt(rom, offset, value, 3);
@@ -234,9 +214,9 @@ namespace PokemonEmeraldRandomizer.Backend
         };
         private const byte textTerminator = 0xFF;
         private const byte textVariable   = 0xFD;
-        // Read a string of specified length from the rom
-        // Use with 2 args to read a variable length string
-        public static string readString(this byte[] rom, int offset, int maxLength = int.MaxValue)
+        /// <summary>Read a string of specified length from the rom.
+        /// Use with 2 args to read a variable length string</summary>
+        public static string ReadString(this byte[] rom, int offset, int maxLength = int.MaxValue)
         {
             StringBuilder sb = new StringBuilder();
             for (int i = 0; i < maxLength; i++)
