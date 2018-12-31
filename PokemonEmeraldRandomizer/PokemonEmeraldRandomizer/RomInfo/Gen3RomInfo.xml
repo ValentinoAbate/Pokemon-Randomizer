@@ -12,7 +12,7 @@
     <headerChecksum addy="0xBD"/>
   </versionInfo>
 
-  <BPEJ>
+  <BPEJ0>
     <!-- Metadata -->
 
     <name>Pokémon Emerald (J)</name>
@@ -22,11 +22,12 @@
     <!-- Pokemon Base Stats -->
     <!-- May be incorrect -->
     <pokemonBaseStats addy="0x2F0D70"/>
-  </BPEJ>
-  <BPEE>
+  </BPEJ0>
+  <BPEE0>
     <!-- Metadata -->
     
     <name>Pokémon Emerald (U)</name>
+    <version>0</version>
     <support>partial</support>
     <!-- May be incorrect -->
     <hash>7b058a7aea5bfbb352026727ebd87e17</hash>
@@ -81,6 +82,60 @@
     <mapHeaders addy="0x84AA4"/>
     <maps addy="0x849CC" numBanks="34" bankSizes="[57,5,5,6,7,8,9,7,7,14,8,17,10,23,13,15,15,2,2,2,3,1,1,1,108,61,89,2,1,13,1,1,2,1]"/>
 
-  </BPEE>
+  </BPEE0>
+  <BPRE0>
+    <name>Pokémon Fire Red (U) 1.0</name>
+    <version>0</version>
+
+    <support>partial</support>
+    <!-- May be incorrect -->
+    <hash>7b058a7aea5bfbb352026727ebd87e17</hash>
+    <freeSpace byte="0xFF" startAddy="0x800000"/>
+
+    <!-- Type Data -->
+
+    <numTypes>18</numTypes>
+    <!-- The address where the type effectiveness definitions start -->
+    <!-- ADD TERMINATOR INFO -->
+    <typeEffectiveness addy="0x24F050"/>
+
+    <!-- Move Data -->
+
+    <!-- TMs, HMs, and Move Tutors -->
+
+    <!-- TM Move mappings -->
+    <tmMoves num="50" size="2" addy="0x45A5A4"/>
+    <!-- HM move mappings -->
+    <hmMoves num="8" size="2" addy="0x45A608"/>
+    <!-- MT move mappings -->
+    <moveTutorMoves num="15" size="2" addy="0x459B60"/>
+
+    <!-- Pokemon Definitions -->
+
+    <pokemonBaseStats num="411" size="28" addy="0x2547A0" skip="25" skipAt="251"/>
+    <tmHmCompat size="8" addy="0x252BC8"/>
+    <moveTutorCompat size="2" addy="0x459B7E"/>
+    <movesets addy="0x257494"/>
+    <!-- from thethethethe's forum post: http://pokemonhackersonline.com/showthread.php?t=2586 -->
+    <eggMoves addy="0x25EF0C"/>
+    <evolutions size="40" sizePerEvolution="8" evolutionsPerPokemon="5" addy="0x259754"/>
+
+    <!-- Items -->
+
+    <!-- from dabomstew's UP randomizer source https://github.com/Dabomstew/universal-pokemon-randomizer (untested)-->
+    <starterItems addy="0x000000"/>
+    <pcPotion addy="0x402220"/>
+
+    <!-- Static Pokemon -->
+
+    <!-- from dabomstew's UP randomizer source https://github.com/Dabomstew/universal-pokemon-randomizer (untested)-->
+    <starterPokemon addy="0x169BB5"/>
+
+    <!-- Trainer Battle Definitions -->
+
+    <!-- from thethethethe's forum post: http://pokemonhackersonline.com/showthread.php?t=2586 -->
+    <trainerBattles num="743" size="40" addy="0x23EAF0"/>
+    <trainerClassNames num="107" length="13" addy="0x23E558"/>
+  </BPRE0>
 
 </gen3RomInfo>

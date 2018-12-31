@@ -13,7 +13,7 @@ namespace PokemonEmeraldRandomizer.Backend
         {
             //{RomData.Generation.III, Path.Combine(Directory.GetCurrentDirectory(), "ROMInfo", "Gen3ROMInfo.xml") }
             // Temporary debug path
-            {RomData.Generation.III, "C:\\Users\\valen\\Documents\\GitHub\\Pokemon-Emerald-Randomizer\\PokemonEmeraldRandomizer\\PokemonEmeraldRandomizer\\RomDataXml\\Gen3RomInfo.xml" }
+            {RomData.Generation.III, "C:\\Users\\valen\\Documents\\GitHub\\Pokemon-Emerald-Randomizer\\PokemonEmeraldRandomizer\\PokemonEmeraldRandomizer\\RomInfo\\Gen3RomInfo.xml" }
 
         };
         public enum Generation { I,II,III,IV,V,VI,VII }
@@ -56,7 +56,7 @@ namespace PokemonEmeraldRandomizer.Backend
             Info = new XmlManager(infoPaths[Gen]);
             Info.SetSearchRoot("versionInfo"); 
             initMetaData();
-            Info.SetSearchRoot(Code);
+            Info.SetSearchRoot(Code + Version.ToString());
         }
         // set the Rom generation (from the file size)
         private void initGeneration()
@@ -73,10 +73,11 @@ namespace PokemonEmeraldRandomizer.Backend
                     Gen = Generation.III;
                     break;
                 case 67108864:   // 64mb  (diamond and pearl)
-                case 134217728:  // 128mb (heart gold and soul silver)
+                case 134217728:  // 128mb (heart gold, soul silver, and platinum)
                     Gen = Generation.IV;
                     break;
-                case 268435456:  // 256mb
+                case 268435456:  // 256mb (black and white)
+                case 536870912:  // 512mb (black 2 and white 2)
                     Gen = Generation.V;
                     break;
                 default:

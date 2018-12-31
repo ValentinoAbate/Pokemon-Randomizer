@@ -44,5 +44,9 @@ namespace PokemonEmeraldRandomizer.Backend
             parameter = data.ReadUInt16(2);
             EvolvesTo = (PokemonSpecies)data.ReadUInt16(4);
         }
+        public override string ToString()
+        {
+            return EvolvesTo.ToDisplayString() + ": " + Type.ToDisplayString() + " " + parameter;
+        }
     }
 }
