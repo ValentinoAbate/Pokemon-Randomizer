@@ -101,11 +101,11 @@
     <Compile Include="Backend\PokedexUtils.cs" />
     <Compile Include="Backend\PokemonBaseStats.cs" />
     <Compile Include="Backend\Mutator.cs" />
-    <Compile Include="Backend\RomDataR.cs" />
-    <Compile Include="Backend\RomUtilsR.cs" />
-    <Compile Include="Backend\RomWriterR.cs" />
-    <Compile Include="Backend\RomDataMutatorR.cs" />
-    <Compile Include="Backend\RomParserR.cs" />
+    <Compile Include="Backend\RomData.cs" />
+    <Compile Include="Backend\RomUtils.cs" />
+    <Compile Include="Backend\RomWriter.cs" />
+    <Compile Include="Backend\RomDataMutator.cs" />
+    <Compile Include="Backend\RomParser.cs" />
     <Compile Include="Backend\TableReader.cs" />
     <Compile Include="Backend\Trainer.cs" />
     <Compile Include="Backend\Pokemon.cs" />
@@ -162,7 +162,7 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="RomDataXml\Gen3RomInfoR.xml" />
+    <Resource Include="RomInfo\Gen3RomInfo.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
