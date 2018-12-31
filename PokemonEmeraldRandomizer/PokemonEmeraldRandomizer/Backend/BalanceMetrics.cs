@@ -17,7 +17,7 @@ namespace PokemonEmeraldRandomizer.Backend
         public WeightedSet<TypeEffectiveness> TypeEffectivenessRatios { get; }
 
         // Calculates the balancing metrics based on the given data
-        public BalanceMetrics(ROMData data)
+        public BalanceMetrics(RomData data)
         {
             #region Pokemon Base Stat Metrics
 

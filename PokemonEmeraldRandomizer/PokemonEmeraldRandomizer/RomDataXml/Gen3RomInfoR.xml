@@ -1,0 +1,86 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<!-- README -->
+<!-- All size attributes are considered to be in bytes -->
+
+<gen3RomInfo>
+  <versionInfo>
+    <romName size="12" addy="0xA0" format="ASCII"/>
+    <code size ="4" addy="0xAC" format="ASCII"/>
+    <version size="1" addy="0xBC"/>
+    <!-- From dabomstew's source. idk what this is -->
+    <headerChecksum addy="0xBD"/>
+  </versionInfo>
+
+  <BPEJ>
+    <!-- Metadata -->
+
+    <name>Pokémon Emerald (J)</name>
+    <support>none</support>
+    <!-- May be incorrect -->
+    
+    <!-- Pokemon Base Stats -->
+    <!-- May be incorrect -->
+    <pokemonBaseStats addy="0x2F0D70"/>
+  </BPEJ>
+  <BPEE>
+    <!-- Metadata -->
+    
+    <name>Pokémon Emerald (U)</name>
+    <support>partial</support>
+    <!-- May be incorrect -->
+    <hash>7b058a7aea5bfbb352026727ebd87e17</hash>
+    <freeSpace byte="0x00" startAddy="0x9C0B20"/>
+    
+    <!-- Type Data -->
+    
+    <numTypes>18</numTypes>
+    <!-- The address where the type effectiveness definitions start -->
+    <!-- ADD TERMINATOR INFO -->
+    <typeEffectiveness addy="0x31ace8"/>
+
+    <!-- Move Data -->
+    
+    <!-- TMs, HMs, and Move Tutors -->
+    
+    <!-- TM Move mappings -->
+    <tmMoves num="50" size="2" addy="0x615b94"/>
+    <!-- HM move mappings -->
+    <hmMoves num="8" size="2" addy="0x615bf8"/>
+    <!-- MT move mappings -->
+    <moveTutorMoves num="30" size="2" addy="0x61500c"/>
+    
+    <!-- Pokemon Definitions -->
+    
+    <pokemonBaseStats num="411" size="28" addy="0x3203e8" skip="25" skipAt="251"/>
+    <tmHmCompat size="8" addy="0x31e8a0"/>
+    <moveTutorCompat size="4" addy="0x31e8a0"/>
+    <movesets addy="0x3230dc"/>
+    <evolutions size="40" sizePerEvolution="8" evolutionsPerPokemon="5" addy="0x325344"/>
+    
+    <!-- Items -->
+    
+    <!-- from dabomstew's UP randomizer source https://github.com/Dabomstew/universal-pokemon-randomizer (untested)-->
+    <starterItems addy="0xB117A"/>
+    <pcPotion addy="0x5DFEFC"/>
+    
+    <!-- Static Pokemon -->
+    
+    <!-- from dabomstew's UP randomizer source https://github.com/Dabomstew/universal-pokemon-randomizer (untested)-->
+    <starterPokemon addy="0x5B1DF8"/>
+
+    <!-- Trainer Battle Definitions -->
+
+    <!-- from dabomstew's UP randomizer source https://github.com/Dabomstew/universal-pokemon-randomizer (untested)-->
+    <trainerBattles num="854" size="40" addy="0x310030"/>
+    <trainerClassNames num="66" length="13" addy="0x30FCD4"/> 
+
+    <!-- Map Data -->
+    
+    <!-- from MEH .ini: https://github.com/shinyquagsire23/MEH (thanks shinyquagsire23) (untested) -->
+    <mapHeaders addy="0x84AA4"/>
+    <maps addy="0x849CC" numBanks="34" bankSizes="[57,5,5,6,7,8,9,7,7,14,8,17,10,23,13,15,15,2,2,2,3,1,1,1,108,61,89,2,1,13,1,1,2,1]"/>
+
+  </BPEE>
+
+</gen3RomInfo>

@@ -81,6 +81,7 @@
     <Compile Include="Converters\PercentConverter.cs" />
     <Compile Include="CultureUtils\CultureUtils.cs" />
     <Compile Include="Collections\MultiSet.cs" />
+    <Compile Include="Backend\XmlManager.cs" />
     <Compile Include="UserControls\MutationRateSlider.xaml.cs">
       <DependentUpon>MutationRateSlider.xaml</DependentUpon>
     </Compile>
@@ -92,7 +93,6 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Backend\AddyUtils.cs" />
     <Compile Include="Backend\BalanceMetrics.cs" />
     <Compile Include="Backend\EnumUtils.cs" />
     <Compile Include="Backend\Evolution.cs" />
@@ -101,11 +101,11 @@
     <Compile Include="Backend\PokedexUtils.cs" />
     <Compile Include="Backend\PokemonBaseStats.cs" />
     <Compile Include="Backend\Mutator.cs" />
-    <Compile Include="Backend\ROMData.cs" />
-    <Compile Include="Backend\ROMUtils.cs" />
-    <Compile Include="Backend\ROMWriter.cs" />
-    <Compile Include="Backend\ROMDataMutator.cs" />
-    <Compile Include="Backend\ROMParser.cs" />
+    <Compile Include="Backend\RomDataR.cs" />
+    <Compile Include="Backend\RomUtilsR.cs" />
+    <Compile Include="Backend\RomWriterR.cs" />
+    <Compile Include="Backend\RomDataMutatorR.cs" />
+    <Compile Include="Backend\RomParserR.cs" />
     <Compile Include="Backend\TableReader.cs" />
     <Compile Include="Backend\Trainer.cs" />
     <Compile Include="Backend\Pokemon.cs" />
@@ -162,7 +162,7 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="ROMInfo\Gen3ROMInfo.xml" />
+    <Resource Include="RomDataXml\Gen3RomInfoR.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

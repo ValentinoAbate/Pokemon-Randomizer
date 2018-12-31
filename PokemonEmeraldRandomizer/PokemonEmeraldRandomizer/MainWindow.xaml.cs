@@ -70,8 +70,8 @@ namespace PokemonEmeraldRandomizer
         }
         #endregion
 
-        private Backend.ROMData Data { get; set; }
-        private Backend.ROMData RandomizedData { get; set; }
+        private Backend.RomData Data { get; set; }
+        private Backend.RomData RandomizedData { get; set; }
 
         public MainWindow()
         {
@@ -84,7 +84,7 @@ namespace PokemonEmeraldRandomizer
         private void OpenTestROM(string path)
         {
             byte[] rawROM = File.ReadAllBytes(path);
-            Data = Backend.ROMParser.Parse(rawROM);
+            Data = Backend.RomParser.Parse(rawROM);
             RandomizedData = Data;
             IsROMLoaded = true;
             lblMessageBoxContent.Content = "Pokemon Emerald ROM opened";
@@ -141,7 +141,7 @@ namespace PokemonEmeraldRandomizer
             if (openFileDialog.ShowDialog() == true)
             {
                 byte[] rawROM = File.ReadAllBytes(openFileDialog.FileName);
-                Data = Backend.ROMParser.Parse(rawROM);
+                Data = Backend.RomParser.Parse(rawROM);
                 RandomizedData = Data;
                 IsROMLoaded = true;
                 lblMessageBoxContent.Content = "Pokemon Emerald ROM opened";
@@ -155,8 +155,8 @@ namespace PokemonEmeraldRandomizer
             saveFileDialog.Title = "Save ROM";
             if (saveFileDialog.ShowDialog() == true)
             {
-                RandomizedData = Backend.ROMDataMutator.Mutate(Data, this);
-                File.WriteAllBytes(saveFileDialog.FileName, Backend.ROMWriter.Write(RandomizedData));
+                RandomizedData = Backend.RomDataMutator.Mutate(Data, this);
+                File.WriteAllBytes(saveFileDialog.FileName, Backend.RomWriter.Write(RandomizedData));
             }
         }
 
