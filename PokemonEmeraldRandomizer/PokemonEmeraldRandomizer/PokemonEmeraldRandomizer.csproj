@@ -77,7 +77,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Backend\Map.cs" />
-    <Compile Include="Backend\MapBank.cs" />
+    <Compile Include="Backend\MapManager.cs" />
     <Compile Include="Converters\PercentConverter.cs" />
     <Compile Include="CultureUtils\CultureUtils.cs" />
     <Compile Include="Collections\MultiSet.cs" />

@@ -33,6 +33,7 @@ namespace PokemonEmeraldRandomizer.Backend
             data.Trainers = ReadTrainers(rom, data.Info, data.ClassNames);
             // Calculate the balance metrics from the loaded data
             data.TypeDefinitions = ReadTypeEffectivenessData(rom, data.Info);
+            data.Maps = new MapManager(rom, data.Info);
             data.CalculateMetrics();
             return data;
         }
@@ -181,7 +182,6 @@ namespace PokemonEmeraldRandomizer.Backend
                 ret.Add(new Trainer(rom, data.Addy("trainerBattles") + (i * data.Size("trainerBattles")), classNames));
             return ret.ToArray();
         }
-
         // Read Type Effectiveness data
         private static TypeEffectivenessChart ReadTypeEffectivenessData(byte[] rom, XmlManager data)
         {

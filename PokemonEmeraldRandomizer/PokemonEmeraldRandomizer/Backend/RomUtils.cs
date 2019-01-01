@@ -94,7 +94,8 @@ namespace PokemonEmeraldRandomizer.Backend
             System.Array.ConstrainedCopy(data, 0, rom, (int)blockOffset, data.Length);
             return blockOffset;
         }
-        /// <summary> Repoint all pointers to an offset to a target offset </summary>
+        /// <summary> Repoint all pointers to an offset to a target offset. 
+        /// Argument given is assumed to by a 24-bit ROM address, and is converted to a 32-bit RAM address</summary>
         public static void Repoint(this byte[] rom, int originalOffset, int newOffset)
         {
             //The offset with the 0x08000000 component
@@ -102,7 +103,7 @@ namespace PokemonEmeraldRandomizer.Backend
             for (int i = 0; i < rom.Length - 3; ++i)
             {
                 if (ReadUInt(rom, i, 4) == ptr)
-                    // Write a pointer (faster private version - same as ReadPointer())
+                    // Write a pointer (faster private version - same as WritePointer())
                     WriteUInt(rom, i, 0x08000000  + newOffset, 4);
             }
         }
@@ -148,10 +149,13 @@ namespace PokemonEmeraldRandomizer.Backend
         {
             return ReadUInt(rom, offset, 2);
         }
-        /// <summary>Reads a pointer from the rom (a 24-bit number)</summary>
-        public static int ReadPointer(this byte[] rom, int offset)
+        /// <summary> Reads a pointer from the rom.
+        /// A pointer on gen 3 ROMs is stored as a 32-bit number which points to a location in RAM where the game would be running
+        /// <para> However, the actual address in the ROM is the first 24 bits, because the ROM is loaded into RAM at 0x08000000 </para>
+        /// This method returns the 24-bit ROM address unless readRamAddy is set to true. To get the RAM adress, simply add 0x08000000</summary>
+        public static int ReadPointer(this byte[] rom, int offset, bool readRamAddy = false)
         {
-            return ReadUInt(rom, offset, 3);
+            return readRamAddy ? ReadUInt(rom, offset, 4) : ReadUInt(rom, offset, 3);
         }
         /// <summary>Writes a UInt of specified number of bytes.
         /// The number of bits written is numBytes * 8</summary>
@@ -173,10 +177,11 @@ namespace PokemonEmeraldRandomizer.Backend
         {
             WriteUInt(rom, offset, value, 2);
         }
-        /// <summary>Writes a pointer to the rom (a 24-bit number)</summary>
-        public static void WritePointer(this byte[] rom, int offset, int value)
+        /// <summary>Writes a pointer to the rom (a 32-bit number).
+        /// If the number given is a 24-bit ROM address, it is converted to a 32-bit RAM adress by adding 0x08000000 </summary>
+        public static void WritePointer(this byte[] rom, int offset, int value, bool isRomAddy = true)
         {
-            WriteUInt(rom, offset, value, 3);
+                WriteUInt(rom, offset, isRomAddy ? 0x08000000 + value : value, 4);
         }
         #endregion
 

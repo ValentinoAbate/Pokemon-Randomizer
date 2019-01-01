@@ -41,6 +41,7 @@ namespace PokemonEmeraldRandomizer.Backend
         public string[] ClassNames { get; set; }
         public Trainer[] Trainers { get; set; }
         public TypeEffectivenessChart TypeDefinitions { get; set; }
+        public MapManager Maps { get; set; }
 
         #region TM, HM, and tutor move definition arrays
         public Move[] TMMoves;
