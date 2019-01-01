@@ -23,15 +23,19 @@ namespace PokemonEmeraldRandomizer.Backend
         }
         #endregion
 
+        /// <summary> Sets the element (by name) to consider as the root when searching
+        /// If the name is not in the cache it is searched for (without caching) </summary>
         public void SetSearchRoot(string element)
         {
             searchRoot = root;
             searchRoot = Element(element, false);
         }
+        /// <summary> Sets the element to consider as the root when searching</summary>
         public void SetSearchRoot(XElement element)
         {
             searchRoot = element;
         }
+        /// <summary> Clears the cache dictionary</summary>
         public void ClearCache()
         {
             cache.Clear();
@@ -73,23 +77,33 @@ namespace PokemonEmeraldRandomizer.Backend
         /// <summary>
         /// Finds an element by name and returns the given attribute.
         /// If the element is cached, it is looked up,
-        /// else it is searched for (starting at the SearchRoot Node)
+        /// else it is searched for (with SearchRoot as the search root Node)
         /// </summary>
         public XAttribute Attr(string element, string attribute)
         {
             return Element(element).Attribute(attribute);
         }
+        /// <summary>
+        /// Finds an element by name. If the element is cached, it is looked up,
+        /// else it is searched for (with SearchRoot as the search root Node)
+        /// <para>If cache == true, then the element (if found) and all elements searched through will be cached</para>
+        /// </summary>
         public XElement Element(string element, bool cache = true)
         {
             return Element(element, searchRoot, cache);
         }
-        public XElement Element(string element, XElement start, bool cache = true)
+        /// <summary>
+        /// Finds an element by name. If the element is cached, it is looked up,
+        /// else it is searched for (using the given root Node)
+        /// <para>If cache == true, then the element (if found) and all elements searched through will be cached</para>
+        /// </summary>
+        public XElement Element(string element, XElement root, bool cache = true)
         {
             if (this.cache.ContainsKey(element))
                 return this.cache[element];
             if (!cache)
-                return start.DescendantsAndSelf().FirstOrDefault(e => e.Name == element);
-            var elts = start.DescendantsAndSelf();
+                return root.DescendantsAndSelf().FirstOrDefault(e => e.Name == element);
+            var elts = root.DescendantsAndSelf();
             foreach(var elt in elts)
             {
                 if (this.cache.ContainsKey(elt.Name.LocalName))

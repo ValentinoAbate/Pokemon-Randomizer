@@ -7,76 +7,6 @@ using System.Threading.Tasks;
 
 namespace PokemonEmeraldRandomizer.Backend
 {
-    public enum TrainerClass
-    {
-        PKMN_TRAINER1,
-        PKMN_TRAINER2,
-        HIKER,
-        TEAM_AQUA,
-        BREEDER,
-        COOLTRAINER,
-        BIRD_KEEPER,
-        COLLECTOR,
-        SWIMMER_MALE,
-        TEAM_MAGMA,
-        EXPERT,
-        AQUA_ADMIN,
-        BLACK_BELT,
-        AQUA_LEADER,
-        HEX_MANIAC,
-        AROMA_LADY,
-        RUIN_MANIAC,
-        INTERVIEWER,
-        TUBER_FEMALE,
-        TUBER_MALE,
-        LADY,
-        BEAUTY,
-        RICH_BOY,
-        POKEMANIAC,
-        GUITARIST,
-        KINDLER,
-        CAMPER,
-        PICKNICKER,
-        BUG_MANIAC,
-        PSYCHIC,
-        GENTLEMAN,
-        ELITE_FOUR,
-        LEADER,
-        SCHOOL_KID,
-        SR_AND_JR,
-        WINSTRATE,
-        POKEFAN,
-        YOUNGSTER,
-        CHAMPION,
-        FISHERMAN,
-        TRIATHLETE,
-        DRAGON_TAMER,
-        NINJA_BOY,
-        BATTLE_GIRL,
-        PARASOL_LADY,
-        SWIMMER_FEMALE,
-        TWINS,
-        SAILOR,
-        COOLTRAINER2,
-        MAGMA_ADMIN,
-        PKMN_TRAINER3,
-        BUG_CATCHER,
-        PKMN_RANGER,
-        MAGMA_LEADER,
-        LASS,
-        YOUNG_COUPLE,
-        OLD_COUPLE,
-        SIS_AND_BRO,
-        SALON_MAIDEN,
-        DOME_ACE,
-        PALACE_MAVEN,
-        ARENA_TYCOON,
-        FACTORY_HEAD,
-        PIKE_QUEEN,
-        PYRAMID_ACE,
-        PKMN_TRAINER4,
-    }
-
     public enum Gender
     {
         Male,
@@ -87,10 +17,14 @@ namespace PokemonEmeraldRandomizer.Backend
 
     public class Trainer
     {
+        // The all of the class names (mostly for debugging)
+        public string[] classNames;
+        public string Class { get => classNames[trainerClass]; }
+        // Actual data
         public int offset;
         public TrainerPokemon.DataType dataType;
         public TrainerPokemon[] pokemon;
-        public TrainerClass trainerClass;
+        public int trainerClass;
         public Gender gender;
         public byte musicIndex;
         public byte spriteIndex;
@@ -99,10 +33,11 @@ namespace PokemonEmeraldRandomizer.Backend
         public bool isDoubleBattle;
         public BitArray AIFlags;
 
-        public Trainer(byte[] rom, int offset)
+        public Trainer(byte[] rom, int offset, string[] classNames)
         {
+            this.classNames = classNames;
             dataType = (TrainerPokemon.DataType)rom[offset];
-            trainerClass = (TrainerClass)rom[offset + 1];
+            trainerClass = rom[offset + 1];
             // Read Gender (byte 2 bit 0)
             gender = (Gender)((rom[offset + 2] & 0x80) >> 7);
             // Read music track index (byte 2 bits 1-7)
@@ -192,7 +127,7 @@ namespace PokemonEmeraldRandomizer.Backend
 
         public override string ToString()
         {
-            return trainerClass.ToDisplayString() + " " + name;
+            return Class + " " + name;
         }
 
         //Commented code below from Dabomstew's Universal Randomizer source. Thanks Dabomstew!

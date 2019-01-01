@@ -80,8 +80,8 @@
 
     <!-- Trainer Battle Definitions -->
 
-    <!-- from dabomstew's UP randomizer source https://github.com/Dabomstew/universal-pokemon-randomizer (untested)-->
     <trainerBattles num="854" size="40" addy="0x310030"/>
+    <!-- from dabomstew's UP randomizer source https://github.com/Dabomstew/universal-pokemon-randomizer (untested)-->
     <trainerClassNames num="66" length="13" addy="0x30FCD4"/> 
 
     <!-- Map Data -->
@@ -99,8 +99,8 @@
     <version>0</version>
 
     <support>partial</support>
-    <!-- May be incorrect -->
-    <hash>7b058a7aea5bfbb352026727ebd87e17</hash>
+    <!-- Def invalid -->
+    <hash>000000000000000000000</hash>
     <freeSpace byte="0xFF" startAddy="0x800000"/>
 
     <!-- Type Data -->

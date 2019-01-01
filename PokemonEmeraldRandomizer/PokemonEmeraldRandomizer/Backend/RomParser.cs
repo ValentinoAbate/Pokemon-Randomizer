@@ -25,10 +25,12 @@ namespace PokemonEmeraldRandomizer.Backend
             data.tutorMoves = ReadMoveMappings(rom, data.Info.Addy("moveTutorMoves"), data.Info.Num("moveTutorMoves"));
             #endregion
 
-            // Read the pokemon base stats from the ROM
+            // Read the pokemon base stats from the Rom
             data.Pokemon = ReadPokemonBaseStats(rom, data.Info);
             // data.Starters = ReadStarters(rom);
-            data.Trainers = ReadTrainers(rom, data.Info);
+            // Trainers and associated data
+            data.ClassNames = ReadTrainerClassNames(rom, data.Info);
+            data.Trainers = ReadTrainers(rom, data.Info, data.ClassNames);
             // Calculate the balance metrics from the loaded data
             data.TypeDefinitions = ReadTypeEffectivenessData(rom, data.Info);
             data.CalculateMetrics();
@@ -159,12 +161,24 @@ namespace PokemonEmeraldRandomizer.Backend
         {
             throw new System.NotImplementedException();
         }
+        // Read the Trainer Class names
+        private static string[] ReadTrainerClassNames(byte[] rom, XmlManager data)
+        {
+            int addy = data.Addy("trainerClassNames");
+            int numClasses = data.Num("trainerClassNames");
+            int nameLength = (int)data.Attr("trainerClassNames", "length");
+
+            string[] classNames = new string[numClasses];
+            for(int i = 0; i < numClasses; ++i)
+                classNames[i] = rom.ReadString(addy + (i * nameLength), nameLength);
+            return classNames;
+        }
         // Read the Trainers
-        private static Trainer[] ReadTrainers(byte[] rom, XmlManager data)
+        private static Trainer[] ReadTrainers(byte[] rom, XmlManager data, string[] classNames)
         {
             List<Trainer> ret = new List<Trainer>();
             for (int i = 0; i < data.Num("trainerBattles"); ++i)
-                ret.Add(new Trainer(rom, data.Addy("trainerBattles") + (i * data.Size("trainerBattles"))));
+                ret.Add(new Trainer(rom, data.Addy("trainerBattles") + (i * data.Size("trainerBattles")), classNames));
             return ret.ToArray();
         }
 

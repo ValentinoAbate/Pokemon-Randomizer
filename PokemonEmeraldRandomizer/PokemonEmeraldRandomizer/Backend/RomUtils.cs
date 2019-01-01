@@ -58,8 +58,8 @@ namespace PokemonEmeraldRandomizer.Backend
             }
             return null;
         }
-        // Scans for the first open block of free space above a certain size (in bytes)
-        // Returns null if no big enough block is found, else returns the offset of the block
+        /// <summary>Scans for the first open block of free space above a certain size (in bytes).
+        /// Returns null if no big enough block is found, else returns the offset of the block</summary>
         private static int? ScanForFreeSpaceOffset(byte[] rom, byte freeSpace, int startAddy, int minSize = 10000)
         {
             for (int offset = startAddy; offset < rom.Length; ++offset)
