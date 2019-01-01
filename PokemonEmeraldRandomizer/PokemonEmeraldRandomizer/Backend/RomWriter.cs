@@ -13,7 +13,7 @@ namespace PokemonEmeraldRandomizer.Backend
     {
         public static byte[] Write(RomData data)
         {
-            byte[] file = data.Rom.Clone() as byte[];
+            Rom file = new Rom(data.Rom.File, data.Info);
             //Unlock National pokedex
             //if (data.NationalDexUnlocked)
             //{
@@ -22,29 +22,13 @@ namespace PokemonEmeraldRandomizer.Backend
             //}
             WritePokemonBaseStats(data, file);
             WriteTypeDefinitions(data, file);
-            return file;
+            return file.File;
         }
-        private static void WritePokemonBaseStats(RomData data, byte[] file)
+        private static void WritePokemonBaseStats(RomData data, Rom file)
         {
-            // MESSY SLOPPY AND UNFINISHED
-            #region Convert to byte[]
-            List<byte> statData = new List<byte>();
-            List<byte> moveData = new List<byte>();
-            List<byte> atkData = new List<byte>();
-            List<byte> TMHMData = new List<byte>();
-            List<byte> tutorData = new List<byte>();
-            foreach (var baseStats in data.Pokemon)
-            {
-                statData.AddRange(baseStats.ToByteArray());
-            }
-            #endregion
-            int pkmnSize = data.Info.Size("pokemonBaseStats");
-            byte[] b = new byte[700];
-            Array.ConstrainedCopy(data.Rom, data.Info.Addy("pokemonBaseStats") + pkmnSize * 251, b, 0, 700);
-            statData.InsertRange(pkmnSize * 251, b);
-            file.WriteBlock(data.Info.Addy("pokemonBaseStats"), statData.ToArray());
+            // do nothing right now
         }
-        private static void WriteTypeDefinitions(RomData data, byte[] file)
+        private static void WriteTypeDefinitions(RomData data, Rom file)
         {
             #region Convert TypeChart to byte[]
             List<byte> typeData = new List<byte>();

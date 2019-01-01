@@ -12,28 +12,28 @@ namespace PokemonEmeraldRandomizer.Backend
     public static class RomParser
     {
         // Parse the ROM bytes into a RomData object
-        public static RomData Parse(byte[] rom)
+        public static RomData Parse(byte[] rawRom)
         {           
-            RomData data = new RomData(rom);
+            RomData data = new RomData(rawRom);
 
             #region Move Mappings (TMs/HMs/Tutors)
             //Read the TM move mappings from the ROM
-            data.TMMoves = ReadMoveMappings(rom, data.Info.Addy("tmMoves"), data.Info.Num("tmMoves"));
+            data.TMMoves = ReadMoveMappings(rawRom, data.Info.Addy("tmMoves"), data.Info.Num("tmMoves"));
             //Read the HM move mappings from the ROM
-            data.HMMoves = ReadMoveMappings(rom, data.Info.Addy("hmMoves"), data.Info.Num("hmMoves"));
+            data.HMMoves = ReadMoveMappings(rawRom, data.Info.Addy("hmMoves"), data.Info.Num("hmMoves"));
             //Read the move tutor move mappings from the ROM
-            data.tutorMoves = ReadMoveMappings(rom, data.Info.Addy("moveTutorMoves"), data.Info.Num("moveTutorMoves"));
+            data.tutorMoves = ReadMoveMappings(rawRom, data.Info.Addy("moveTutorMoves"), data.Info.Num("moveTutorMoves"));
             #endregion
 
             // Read the pokemon base stats from the Rom
-            data.Pokemon = ReadPokemonBaseStats(rom, data.Info);
+            data.Pokemon = ReadPokemonBaseStats(rawRom, data.Info);
             // data.Starters = ReadStarters(rom);
             // Trainers and associated data
-            data.ClassNames = ReadTrainerClassNames(rom, data.Info);
-            data.Trainers = ReadTrainers(rom, data.Info, data.ClassNames);
+            data.ClassNames = ReadTrainerClassNames(rawRom, data.Info);
+            data.Trainers = ReadTrainers(rawRom, data.Info, data.ClassNames);
             // Calculate the balance metrics from the loaded data
-            data.TypeDefinitions = ReadTypeEffectivenessData(rom, data.Info);
-            data.Maps = new MapManager(rom, data.Info);
+            data.TypeDefinitions = ReadTypeEffectivenessData(rawRom, data.Info);
+            data.Maps = new MapManager(rawRom, data.Info);
             data.CalculateMetrics();
             return data;
         }

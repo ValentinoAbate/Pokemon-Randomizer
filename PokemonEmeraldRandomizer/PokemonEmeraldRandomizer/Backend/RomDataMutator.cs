@@ -14,7 +14,7 @@ namespace PokemonEmeraldRandomizer.Backend
         public static RomData Mutate(RomData orig, MainWindow window)
         {
             // Initialize copy data to mutate and mutator with seed if applicable
-            RomData copy = RomParser.Parse(orig.Rom);
+            RomData copy = orig.Clone();
             Mutator mut = (bool)window.cbSeed.IsChecked ? new Mutator(window.tbSeed.Text) : new Mutator();
 
             // Define pokemon set

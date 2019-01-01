@@ -24,7 +24,7 @@ namespace PokemonEmeraldRandomizer.Backend
         public string Name { get; private set; }
 
         // The original ROM the data was loaded from. Used by ROMWriter to write the data to a file.
-        public byte[] Rom { get; }
+        public Rom Rom { get; }
         // A metrics database calculated from the input ROM data (the base game if the rom being loaded is normal)
         public BalanceMetrics Metrics { get; private set; }
         public Pokemon[] Starters { get; set; }
@@ -51,21 +51,19 @@ namespace PokemonEmeraldRandomizer.Backend
 
         public bool NationalDexUnlocked = false;
 
-        public RomData(byte[] rom)
+        public RomData(byte[] rawRom)
         {
-            Rom = rom;
-            initGeneration();
+            initGeneration(rawRom);
             Info = new XmlManager(infoPaths[Gen]);
             Info.SetSearchRoot("versionInfo"); 
-            initMetaData();
+            initMetaData(rawRom);
             Info.SetSearchRoot(Code + Version.ToString());
-            RomUtils.FreeSpaceByte = (byte)Info.HexAttr("freeSpace", "byte");
-            RomUtils.SearchStartOffset = Info.HexAttr("freeSpace", "startAddy");
+            Rom = new Rom(rawRom, Info);
         }
         // set the Rom generation (from the file size)
-        private void initGeneration()
+        private void initGeneration(byte[] rawRom)
         {
-            switch (Rom.Length)
+            switch (rawRom.Length)
             {
                 case 1048576:    // 1mb
                     Gen = Generation.I;
@@ -91,7 +89,7 @@ namespace PokemonEmeraldRandomizer.Backend
             }          
         }
         // read code, name and version info from rom
-        private void initMetaData()
+        private void initMetaData(byte[] rawRom)
         {
             switch (Gen)
             {
@@ -102,7 +100,7 @@ namespace PokemonEmeraldRandomizer.Backend
                 case Generation.III:
                     Name = Encoding.ASCII.GetString(Rom.ReadBlock(Info.Addy("romName"), Info.Size("romName")));
                     Code = Encoding.ASCII.GetString(Rom.ReadBlock(Info.Addy("code"), Info.Size("code")));
-                    Version = Rom[Info.Addy("version")];
+                    Version = rawRom[Info.Addy("version")];
                     break;
                 case Generation.IV:
                     break;
@@ -115,6 +113,11 @@ namespace PokemonEmeraldRandomizer.Backend
                 default:
                     throw new Exception("Gen " + Gen.ToDisplayString() + " is not supported. unable to find metadata");
             }          
+        }
+        // returns a clone of this rom data
+        public RomData Clone()
+        {
+            return RomParser.Parse(Rom.File);
         }
         // updates the metrics from the current data
         public void CalculateMetrics()

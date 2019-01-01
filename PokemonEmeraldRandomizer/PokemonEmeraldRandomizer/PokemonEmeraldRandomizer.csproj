@@ -78,6 +78,7 @@
     </ApplicationDefinition>
     <Compile Include="Backend\Map.cs" />
     <Compile Include="Backend\MapManager.cs" />
+    <Compile Include="Backend\Rom.cs" />
     <Compile Include="Converters\PercentConverter.cs" />
     <Compile Include="CultureUtils\CultureUtils.cs" />
     <Compile Include="Collections\MultiSet.cs" />
@@ -102,7 +103,7 @@
     <Compile Include="Backend\PokemonBaseStats.cs" />
     <Compile Include="Backend\Mutator.cs" />
     <Compile Include="Backend\RomData.cs" />
-    <Compile Include="Backend\RomUtils.cs" />
+    <Compile Include="Backend\ByteArrayUtils.cs" />
     <Compile Include="Backend\RomWriter.cs" />
     <Compile Include="Backend\RomDataMutator.cs" />
     <Compile Include="Backend\RomParser.cs" />
