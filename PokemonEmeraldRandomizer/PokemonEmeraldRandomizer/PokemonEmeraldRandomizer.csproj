@@ -78,6 +78,7 @@
     </ApplicationDefinition>
     <Compile Include="Backend\Map.cs" />
     <Compile Include="Backend\MapManager.cs" />
+    <Compile Include="Backend\MathUtils.cs" />
     <Compile Include="Backend\Rom.cs" />
     <Compile Include="Converters\PercentConverter.cs" />
     <Compile Include="CultureUtils\CultureUtils.cs" />
@@ -163,7 +164,9 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="RomInfo\Gen3RomInfo.xml" />
+    <Resource Include="RomInfo\Gen3RomInfo.xml">
+      <SubType>Designer</SubType>
+    </Resource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

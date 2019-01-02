@@ -9,7 +9,7 @@ namespace PokemonEmeraldRandomizer.Backend
     public class MapManager
     {
         private Map[][] mapBanks;
-        public MapManager(byte[] rom, XmlManager data)
+        public MapManager(Rom rom, XmlManager data)
         {
             int bankPtrAddy = data.Addy("mapBankPointers");
             int ptrSize = data.Size("mapBankPointers");
@@ -23,7 +23,7 @@ namespace PokemonEmeraldRandomizer.Backend
                 
         }
 
-        private Map[] LoadBank(byte[] rom, XmlManager data, int address, int numMaps)
+        private Map[] LoadBank(Rom rom, XmlManager data, int address, int numMaps)
         {
             Map[] maps = new Map[numMaps];
             for(int i = 0; i < maps.Length; ++i)

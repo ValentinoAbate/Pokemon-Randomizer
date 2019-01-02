@@ -38,22 +38,23 @@ namespace PokemonEmeraldRandomizer.Backend
         public byte unknown2;
         public byte showLabelOnEntry;
         public byte battleField;
-        public Map(byte[] rom, int ptr)
+        public Map(Rom rom, int ptr)
         {
-            mapDataPtr = rom.ReadPointer(ptr);
-            eventDataPtr = rom.ReadPointer(ptr + 4);
-            mapScriptsPtr = rom.ReadPointer(ptr + 8);
-            connectionPtr = rom.ReadPointer(ptr + 12);
-            music = rom.ReadUInt16(ptr + 13);
-            mpInd = rom.ReadUInt16(ptr + 15);
-            labelIndex = rom[ptr + 17];
-            visibility = rom[ptr + 18];
-            weather = rom[ptr + 19];
-            mapType = rom[ptr + 20];
-            unknown = rom[ptr + 21];
-            unknown2 = rom[ptr + 22];
-            showLabelOnEntry = rom[ptr + 23];
-            battleField = rom[ptr + 24];
+            rom.Seek(ptr);
+            mapDataPtr = rom.ReadPointer();
+            eventDataPtr = rom.ReadPointer();
+            mapScriptsPtr = rom.ReadPointer();
+            connectionPtr = rom.ReadPointer();
+            music = rom.ReadUInt16();
+            mpInd = rom.ReadUInt16();
+            labelIndex = rom.ReadByte();
+            visibility = rom.ReadByte();
+            weather = rom.ReadByte();
+            mapType = rom.ReadByte();
+            unknown = rom.ReadByte();
+            unknown2 = rom.ReadByte();
+            showLabelOnEntry = rom.ReadByte();
+            battleField = rom.ReadByte();
 
         }
     }

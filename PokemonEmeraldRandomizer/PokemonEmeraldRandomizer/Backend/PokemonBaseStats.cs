@@ -235,6 +235,7 @@ namespace PokemonEmeraldRandomizer.Backend
         public ExpGrowthType growthType;
         public EggGroup[] eggGroups = new EggGroup[2];
         public byte eggCycles; // How many cycles it takes for eggs to hatch (256 steps per cycle)
+        public byte baseFriendship;
         public byte catchRate; // how easy it is to catch the pokemon (higher is easier)
         public byte baseExpYield; // base exp gained if defeated (max 255, higher is more)
         public byte safariZoneRunRate;
@@ -251,40 +252,38 @@ namespace PokemonEmeraldRandomizer.Backend
 
         public Evolution[] evolutions;
 
-        public PokemonBaseStats(byte[] data, PokemonSpecies species)
+        public PokemonBaseStats(Rom data, int offset, PokemonSpecies species)
         {
-#if DEBUG
-            if (data.Length < 28)
-                throw new System.Exception("Error parsing Pokemon Data: Expected 28 bytes, got " + data.Length);
-#endif
             // Set species
             this.species = species;
+            data.Seek(offset);
             // fill in stats (hp/at/df/sp/sa/sd)
-            Array.ConstrainedCopy(data, 0, stats, 0, 6);
+            stats = data.ReadBlock(6);
             // fill in types
-            types[0] = (PokemonType)data[6];
-            types[1] = (PokemonType)data[7];
-            catchRate = data[8];
-            baseExpYield = data[9];
+            types[0] = (PokemonType)data.ReadByte();
+            types[1] = (PokemonType)data.ReadByte();
+            catchRate = data.ReadByte();
+            baseExpYield = data.ReadByte();
             // fill in ev yields (stored in the first 12 bits of data[10-11])
-            for (int i = 0; i < 6; i++)
-                evYields[i] = (byte)((data[10 + i / 4] >> ((i * 2) % 8)) & 3);
-            heldItems[0] = (Item)data.ReadUInt16(12); // (data[13] * 256 + data[12]);
-            heldItems[1] = (Item)data.ReadUInt16(14); // (data[15] * 256 + data[14]);
-            genderRatio = data[16];
-            eggCycles = data[17];
-            growthType = (ExpGrowthType)data[19];
+            evYields = Array.ConvertAll(data.ReadBits(12, 2), (i) => (byte)i);
+            heldItems[0] = (Item)data.ReadUInt16(); // (data[13] * 256 + data[12]);
+            heldItems[1] = (Item)data.ReadUInt16(); // (data[15] * 256 + data[14]);
+            genderRatio = data.ReadByte();
+            eggCycles = data.ReadByte();
+            baseFriendship = data.ReadByte();
+            growthType = (ExpGrowthType)data.ReadByte();
             // fill in egg groups
-            eggGroups[0] = (EggGroup)data[20];
-            eggGroups[1] = (EggGroup)data[21];
+            eggGroups[0] = (EggGroup)data.ReadByte();
+            eggGroups[1] = (EggGroup)data.ReadByte();
             // fill in abilities
-            abilities[0] = (Ability)data[22];
-            abilities[1] = (Ability)data[23];
-            safariZoneRunRate = data[24];
+            abilities[0] = (Ability)data.ReadByte();
+            abilities[1] = (Ability)data.ReadByte();
+            safariZoneRunRate = data.ReadByte();
+            byte searchFlip = data.ReadByte();
             // read color
-            searchColor = (SearchColor)((data[25] & 0b1111_1110) >> 1);
+            searchColor = (SearchColor)((searchFlip & 0b1111_1110) >> 1);
             // read flip
-            flip = (data[25] & 0b0000_0001) == 1;
+            flip = (searchFlip & 0b0000_0001) == 1;
         }
         public byte[] ToByteArray()
         {

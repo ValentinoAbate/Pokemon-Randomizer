@@ -78,7 +78,7 @@ namespace PokemonEmeraldRandomizer
             IsROMLoaded = false;
             InitializeComponent();
             this.DataContext = this;
-            //OpenTestROM("C:\\Users\\valen\\Desktop\\Pokemon - Emerald Version (U).gba");
+            OpenTestROM("C:\\Users\\valen\\Desktop\\Pokemon - Emerald Version (U).gba");
         }
 
         private void OpenTestROM(string path)

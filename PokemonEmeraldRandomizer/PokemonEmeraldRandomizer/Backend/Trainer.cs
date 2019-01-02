@@ -33,25 +33,27 @@ namespace PokemonEmeraldRandomizer.Backend
         public bool isDoubleBattle;
         public BitArray AIFlags;
 
-        public Trainer(byte[] rom, int offset, string[] classNames)
+        public Trainer(Rom rom, int offset, string[] classNames)
         {
             this.classNames = classNames;
-            dataType = (TrainerPokemon.DataType)rom[offset];
-            trainerClass = rom[offset + 1];
+            rom.Seek(offset);
+            dataType = (TrainerPokemon.DataType)rom.ReadByte();
+            trainerClass = rom.ReadByte();
             // Read Gender (byte 2 bit 0)
-            gender = (Gender)((rom[offset + 2] & 0x80) >> 7);
+            gender = (Gender)((rom.Peek() & 0x80) >> 7);
             // Read music track index (byte 2 bits 1-7)
-            musicIndex = (byte)(rom[offset + 2] & 0x7F);
+            musicIndex = (byte)(rom.ReadByte() & 0x7F);
             // Read sprite index (byte 3)
-            spriteIndex = rom[offset + 3];
+            spriteIndex = rom.ReadByte();
             // Read name (I think bytes 4 - 15?)
-            name = rom.ReadString(offset + 4, 12);
+            name = rom.ReadFixedLengthString(12);
             // Read items (bytes 16-23)
             for (int i = 0; i < 4; ++i)
-                useItems[i] = (Item)rom.ReadUInt16(offset + 16 + (i * 2));
+                useItems[i] = (Item)rom.ReadUInt16();
             // Read double battle (byte 24)
-            isDoubleBattle = rom[offset + 24] == 1;
+            isDoubleBattle = rom.ReadByte() == 1;
             // What is in bytes 25-27?
+            rom.Skip(3);
             // Read AI flags
             #region AI script flag documentation
             // Reference: https://www.pokecommunity.com/showthread.php?t=333767 (thanks Knizz and DaniilS) (may be partially incorrect)
@@ -95,10 +97,11 @@ namespace PokemonEmeraldRandomizer.Backend
             // Flag 30     - AI_Safari                         Safari Zone AI pokemon may flee (not used for trainers)
             // Flag 31     - AI_FirstBattle                    Run if at low hp (not used for trainers, unused)
             #endregion
-            AIFlags = new BitArray(new int[] { rom.ReadUInt32(offset + 28) });
-            int numPokemon = rom[offset + 32];
+            AIFlags = new BitArray(new int[] { rom.ReadUInt32() });
+            int numPokemon = rom.ReadByte();
             // What is in bytes 33-35?
-            int pokemonPtr = rom.ReadPointer(offset + 36);
+            rom.Skip(3);
+            int pokemonPtr = rom.ReadPointer();
 
             #region Read pokemon from pokemonPtr
             pokemon = new TrainerPokemon[numPokemon];

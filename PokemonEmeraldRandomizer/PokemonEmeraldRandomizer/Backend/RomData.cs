@@ -98,8 +98,8 @@ namespace PokemonEmeraldRandomizer.Backend
                 case Generation.II:
                     break;
                 case Generation.III:
-                    Name = Encoding.ASCII.GetString(Rom.ReadBlock(Info.Addy("romName"), Info.Size("romName")));
-                    Code = Encoding.ASCII.GetString(Rom.ReadBlock(Info.Addy("code"), Info.Size("code")));
+                    Name = Encoding.ASCII.GetString(rawRom.ReadBlock(Info.Addy("romName"), Info.Size("romName")));
+                    Code = Encoding.ASCII.GetString(rawRom.ReadBlock(Info.Addy("code"), Info.Size("code")));
                     Version = rawRom[Info.Addy("version")];
                     break;
                 case Generation.IV:

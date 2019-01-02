@@ -27,6 +27,14 @@ namespace PokemonEmeraldRandomizer.Backend
             InternalOffset = 0;
             File = rawRom;
         }
+        /// <summary>Read a block of bytes at the internal offset</summary>
+        public byte[] ReadBlock(int length)
+        {
+            byte[] block = new byte[length];
+            System.Array.ConstrainedCopy(File, InternalOffset, block, 0, length);
+            InternalOffset += length;
+            return block;
+        }
         /// <summary>Read a block of bytes at the given offset</summary>
         public byte[] ReadBlock(int offset, int length)
         {
@@ -132,15 +140,44 @@ namespace PokemonEmeraldRandomizer.Backend
             }
         }
         #endregion
-        ///.<summary>Sets the Rom's internal offset</summary>
+        /// <summary>Sets the Rom's internal offset</summary>
         public void Seek(int offset)
         {
             InternalOffset = offset;
+        }
+        /// <summary>Returns the byte at the Rom's internal offset (without changing it)</summary>
+        public byte Peek() => File[InternalOffset];
+        /// <summary>Increments the Rom's internal offset by a given number of bytes</summary>
+        public void Skip(int numBytes = 1)
+        {
+            InternalOffset += numBytes;
         }
         /// <summary>Reads a byte from the internal offset</summary>
         public byte ReadByte() => File[InternalOffset++];
         /// <summary>Reads a byte from the given offset</summary>
         public byte ReadByte(int offset) => File[offset];
+        /// <summary>Reads the bits of a byte in chunks of num from the internal offset</summary>
+        public int[] ReadBits(int numBits = 8, int chunkSize = 1)
+        {
+            int numBytes = numBits % 8 == 0 ? numBits / 8 : (numBits / 8) + 1;
+            InternalOffset += numBytes;
+            return ReadBits(InternalOffset - numBytes, numBits, chunkSize);
+        }
+        /// <summary>Reads the bits of a byte in chunks of num from the given offset</summary>
+        public int[] ReadBits(int offset, int numBits = 8, int chunkSize = 1)
+        {
+            int mask = MathUtils.IntPow(2, chunkSize) - 1;
+            int numChunks = numBits / chunkSize;
+            int chunksPerByte = 8 / chunkSize;
+            int[] ret = new int[numChunks];
+            for(int i = 0; i < numChunks; ++i)
+            {
+                byte src = File[offset + i / chunksPerByte];
+                int shiftBy = (i % chunksPerByte) * chunkSize;
+                ret[i] = (src & (mask << shiftBy)) >> shiftBy;
+            }
+            return ret;
+        }
 
         #region Number Reading and Writing (UInt16, 32, etc)
         private int ReadUInt(int numBytes)
@@ -182,7 +219,7 @@ namespace PokemonEmeraldRandomizer.Backend
         /// This method returns the 24-bit ROM address unless readRamAddy is set to true. To get the RAM adress, simply add ramOffset</summary>
         public int ReadPointer(bool readRamAddy = false)
         {
-            return readRamAddy ? ReadUInt(4) : ReadUInt(3) - ramOffset;
+            return readRamAddy ? ReadUInt(4) : ReadUInt(4) - ramOffset;
         }
         /// <summary>Writes a UInt of specified number of bytes to the internalOffset </summary>
         private void WriteUInt(int value, int numBytes)
@@ -260,6 +297,20 @@ namespace PokemonEmeraldRandomizer.Backend
         };
         private const byte textTerminator = 0xFF;
         private const byte textVariable = 0xFD;
+        /// <summary>Read a string of specified length from the File.</summary>
+        public string ReadVariableLengthString(int maxLength = int.MaxValue)
+        {
+            var str = ReadString(InternalOffset, maxLength);
+            InternalOffset += str.Length;
+            return str;
+        }
+        /// <summary>Read a string of specified length from the File.</summary>
+        public string ReadFixedLengthString(int length)
+        {
+            var str = ReadString(InternalOffset, length);
+            InternalOffset += length;
+            return str;
+        }
         /// <summary>Read a string of specified length from the File.
         /// Use with 2 args to read a variable length string</summary>
         public string ReadString(int offset, int maxLength = int.MaxValue)
