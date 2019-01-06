@@ -76,6 +76,8 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Backend\Connection.cs" />
+    <Compile Include="Backend\ConnectionData.cs" />
     <Compile Include="Backend\Map.cs" />
     <Compile Include="Backend\MapManager.cs" />
     <Compile Include="Backend\MathUtils.cs" />

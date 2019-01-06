@@ -19,8 +19,7 @@ namespace PokemonEmeraldRandomizer.Backend
             {
                 int bankPtr = rom.ReadPointer(bankPtrAddy + (i * ptrSize));
                 mapBanks[i] = LoadBank(rom, data, bankPtr, BankLengths[i]);
-            }
-                
+            }   
         }
 
         private Map[] LoadBank(Rom rom, XmlManager data, int address, int numMaps)

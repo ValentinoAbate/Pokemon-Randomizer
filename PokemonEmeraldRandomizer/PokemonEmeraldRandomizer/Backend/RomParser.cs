@@ -38,11 +38,11 @@ namespace PokemonEmeraldRandomizer.Backend
             return data;
         }
         // Read TM, HM, or Move tutor definitions from the rom (depending on args)
-        private static Move[] ReadMoveMappings(Rom rom, int ptr, int numToRead)
+        private static Move[] ReadMoveMappings(Rom rom, int offset, int numToRead)
         {
-            rom.Seek(ptr);
+            rom.Seek(offset);
             Move[] moves = new Move[numToRead];
-            for (int i = 0; i < numToRead; i++, ptr += 2)
+            for (int i = 0; i < numToRead; i++, offset += 2)
                 moves[i] = (Move)rom.ReadUInt16();
             return moves;
         }
@@ -91,32 +91,32 @@ namespace PokemonEmeraldRandomizer.Backend
             }
             return pokemon.ToArray();
         }
-        // Read the attacks starting at atkPtr (returns the index after completion)
-        private static int ReadAttacks(Rom rom, int movePtr, out MoveSet moves)
+        // Read the attacks starting at offset (returns the index after completion)
+        private static int ReadAttacks(Rom rom, int offset, out MoveSet moves)
         {
             moves = new MoveSet();
-            byte curr = rom.ReadByte(movePtr);
-            byte next = rom.ReadByte(movePtr + 1);
+            byte curr = rom.ReadByte(offset);
+            byte next = rom.ReadByte(offset + 1);
             while (curr != 255 || next != 255)
             {
                 int lvl = next >> 1;
                 Move move = (Move)((next % 2) * 256 + curr);
                 moves.Add(move, lvl);
-                movePtr += 2;
-                curr = rom.ReadByte(movePtr);
-                next = rom.ReadByte(movePtr + 1);
+                offset += 2;
+                curr = rom.ReadByte(offset);
+                next = rom.ReadByte(offset + 1);
             }
-            movePtr += 2;    //pass final FFFF
-            return movePtr;
+            offset += 2;    //pass final FFFF
+            return offset;
         }
-        // Read the TMcompat and HM compat BitArrays starting at ptr
-        private static void ReadTMHMCompat(Rom rom, XmlManager data, int ptr, out BitArray tmCompat, out BitArray hmCompat)
+        // Read the TMcompat and HM compat BitArrays starting at given offset
+        private static void ReadTMHMCompat(Rom rom, XmlManager data, int offset, out BitArray tmCompat, out BitArray hmCompat)
         {
             int numTms = data.Num("tmMoves");
             int numHms = data.Num("hmMoves");
             tmCompat = new BitArray(numTms);
             hmCompat = new BitArray(numHms);
-            byte[] tmHmChunk = rom.ReadBlock(ptr, data.Size("tmHmCompat"));
+            byte[] tmHmChunk = rom.ReadBlock(offset, data.Size("tmHmCompat"));
             int mask = 0;
             for (int p = 0; p < numTms + numHms; ++p)
             {
@@ -126,13 +126,13 @@ namespace PokemonEmeraldRandomizer.Backend
                 mask = mask << 1;
             }
         }
-        // Read the move tutor compatibility BitArray at tutPtr
-        private static void ReadTutorCompat(Rom rom, XmlManager data, int tutPtr, out BitArray tutCompat)
+        // Read the move tutor compatibility BitArray at offset
+        private static void ReadTutorCompat(Rom rom, XmlManager data, int offset, out BitArray tutCompat)
         {
             int numMoveTutors = data.Num("moveTutorMoves");
             int tutorCompatSize = data.Size("moveTutorCompat");
             tutCompat = new BitArray(numMoveTutors);
-            byte[] tutChunk = rom.ReadBlock(tutPtr, tutorCompatSize);
+            byte[] tutChunk = rom.ReadBlock(offset, tutorCompatSize);
             int mask = 0;
             for (int p = 0; p < numMoveTutors; ++p)
             {
@@ -141,14 +141,14 @@ namespace PokemonEmeraldRandomizer.Backend
                 mask = mask << 1;
             }
         }
-        // Read all five evolutions
-        private static void ReadEvolutions(Rom rom, XmlManager data, int evolutionPtr , out Evolution[] evolutions)
+        // Read evolutions
+        private static void ReadEvolutions(Rom rom, XmlManager data, int offset, out Evolution[] evolutions)
         {
             int bytesPerEvolution = (int)data.Attr("evolutions", "sizePerEvolution");
             evolutions = new Evolution[(int)data.Attr("evolutions", "evolutionsPerPokemon")];          
-            for(int i = 0; i < evolutions.Length; ++i, evolutionPtr += bytesPerEvolution)
+            for(int i = 0; i < evolutions.Length; ++i, offset += bytesPerEvolution)
             {
-                byte[] evolutionBlock = rom.ReadBlock(evolutionPtr, bytesPerEvolution);
+                byte[] evolutionBlock = rom.ReadBlock(offset, bytesPerEvolution);
                 evolutions[i] = new Evolution(evolutionBlock);
             }
 

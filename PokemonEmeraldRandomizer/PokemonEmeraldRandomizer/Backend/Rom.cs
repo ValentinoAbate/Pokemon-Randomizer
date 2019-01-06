@@ -12,6 +12,7 @@ namespace PokemonEmeraldRandomizer.Backend
     public class Rom
     {
         private const int ramOffset = 0x08000000;
+        public const int nullPointer = -ramOffset;
         /// <summary>The byte that WriteInFreeSpace(byte[] data) considers free space </summary>
         public byte FreeSpaceByte { get; }
         /// <summary>The offset that WriteInFreeSpace(byte[] data) starts searching at </summary>
