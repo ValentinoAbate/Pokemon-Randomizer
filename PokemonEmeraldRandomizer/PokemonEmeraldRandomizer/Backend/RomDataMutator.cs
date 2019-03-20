@@ -39,7 +39,7 @@ namespace PokemonEmeraldRandomizer.Backend
                 if (te != TypeEffectiveness.Normal)
                     copy.TypeDefinitions.Add(PokemonType.Unknown, t, te, t == PokemonType.GHO);
             }
-            // Generate ??? type traits
+            // Generate ??? type traits (INCOMPLETE)
             copy.TypeDefinitions.Set(PokemonType.NRM, PokemonType.Unknown, TypeEffectiveness.SuperEffective);
             // Combat Hacks
                 // Hack combat if applicable
@@ -77,8 +77,39 @@ namespace PokemonEmeraldRandomizer.Backend
                 // Mutate battle states and EVs
                 // Mutate Learn Sets
             }
+            // Calculate pokemon tiering
             // Mutate Starter Pokemon
-            // Mutate Trainers
+            // Determine trainer class set
+                // Only double battles?
+                // Include FRLG classes in emerald (and vice-versa)?
+            // Mutate Trainer classes
+                // Theme: type?
+                // Theme: move strategy?
+                // Theme: hold item?
+                // Ace trainers have random theme?
+            // Mutate Maps
+                // Mutate tiles and layout (if applicable)
+                    // Team magma/aqua/rocket takeover mode?
+                // Set metadata (environent, etc)
+                // Mutate wild pokemon
+            // Mutate Trainers (should be per map later?)
+            foreach(var trainer in copy.Trainers)
+            {
+                // Set Trainer positions (and some base tags maybe) and add scripts
+                    // Sleeper agents? (Random non-npc trainers become trainers)
+                // Set tags (gym trainer, gym leader, elite 4, rival, reoccuring, etc)
+                // Set class
+                    // Natural trainers (trainer types are based on environment type)
+                // Set pokemon
+                foreach(var pokemon in trainer.pokemon)
+                {
+                    //Search for replacement (probably use a constraint solver)
+                }
+                    // Class based?
+                    // Local environment based?
+                // 
+            }
+
             // Mutate Field Items
             // Misc Hacks
                 // Potential hacks:

@@ -57,20 +57,25 @@ namespace PokemonEmeraldRandomizer.Backend
         {
             return (int)Attr(element, "size");
         }
-        /// <summary> returns the "addy" (address) attribute of the element converted from hex string to int </summary>
-        public int Addy(string element)
+        /// <summary> returns the "offset" (offset) attribute of the element converted from hex string to int </summary>
+        public int Offset(string element)
         {
-            return HexAttr(element, "addy");
+            return HexAttr(element, "offset");
         }
         /// <summary> returns the given attribute of the element converted from hex string to int </summary> 
         public int HexAttr(string element, string attribute)
         {
             return HexToInt((string)Attr(element, attribute));
         }
-        /// <summary> returns the given attribute of the element converted from hex string to int </summary>
+        /// <summary> returns the given attribute of the element with each element interpreted as an int </summary>
         public int[] IntArrayAttr(string element, string attribute)
         {
             return Array.ConvertAll(((string)Attr(element, attribute)).Trim('[', ']').Split(','), int.Parse);
+        }
+        /// <summary> returns the given attribute of the element with each element interpreted from a hex string </summary>
+        public int[] HexArrayAttr(string element, string attribute)
+        {
+            return Array.ConvertAll(((string)Attr(element, attribute)).Trim('[', ']').Split(','), HexToInt);
         }
         /// <summary> returns the given element's content as a string </summary> 
         public string StringElt(string element)

@@ -18,11 +18,11 @@ namespace PokemonEmeraldRandomizer.Backend
 
             #region Move Mappings (TMs/HMs/Tutors)
             //Read the TM move mappings from the ROM
-            data.TMMoves = ReadMoveMappings(data.Rom, data.Info.Addy("tmMoves"), data.Info.Num("tmMoves"));
+            data.TMMoves = ReadMoveMappings(data.Rom, data.Info.Offset("tmMoves"), data.Info.Num("tmMoves"));
             //Read the HM move mappings from the ROM
-            data.HMMoves = ReadMoveMappings(data.Rom, data.Info.Addy("hmMoves"), data.Info.Num("hmMoves"));
+            data.HMMoves = ReadMoveMappings(data.Rom, data.Info.Offset("hmMoves"), data.Info.Num("hmMoves"));
             //Read the move tutor move mappings from the ROM
-            data.tutorMoves = ReadMoveMappings(data.Rom, data.Info.Addy("moveTutorMoves"), data.Info.Num("moveTutorMoves"));
+            data.tutorMoves = ReadMoveMappings(data.Rom, data.Info.Offset("moveTutorMoves"), data.Info.Num("moveTutorMoves"));
             #endregion
 
             // Read the pokemon base stats from the Rom
@@ -64,14 +64,14 @@ namespace PokemonEmeraldRandomizer.Backend
         private static PokemonBaseStats[] ReadPokemonBaseStats(Rom rom, XmlManager data)
         {
             List<PokemonBaseStats> pokemon = new List<PokemonBaseStats>();
-            int pkmnPtr = data.Addy("pokemonBaseStats");
+            int pkmnPtr = data.Offset("pokemonBaseStats");
             int pkmnSize = data.Size("pokemonBaseStats");
-            int tmPtr = data.Addy("tmHmCompat");
+            int tmPtr = data.Offset("tmHmCompat");
             int tmHmSize = data.Size("tmHmCompat");
-            int tutorPtr = data.Addy("moveTutorCompat");
+            int tutorPtr = data.Offset("moveTutorCompat");
             int tutorSize = data.Size("moveTutorCompat");
-            int movePtr = data.Addy("movesets");
-            int evolutionPtr = data.Addy("evolutions");
+            int movePtr = data.Offset("movesets");
+            int evolutionPtr = data.Offset("evolutions");
             int evolutionSize = data.Size("evolutions");
             for (int i = 0; i < data.Num("pokemonBaseStats"); i++)
             {
@@ -163,7 +163,7 @@ namespace PokemonEmeraldRandomizer.Backend
         // Read the Trainer Class names
         private static string[] ReadTrainerClassNames(Rom rom, XmlManager data)
         {
-            int addy = data.Addy("trainerClassNames");
+            int addy = data.Offset("trainerClassNames");
             int numClasses = data.Num("trainerClassNames");
             int nameLength = (int)data.Attr("trainerClassNames", "length");
 
@@ -177,14 +177,14 @@ namespace PokemonEmeraldRandomizer.Backend
         {
             List<Trainer> ret = new List<Trainer>();
             for (int i = 0; i < data.Num("trainerBattles"); ++i)
-                ret.Add(new Trainer(rom, data.Addy("trainerBattles") + (i * data.Size("trainerBattles")), classNames));
+                ret.Add(new Trainer(rom, data.Offset("trainerBattles") + (i * data.Size("trainerBattles")), classNames));
             return ret.ToArray();
         }
         // Read Type Effectiveness data
         private static TypeEffectivenessChart ReadTypeEffectivenessData(Rom rom, XmlManager data)
         {
             TypeEffectivenessChart ret = new TypeEffectivenessChart();
-            rom.Seek(data.Addy("typeEffectiveness"));
+            rom.Seek(data.Offset("typeEffectiveness"));
             bool ignoreAfterForesight = false;
             // Run until the end of structure sequence (0xff 0xff 0x00)
             while (rom.Peek() != 0xff)

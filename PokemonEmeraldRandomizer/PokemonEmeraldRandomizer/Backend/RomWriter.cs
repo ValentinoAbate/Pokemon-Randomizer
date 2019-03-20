@@ -54,11 +54,11 @@ namespace PokemonEmeraldRandomizer.Backend
             {
                 int? newOffset = file.WriteInFreeSpace(typeData.ToArray());
                 if (newOffset != null)
-                    file.Repoint(data.Info.Addy("typeEffectiveness"), (int)newOffset);
+                    file.Repoint(data.Info.Offset("typeEffectiveness"), (int)newOffset);
             }
             else
             {
-                file.WriteBlock(data.Info.Addy("typeEffectiveness"), typeData.ToArray());
+                file.WriteBlock(data.Info.Offset("typeEffectiveness"), typeData.ToArray());
             }
             #endregion
         }

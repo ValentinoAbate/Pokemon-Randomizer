@@ -53,15 +53,15 @@ namespace PokemonEmeraldRandomizer.Backend
 
         public RomData(byte[] rawRom)
         {
-            initGeneration(rawRom);
+            InitGeneration(rawRom);
             Info = new XmlManager(infoPaths[Gen]);
             Info.SetSearchRoot("versionInfo"); 
-            initMetaData(rawRom);
+            InitMetaData(rawRom);
             Info.SetSearchRoot(Code + Version.ToString());
             Rom = new Rom(rawRom, Info);
         }
         // set the Rom generation (from the file size)
-        private void initGeneration(byte[] rawRom)
+        private void InitGeneration(byte[] rawRom)
         {
             switch (rawRom.Length)
             {
@@ -89,7 +89,7 @@ namespace PokemonEmeraldRandomizer.Backend
             }          
         }
         // read code, name and version info from rom
-        private void initMetaData(byte[] rawRom)
+        private void InitMetaData(byte[] rawRom)
         {
             switch (Gen)
             {
@@ -98,9 +98,9 @@ namespace PokemonEmeraldRandomizer.Backend
                 case Generation.II:
                     break;
                 case Generation.III:
-                    Name = Encoding.ASCII.GetString(rawRom.ReadBlock(Info.Addy("romName"), Info.Size("romName")));
-                    Code = Encoding.ASCII.GetString(rawRom.ReadBlock(Info.Addy("code"), Info.Size("code")));
-                    Version = rawRom[Info.Addy("version")];
+                    Name = Encoding.ASCII.GetString(rawRom.ReadBlock(Info.Offset("romName"), Info.Size("romName")));
+                    Code = Encoding.ASCII.GetString(rawRom.ReadBlock(Info.Offset("code"), Info.Size("code")));
+                    Version = rawRom[Info.Offset("version")];
                     break;
                 case Generation.IV:
                     break;

@@ -11,7 +11,7 @@ namespace PokemonEmeraldRandomizer.Backend
         private Map[][] mapBanks;
         public MapManager(Rom rom, XmlManager data)
         {
-            int bankPtrAddy = data.Addy("mapBankPointers");
+            int bankPtrAddy = data.Offset("mapBankPointers");
             int ptrSize = data.Size("mapBankPointers");
             mapBanks = new Map[data.Num("mapBankPointers")][];
             int[] BankLengths = data.IntArrayAttr("maps", "bankLengths");
@@ -28,7 +28,6 @@ namespace PokemonEmeraldRandomizer.Backend
             for(int i = 0; i < maps.Length; ++i)
             {
                 int mapAddy = rom.ReadPointer(address + (i * 4));
-                string fullPointer = rom.ReadPointer(address + (i * 4), true).ToString("X");
                 maps[i] = new Map(rom, mapAddy );
             }
             return maps;
