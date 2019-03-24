@@ -11,36 +11,40 @@ namespace PokemonEmeraldRandomizer.Backend
     public static class RomDataMutator
     {
         // Apply mutations based on program settings.
-        public static RomData Mutate(RomData orig, MainWindow window)
+        public static RomData Mutate(RomData orig, ApplicationData appData)
         {
             // Initialize copy data to mutate and mutator with seed if applicable
             RomData copy = orig.Clone();
-            Mutator mut = (bool)window.cbSeed.IsChecked ? new Mutator(window.tbSeed.Text) : new Mutator();
+            Mutator mut = (bool)appData.SetSeed ? new Mutator(appData.Seed) : new Mutator();
 
             // Define pokemon set
-                // Restrict pokemon if applicable
-                    // Possible restrictions any combination of: GenI, GenI+ (GenI related pokemon from GenII, and/or possibly GenIV), GenII,
-                    // GenII+ (GenII related from GenI, GenII and/or possilby GenIV), GenIII, GenIII+ (Gen II related pokemon from GenI and/or GenII
-                    // Possibly other pkmn groups like starters, legendaries, maybe even arbitrary groups
-                // Hack in new pokemon if applicable
-                    // Possible Hacks: Gen IV
+            // Restrict pokemon if applicable
+            // Possible restrictions any combination of: GenI, GenI+ (GenI related pokemon from GenII, and/or possibly GenIV), GenII,
+            // GenII+ (GenII related from GenI, GenII and/or possilby GenIV), GenIII, GenIII+ (Gen II related pokemon from GenI and/or GenII
+            // Possibly other pkmn groups like starters, legendaries, maybe even arbitrary groups
+            // Hack in new pokemon if applicable
+            // Possible Hacks: Gen IV
             // Define Type set
-                // Hack in new types if applicable
-                    // Possible Hacks: Add Fairy Type
+            // Hack in new types if applicable
+            // Possible Hacks: Add Fairy Type
             // Define Type Traits
 
             // Randomize type traits
-            foreach(PokemonType t in EnumUtils.GetValues<PokemonType>())
-            {
-                TypeEffectiveness te = mut.RandomChoice(orig.Metrics.TypeEffectivenessRatios);
-                if (te != TypeEffectiveness.Normal)
-                    copy.TypeDefinitions.Add(t, PokemonType.Unknown, te, (t == PokemonType.NRM || t == PokemonType.FTG) && te == TypeEffectiveness.NoEffect);
-                te = mut.RandomChoice(orig.Metrics.TypeEffectivenessRatios);
-                if (te != TypeEffectiveness.Normal)
-                    copy.TypeDefinitions.Add(PokemonType.Unknown, t, te, t == PokemonType.GHO);
-            }
             // Generate ??? type traits (INCOMPLETE)
-            copy.TypeDefinitions.Set(PokemonType.NRM, PokemonType.Unknown, TypeEffectiveness.SuperEffective);
+            if((bool)appData.ModifyUnknownType)
+            {
+                foreach (PokemonType t in EnumUtils.GetValues<PokemonType>())
+                {
+                    // Type effectiveness of other type (t) vs ???
+                    TypeEffectiveness te = mut.RandomChoice(orig.Metrics.TypeEffectivenessRatios);
+                    if (te != TypeEffectiveness.Normal) // Only register if not normal effectiveness
+                        copy.TypeDefinitions.Add(t, PokemonType.Unknown, te, (t == PokemonType.NRM || t == PokemonType.FTG) && te == TypeEffectiveness.NoEffect);
+                    // Type effectiveness of ??? vs other type (t)
+                    te = mut.RandomChoice(orig.Metrics.TypeEffectivenessRatios);
+                    if (te != TypeEffectiveness.Normal) // Only register if not normal effectiveness
+                        copy.TypeDefinitions.Add(PokemonType.Unknown, t, te, t == PokemonType.GHO);
+                }
+            }
             // Combat Hacks
                 // Hack combat if applicable
                     // Possible Hacks: Upgrade combat AI, Special/Physical split
@@ -63,15 +67,14 @@ namespace PokemonEmeraldRandomizer.Backend
                 // Mutate Pokemon Type
                 if (pkmn.IsSingleTyped)
                 {
-                    var rate = window.mutSlSingleType.Value;
-                    if (mut.RandomDouble() < rate)
+                    if (mut.RandomDouble() < appData.SingleTypeMutationRate)
                         pkmn.types[0] = pkmn.types[1] = randomType(mut, copy.Metrics, "None");
                 }
                 else
                 {
-                    if (mut.RandomDouble() < 0.05)
+                    if (mut.RandomDouble() < appData.DualTypePrimaryMutationRate)
                         pkmn.types[0] = mut.RandomChoice(orig.Metrics.TypeRatiosDualPrimary);
-                    if (mut.RandomDouble() < 0.05)
+                    if (mut.RandomDouble() < appData.DualTypeSecondaryMutationRate)
                         pkmn.types[1] = mut.RandomChoice(orig.Metrics.TypeRatiosDualSecondary);
                 }
                 // Mutate battle states and EVs
@@ -92,22 +95,27 @@ namespace PokemonEmeraldRandomizer.Backend
                     // Team magma/aqua/rocket takeover mode?
                 // Set metadata (environent, etc)
                 // Mutate wild pokemon
-            // Mutate Trainers (should be per map later?)
+                // Mutate Trainers (should be per map later?)
+                    // Set Trainer positions (and some base tags maybe) and add scripts
+                        // Sleeper agents? (Random non-npc trainers become trainers)
+                    // Set tags (gym trainer, gym leader, elite 4, rival, reoccuring, etc)
+                    // Set class
+                        // Natural trainers? (trainer types are based on environment type)
+                    //Mutate battle here later?
+            // Mutate Trainer battles
             foreach(var trainer in copy.Trainers)
             {
-                // Set Trainer positions (and some base tags maybe) and add scripts
-                    // Sleeper agents? (Random non-npc trainers become trainers)
-                // Set tags (gym trainer, gym leader, elite 4, rival, reoccuring, etc)
-                // Set class
-                    // Natural trainers (trainer types are based on environment type)
+                // Set data type
+                // Set AI flags
+                // Set item stock (if applicable)
                 // Set pokemon
-                foreach(var pokemon in trainer.pokemon)
+                foreach (var pokemon in trainer.pokemon)
                 {
                     //Search for replacement (probably use a constraint solver)
+                    //pokemon.species = mut.RandomChoice(EnumUtils.GetValues<PokemonSpecies>().ToArray());
                 }
                     // Class based?
                     // Local environment based?
-                // 
             }
 
             // Mutate Field Items
