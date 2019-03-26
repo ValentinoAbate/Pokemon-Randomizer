@@ -38,6 +38,7 @@ namespace PokemonEmeraldRandomizer.Backend
                 return shallowClone;
             }
         }
+        public Dictionary<PokemonSpecies,PokemonBaseStats> PokemonLookup { get; set; }
         public string[] ClassNames { get; set; }
         public Trainer[] Trainers { get; set; }
         public TypeEffectivenessChart TypeDefinitions { get; set; }

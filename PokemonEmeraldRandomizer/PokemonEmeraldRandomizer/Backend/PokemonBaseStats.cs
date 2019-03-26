@@ -50,24 +50,25 @@ namespace PokemonEmeraldRandomizer.Backend
     // All of the pokemon types. These should map integer wise to the game-defined types
     public enum PokemonType : byte
     {
-        NRM, //Normal
-        FTG, //Fighting
-        FLY, //Flying
-        PSN, //Poison
-        GRD, //Ground
-        RCK, //Rock
-        BUG, //Bug (the best type)
-        GHO, //Ghost
-        STL, //Steel
-        Unknown, //Question (???). I think this is curse's type?
-        FIR, //Fire
-        WAT, //Water
-        GRS, //Grass
-        ELE, //Electric
-        PSY, //Psychic
-        ICE, //Ice
-        DRG, //Dragon
-        DRK, //Dark
+        NRM, // Normal
+        FTG, // Fighting
+        FLY, // Flying
+        PSN, // Poison
+        GRD, // Ground
+        RCK, // Rock
+        BUG, // Bug (the best type)
+        GHO, // Ghost
+        STL, // Steel
+        Unknown, // Question (???). This is curse's type
+        FIR, // Fire
+        WAT, // Water
+        GRS, // Grass
+        ELE, // Electric
+        PSY, // Psychic
+        ICE, // Ice
+        DRG, // Dragon
+        DRK, // Dark
+        FAI, // Fairy
     }
     // All of the pokemon abilities
     public enum Ability : byte
@@ -126,14 +127,14 @@ namespace PokemonEmeraldRandomizer.Backend
     // All of the pokemon exp growth curves
     public enum ExpGrowthType : byte
     {
-        //for more info on curves, see https://bulbapedia.bulbagarden.net/wiki/Experience
-        //Name           //Lv100 Exp
-        Medium_Fast,     //1,000,000
-        Erratic,         //600,000
-        Fluctuating,     //1,640,000
-        Medium_Slow,     //1,059,860
-        Fast,            //800,000
-        Slow, 	         //1,250,000
+        // for more info on curves, see https://bulbapedia.bulbagarden.net/wiki/Experience
+        // Name           // Lv100 Exp
+        Medium_Fast,      // 1,000,000
+        Erratic,          // 600,000
+        Fluctuating,      // 1,640,000
+        Medium_Slow,      // 1,059,860
+        Fast,             // 800,000
+        Slow, 	          // 1,250,000
     }
     // All of the pokemon Egg groups
     public enum EggGroup : byte

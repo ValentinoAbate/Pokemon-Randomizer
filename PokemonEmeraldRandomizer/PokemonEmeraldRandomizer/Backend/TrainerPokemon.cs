@@ -24,5 +24,10 @@ namespace PokemonEmeraldRandomizer.Backend
         public Move[] moves = new Move[4];
         public int level;
         public int IVLevel;
+
+        public override string ToString()
+        {
+            return species.ToDisplayString() + " Lv. " + level;
+        }
     }
 }

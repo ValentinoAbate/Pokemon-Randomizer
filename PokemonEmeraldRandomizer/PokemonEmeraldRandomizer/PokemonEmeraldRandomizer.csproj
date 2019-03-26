@@ -82,6 +82,7 @@
     <Compile Include="Backend\Map.cs" />
     <Compile Include="Backend\MapManager.cs" />
     <Compile Include="Backend\MathUtils.cs" />
+    <Compile Include="Backend\PokemonTiering.cs" />
     <Compile Include="Backend\Rom.cs" />
     <Compile Include="Converters\PercentConverter.cs" />
     <Compile Include="CultureUtils\CultureUtils.cs" />

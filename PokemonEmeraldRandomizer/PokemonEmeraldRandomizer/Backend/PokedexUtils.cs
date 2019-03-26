@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PokemonEmeraldRandomizer.Backend
 {
-    //A utility class containing various tables to of pokedex data
+    // A utility class containing various tables to of pokedex data
     public static class PokedexUtils
     {
         private static readonly int[] species_to_dex =
@@ -97,6 +97,13 @@ namespace PokemonEmeraldRandomizer.Backend
             "371 - Bagon","372 - Shelgon","373 - Salamence","374 - Beldum","375 - Metang","376 - Metagross","377 - Regirock","378 - Regice",
             "379 - Registeel","380 - Latias","381 - Latios","382 - Kyogre","383 - Groudon","384 - Rayquaza","385 - Jirachi","386 - Deoxys"
         };
+        private static readonly int[] legendaries = new int[]
+        {
+            144, 145, 146, 150, 151, 243, 244, 245, 249, 250, 251, 377, 378, 379,
+            380, 381, 382, 383, 384, 385, 386, 479, 480, 481, 482, 483, 484, 485, 486, 487, 488,
+            489, 490, 491, 492, 493, 494, 638, 639, 640, 641, 642, 643, 644, 645, 646, 647, 648, 649
+        };
+
         public static int PokedexIndex(PokemonSpecies s)
         {
             return species_to_dex[(int)s];
@@ -104,6 +111,10 @@ namespace PokemonEmeraldRandomizer.Backend
         public static PokemonSpecies DexToSpecies(int dexInd)
         {
             return (PokemonSpecies)dex_to_species[dexInd];
+        }
+        public static bool IsLegendary(PokemonSpecies s)
+        {
+            return legendaries.Contains((int)s);
         }
         public static string MenuName(int dexInd)
         {

@@ -15,34 +15,25 @@ namespace PokemonEmeraldRandomizer.Backend
         {
             // Initialize copy data to mutate and mutator with seed if applicable
             RomData copy = orig.Clone();
-            Mutator mut = (bool)appData.SetSeed ? new Mutator(appData.Seed) : new Mutator();
+            Mutator mut = appData.SetSeed ? new Mutator(appData.Seed) : new Mutator();
 
-            // Define pokemon set
-            // Restrict pokemon if applicable
-            // Possible restrictions any combination of: GenI, GenI+ (GenI related pokemon from GenII, and/or possibly GenIV), GenII,
-            // GenII+ (GenII related from GenI, GenII and/or possilby GenIV), GenIII, GenIII+ (Gen II related pokemon from GenI and/or GenII
-            // Possibly other pkmn groups like starters, legendaries, maybe even arbitrary groups
-            // Hack in new pokemon if applicable
-            // Possible Hacks: Gen IV
-            // Define Type set
-            // Hack in new types if applicable
-            // Possible Hacks: Add Fairy Type
-            // Define Type Traits
+            var pokemonSet = DefinePokemonSet(copy, appData, mut);
+            var types = DefinePokemonTypes(copy, appData, mut);
 
             // Randomize type traits
             // Generate ??? type traits (INCOMPLETE)
-            if((bool)appData.ModifyUnknownType)
+            if(appData.ModifyUnknownType)
             {
-                foreach (PokemonType t in EnumUtils.GetValues<PokemonType>())
+                foreach (var type in types)
                 {
-                    // Type effectiveness of other type (t) vs ???
-                    TypeEffectiveness te = mut.RandomChoice(orig.Metrics.TypeEffectivenessRatios);
+                    // Type effectiveness of other type vs ???
+                    var te = mut.RandomChoice(orig.Metrics.TypeEffectivenessRatios);
                     if (te != TypeEffectiveness.Normal) // Only register if not normal effectiveness
-                        copy.TypeDefinitions.Add(t, PokemonType.Unknown, te, (t == PokemonType.NRM || t == PokemonType.FTG) && te == TypeEffectiveness.NoEffect);
-                    // Type effectiveness of ??? vs other type (t)
+                        copy.TypeDefinitions.Add(type, PokemonType.Unknown, te, (type == PokemonType.NRM || type == PokemonType.FTG) && te == TypeEffectiveness.NoEffect);
+                    // Type effectiveness of ??? vs other type
                     te = mut.RandomChoice(orig.Metrics.TypeEffectivenessRatios);
                     if (te != TypeEffectiveness.Normal) // Only register if not normal effectiveness
-                        copy.TypeDefinitions.Add(PokemonType.Unknown, t, te, t == PokemonType.GHO);
+                        copy.TypeDefinitions.Add(PokemonType.Unknown, type, te, type == PokemonType.GHO);
                 }
             }
             // Combat Hacks
@@ -80,7 +71,7 @@ namespace PokemonEmeraldRandomizer.Backend
                 // Mutate battle states and EVs
                 // Mutate Learn Sets
             }
-            // Calculate pokemon tiering
+            var PowerScores = PowerScaling.Calculate(copy.Pokemon, appData.TieringOptions);
             // Mutate Starter Pokemon
             // Determine trainer class set
                 // Only double battles?
@@ -111,8 +102,19 @@ namespace PokemonEmeraldRandomizer.Backend
                 // Set pokemon
                 foreach (var pokemon in trainer.pokemon)
                 {
+                    var combinedWeightings = new WeightedSet<PokemonSpecies>();
+                    var powerScoreSimilarity = pokemonSet.Select((p) => PowerScaleSimilarity(PowerScores[pokemon.species], PowerScores[p]));
+                    var powerWeighting = new WeightedSet<PokemonSpecies>(pokemonSet, powerScoreSimilarity);
+                    powerWeighting.Normalize();
+                    combinedWeightings.Add(powerWeighting);
+                    var typeSimilarity = pokemonSet.Select((p) => TypeSimilarity(pokemon.species, p, copy));
+                    var typeWeighting = new WeightedSet<PokemonSpecies>(pokemonSet, typeSimilarity);
+                    typeWeighting.Normalize();
+                    combinedWeightings.Add(typeWeighting);
+                    
+                    pokemon.species = mut.RandomChoice(combinedWeightings);
                     //Search for replacement (probably use a constraint solver)
-                    //pokemon.species = mut.RandomChoice(EnumUtils.GetValues<PokemonSpecies>().ToArray());
+                    //pokemon.species = mut.RandomChoice();
                 }
                     // Class based?
                     // Local environment based?
@@ -142,6 +144,54 @@ namespace PokemonEmeraldRandomizer.Backend
             copy.CalculateMetrics();
             return copy;
         }
+
+        // Define and return the set of valid pokemon (with applicable restrictions)
+        private static HashSet<PokemonSpecies> DefinePokemonSet(RomData romData, ApplicationData appData, Mutator mut)
+        {                        
+            //Start with all for now
+            HashSet<PokemonSpecies> pokemonSet = EnumUtils.GetValues<PokemonSpecies>().ToHashSet();          
+                // Restrict pokemon if applicable
+            // Possible restrictions any combination of: GenI, GenI+ (GenI related pokemon from GenII, and/or possibly GenIV), GenII,
+                // GenII+ (GenII related from GenI, GenII and/or possilby GenIV), GenIII, GenIII+ (Gen II related pokemon from GenI and/or GenII
+            // Possibly other pkmn groups like starters, legendaries, maybe even arbitrary groups
+                // Hack in new pokemon if applicable
+                // Possible Hacks: Gen IV
+            return pokemonSet;
+        }
+
+        // Define and return the set of valid types (with applicable restrictions)
+        private static HashSet<PokemonType> DefinePokemonTypes(RomData romData, ApplicationData appData, Mutator mut)
+        {
+            HashSet<PokemonType> types = EnumUtils.GetValues<PokemonType>().ToHashSet();
+            // Remove the FAIRY type if we are Gen V or below and have not enabled the add fairy type hack
+            if (romData.Gen < RomData.Generation.VI && !appData.AddFairyType)
+                types.Remove(PokemonType.FAI);
+            return types;
+        }
+        
+        private static float PowerScaleSimilarity(float powerScale, float other)
+        {
+            float maxDifference = 700;
+            float difference = Math.Abs(powerScale - other);
+            float differenceRating = maxDifference - (difference * 5);
+            return differenceRating <= 0 ? 1 : differenceRating;
+        }
+
+        private static float TypeSimilarity(PokemonSpecies species, PokemonSpecies otherSpecies, RomData data)
+        {
+            PokemonBaseStats self = data.PokemonLookup[species];
+            PokemonBaseStats other = data.PokemonLookup[otherSpecies];
+            if(self.IsSingleTyped)
+                return other.types.Contains(self.types[0]) ? 1 : 0;
+            else
+            {
+                var matches = self.types.Intersect(other.types).Count();
+                if (matches == 2)
+                    return 1;
+                return matches == 1 ? 0.75f : 0;
+            }
+        }
+
         private static PokemonType randomType(Mutator mut, BalanceMetrics metrics, string metric)
         {
             switch (metric)

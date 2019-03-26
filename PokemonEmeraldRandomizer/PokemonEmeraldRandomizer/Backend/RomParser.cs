@@ -27,6 +27,9 @@ namespace PokemonEmeraldRandomizer.Backend
 
             // Read the pokemon base stats from the Rom
             data.Pokemon = ReadPokemonBaseStats(data.Rom, data.Info);
+            data.PokemonLookup = new Dictionary<PokemonSpecies, PokemonBaseStats>();
+            foreach (var pokemon in data.Pokemon)
+                data.PokemonLookup.Add(pokemon.species, pokemon);
             // data.Starters = ReadStarters(rom);
             // Trainers and associated data
             data.ClassNames = ReadTrainerClassNames(data.Rom, data.Info);
