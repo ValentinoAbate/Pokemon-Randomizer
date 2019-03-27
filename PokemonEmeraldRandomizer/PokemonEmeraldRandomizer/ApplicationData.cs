@@ -37,6 +37,10 @@ namespace PokemonEmeraldRandomizer
         public Backend.PowerScaling.Options TieringOptions { get => Backend.PowerScaling.Options.BaseStatsAggregate; }
         #endregion
 
+        #region Trainer Pokemon
+        
+        #endregion
+
         public ApplicationData(MainWindow window)
         {
             this.window = window;

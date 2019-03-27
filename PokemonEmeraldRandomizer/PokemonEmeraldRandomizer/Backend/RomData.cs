@@ -26,7 +26,7 @@ namespace PokemonEmeraldRandomizer.Backend
         // The original ROM the data was loaded from. Used by ROMWriter to write the data to a file.
         public Rom Rom { get; }
         // A metrics database calculated from the input ROM data (the base game if the rom being loaded is normal)
-        public BalanceMetrics Metrics { get; private set; }
+        public RomMetrics Metrics { get; private set; }
         public Pokemon[] Starters { get; set; }
         public PokemonBaseStats[] Pokemon { get; set; }
         public PokemonBaseStats[] PokemonDexOrder
@@ -123,7 +123,7 @@ namespace PokemonEmeraldRandomizer.Backend
         // updates the metrics from the current data
         public void CalculateMetrics()
         {
-            Metrics = new BalanceMetrics(this);
+            Metrics = new RomMetrics(this);
         }
         // Create string array to write to info file
         public string[] ToStringArray()

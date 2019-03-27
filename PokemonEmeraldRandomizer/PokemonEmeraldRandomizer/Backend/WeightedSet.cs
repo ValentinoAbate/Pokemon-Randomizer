@@ -21,9 +21,7 @@ namespace PokemonEmeraldRandomizer.Backend
                 var ret = new Dictionary<T, float>();
                 float totalWieght = Weights.Aggregate((a, b) => a + b);
                 foreach (var kvp in items)
-                {
                     ret.Add(kvp.Key, (kvp.Value / totalWieght) * 100);
-                }
                 return ret;
             }
         }

@@ -71,7 +71,8 @@ namespace PokemonEmeraldRandomizer.Backend
                 // Mutate battle states and EVs
                 // Mutate Learn Sets
             }
-            var PowerScores = PowerScaling.Calculate(copy.Pokemon, appData.TieringOptions);
+            // Recalculate power scoring
+            var powerScores = PowerScaling.Calculate(copy.Pokemon, appData.TieringOptions);
             // Mutate Starter Pokemon
             // Determine trainer class set
                 // Only double battles?
@@ -103,18 +104,13 @@ namespace PokemonEmeraldRandomizer.Backend
                 foreach (var pokemon in trainer.pokemon)
                 {
                     var combinedWeightings = new WeightedSet<PokemonSpecies>();
-                    var powerScoreSimilarity = pokemonSet.Select((p) => PowerScaleSimilarity(PowerScores[pokemon.species], PowerScores[p]));
-                    var powerWeighting = new WeightedSet<PokemonSpecies>(pokemonSet, powerScoreSimilarity);
-                    powerWeighting.Normalize();
+                    var powerWeighting = PokemonMetrics.PowerSimilarity(pokemonSet, powerScores, pokemon.species);
                     combinedWeightings.Add(powerWeighting);
-                    var typeSimilarity = pokemonSet.Select((p) => TypeSimilarity(pokemon.species, p, copy));
-                    var typeWeighting = new WeightedSet<PokemonSpecies>(pokemonSet, typeSimilarity);
-                    typeWeighting.Normalize();
+                    var typeWeighting = PokemonMetrics.TypeSimilarity(pokemonSet, copy, pokemon.species);
                     combinedWeightings.Add(typeWeighting);
-                    
+                    // Actually choose the species
                     pokemon.species = mut.RandomChoice(combinedWeightings);
-                    //Search for replacement (probably use a constraint solver)
-                    //pokemon.species = mut.RandomChoice();
+                    // Reset special moves if necessary
                 }
                     // Class based?
                     // Local environment based?
@@ -169,30 +165,9 @@ namespace PokemonEmeraldRandomizer.Backend
             return types;
         }
         
-        private static float PowerScaleSimilarity(float powerScale, float other)
-        {
-            float maxDifference = 700;
-            float difference = Math.Abs(powerScale - other);
-            float differenceRating = maxDifference - (difference * 5);
-            return differenceRating <= 0 ? 1 : differenceRating;
-        }
 
-        private static float TypeSimilarity(PokemonSpecies species, PokemonSpecies otherSpecies, RomData data)
-        {
-            PokemonBaseStats self = data.PokemonLookup[species];
-            PokemonBaseStats other = data.PokemonLookup[otherSpecies];
-            if(self.IsSingleTyped)
-                return other.types.Contains(self.types[0]) ? 1 : 0;
-            else
-            {
-                var matches = self.types.Intersect(other.types).Count();
-                if (matches == 2)
-                    return 1;
-                return matches == 1 ? 0.75f : 0;
-            }
-        }
 
-        private static PokemonType randomType(Mutator mut, BalanceMetrics metrics, string metric)
+        private static PokemonType randomType(Mutator mut, RomMetrics metrics, string metric)
         {
             switch (metric)
             {
