@@ -30,29 +30,32 @@ namespace PokemonEmeraldRandomizer.Backend
 
         #region Constructors
         public WeightedSet() {}
+        public WeightedSet(IEnumerable<T> items, float weight = 0)
+        {
+            foreach (var item in items)
+                this.items.Add(item, weight);
+        }
         public WeightedSet(IEnumerable<T> items, IEnumerable<float> weights)
         {
             IEnumerator<float> e = weights.GetEnumerator();
             e.MoveNext();
             foreach(T item in items)
             {
-                Add(item, e.Current);
+                this.items.Add(item, e.Current);
                 e.MoveNext();
             }
         }
         public WeightedSet(IEnumerable<KeyValuePair<T, float>> pairs)
         {
             foreach (var kvp in pairs)
-                Add(kvp.Key, kvp.Value);
+                this.items.Add(kvp.Key, kvp.Value);
         }
         #endregion
 
-        public void Add(WeightedSet<T> set)
+        public void Add(WeightedSet<T> set, float multiplier = 1)
         {
-            foreach(var item in set.Items)
-            {
-                Add(item, set[item]);
-            }
+            foreach (var item in set.Items)
+                Add(item, set[item] * multiplier);
         }
         public void Add(T item, float weight = 1)
         {
@@ -64,6 +67,16 @@ namespace PokemonEmeraldRandomizer.Backend
         public void Remove(T item)
         {
             items.Remove(item);
+        }
+        public void RemoveWhere(Predicate<T> predicate)
+        {
+            foreach (var key in items.Keys.ToArray())
+                if (predicate(key))
+                    items.Remove(key);
+        }
+        public bool Contains(T item)
+        {
+            return items.ContainsKey(item);
         }
  
         public void Normalize()

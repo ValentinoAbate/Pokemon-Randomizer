@@ -15,27 +15,37 @@ namespace PokemonEmeraldRandomizer.Backend
         /// <summary> returns a given pokemon's power similarity to all pokemon in the pokemonSet. Output is normalized </summary>
         public static WeightedSet<PokemonSpecies> PowerSimilarity(HashSet<PokemonSpecies> pokemonSet, Dictionary<PokemonSpecies,float> powerScores, PokemonSpecies species)
         {
-            var powerScoreSimilarity = pokemonSet.Select((p) => PowerScaleSimilarity(powerScores[species], powerScores[p]));
-            var powerWeighting = new WeightedSet<PokemonSpecies>(pokemonSet, powerScoreSimilarity);
+            float myPowerScore = powerScores[species];
+            var powerWeighting = new WeightedSet<PokemonSpecies>();          
+            foreach (var pokemon in pokemonSet)
+            {
+                float similarity = PowerScoreSimilarity(myPowerScore, powerScores[pokemon]);
+                if (similarity > 0)
+                    powerWeighting.Add(pokemon, similarity);
+            }
             powerWeighting.Normalize();
             return powerWeighting;
         }
         /// <summary> The method used to compare one power score to another. Returns higher the more similar the scores are </summary>
-        private static float PowerScaleSimilarity(float powerScale, float other)
+        private static float PowerScoreSimilarity(float powerScale, float other)
         {
-            float maxDifference = 700;
+            float maxDifference = 100;
             float difference = Math.Abs(powerScale - other);
-            float differenceRating = maxDifference - (difference * 5);
-            return differenceRating <= 0 ? 1 : differenceRating;
+            float differenceRating = maxDifference - (difference);
+            return differenceRating <= 0 ? 0 : differenceRating;
         }
 
         public static WeightedSet<PokemonSpecies> TypeSimilarity(HashSet<PokemonSpecies> pokemonSet, RomData data, PokemonSpecies species)
         {
-            var stats = data.PokemonLookup[species];
-            var typeSimilarity = pokemonSet.Select((p) => TypeSimilarity(stats, data.PokemonLookup[p]));
-            var typeWeighting = new WeightedSet<PokemonSpecies>(pokemonSet, typeSimilarity);
-            typeWeighting.Normalize();
-            return typeWeighting;
+            var myStats = data.PokemonLookup[species];
+            var typeWeighting = new WeightedSet<PokemonSpecies>();
+            foreach(var pokemon in pokemonSet)
+            {
+                float similarity = TypeSimilarity(myStats, data.PokemonLookup[pokemon]);
+                if (similarity > 0)
+                    typeWeighting.Add(pokemon, similarity);
+            } 
+            return typeWeighting; // Type weighting is already normalized
         }
         /// <summary> method used to compare the types of one pokemon to another 
         /// Returns 1 if single typed and the other is the same single type, or 0.8</summary>
@@ -48,7 +58,7 @@ namespace PokemonEmeraldRandomizer.Backend
                 var matches = self.types.Intersect(other.types).Count();
                 if (matches == 2)
                     return 1;
-                return matches == 1 ? 0.75f : 0;
+                return matches == 1 ? 0.8f : 0;
             }
         }
     }

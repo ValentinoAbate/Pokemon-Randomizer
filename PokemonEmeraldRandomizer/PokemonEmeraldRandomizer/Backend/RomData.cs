@@ -169,67 +169,6 @@ namespace PokemonEmeraldRandomizer.Backend
             #endregion
 
             #region TODO
-            //String[] pkmn = ak.getPokemonListGameOrder();
-
-            //String[] arPkmn = new ArrayKeeper().getPokemonListGameOrder();
-            //StringBuilder sb;
-
-            ////PokeData-----------------------------------------------------------------------
-            //int ptr = addy("3203e8");
-            //int[] arData = new int[28];
-            //PokeData pkdt;
-
-            //outLs.Add(divider);
-            //outLs.Add("   Pokémon Info List");
-            //outLs.Add(divider);
-            //outLs.Add(("Pkmn Name      |  HP  AT  DF  SP  SA  SD   |       EPs      |" +
-            //    " Type(s) |  Ability 1     | Ability 2     | Held Item 1   | Held Item 2   | "));
-            //outLs.Add(("---------------------------------------------------------" +
-            //        "----------------------------------------------------------------------------"));
-
-            //String[] actualOrder = new String[411];
-            //for (int i = 0; i < 411; i++, ptr += 28)
-            //{
-            //    if (i >= 251 && i < 276) continue;
-            //    for (int p = 0; p < 28; p++)
-            //    {
-            //        arData[p] = byteToInt(rom[ptr + p]);
-            //    }
-            //    sb = new StringBuilder(String.format("%-10s", arPkmn[i]));
-            //    pkdt = new PokeData(arData);
-            //    actualOrder[i] = sb.toString() + " | " + pkdt.toString();
-            //}
-            //int[] order = ak.getPkmnDexToGameTranscription();
-            //for (int i = 0; i < order.length; i++)
-            //{
-            //    outLs.Add(String.format("%03d.", i + 1) + actualOrder[order[i] - 1]);
-            //}
-
-            ////----------------------------TMs
-            //outLs.Add("\r\n\r\n" + divider);
-            //outLs.Add("   TM/HM Compatability List");
-            //outLs.Add(divider);
-            //ptr = addy("615b94");
-            //String[] atList = ak.getAttackListText();
-            //int tm = 0, tm2 = 0;
-
-            //for (int i = 0; i < 25; i++, ptr += 2)
-            //{
-            //    tm = byteToInt(rom[ptr]) + byteToInt(rom[ptr + 1]) * 256;
-            //    tm2 = byteToInt(rom[ptr + 50]) + byteToInt(rom[ptr + 51]) * 256;
-            //    outLs.printf("TM%02d - %-10s\tTM%02d - %-10s\r\n", (i + 1), atList[tm], (i + 26), atList[tm2]);
-            //}
-            ////TM compat-----------------------------------------------------------------------------------
-            //outLs.Add("\r\n\r\n" + divider);
-            //outLs.Add("   TM/HM Compatability List");
-            //outLs.Add(divider);
-            //ptr = addy("31e8a0");
-            //String header = "\r\n\r\n               |01  03  05|  07  09  |11  13  15|  17  19  |21  23  25|" +
-            //            "  27  29  |31  33  35|  37  39  |41  43  45|  47  49  |01  03  05|  07  \r\n" +
-            //                "               |   02  04 |06  08  10|  12  14  |16  18  20|  22  24  |" +
-            //            "26  28  30|  32  34  |36  38  40|  42  44  |46  48  50|  02  04  |06  08\r\n" +
-            //                "-----------------------------------------------------------------------" +
-            //            "------------------------------------------------------------------------";
             //int[] TMlist = new int[8];
 
             //actualOrder = new String[411];

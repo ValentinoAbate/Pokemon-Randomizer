@@ -103,11 +103,40 @@ namespace PokemonEmeraldRandomizer.Backend
                 // Set pokemon
                 foreach (var pokemon in trainer.pokemon)
                 {
+                    var possiblePokemon = new HashSet<PokemonSpecies>(pokemonSet);
                     var combinedWeightings = new WeightedSet<PokemonSpecies>();
-                    var powerWeighting = PokemonMetrics.PowerSimilarity(pokemonSet, powerScores, pokemon.species);
-                    combinedWeightings.Add(powerWeighting);
-                    var typeWeighting = PokemonMetrics.TypeSimilarity(pokemonSet, copy, pokemon.species);
-                    combinedWeightings.Add(typeWeighting);
+                    // Power level similarity
+                    if(appData.TrainerPowerScaleSimilarityMod > 0)
+                    {
+                        var powerWeighting = PokemonMetrics.PowerSimilarity(possiblePokemon, powerScores, pokemon.species);
+                        combinedWeightings.Add(powerWeighting, appData.TrainerPowerScaleSimilarityMod);
+                        // Cull if necessary
+                        if (appData.TrainerPowerScaleCull)
+                        {
+                            possiblePokemon.RemoveWhere((p) => !powerWeighting.Contains(p));
+                            // combinedWeightings.RemoveWhere((p) => !powerWeighting.Contains(p)); no need to back-propagate (first metric)
+                        }                           
+                    }
+                    // Type similarity
+                    if(appData.TrainerTypeSimilarityMod > 0)
+                    {
+                        var typeWeighting = PokemonMetrics.TypeSimilarity(possiblePokemon, copy, pokemon.species);
+                        combinedWeightings.Add(typeWeighting, appData.TrainerTypeSimilarityMod);
+                        // Cull if necessary
+                        if (appData.TrainerPowerScaleCull)
+                        {
+                            possiblePokemon.RemoveWhere((p) => !typeWeighting.Contains(p));
+                            combinedWeightings.RemoveWhere((p) => !typeWeighting.Contains(p));
+                        }
+                    }
+                    // Normalize combined weightings and add noise
+                    if(appData.TrainerPokemonNoise > 0)
+                    {
+                        combinedWeightings.Normalize();
+                        var noise = new WeightedSet<PokemonSpecies>(pokemonSet, appData.TrainerPokemonNoise);
+                        combinedWeightings.Add(noise);
+                    }
+
                     // Actually choose the species
                     pokemon.species = mut.RandomChoice(combinedWeightings);
                     // Reset special moves if necessary

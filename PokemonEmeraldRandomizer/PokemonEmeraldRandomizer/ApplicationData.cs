@@ -27,18 +27,22 @@ namespace PokemonEmeraldRandomizer
 
         #region Typing
         public double SingleTypeMutationRate { get => window.mutSlSingleType.Value; }
-        public double DualTypePrimaryMutationRate { get => 0.05; }
-        public double DualTypeSecondaryMutationRate { get => 0.05; }
+        public double DualTypePrimaryMutationRate { get => 0.0; }
+        public double DualTypeSecondaryMutationRate { get => 0.0; }
         #endregion
 
         #endregion
 
-        #region Tiering
+        #region Power Scaling
         public Backend.PowerScaling.Options TieringOptions { get => Backend.PowerScaling.Options.BaseStatsAggregate; }
         #endregion
 
         #region Trainer Pokemon
-        
+        public float TrainerPokemonNoise { get => 0.0f; }
+        public float TrainerPowerScaleSimilarityMod { get => 0.25f; }
+        public bool TrainerPowerScaleCull { get => true; }
+        public float TrainerTypeSimilarityMod { get => 1f; }
+        public bool TrainerTypeSimilarityCull { get => true; }
         #endregion
 
         public ApplicationData(MainWindow window)
