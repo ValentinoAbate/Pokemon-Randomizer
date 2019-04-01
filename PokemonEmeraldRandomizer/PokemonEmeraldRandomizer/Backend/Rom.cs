@@ -179,6 +179,11 @@ namespace PokemonEmeraldRandomizer.Backend
             }
             return ret;
         }
+        /// <summary> Find all instances of a byte sequence in the ROM </summary>
+        public int[] FindAll(string hexString)
+        {
+            throw new NotImplementedException();
+        }
 
         #region Number Reading and Writing (UInt16, 32, etc)
         private int ReadUInt(int numBytes)

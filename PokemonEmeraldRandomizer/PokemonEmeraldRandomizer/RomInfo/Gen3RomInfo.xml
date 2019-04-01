@@ -18,6 +18,15 @@
     <!-- From dabomstew's source. idk what this is -->
     <headerChecksum offset="0xBD"/>
   </versionInfo>
+
+  <!-- Gen III Constants -->
+  
+  <constants>
+    <!-- from dabomstew's UP randomizer source https://github.com/Dabomstew/universal-pokemon-randomizer (untested)-->
+    <wildPokemon ptrPrefix="0x0348048009E00000FFFF0000"/>
+    <mapBanks ptrPrefix="0x80180068890B091808687047"/>
+    <pokedexOrder ptrPrefix="0x0448814208D0481C0004000C05E00000"/>
+  </constants>
   
   <!-- Emerald Rom Info -->
 
@@ -97,6 +106,9 @@
     <mapBankPointers num="34" size="4" offset="0x486578" pointer="0x84AA4"/>
     <maps offset="0x849CC" bankLengths="[57,5,5,6,7,8,9,7,7,14,8,17,10,23,13,15,15,2,2,2,3,1,1,1,108,61,89,2,1,13,1,1,2,1]"/>
 
+    <!-- Encounter Data -->
+    <encounters offset=""/>
+    
   </BPEE0>
 
   <!-- Fire Red Rom Info -->
@@ -115,7 +127,7 @@
     <numTypes>18</numTypes>
     <!-- The address where the type effectiveness definitions start -->
     <!-- ADD TERMINATOR INFO -->
-    <typeEffectiveness offset="0x24F050"/>
+    <typeEffectiveness offset="0x24F050" separator="[0xfe,0xfe,0x00]" terminator="[0xff,0xff,0x00]"/>
 
     <!-- Move Data -->
 
