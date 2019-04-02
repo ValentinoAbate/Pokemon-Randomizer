@@ -42,7 +42,7 @@ namespace PokemonEmeraldRandomizer.Backend
                     TypeRatiosDualSecondary.Add(pkmn.types[1]);
                 }
             }
-            DualTypePercentage = data.Pokemon.Length / TypeRatiosDualPrimary.Count;
+            DualTypePercentage = data.Pokemon.Count / TypeRatiosDualPrimary.Count;
             #endregion
 
             #region Type Effectiveness Metrics

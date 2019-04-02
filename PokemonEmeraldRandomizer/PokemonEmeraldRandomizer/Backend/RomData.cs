@@ -27,20 +27,20 @@ namespace PokemonEmeraldRandomizer.Backend
         public Rom Rom { get; }
         // A metrics database calculated from the input ROM data (the base game if the rom being loaded is normal)
         public RomMetrics Metrics { get; private set; }
-        public Pokemon[] Starters { get; set; }
-        public PokemonBaseStats[] Pokemon { get; set; }
+        public List<Pokemon> Starters { get; set; }
+        public List<PokemonBaseStats> Pokemon { get; set; }
         public PokemonBaseStats[] PokemonDexOrder
         {
             get
             {
-                PokemonBaseStats[] shallowClone = Pokemon.Clone() as PokemonBaseStats[];
+                PokemonBaseStats[] shallowClone = Pokemon.ToArray();
                 Array.Sort(shallowClone, (x, y) => x.DexIndex.CompareTo(y.DexIndex));
                 return shallowClone;
             }
         }
         public Dictionary<PokemonSpecies,PokemonBaseStats> PokemonLookup { get; set; }
-        public string[] ClassNames { get; set; }
-        public Trainer[] Trainers { get; set; }
+        public List<string> ClassNames { get; set; }
+        public List<Trainer> Trainers { get; set; }
         public TypeEffectivenessChart TypeDefinitions { get; set; }
         public MapManager Maps { get; set; }
 
@@ -59,7 +59,10 @@ namespace PokemonEmeraldRandomizer.Backend
             Info.SetSearchRoot("versionInfo"); 
             InitMetaData(rawRom);
             Info.SetSearchRoot(Code + Version.ToString());
-            Rom = new Rom(rawRom, Info);
+            //Initalize Rom file wrapper
+            var freeSpaceByte = (byte)Info.HexAttr("freeSpace", "byte");
+            var searchStartOffset = Info.HexAttr("freeSpace", "startAddy");
+            Rom = new Rom(rawRom, freeSpaceByte, searchStartOffset);
         }
         // set the Rom generation (from the file size)
         private void InitGeneration(byte[] rawRom)

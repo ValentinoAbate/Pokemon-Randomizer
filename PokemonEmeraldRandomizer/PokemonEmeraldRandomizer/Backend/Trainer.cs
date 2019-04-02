@@ -18,7 +18,7 @@ namespace PokemonEmeraldRandomizer.Backend
     public class Trainer
     {
         // The all of the class names (mostly for debugging)
-        public string[] classNames;
+        public List<string> classNames;
         public string Class { get => classNames[trainerClass]; }
         // Actual data
         public int offset;
@@ -33,7 +33,7 @@ namespace PokemonEmeraldRandomizer.Backend
         public bool isDoubleBattle;
         public BitArray AIFlags;
 
-        public Trainer(Rom rom, int offset, string[] classNames)
+        public Trainer(Rom rom, int offset, List<string> classNames)
         {
             this.classNames = classNames;
             rom.Seek(offset);

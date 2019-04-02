@@ -108,8 +108,10 @@ namespace PokemonEmeraldRandomizer.Backend
         /// </summary>
         public byte battleField;
 
-        // Actual data
+        // Actual connection data
         public ConnectionData connections;
+        // The encounters associated with this map (filled externally in RomParser.cs right now)
+        public List<EncounterSet> encounters = new List<EncounterSet>();
 
         public Map(Rom rom, int offset)
         {

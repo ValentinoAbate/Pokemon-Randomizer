@@ -21,12 +21,20 @@ namespace PokemonEmeraldRandomizer.Backend
         public byte[] File {get;}
 
         /// <summary> Initilize a new Rom with applicable data </summary>
-        public Rom(byte[] rawRom, XmlManager data)
+        public Rom(byte[] rawRom, byte freeSpaceByte, int searchStartOffset)
         {
-            FreeSpaceByte = (byte)data.HexAttr("freeSpace", "byte");
-            SearchStartOffset = data.HexAttr("freeSpace", "startAddy");
-            InternalOffset = 0;
+            FreeSpaceByte = freeSpaceByte;
+            SearchStartOffset = searchStartOffset;
             File = rawRom;
+            InternalOffset = 0;           
+        }
+        /// <summary> Initilize a new Rom as a copy of an extant one </summary>
+        public Rom(Rom toCopy)
+        {
+            FreeSpaceByte = toCopy.FreeSpaceByte;
+            SearchStartOffset = toCopy.SearchStartOffset;
+            File = toCopy.File;
+            InternalOffset = 0;  
         }
         /// <summary>Read a block of bytes at the internal offset</summary>
         public byte[] ReadBlock(int length)
@@ -141,6 +149,7 @@ namespace PokemonEmeraldRandomizer.Backend
             }
         }
         #endregion
+
         /// <summary>Sets the Rom's internal offset</summary>
         public void Seek(int offset)
         {
@@ -179,11 +188,31 @@ namespace PokemonEmeraldRandomizer.Backend
             }
             return ret;
         }
+
+        #region Pattern Searching
         /// <summary> Find all instances of a byte sequence in the ROM </summary>
-        public int[] FindAll(string hexString)
+        public List<int> FindAll(string hexString)
         {
-            throw new NotImplementedException();
+            var pattern = HexUtils.HexToBytes(hexString);
+            return Search.Kmp.SearchAll(File, pattern);
         }
+        /// <summary> Find all instances of a byte sequence in the ROM </summary>
+        public List<int> FindAll(byte[] pattern)
+        {
+            return Search.Kmp.SearchAll(File, pattern);
+        }
+        /// <summary> Find the first instance of a byte sequence in the ROM </summary>
+        public int FindFirst(string hexString)
+        {
+            var pattern = HexUtils.HexToBytes(hexString);
+            return Search.Kmp.Search(File, pattern);
+        }
+        /// <summary> Find all instances of a byte sequence in the ROM </summary>
+        public int FindFirst(byte[] pattern)
+        {
+            return Search.Kmp.Search(File, pattern);
+        }
+        #endregion
 
         #region Number Reading and Writing (UInt16, 32, etc)
         private int ReadUInt(int numBytes)

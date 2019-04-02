@@ -64,7 +64,7 @@ namespace PokemonEmeraldRandomizer.Backend
 
         #region Read Pokemon Base Stats
         // Read the Pokemon base stat definitions from the ROM
-        private static PokemonBaseStats[] ReadPokemonBaseStats(Rom rom, XmlManager data)
+        private static List<PokemonBaseStats> ReadPokemonBaseStats(Rom rom, XmlManager data)
         {
             List<PokemonBaseStats> pokemon = new List<PokemonBaseStats>();
             int pkmnPtr = data.Offset("pokemonBaseStats");
@@ -92,7 +92,7 @@ namespace PokemonEmeraldRandomizer.Backend
                 ReadEvolutions(rom, data, evolutionPtr + (i * evolutionSize), out pkmn.evolutions);
                 pokemon.Add(pkmn);
             }
-            return pokemon.ToArray();
+            return pokemon;
         }
         // Read the attacks starting at offset (returns the index after completion)
         private static int ReadAttacks(Rom rom, int offset, out MoveSet moves)
@@ -159,29 +159,34 @@ namespace PokemonEmeraldRandomizer.Backend
         #endregion
 
         // Read the starter pokemon (TODO)
-        private static Pokemon[] ReadStarters(Rom rom, XmlManager data)
+        private static List<Pokemon> ReadStarters(Rom rom, XmlManager data)
         {
             throw new System.NotImplementedException();
         }
         // Read the Trainer Class names
-        private static string[] ReadTrainerClassNames(Rom rom, XmlManager data)
+        private static List<string> ReadTrainerClassNames(Rom rom, XmlManager data)
         {
             int addy = data.Offset("trainerClassNames");
             int numClasses = data.Num("trainerClassNames");
             int nameLength = (int)data.Attr("trainerClassNames", "length");
 
-            string[] classNames = new string[numClasses];
+            List<string> classNames = new List<string>(numClasses);
             for(int i = 0; i < numClasses; ++i)
-                classNames[i] = rom.ReadString(addy + (i * nameLength), nameLength);
+                classNames.Add(rom.ReadString(addy + (i * nameLength), nameLength));
             return classNames;
         }
         // Read the Trainers
-        private static Trainer[] ReadTrainers(Rom rom, XmlManager data, string[] classNames)
+        private static List<Trainer> ReadTrainers(Rom rom, XmlManager data, List<string> classNames)
         {
             List<Trainer> ret = new List<Trainer>();
             for (int i = 0; i < data.Num("trainerBattles"); ++i)
                 ret.Add(new Trainer(rom, data.Offset("trainerBattles") + (i * data.Size("trainerBattles")), classNames));
-            return ret.ToArray();
+            return ret;
+        }
+        // Read encounters
+        private static List<EncounterSet> ReadEncounters(Rom rom, XmlManager data, MapManager maps)
+        {
+            throw new NotImplementedException();
         }
         // Read Type Effectiveness data
         private static TypeEffectivenessChart ReadTypeEffectivenessData(Rom rom, XmlManager data)

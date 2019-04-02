@@ -13,7 +13,7 @@ namespace PokemonEmeraldRandomizer.Backend
     {
         public static byte[] Write(RomData data)
         {
-            Rom file = new Rom(data.Rom.File, data.Info);
+            Rom file = new Rom(data.Rom);
             //Unlock National pokedex
             //if (data.NationalDexUnlocked)
             //{

@@ -79,6 +79,9 @@
     <Compile Include="ApplicationData.cs" />
     <Compile Include="Backend\Connection.cs" />
     <Compile Include="Backend\ConnectionData.cs" />
+    <Compile Include="Backend\Encounter.cs" />
+    <Compile Include="Backend\EncounterSet.cs" />
+    <Compile Include="Backend\HexUtils.cs" />
     <Compile Include="Backend\Map.cs" />
     <Compile Include="Backend\MapManager.cs" />
     <Compile Include="Backend\MathUtils.cs" />
@@ -89,6 +92,7 @@
     <Compile Include="CultureUtils\CultureUtils.cs" />
     <Compile Include="Collections\MultiSet.cs" />
     <Compile Include="Backend\XmlManager.cs" />
+    <Compile Include="Search\Kmp.cs" />
     <Compile Include="UserControls\MutationRateSlider.xaml.cs">
       <DependentUpon>MutationRateSlider.xaml</DependentUpon>
     </Compile>
