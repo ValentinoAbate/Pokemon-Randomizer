@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace PokemonEmeraldRandomizer.Search
 {
+    /// <summary>
+    /// A class containing generic methods that allow for KMP sequence seraching of arrays of any comparable T
+    /// </summary>
     public class Kmp
     {
         /// <summary>
@@ -24,7 +27,8 @@ namespace PokemonEmeraldRandomizer.Search
                 if (comparer.Equals(text[i], pattern[j]))
                 {
                     ++i;
-                    ++j;
+                    if (++j == pattern.Length)
+                        return i - pattern.Length;
                 }
                 else if (j != 0)
                 {
@@ -34,8 +38,7 @@ namespace PokemonEmeraldRandomizer.Search
                 {
                     ++i;
                 }
-                if (j == pattern.Length)
-                    return i;
+
             }
             return -1;
         }
@@ -56,7 +59,11 @@ namespace PokemonEmeraldRandomizer.Search
                 if (comparer.Equals(text[i], pattern[j]))
                 {
                     ++i;
-                    ++j;
+                    if (++j == pattern.Length)
+                    {
+                        matches.Add(i - pattern.Length);
+                        j = 0;
+                    }                      
                 }
                 else if (j != 0)
                 {
@@ -66,8 +73,6 @@ namespace PokemonEmeraldRandomizer.Search
                 {
                     ++i;
                 }
-                if (j == pattern.Length)
-                    matches.Add(i);
             }
             return matches;
         }

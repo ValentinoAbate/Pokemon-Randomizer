@@ -8,9 +8,18 @@ using System.Xml.Linq;
 namespace PokemonEmeraldRandomizer.Backend
 {
     public class XmlManager
-    {
-        private readonly XElement root;
+    {       
+        public XElement Root { get; }
         private XElement searchRoot;
+        public XElement Constants
+        {
+            get
+            {
+                if (cache.ContainsKey("constants"))
+                    return cache["constants"];
+                return Element("constants", Root);
+            }
+        }
 
         private Dictionary<string, XElement> cache = new Dictionary<string, XElement>();
 
@@ -18,7 +27,7 @@ namespace PokemonEmeraldRandomizer.Backend
         public XmlManager(string path) : this(XElement.Load(path)) { }
         public XmlManager(XElement root)
         {
-            this.root = root;
+            Root = root;
             searchRoot = root;
         }
         #endregion
@@ -27,7 +36,7 @@ namespace PokemonEmeraldRandomizer.Backend
         /// If the name is not in the cache it is searched for (without caching) </summary>
         public void SetSearchRoot(string element)
         {
-            searchRoot = root;
+            searchRoot = Root;
             searchRoot = Element(element, false);
         }
         /// <summary> Sets the element to consider as the root when searching</summary>
@@ -67,7 +76,7 @@ namespace PokemonEmeraldRandomizer.Backend
         {
             return HexToInt((string)Attr(element, attribute));
         }
-        /// <summary> returns the given attribute of the element with each element interpreted as an int </summary>
+        /// <summary> returns the given attribute of the element with each element interpreted as an int[] </summary>
         public int[] IntArrayAttr(string element, string attribute)
         {
             return Array.ConvertAll(((string)Attr(element, attribute)).Trim('[', ']').Split(','), int.Parse);
@@ -92,6 +101,15 @@ namespace PokemonEmeraldRandomizer.Backend
         public XAttribute Attr(string element, string attribute)
         {
             return Element(element).Attribute(attribute);
+        }
+        /// <summary>
+        /// Finds an element by name and returns the given attribute.
+        /// If the element is cached, it is looked up,
+        /// else it is searched for (with the specified search root as the search root Node)
+        /// </summary>
+        public XAttribute Attr(string element, string attribute, XElement root)
+        {
+            return Element(element, root).Attribute(attribute);
         }
         /// <summary>
         /// Finds an element by name. If the element is cached, it is looked up,

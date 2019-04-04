@@ -13,7 +13,7 @@ namespace PokemonEmeraldRandomizer.Backend
     {
         // Parse the ROM bytes into a RomData object
         public static RomData Parse(byte[] rawRom)
-        {           
+        {
             RomData data = new RomData(rawRom);
 
             #region Move Mappings (TMs/HMs/Tutors)
@@ -37,6 +37,7 @@ namespace PokemonEmeraldRandomizer.Backend
             // Calculate the balance metrics from the loaded data
             data.TypeDefinitions = ReadTypeEffectivenessData(data.Rom, data.Info);
             data.Maps = new MapManager(data.Rom, data.Info);
+            data.Encounters = ReadEncounters(data.Rom, data.Info, data.Maps);
             data.CalculateMetrics();
             return data;
         }
@@ -148,7 +149,7 @@ namespace PokemonEmeraldRandomizer.Backend
         private static void ReadEvolutions(Rom rom, XmlManager data, int offset, out Evolution[] evolutions)
         {
             int bytesPerEvolution = (int)data.Attr("evolutions", "sizePerEvolution");
-            evolutions = new Evolution[(int)data.Attr("evolutions", "evolutionsPerPokemon")];          
+            evolutions = new Evolution[(int)data.Attr("evolutions", "evolutionsPerPokemon")];
             for(int i = 0; i < evolutions.Length; ++i, offset += bytesPerEvolution)
             {
                 byte[] evolutionBlock = rom.ReadBlock(offset, bytesPerEvolution);
@@ -179,14 +180,19 @@ namespace PokemonEmeraldRandomizer.Backend
         private static List<Trainer> ReadTrainers(Rom rom, XmlManager data, List<string> classNames)
         {
             List<Trainer> ret = new List<Trainer>();
-            for (int i = 0; i < data.Num("trainerBattles"); ++i)
-                ret.Add(new Trainer(rom, data.Offset("trainerBattles") + (i * data.Size("trainerBattles")), classNames));
+            int numTrainers = data.Num("trainerBattles");
+            int offset = data.Offset("trainerBattles");
+            int size = data.Size("trainerBattles");
+            for (int i = 0; i < numTrainers; ++i)
+                ret.Add(new Trainer(rom, offset + (i * size), classNames));
             return ret;
         }
         // Read encounters
         private static List<EncounterSet> ReadEncounters(Rom rom, XmlManager data, MapManager maps)
         {
-            throw new NotImplementedException();
+            var encounterPtrPrefix = HexUtils.HexToBytes(data.Attr("wildPokemon", "ptrPrefix", data.Constants).Value);
+            var ret = new List<EncounterSet>();
+            return ret;
         }
         // Read Type Effectiveness data
         private static TypeEffectivenessChart ReadTypeEffectivenessData(Rom rom, XmlManager data)
@@ -216,7 +222,7 @@ namespace PokemonEmeraldRandomizer.Backend
         private static void checkHash(byte[] rawRom, XmlManager data)
         {
             MD5 mD5 = MD5.Create();
-            byte[] bytes = mD5.ComputeHash(rawRom); 
+            byte[] bytes = mD5.ComputeHash(rawRom);
             // Create a new Stringbuilder to collect the byte and create a string.
             StringBuilder sBuilder = new StringBuilder();
             // Loop through each byte of the hashed data and format each one as a hexadecimal string.
