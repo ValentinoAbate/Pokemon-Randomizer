@@ -190,7 +190,20 @@ namespace PokemonEmeraldRandomizer.Backend
         // Read encounters
         private static List<EncounterSet> ReadEncounters(Rom rom, XmlManager data, MapManager maps)
         {
-            var encounterPtrPrefix = HexUtils.HexToBytes(data.Attr("wildPokemon", "ptrPrefix", data.Constants).Value);
+            #region Find and Seek encounter table
+            var encounterPtrPrefix = data.Attr("wildPokemon", "ptrPrefix", data.Constants).Value;
+            var prefixes = rom.FindAll(encounterPtrPrefix);
+            // If no prefix was found, fall back on another method (no other method yet)
+            if (prefixes.Count <= 0)
+                throw new Exception("No wild pokemon ptr prefix found");
+            // If more than 1 prefix was found, fall back on another method (potentially just choose the first)
+            if (prefixes.Count > 1)
+                throw new Exception("Wild pokemon ptr prefix is not unique");
+            // Go to the location in the pointer after the prefix 
+            // ptr is at the location + half the length of the hex string (-2 for the "0x" formatting)
+            rom.Seek(rom.ReadPointer(prefixes[0] + (encounterPtrPrefix.Length / 2) - 2 ));
+            #endregion
+
             var ret = new List<EncounterSet>();
             return ret;
         }
