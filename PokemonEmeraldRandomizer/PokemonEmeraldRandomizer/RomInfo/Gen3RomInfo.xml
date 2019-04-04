@@ -23,7 +23,7 @@
   
   <constants>
     <!-- from dabomstew's UP randomizer source https://github.com/Dabomstew/universal-pokemon-randomizer (untested)-->
-    <wildPokemon ptrPrefix="0x0348048009E00000FFFF0000"/>
+    <wildPokemon ptrPrefix="0x0348048009E00000FFFF0000" grassSlots="12" surfSlots="5" rockSmashSlots="5" fishSlots="10"/>
     <mapBanks ptrPrefix="0x80180068890B091808687047"/>
     <pokedexOrder ptrPrefix="0x0448814208D0481C0004000C05E00000"/>
   </constants>

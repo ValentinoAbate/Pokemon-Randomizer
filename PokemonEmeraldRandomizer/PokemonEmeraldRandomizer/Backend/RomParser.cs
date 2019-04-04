@@ -204,9 +204,64 @@ namespace PokemonEmeraldRandomizer.Backend
             rom.Seek(rom.ReadPointer(prefixes[0] + (encounterPtrPrefix.Length / 2) - 2 ));
             #endregion
 
+            #region Encounter Slots
+            int grassSlots = int.Parse(data.Attr("wildPokemon", "grassSlots", data.Constants).Value);
+            int surfSlots = int.Parse(data.Attr("wildPokemon", "surfSlots", data.Constants).Value);
+            int rockSmashSlots = int.Parse(data.Attr("wildPokemon", "rockSmashSlots", data.Constants).Value);
+            int fishSlots = int.Parse(data.Attr("wildPokemon", "fishSlots", data.Constants).Value);
+            #endregion
+
+            var encounters = new List<EncounterSet>();
+
+            // Iterate until the ending marker (0xff, 0xff)
+            while (rom.Peek() != 0xff || rom.Peek(1) != 0xff)
+            {
+                int bank = rom.ReadByte();
+                int map = rom.ReadByte();
+                // Idk what the next two bytes are
+                rom.Skip(2);
+                int grassPtr = rom.ReadPointer();
+                int surfPtr = rom.ReadPointer();
+                int rockSmashPtr = rom.ReadPointer();
+                int fishPtr = rom.ReadPointer();
+                // Save the internal offset before chasing pointers
+                rom.Save();
+
+                #region Load the actual Encounter sets for this area
+                if(grassPtr > 0 && grassPtr < rom.Length)
+                {
+                    var grassPokemon = new EncounterSet(EncounterSet.Type.Grass, bank, map, rom, grassPtr, grassSlots);
+                    encounters.Add(grassPokemon);
+                    // TODO: Log in map
+                }
+                if(surfPtr > 0 && surfPtr < rom.Length)
+                {
+                    var surfPokemon = new EncounterSet(EncounterSet.Type.Surf, bank, map, rom, surfPtr, surfSlots);
+                    encounters.Add(surfPokemon);
+                    // TODO: Log in map
+                }
+                if (rockSmashPtr > 0 && surfPtr < rom.Length)
+                {
+                    var rockSmashPokemon = new EncounterSet(EncounterSet.Type.RockSmash, bank, map, rom, rockSmashPtr, rockSmashSlots);
+                    encounters.Add(rockSmashPokemon);
+                    // TODO: Log in map
+                }
+                if(fishPtr > 0 && surfPtr < rom.Length)
+                {
+                    var fishPokemon = new EncounterSet(EncounterSet.Type.Fish, bank, map, rom, fishPtr, fishSlots);
+                    encounters.Add(fishPokemon);
+                    // TODO: Log in map
+                }
+                #endregion
+
+                // Load the saved offset to check the next header
+                rom.Load(); 
+            }
+
             var ret = new List<EncounterSet>();
             return ret;
         }
+
         // Read Type Effectiveness data
         private static TypeEffectivenessChart ReadTypeEffectivenessData(Rom rom, XmlManager data)
         {
