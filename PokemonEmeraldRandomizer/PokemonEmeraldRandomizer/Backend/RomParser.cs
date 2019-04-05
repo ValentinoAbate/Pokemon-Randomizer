@@ -200,8 +200,8 @@ namespace PokemonEmeraldRandomizer.Backend
             if (prefixes.Count > 1)
                 throw new Exception("Wild pokemon ptr prefix is not unique");
             // Go to the location in the pointer after the prefix 
-            // ptr is at the location + half the length of the hex string (-2 for the "0x" formatting)
-            rom.Seek(rom.ReadPointer(prefixes[0] + (encounterPtrPrefix.Length / 2) - 2 ));
+            // ptr is at the location + half the length of the hex string (-1 for the "0x" formatting)
+            rom.Seek(rom.ReadPointer(prefixes[0] + (encounterPtrPrefix.Length / 2) - 1));
             #endregion
 
             #region Encounter Slots
@@ -258,8 +258,7 @@ namespace PokemonEmeraldRandomizer.Backend
                 rom.Load(); 
             }
 
-            var ret = new List<EncounterSet>();
-            return ret;
+            return encounters;
         }
 
         // Read Type Effectiveness data

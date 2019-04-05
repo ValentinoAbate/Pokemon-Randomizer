@@ -17,5 +17,9 @@ namespace PokemonEmeraldRandomizer.Backend
             this.level = level;
             this.maxLevel = maxLevel;
         }
+        public override string ToString()
+        {
+            return pokemon.ToDisplayString() + " Lv" + (level == maxLevel ? level.ToString() : level + "-" + maxLevel); 
+        }
     }
 }
