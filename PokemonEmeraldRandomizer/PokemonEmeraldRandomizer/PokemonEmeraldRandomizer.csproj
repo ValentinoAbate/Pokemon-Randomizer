@@ -111,11 +111,11 @@
     <Compile Include="Backend\MoveSet.cs" />
     <Compile Include="Backend\PokedexUtils.cs" />
     <Compile Include="Backend\PokemonBaseStats.cs" />
-    <Compile Include="Backend\Mutator.cs" />
+    <Compile Include="Backend\Random.cs" />
     <Compile Include="Backend\RomData.cs" />
     <Compile Include="Backend\ByteArrayUtils.cs" />
     <Compile Include="Backend\RomWriter.cs" />
-    <Compile Include="Backend\RomDataMutator.cs" />
+    <Compile Include="Backend\Randomizer.cs" />
     <Compile Include="Backend\RomParser.cs" />
     <Compile Include="Backend\TableReader.cs" />
     <Compile Include="Backend\Trainer.cs" />

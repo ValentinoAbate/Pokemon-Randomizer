@@ -8,17 +8,17 @@ namespace PokemonEmeraldRandomizer.Backend
 {
     // This class does the actualmutation and randomizing by creating a mutated copy
     // of the original ROM data
-    public static class RomDataMutator
+    public static class Randomizer
     {
         // Apply mutations based on program settings.
-        public static RomData Mutate(RomData orig, ApplicationData appData)
+        public static RomData Randomize(RomData orig, ApplicationData appData)
         {
             // Initialize copy data to mutate and mutator with seed if applicable
             RomData copy = orig.Clone();
-            Mutator mut = appData.SetSeed ? new Mutator(appData.Seed) : new Mutator();
+            Random rand = appData.SetSeed ? new Random(appData.Seed) : new Random();
 
-            var pokemonSet = DefinePokemonSet(copy, appData, mut);
-            var types = DefinePokemonTypes(copy, appData, mut);
+            var pokemonSet = DefinePokemonSet(copy, appData, rand);
+            var types = DefinePokemonTypes(copy, appData, rand);
 
             // Randomize type traits
             // Generate ??? type traits (INCOMPLETE)
@@ -27,11 +27,11 @@ namespace PokemonEmeraldRandomizer.Backend
                 foreach (var type in types)
                 {
                     // Type effectiveness of other type vs ???
-                    var te = mut.RandomChoice(orig.Metrics.TypeEffectivenessRatios);
+                    var te = rand.RandomChoice(orig.Metrics.TypeEffectivenessRatios);
                     if (te != TypeEffectiveness.Normal) // Only register if not normal effectiveness
                         copy.TypeDefinitions.Add(type, PokemonType.Unknown, te, (type == PokemonType.NRM || type == PokemonType.FTG) && te == TypeEffectiveness.NoEffect);
                     // Type effectiveness of ??? vs other type
-                    te = mut.RandomChoice(orig.Metrics.TypeEffectivenessRatios);
+                    te = rand.RandomChoice(orig.Metrics.TypeEffectivenessRatios);
                     if (te != TypeEffectiveness.Normal) // Only register if not normal effectiveness
                         copy.TypeDefinitions.Add(PokemonType.Unknown, type, te, type == PokemonType.GHO);
                 }
@@ -58,15 +58,15 @@ namespace PokemonEmeraldRandomizer.Backend
                 // Mutate Pokemon Type
                 if (pkmn.IsSingleTyped)
                 {
-                    if (mut.RandomDouble() < appData.SingleTypeMutationRate)
-                        pkmn.types[0] = pkmn.types[1] = randomType(mut, copy.Metrics, "None");
+                    if (rand.RandomDouble() < appData.SingleTypeMutationRate)
+                        pkmn.types[0] = pkmn.types[1] = randomType(rand, copy.Metrics, "None");
                 }
                 else
                 {
-                    if (mut.RandomDouble() < appData.DualTypePrimaryMutationRate)
-                        pkmn.types[0] = mut.RandomChoice(orig.Metrics.TypeRatiosDualPrimary);
-                    if (mut.RandomDouble() < appData.DualTypeSecondaryMutationRate)
-                        pkmn.types[1] = mut.RandomChoice(orig.Metrics.TypeRatiosDualSecondary);
+                    if (rand.RandomDouble() < appData.DualTypePrimaryMutationRate)
+                        pkmn.types[0] = rand.RandomChoice(orig.Metrics.TypeRatiosDualPrimary);
+                    if (rand.RandomDouble() < appData.DualTypeSecondaryMutationRate)
+                        pkmn.types[1] = rand.RandomChoice(orig.Metrics.TypeRatiosDualSecondary);
                 }
                 // Mutate battle states and EVs
                 // Mutate Learn Sets
@@ -138,7 +138,7 @@ namespace PokemonEmeraldRandomizer.Backend
                     }
 
                     // Actually choose the species
-                    pokemon.species = mut.RandomChoice(combinedWeightings);
+                    pokemon.species = rand.RandomChoice(combinedWeightings);
                     // Reset special moves if necessary
                 }
                     // Class based?
@@ -171,7 +171,7 @@ namespace PokemonEmeraldRandomizer.Backend
         }
 
         // Define and return the set of valid pokemon (with applicable restrictions)
-        private static HashSet<PokemonSpecies> DefinePokemonSet(RomData romData, ApplicationData appData, Mutator mut)
+        private static HashSet<PokemonSpecies> DefinePokemonSet(RomData romData, ApplicationData appData, Random mut)
         {                        
             //Start with all for now
             HashSet<PokemonSpecies> pokemonSet = EnumUtils.GetValues<PokemonSpecies>().ToHashSet();          
@@ -185,7 +185,7 @@ namespace PokemonEmeraldRandomizer.Backend
         }
 
         // Define and return the set of valid types (with applicable restrictions)
-        private static HashSet<PokemonType> DefinePokemonTypes(RomData romData, ApplicationData appData, Mutator mut)
+        private static HashSet<PokemonType> DefinePokemonTypes(RomData romData, ApplicationData appData, Random mut)
         {
             HashSet<PokemonType> types = EnumUtils.GetValues<PokemonType>().ToHashSet();
             // Remove the FAIRY type if we are Gen V or below and have not enabled the add fairy type hack
@@ -196,7 +196,7 @@ namespace PokemonEmeraldRandomizer.Backend
         
 
 
-        private static PokemonType randomType(Mutator mut, RomMetrics metrics, string metric)
+        private static PokemonType randomType(Random mut, RomMetrics metrics, string metric)
         {
             switch (metric)
             {

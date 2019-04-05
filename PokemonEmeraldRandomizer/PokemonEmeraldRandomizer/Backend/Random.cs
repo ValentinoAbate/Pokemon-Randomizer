@@ -7,16 +7,16 @@ using System.Threading.Tasks;
 
 namespace PokemonEmeraldRandomizer.Backend
 {
-    public class Mutator
+    public class Random
     {
-        private Random rand;
-        public Mutator()
+        private System.Random rand;
+        public Random()
         {
-            rand = new Random();
+            rand = new System.Random();
         }
-        public Mutator(string seed)
+        public Random(string seed)
         {
-            rand = new Random(seed.GetHashCode());
+            rand = new System.Random(seed.GetHashCode());
         }
 
         #region General Random Functions
