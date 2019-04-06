@@ -109,29 +109,34 @@ namespace PokemonEmeraldRandomizer.Backend
             //Mutate battle here later?
 
             #region Randomize Wild Pokemon (may happen during maps later)
+            // Get the species randomization settings for wild pokemon
+            var wildSpeciesSettings = settings.GetSpeciesSettings("wild");
 
-            if(settings.WildPokemonSetting == Settings.WildPokemonOption.CompletelyRandom)
+            if (settings.WildPokemonSetting == Settings.WildPokemonOption.CompletelyRandom)
             {
                 foreach (var encounterSet in data.Encounters)
                 {
-                    foreach (var encounter in encounterSet)
+                    foreach (var enc in encounterSet)
                     {
-                        encounter.pokemon = RandomSpecies(pokemonSet, encounter.pokemon, settings.GetSpeciesSettings("wild"));
+                        enc.pokemon = RandomSpecies(pokemonSet, enc.pokemon, enc.level, wildSpeciesSettings);
                     }
                 }
             }
             else if(settings.WildPokemonSetting == Settings.WildPokemonOption.AreaOneToOne)
             {
+                
                 foreach (var encounterSet in data.Encounters)
                 {
                     // Get all unique species in the encounter set
                     var species = encounterSet.Select((e) => e.pokemon).Distinct();
                     var mapping = new Dictionary<PokemonSpecies, PokemonSpecies>();
                     foreach (var s in species)
-                        mapping.Add(s, RandomSpecies(pokemonSet, s, settings.GetSpeciesSettings("wild")));
-                    foreach (var encounter in encounterSet)
+                        mapping.Add(s, RandomSpecies(pokemonSet, s, wildSpeciesSettings));
+                    foreach (var enc in encounterSet)
                     {
-                        encounter.pokemon = mapping[encounter.pokemon];
+                        enc.pokemon = mapping[enc.pokemon];
+                        if (wildSpeciesSettings.DisableIllegalEvolutions)
+                            enc.pokemon = CorrectImpossibleEvo(enc.pokemon, enc.level);
                     }
                 }
             }
@@ -139,12 +144,14 @@ namespace PokemonEmeraldRandomizer.Backend
             {
                 var mapping = new Dictionary<PokemonSpecies, PokemonSpecies>();
                 foreach (var s in pokemonSet)
-                    mapping.Add(s, RandomSpecies(pokemonSet, s, settings.GetSpeciesSettings("wild")));
+                    mapping.Add(s, RandomSpecies(pokemonSet, s, wildSpeciesSettings));
                 foreach (var encounterSet in data.Encounters)
                 {
-                    foreach (var encounter in encounterSet)
+                    foreach (var enc in encounterSet)
                     {
-                        encounter.pokemon = mapping[encounter.pokemon];
+                        enc.pokemon = mapping[enc.pokemon];
+                        if (wildSpeciesSettings.DisableIllegalEvolutions)
+                            enc.pokemon = CorrectImpossibleEvo(enc.pokemon, enc.level);
                     }
                 }
             }
@@ -161,7 +168,7 @@ namespace PokemonEmeraldRandomizer.Backend
                 // Set pokemon
                 foreach (var pokemon in trainer.pokemon)
                 {
-                    pokemon.species = RandomSpecies(pokemonSet, pokemon.species, settings.GetSpeciesSettings("trainer"));
+                    pokemon.species = RandomSpecies(pokemonSet, pokemon.species, pokemon.level, settings.GetSpeciesSettings("trainer"));
                     // Reset special moves if necessary
                     if (pokemon.dataType == TrainerPokemon.DataType.SpecialMoves || pokemon.dataType == TrainerPokemon.DataType.SpecialMovesAndHeldItem)
                     {
@@ -257,6 +264,45 @@ namespace PokemonEmeraldRandomizer.Backend
 
             // Actually choose the species
             return rand.RandomChoice(combinedWeightings);
+        }
+        /// <summary>Chose a random species from the input set based on the given species settings.
+        /// If speciesSettings.DisableIllegalEvolutions is true, scale impossible evolutions down to their less evolved forms </summary> 
+        private PokemonSpecies RandomSpecies(IEnumerable<PokemonSpecies> possiblePokemon, PokemonSpecies pokemon, int level, Settings.SpeciesSettings speciesSettings)
+        {
+            var newSpecies = RandomSpecies(possiblePokemon, pokemon, speciesSettings);
+            if(speciesSettings.DisableIllegalEvolutions)
+                newSpecies = CorrectImpossibleEvo(newSpecies, level);
+            // Actually choose the species
+            return newSpecies;
+        }
+        /// If the pokemon is an invalid level due to evolution state, revert to an earlier evolution
+        private PokemonSpecies CorrectImpossibleEvo(PokemonSpecies species, int level)
+        {
+            var newSpecies = species;
+            var evolvesFrom = data.PokemonLookup[newSpecies].evolvesFrom;
+            while (!IsPokemonValidLevel(evolvesFrom, level))
+            {
+                // Choose a random element from the pokemon this pokemon evolves from
+                newSpecies = rand.RandomChoice(evolvesFrom).Pokemon;
+                evolvesFrom = data.PokemonLookup[newSpecies].evolvesFrom;
+            }
+            return newSpecies;
+        }
+        /// <summary> returns false if the pokemon is an invalid level 
+        /// (due to not being high enough level to evolve to the current species) </summary>
+        private static bool IsPokemonValidLevel(List<Evolution> evolvesFrom, int level)
+        {
+            if (evolvesFrom.Count == 0) // basic pokemon
+                return true;
+            // Is there at least one valid evolution
+            foreach (var evo in evolvesFrom)
+            {
+                if (!evo.EvolvesByLevel) // evolution is valid if not by level
+                    return true;
+                else if (evo.parameter <= level) // evolution is valid if required level is <= level
+                    return true;
+            }
+            return false;
         }
     }
 }

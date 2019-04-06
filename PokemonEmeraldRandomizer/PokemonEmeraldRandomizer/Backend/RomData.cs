@@ -129,6 +129,17 @@ namespace PokemonEmeraldRandomizer.Backend
         {
             Metrics = new RomMetrics(this);
         }
+        /// <summary>updates the "evolvesFrom" fields of all pokemon</summary> 
+        public void LinkEvolutions()
+        {
+            foreach (var pokemon in Pokemon)
+                pokemon.evolvesFrom.Clear();
+            foreach(var pokemon in Pokemon)
+                foreach (var evo in pokemon.evolvesTo)
+                    if(evo.Type != EvolutionType.None)
+                        PokemonLookup[evo.Pokemon].evolvesFrom.Add(new Evolution(evo.Type, pokemon.species, evo.parameter));
+        }
+
         // Create string array to write to info file
         public string[] ToStringArray()
         {

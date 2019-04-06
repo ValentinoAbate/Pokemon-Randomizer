@@ -37,16 +37,23 @@ namespace PokemonEmeraldRandomizer.Backend
         // For the Beauty type, the parameter is the beauty threshold (0-255)
         // On any other types the parameter does not apply
         public int parameter;
-        public PokemonSpecies EvolvesTo { get; set; }
+        public PokemonSpecies Pokemon { get; set; }
+        public bool EvolvesByLevel { get => Type.ToString().Contains("Level"); }
         public Evolution(byte[] data)
         {
             Type = (EvolutionType)data.ReadUInt16(0);
             parameter = data.ReadUInt16(2);
-            EvolvesTo = (PokemonSpecies)data.ReadUInt16(4);
+            Pokemon = (PokemonSpecies)data.ReadUInt16(4);
+        }
+        public Evolution(EvolutionType type, PokemonSpecies pokemon, int parameter)
+        {
+            Type = type;
+            Pokemon = pokemon;
+            this.parameter = parameter;
         }
         public override string ToString()
         {
-            return EvolvesTo.ToDisplayString() + ": " + Type.ToDisplayString() + " " + parameter;
+            return Pokemon.ToDisplayString() + ": " + Type.ToDisplayString() + " " + parameter;
         }
     }
 }

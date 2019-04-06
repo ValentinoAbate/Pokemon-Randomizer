@@ -22,6 +22,7 @@ namespace PokemonEmeraldRandomizer.Backend
         public int encounterRate;
         public int bank;
         public int map;
+   
         public EncounterSet(Type type, int bank, int map, Rom rom, int offset, int num)
         {
             encounters = new List<Encounter>();
@@ -43,6 +44,7 @@ namespace PokemonEmeraldRandomizer.Backend
                 encounters.Add(new Encounter(pokemon, level, maxLevel));
             }
         }
+
         public override string ToString()
         {
             return bank + ", " + map + ": " + type;

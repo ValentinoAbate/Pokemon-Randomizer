@@ -30,6 +30,8 @@ namespace PokemonEmeraldRandomizer.Backend
             data.PokemonLookup = new Dictionary<PokemonSpecies, PokemonBaseStats>();
             foreach (var pokemon in data.Pokemon)
                 data.PokemonLookup.Add(pokemon.species, pokemon);
+            // Link Pokemon to what they evolved from
+            data.LinkEvolutions();
             // data.Starters = ReadStarters(rom);
             // Trainers and associated data
             data.ClassNames = ReadTrainerClassNames(data.Rom, data.Info);
@@ -90,7 +92,7 @@ namespace PokemonEmeraldRandomizer.Backend
                 movePtr = ReadAttacks(rom, movePtr, out pkmn.learnSet);
                 ReadTMHMCompat(rom, data, tmPtr + (i * tmHmSize), out pkmn.TMCompat, out pkmn.HMCompat);
                 ReadTutorCompat(rom, data, tutorPtr + (i * tutorSize), out pkmn.moveTutorCompat);
-                ReadEvolutions(rom, data, evolutionPtr + (i * evolutionSize), out pkmn.evolutions);
+                ReadEvolutions(rom, data, evolutionPtr + (i * evolutionSize), out pkmn.evolvesTo);
                 pokemon.Add(pkmn);
             }
             return pokemon;

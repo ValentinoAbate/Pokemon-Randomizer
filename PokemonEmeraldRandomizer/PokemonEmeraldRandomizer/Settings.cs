@@ -65,6 +65,7 @@ namespace PokemonEmeraldRandomizer
         };
         public class SpeciesSettings
         {
+            public bool DisableIllegalEvolutions { get => true; }
             public float Noise { get => 0.001f; }
             public float PowerScaleSimilarityMod { get => 0.15f; }
             public bool PowerScaleCull { get => true; }
