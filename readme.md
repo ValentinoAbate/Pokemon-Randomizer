@@ -1,18 +1,14 @@
-An Emerald randomizer I'm customizing as a fun side project!
+A Pokemon randomizer I'm creating as a fun side project!
 
-Based off of original code by Artemis251: v.2.2 -- 13 April 2014
+- Currently focuses on Gen III, but I plan to support at least Gen IV and Gen II
+- Heavy focus on PCG and Vanilla+ options
+
+Originally based off of source code from Artemis251's Pokemon Emerald Randomizer (v.2.2 -- 13 April 2014) but I pivoted to C# so now its just a reference
 Check out their website! http://artemis251.fobby.net/downloads/emerald/
 
-Plans:
+Another project that's been a great reference for writing this is dabomstew's Universal pokemon randomizer 
+Check out their project! https://github.com/Dabomstew/universal-pokemon-randomizer
 
-This randomizer is great, but the randomization is a little too game-breaking to do Nuzlocke runs in. 
+I don't have an executable release yet, but I'll link one here when I do
 
-My first orders of business are:
 
-	-add some balancing constraints to the randomization:
-		-basic pokemon -> basic pokemon (maintain evolution stage)
-		-Pokemon with random type learn moves of their type more often
-		-Move rareness weighting (Hydro cannon is rarer than splash, etc.)
-		-Type weighting (Dragon is rarer than grass, etc.)
-	-make the crazy randomness ("mutations") rarer but break the above rules
-		-settable percentages and weightings
