@@ -56,6 +56,21 @@ namespace PokemonEmeraldRandomizer.Backend
             }
             throw new Exception("No item chosen");
         }
+        /// <summary> Returns a weighted random choice from the given items and float weights </summary> 
+        public T RandomChoice<T>(IEnumerable<T> items, IEnumerable<float> weights)
+        {
+            float totalWeight = weights.Aggregate((a, b) => a + b);
+            float randomNumber = (float)rand.NextDouble() * totalWeight;
+            var e = weights.GetEnumerator();
+            foreach(var item in items)
+            {
+                e.MoveNext();
+                if (randomNumber < e.Current)
+                    return item;
+                randomNumber -= e.Current;
+            }
+            throw new Exception("No item chosen");
+        }
         /// <summary> Returns a weighted random choice from the given items and int weights </summary> 
         public T RandomChoice<T>(T[] items, int[] weights, bool isAbsolute)
         {

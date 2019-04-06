@@ -11,8 +11,8 @@ namespace PokemonEmeraldRandomizer.Backend
     {
         public delegate float Metric(T item);
         
-        public T[] Items { get => items.Keys.ToArray(); }
-        public float[] Weights { get => items.Values.ToArray(); }
+        public IEnumerable<T> Items { get => items.Keys; }
+        public IEnumerable<float> Weights { get => items.Values; }
         public float Count { get => items.Count; }
         public Dictionary<T, float> Percentages
         {

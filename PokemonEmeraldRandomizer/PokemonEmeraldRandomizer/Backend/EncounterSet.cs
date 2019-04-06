@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace PokemonEmeraldRandomizer.Backend
 {
-    public class EncounterSet
+    public class EncounterSet : IEnumerable<Encounter>
     {
         public enum Type
         {
@@ -45,6 +46,16 @@ namespace PokemonEmeraldRandomizer.Backend
         public override string ToString()
         {
             return bank + ", " + map + ": " + type;
+        }
+
+        public IEnumerator<Encounter> GetEnumerator()
+        {
+            return encounters.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return encounters.GetEnumerator();
         }
     }
 }

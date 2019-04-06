@@ -13,7 +13,7 @@ namespace PokemonEmeraldRandomizer.Backend
     public static class PokemonMetrics
     {
         /// <summary> returns a given pokemon's power similarity to all pokemon in the pokemonSet. Output is normalized </summary>
-        public static WeightedSet<PokemonSpecies> PowerSimilarity(HashSet<PokemonSpecies> pokemonSet, Dictionary<PokemonSpecies,float> powerScores, PokemonSpecies species)
+        public static WeightedSet<PokemonSpecies> PowerSimilarity(IEnumerable<PokemonSpecies> pokemonSet, Dictionary<PokemonSpecies,float> powerScores, PokemonSpecies species)
         {
             float myPowerScore = powerScores[species];
             var powerWeighting = new WeightedSet<PokemonSpecies>();          
@@ -35,7 +35,7 @@ namespace PokemonEmeraldRandomizer.Backend
             return differenceRating <= 0 ? 0 : differenceRating;
         }
 
-        public static WeightedSet<PokemonSpecies> TypeSimilarity(HashSet<PokemonSpecies> pokemonSet, RomData data, PokemonSpecies species)
+        public static WeightedSet<PokemonSpecies> TypeSimilarity(IEnumerable<PokemonSpecies> pokemonSet, RomData data, PokemonSpecies species)
         {
             var myStats = data.PokemonLookup[species];
             var typeWeighting = new WeightedSet<PokemonSpecies>();

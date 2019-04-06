@@ -155,7 +155,8 @@ namespace PokemonEmeraldRandomizer
             saveFileDialog.Title = "Save ROM";
             if (saveFileDialog.ShowDialog() == true)
             {
-                RandomizedData = Backend.Randomizer.Randomize(Data, new ApplicationData(this));
+                var randomzier = new Backend.Randomizer(Data, new Settings(this));
+                RandomizedData = randomzier.Randomize();
                 File.WriteAllBytes(saveFileDialog.FileName, Backend.RomWriter.Write(RandomizedData));
             }
         }
