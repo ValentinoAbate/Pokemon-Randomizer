@@ -163,6 +163,10 @@ namespace PokemonEmeraldRandomizer.Backend
                 {
                     pokemon.species = RandomSpecies(pokemonSet, pokemon.species, settings.GetSpeciesSettings("trainer"));
                     // Reset special moves if necessary
+                    if (pokemon.dataType == TrainerPokemon.DataType.SpecialMoves || pokemon.dataType == TrainerPokemon.DataType.SpecialMovesAndHeldItem)
+                    {
+                        pokemon.moves = MovesetGenerator.DefaultMoveset(data.PokemonLookup[pokemon.species], pokemon.level);
+                    }                 
                 }
                 // Class based?
                 // Local environment based?
@@ -179,7 +183,7 @@ namespace PokemonEmeraldRandomizer.Backend
             return data;
         }
 
-        // Define and return the set of valid pokemon (with applicable restrictions)
+        /// <summary>Define and return the set of valid pokemon (with applicable restrictions)</summary>
         private HashSet<PokemonSpecies> DefinePokemonSet()
         {
             //Start with all for now
@@ -192,8 +196,7 @@ namespace PokemonEmeraldRandomizer.Backend
             // Possible Hacks: Gen IV
             return pokemonSet;
         }
-
-        // Define and return the set of valid types (with applicable restrictions)
+        /// <summary>Define and return the set of valid types (with applicable restrictions)</summary> 
         private HashSet<PokemonType> DefinePokemonTypes()
         {
             HashSet<PokemonType> types = EnumUtils.GetValues<PokemonType>().ToHashSet();

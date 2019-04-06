@@ -32,11 +32,11 @@ namespace PokemonEmeraldRandomizer.Backend
         public Item[] useItems = new Item[4];
         public bool isDoubleBattle;
         public BitArray AIFlags;
-
-        public Trainer(Rom rom, int offset, List<string> classNames)
+        public int pokemonOffset;
+        // Read a trainer from the rom's internal offset
+        public Trainer(Rom rom, List<string> classNames)
         {
             this.classNames = classNames;
-            rom.Seek(offset);
             dataType = (TrainerPokemon.DataType)rom.ReadByte();
             trainerClass = rom.ReadByte();
             // Read Gender (byte 2 bit 0)
@@ -101,31 +101,43 @@ namespace PokemonEmeraldRandomizer.Backend
             int numPokemon = rom.ReadByte();
             // What is in bytes 33-35?
             rom.Skip(3);
-            int pokemonPtr = rom.ReadPointer();
+            // Bytes 36-39 (end of data)
+            pokemonOffset = rom.ReadPointer();
+            // Save the internal offset before chasing pointers
+            rom.Save();
 
-            #region Read pokemon from pokemonPtr
+            #region Read pokemon from pokemonOffset
+            rom.Seek(pokemonOffset);
             pokemon = new TrainerPokemon[numPokemon];
             // The pokemon data structures will be either 8 or 16 bytes depending on the dataType of the trainer
-            int pkmnDataBytes = (dataType == TrainerPokemon.DataType.Basic || dataType == TrainerPokemon.DataType.HeldItem) ? 8 : 16;
             for (int i = 0; i < numPokemon; ++i)
             {
-                TrainerPokemon p = new TrainerPokemon();
-                int ptr = pokemonPtr + (i * pkmnDataBytes);
+                var p = new TrainerPokemon();
                 p.dataType = dataType;
-                p.IVLevel = rom.ReadUInt16(ptr);
-                p.level = rom.ReadUInt16(ptr + 2);
-                p.species = (PokemonSpecies)rom.ReadUInt16(ptr + 4);
-                if (dataType == TrainerPokemon.DataType.HeldItem || dataType == TrainerPokemon.DataType.SpecialMovesAndHeldItem)
-                    p.heldItem = (Item)rom.ReadUInt16(ptr + 6);
-                if(dataType == TrainerPokemon.DataType.SpecialMoves || dataType == TrainerPokemon.DataType.SpecialMovesAndHeldItem)
+                p.IVLevel = rom.ReadUInt16();
+                p.level = rom.ReadUInt16();
+                p.species = (PokemonSpecies)rom.ReadUInt16();
+                if (dataType == TrainerPokemon.DataType.Basic)
+                    rom.Skip(2); // Skip padding
+                else if (dataType == TrainerPokemon.DataType.HeldItem)
+                    p.heldItem = (Item)rom.ReadUInt16();
+                else if (dataType == TrainerPokemon.DataType.SpecialMoves)
                 {
-                    int moveStartAddy = dataType == TrainerPokemon.DataType.SpecialMoves ? 6 : 8;
                     for (int j = 0; j < 4; ++j)
-                        p.moves[j] = (Move)rom.ReadUInt16(ptr + moveStartAddy + (j * 2));
+                        p.moves[j] = (Move)rom.ReadUInt16();
+                    rom.Skip(2);
                 }
+                else if (dataType == TrainerPokemon.DataType.SpecialMovesAndHeldItem)
+                {
+                    p.heldItem = (Item)rom.ReadUInt16();
+                    for (int j = 0; j < 4; ++j)
+                        p.moves[j] = (Move)rom.ReadUInt16();
+                }                   
                 pokemon[i] = p;
             }
             #endregion
+            // Return to the trainers
+            rom.Load();
         }
 
         public override string ToString()

@@ -22,6 +22,8 @@ namespace PokemonEmeraldRandomizer.Backend
             //}
             WritePokemonBaseStats(data, file);
             WriteTypeDefinitions(data, file);
+            WriteEncounters(data, file, data.Info);
+            WriteTrainerBattles(data, file, data.Info);
             return file.File;
         }
         private static void WritePokemonBaseStats(RomData data, Rom file)
@@ -61,6 +63,111 @@ namespace PokemonEmeraldRandomizer.Backend
                 file.WriteBlock(data.Info.Offset("typeEffectiveness"), typeData.ToArray());
             }
             #endregion
+        }
+        private static void WriteEncounters(RomData romData, Rom rom, XmlManager data)
+        {
+            #region Find and Seek encounter table
+            var encounterPtrPrefix = data.Attr("wildPokemon", "ptrPrefix", data.Constants).Value;
+            var prefixes = rom.FindAll(encounterPtrPrefix);
+            // If no prefix was found, fall back on another method (no other method yet)
+            if (prefixes.Count <= 0)
+                throw new Exception("No wild pokemon ptr prefix found");
+            // If more than 1 prefix was found, fall back on another method (potentially just choose the first)
+            if (prefixes.Count > 1)
+                throw new Exception("Wild pokemon ptr prefix is not unique");
+            // Go to the location in the pointer after the prefix 
+            // ptr is at the location + half the length of the hex string (-1 for the "0x" formatting)
+            rom.Seek(rom.ReadPointer(prefixes[0] + (encounterPtrPrefix.Length / 2) - 1));
+            #endregion
+
+            var encounterIter = romData.Encounters.GetEnumerator();
+            // Iterate until the ending marker (0xff, 0xff)
+            while(rom.Peek() != 0xff || rom.Peek(1) != 0xff)
+            {
+                // skip bank, map, and padding
+                rom.Skip(4);
+                int grassPtr = rom.ReadPointer();
+                int surfPtr = rom.ReadPointer();
+                int rockSmashPtr = rom.ReadPointer();
+                int fishPtr = rom.ReadPointer();
+                // Save the internal offset before chasing pointers
+                rom.Save();
+
+                #region Load the actual Encounter sets for this area
+                if (grassPtr > 0 && grassPtr < rom.Length)
+                {
+                    encounterIter.MoveNext();
+                    WriteEncounterSet(encounterIter.Current, rom, grassPtr);
+                }
+                if (surfPtr > 0 && surfPtr < rom.Length)
+                {
+                    encounterIter.MoveNext();
+                    WriteEncounterSet(encounterIter.Current, rom, surfPtr);
+                }
+                if (rockSmashPtr > 0 && rockSmashPtr < rom.Length)
+                {
+                    encounterIter.MoveNext();
+                    WriteEncounterSet(encounterIter.Current, rom, rockSmashPtr);
+                }
+                if (fishPtr > 0 && fishPtr < rom.Length)
+                {
+                    encounterIter.MoveNext();
+                    WriteEncounterSet(encounterIter.Current, rom, fishPtr);
+                }
+                #endregion
+
+                // Load the saved offset to check the next header
+                rom.Load();
+            }
+        }
+        private static void WriteEncounterSet(EncounterSet set, Rom rom, int offset)
+        {
+            rom.Seek(offset);
+            rom.WriteByte((byte)set.encounterRate);
+            rom.Skip(3);
+            rom.Seek(rom.ReadPointer());
+            foreach (var encounter in set)
+            {
+                rom.WriteByte((byte)encounter.level);
+                rom.WriteByte((byte)encounter.maxLevel);
+                rom.WriteUInt16((int)encounter.pokemon);
+            }
+        }
+
+        private static void WriteTrainerBattles(RomData romData, Rom rom, XmlManager data)
+        {
+            int numTrainers = data.Num("trainerBattles");
+            rom.Seek(data.Offset("trainerBattles"));
+            foreach(var trainer in romData.Trainers)
+            {
+                rom.Skip(40); // Just skip writing the trainers for now
+                rom.Save();
+                rom.Seek(trainer.pokemonOffset);
+                #region Read pokemon from pokemonPtr
+                foreach(var pokemon in trainer.pokemon)
+                {
+                    rom.WriteUInt16(pokemon.IVLevel);
+                    rom.WriteUInt16(pokemon.level);
+                    rom.WriteUInt16((int)pokemon.species);
+                    if (trainer.dataType == TrainerPokemon.DataType.Basic)
+                        rom.Skip(2); // Skip padding
+                    else if (trainer.dataType == TrainerPokemon.DataType.HeldItem)
+                        rom.WriteUInt16((int)pokemon.heldItem);
+                    else if (trainer.dataType == TrainerPokemon.DataType.SpecialMoves)
+                    {
+                        foreach (var move in pokemon.moves)
+                            rom.WriteUInt16((int)move);
+                        rom.Skip(2);
+                    }
+                    else if (trainer.dataType == TrainerPokemon.DataType.SpecialMovesAndHeldItem)
+                    {
+                        rom.WriteUInt16((int)pokemon.heldItem);
+                        foreach (var move in pokemon.moves)
+                            rom.WriteUInt16((int)move);
+                    }
+                }
+                #endregion
+            }
         }
     }
 }

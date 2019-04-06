@@ -87,7 +87,7 @@ namespace PokemonEmeraldRandomizer.Backend
                 }
                 // Create Pokemon
                 PokemonBaseStats pkmn = new PokemonBaseStats(rom, pkmnPtr + (i * pkmnSize), (PokemonSpecies)(i + 1));
-                movePtr = ReadAttacks(rom, movePtr, out pkmn.moveSet);
+                movePtr = ReadAttacks(rom, movePtr, out pkmn.learnSet);
                 ReadTMHMCompat(rom, data, tmPtr + (i * tmHmSize), out pkmn.TMCompat, out pkmn.HMCompat);
                 ReadTutorCompat(rom, data, tutorPtr + (i * tutorSize), out pkmn.moveTutorCompat);
                 ReadEvolutions(rom, data, evolutionPtr + (i * evolutionSize), out pkmn.evolutions);
@@ -96,9 +96,9 @@ namespace PokemonEmeraldRandomizer.Backend
             return pokemon;
         }
         // Read the attacks starting at offset (returns the index after completion)
-        private static int ReadAttacks(Rom rom, int offset, out MoveSet moves)
+        private static int ReadAttacks(Rom rom, int offset, out LearnSet moves)
         {
-            moves = new MoveSet();
+            moves = new LearnSet();
             byte curr = rom.ReadByte(offset);
             byte next = rom.ReadByte(offset + 1);
             while (curr != 255 || next != 255)
@@ -181,10 +181,9 @@ namespace PokemonEmeraldRandomizer.Backend
         {
             List<Trainer> ret = new List<Trainer>();
             int numTrainers = data.Num("trainerBattles");
-            int offset = data.Offset("trainerBattles");
-            int size = data.Size("trainerBattles");
+            rom.Seek(data.Offset("trainerBattles"));
             for (int i = 0; i < numTrainers; ++i)
-                ret.Add(new Trainer(rom, offset + (i * size), classNames));
+                ret.Add(new Trainer(rom, classNames));
             return ret;
         }
         // Read encounters
@@ -240,13 +239,13 @@ namespace PokemonEmeraldRandomizer.Backend
                     encounters.Add(surfPokemon);
                     // TODO: Log in map
                 }
-                if (rockSmashPtr > 0 && surfPtr < rom.Length)
+                if (rockSmashPtr > 0 && rockSmashPtr < rom.Length)
                 {
                     var rockSmashPokemon = new EncounterSet(EncounterSet.Type.RockSmash, bank, map, rom, rockSmashPtr, rockSmashSlots);
                     encounters.Add(rockSmashPokemon);
                     // TODO: Log in map
                 }
-                if(fishPtr > 0 && surfPtr < rom.Length)
+                if(fishPtr > 0 && fishPtr < rom.Length)
                 {
                     var fishPokemon = new EncounterSet(EncounterSet.Type.Fish, bank, map, rom, fishPtr, fishSlots);
                     encounters.Add(fishPokemon);

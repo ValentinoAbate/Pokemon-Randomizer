@@ -76,6 +76,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Backend\MovesetGenerator.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="Backend\Connection.cs" />
     <Compile Include="Backend\ConnectionData.cs" />
@@ -108,7 +109,7 @@
     <Compile Include="Backend\EnumUtils.cs" />
     <Compile Include="Backend\Evolution.cs" />
     <Compile Include="Backend\Item.cs" />
-    <Compile Include="Backend\MoveSet.cs" />
+    <Compile Include="Backend\LearnSet.cs" />
     <Compile Include="Backend\PokedexUtils.cs" />
     <Compile Include="Backend\PokemonBaseStats.cs" />
     <Compile Include="Backend\Random.cs" />

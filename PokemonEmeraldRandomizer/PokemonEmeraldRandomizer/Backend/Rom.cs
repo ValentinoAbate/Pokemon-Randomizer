@@ -18,7 +18,7 @@ namespace PokemonEmeraldRandomizer.Backend
         /// <summary>The offset that WriteInFreeSpace(byte[] data) starts searching at </summary>
         public int SearchStartOffset { get; }
         public int InternalOffset { get; private set; }
-        public int SavedOffset { get; private set; } = 0;
+        public Stack<int> SavedOffsets { get; } = new Stack<int>();
         public int Length { get => File.Length; }
         public byte[] File {get;}
 
@@ -38,6 +38,8 @@ namespace PokemonEmeraldRandomizer.Backend
             File = toCopy.File;
             InternalOffset = 0;  
         }
+        /// <summary>Reads a byte from the internal offset</summary>
+        public byte WriteByte(byte value) => File[InternalOffset++] = value;
         /// <summary>Read a block of bytes at the internal offset</summary>
         public byte[] ReadBlock(int length)
         {
@@ -166,15 +168,16 @@ namespace PokemonEmeraldRandomizer.Backend
         {
             InternalOffset += numBytes;
         }
-        /// <summary>Saves the Rom's internal offset to SavedOffset (to be loaded later)</summary>
+        /// <summary>Pushes the Rom's internal offset to the SavedOffsets Stack (to be loaded later)</summary>
         public void Save()
         {
-            SavedOffset = InternalOffset;
+            SavedOffsets.Push(InternalOffset);
         }
-        /// <summary>Sets the Rom's internal offset from the SavedOffset</summary>
+        /// <summary>Sets the Rom's internal offset from the SavedOffsets Stack</summary>
         public void Load()
         {
-            InternalOffset = SavedOffset;
+            if(SavedOffsets.Count > 0)
+                InternalOffset = SavedOffsets.Pop(); ;
         }
         /// <summary>Reads a byte from the internal offset</summary>
         public byte ReadByte() => File[InternalOffset++];
