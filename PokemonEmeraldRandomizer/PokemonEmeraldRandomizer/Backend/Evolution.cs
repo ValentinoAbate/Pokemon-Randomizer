@@ -39,6 +39,7 @@ namespace PokemonEmeraldRandomizer.Backend
         public int parameter;
         public PokemonSpecies Pokemon { get; set; }
         public bool EvolvesByLevel { get => Type.ToString().Contains("Level"); }
+        public bool EvolvesByTrade { get => Type == EvolutionType.Trade || Type == EvolutionType.TradeWithItem; }
         public Evolution(byte[] data)
         {
             Type = (EvolutionType)data.ReadUInt16(0);

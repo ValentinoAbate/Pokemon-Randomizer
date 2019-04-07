@@ -65,7 +65,15 @@ namespace PokemonEmeraldRandomizer
         };
         public class SpeciesSettings
         {
+            #region Evolution Settings
             public bool DisableIllegalEvolutions { get => true; }
+            public bool SetLevelsOnArtificialEvos { get => true; }
+            public int ItemEvolutionLevel { get => 27; }
+            public int TradeEvolutionLevel { get => 32; }
+            public int FriendshipEvolutionLevel { get => 3; }
+            public int BeautyEvolutionLevel { get => 32; }
+            #endregion
+
             public float Noise { get => 0.001f; }
             public float PowerScaleSimilarityMod { get => 0.15f; }
             public bool PowerScaleCull { get => true; }

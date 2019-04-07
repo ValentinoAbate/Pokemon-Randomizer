@@ -111,7 +111,6 @@ namespace PokemonEmeraldRandomizer.Backend
             #region Randomize Wild Pokemon (may happen during maps later)
             // Get the species randomization settings for wild pokemon
             var wildSpeciesSettings = settings.GetSpeciesSettings("wild");
-
             if (settings.WildPokemonSetting == Settings.WildPokemonOption.CompletelyRandom)
             {
                 foreach (var encounterSet in data.Encounters)
@@ -136,7 +135,7 @@ namespace PokemonEmeraldRandomizer.Backend
                     {
                         enc.pokemon = mapping[enc.pokemon];
                         if (wildSpeciesSettings.DisableIllegalEvolutions)
-                            enc.pokemon = CorrectImpossibleEvo(enc.pokemon, enc.level);
+                            enc.pokemon = CorrectImpossibleEvo(enc.pokemon, enc.level, wildSpeciesSettings);
                     }
                 }
             }
@@ -151,7 +150,7 @@ namespace PokemonEmeraldRandomizer.Backend
                     {
                         enc.pokemon = mapping[enc.pokemon];
                         if (wildSpeciesSettings.DisableIllegalEvolutions)
-                            enc.pokemon = CorrectImpossibleEvo(enc.pokemon, enc.level);
+                            enc.pokemon = CorrectImpossibleEvo(enc.pokemon, enc.level, wildSpeciesSettings);
                     }
                 }
             }
@@ -271,16 +270,16 @@ namespace PokemonEmeraldRandomizer.Backend
         {
             var newSpecies = RandomSpecies(possiblePokemon, pokemon, speciesSettings);
             if(speciesSettings.DisableIllegalEvolutions)
-                newSpecies = CorrectImpossibleEvo(newSpecies, level);
+                newSpecies = CorrectImpossibleEvo(newSpecies, level, speciesSettings);
             // Actually choose the species
             return newSpecies;
         }
         /// If the pokemon is an invalid level due to evolution state, revert to an earlier evolution
-        private PokemonSpecies CorrectImpossibleEvo(PokemonSpecies species, int level)
+        private PokemonSpecies CorrectImpossibleEvo(PokemonSpecies species, int level, Settings.SpeciesSettings speciesSettings)
         {
             var newSpecies = species;
             var evolvesFrom = data.PokemonLookup[newSpecies].evolvesFrom;
-            while (!IsPokemonValidLevel(evolvesFrom, level))
+            while (!IsPokemonValidLevel(evolvesFrom, level, speciesSettings))
             {
                 // Choose a random element from the pokemon this pokemon evolves from
                 newSpecies = rand.RandomChoice(evolvesFrom).Pokemon;
@@ -290,7 +289,7 @@ namespace PokemonEmeraldRandomizer.Backend
         }
         /// <summary> returns false if the pokemon is an invalid level 
         /// (due to not being high enough level to evolve to the current species) </summary>
-        private static bool IsPokemonValidLevel(List<Evolution> evolvesFrom, int level)
+        private static bool IsPokemonValidLevel(List<Evolution> evolvesFrom, int level, Settings.SpeciesSettings speciesSettings)
         {
             if (evolvesFrom.Count == 0) // basic pokemon
                 return true;
@@ -298,7 +297,21 @@ namespace PokemonEmeraldRandomizer.Backend
             foreach (var evo in evolvesFrom)
             {
                 if (!evo.EvolvesByLevel) // evolution is valid if not by level
-                    return true;
+                {
+                    if (!speciesSettings.SetLevelsOnArtificialEvos)
+                        return true;
+                    int levelReq = 0; // Calculate a level req for randomizer purposes
+                    if (evo.EvolvesByTrade)
+                        levelReq = speciesSettings.TradeEvolutionLevel;
+                    else if (evo.Type == EvolutionType.UseItem)
+                        levelReq = speciesSettings.ItemEvolutionLevel;
+                    else if (evo.Type == EvolutionType.Beauty)
+                        levelReq = speciesSettings.BeautyEvolutionLevel;
+                    else
+                        levelReq = speciesSettings.FriendshipEvolutionLevel;
+                    if (levelReq <= level)
+                        return true;
+                }
                 else if (evo.parameter <= level) // evolution is valid if required level is <= level
                     return true;
             }
