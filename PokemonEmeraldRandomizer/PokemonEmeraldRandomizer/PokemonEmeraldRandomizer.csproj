@@ -76,6 +76,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Backend\MoveData.cs" />
     <Compile Include="Backend\MovesetGenerator.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="Backend\Connection.cs" />

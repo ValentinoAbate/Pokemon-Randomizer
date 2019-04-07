@@ -25,6 +25,7 @@ namespace PokemonEmeraldRandomizer.Backend
             data.tutorMoves = ReadMoveMappings(data.Rom, data.Info.Offset("moveTutorMoves"), data.Info.Num("moveTutorMoves"));
             #endregion
 
+            data.moveData = ReadMoves(data.Rom, data.Info);
             // Read the pokemon base stats from the Rom
             data.Pokemon = ReadPokemonBaseStats(data.Rom, data.Info);
             data.PokemonLookup = new Dictionary<PokemonSpecies, PokemonBaseStats>();
@@ -42,6 +43,21 @@ namespace PokemonEmeraldRandomizer.Backend
             data.Encounters = ReadEncounters(data.Rom, data.Info, data.Maps);
             data.CalculateMetrics();
             return data;
+        }
+        // Read the move definitions
+        private static List<MoveData> ReadMoves(Rom rom, XmlManager data)
+        {
+            List<MoveData> moveData = new List<MoveData>();
+            int moveCount = int.Parse(data.Attr("moveData", "num", data.Constants).Value);
+            int dataOffset = rom.ReadPointer(HexUtils.HexToInt(data.Attr("moveData", "ptr", data.Constants).Value));
+            rom.Seek(dataOffset);
+            for (int i = 0; i <= moveCount; i++)
+            {
+                var move = new MoveData(rom);
+                move.move = (Move)i;
+                moveData.Add(move);
+            }
+            return moveData;
         }
         // Read TM, HM, or Move tutor definitions from the rom (depending on args)
         private static Move[] ReadMoveMappings(Rom rom, int offset, int numToRead)
