@@ -20,15 +20,48 @@ namespace PokemonEmeraldRandomizer.Backend
             //    writeText(addy("e40004"), "[3172016732AC1F083229610825F00129E40825F30116CD40010003]");
             //    writeText(addy("1fa301"), "[0400e4]");
             //}
-            WritePokemonBaseStats(data, file);
+            WritePokemonBaseStats(data, file, data.Info);
             WriteTypeDefinitions(data, file);
             WriteEncounters(data, file, data.Info);
             WriteTrainerBattles(data, file, data.Info);
             return file.File;
         }
-        private static void WritePokemonBaseStats(RomData data, Rom file)
+        private static void WritePokemonBaseStats(RomData romData, Rom rom, XmlManager data)
         {
-            // do nothing right now
+            int pkmnPtr = data.Offset("pokemonBaseStats");
+            int pkmnSize = data.Size("pokemonBaseStats");
+            int tmPtr = data.Offset("tmHmCompat");
+            int tmHmSize = data.Size("tmHmCompat");
+            int tutorPtr = data.Offset("moveTutorCompat");
+            int tutorSize = data.Size("moveTutorCompat");
+            int movePtr = data.Offset("movesets");
+            int evolutionPtr = data.Offset("evolutions");
+            int evolutionSize = data.Size("evolutions");
+            for (int i = 0; i < data.Num("pokemonBaseStats"); i++)
+            {
+                if (i == (int)data.Attr("pokemonBaseStats", "skipAt")) // potentially skip empty slots
+                {
+                    int skipNum = (int)data.Attr("pokemonBaseStats", "skip");
+                    i += skipNum;
+                    movePtr += skipNum * 4; // (don't know why this is 4, cuz move segments are variable lengths possibly terminators?)
+                }
+                // Create Pokemon
+                //okemonBaseStats pkmn = new PokemonBaseStats(rom, pkmnPtr + (i * pkmnSize), (PokemonSpecies)(i + 1));
+                //movePtr = ReadAttacks(rom, movePtr, out pkmn.learnSet);
+                //ReadTMHMCompat(rom, data, tmPtr + (i * tmHmSize), out pkmn.TMCompat, out pkmn.HMCompat);
+                //ReadTutorCompat(rom, data, tutorPtr + (i * tutorSize), out pkmn.moveTutorCompat);
+                WriteEvolutions(romData.PokemonLookup[(PokemonSpecies)(i + 1)], evolutionPtr + (i * evolutionSize), romData, rom, data);
+            }
+        }
+        private static void WriteEvolutions(PokemonBaseStats pokemon, int offset, RomData romData, Rom rom, XmlManager data)
+        {
+            rom.Seek(offset);
+            foreach(var evo in pokemon.evolvesTo)
+            {
+                rom.WriteUInt16((int)evo.Type);
+                rom.WriteUInt16(evo.parameter);
+                rom.WriteUInt16((int)evo.Pokemon);
+            }
         }
         private static void WriteTypeDefinitions(RomData data, Rom file)
         {
@@ -140,7 +173,36 @@ namespace PokemonEmeraldRandomizer.Backend
             rom.Seek(data.Offset("trainerBattles"));
             foreach(var trainer in romData.Trainers)
             {
-                rom.Skip(40); // Just skip writing the trainers for now
+                rom.WriteByte((byte)trainer.dataType);
+                rom.WriteByte((byte)trainer.trainerClass);
+                //// Read Gender (byte 2 bit 0)
+                //gender = (Gender)((rom.Peek() & 0x80) >> 7);
+                //// Read music track index (byte 2 bits 1-7)
+                //musicIndex = (byte)(rom.ReadByte() & 0x7F);
+                rom.Skip(1);
+                // Read sprite index (byte 3)
+                rom.WriteByte(trainer.spriteIndex);
+                //// Read name (I think bytes 4 - 15?)
+                //name = rom.ReadFixedLengthString(12);
+                rom.Skip(12);
+                // Read items (bytes 16-23)
+                for (int i = 0; i < 4; ++i)
+                    rom.WriteUInt16((int)trainer.useItems[i]);
+                // Read double battle (byte 24)
+                rom.WriteByte(Convert.ToByte(trainer.isDoubleBattle));
+                // What is in bytes 25-27?
+                rom.Skip(3);
+                // Write AI flags
+                byte[] aiBytes = new byte[4];
+                trainer.AIFlags.CopyTo(aiBytes, 0);
+                rom.WriteBlock(aiBytes);
+                // Write pokemon num
+                rom.WriteByte((byte)trainer.pokemon.Length);
+                // What is in bytes 33-35?
+                rom.Skip(3);
+                // Bytes 36-39 (end of data)
+                rom.WritePointer(trainer.pokemonOffset);
+
                 rom.Save();
                 rom.Seek(trainer.pokemonOffset);
                 #region Read pokemon from pokemonPtr
@@ -167,6 +229,7 @@ namespace PokemonEmeraldRandomizer.Backend
                     }
                 }
                 #endregion
+                rom.Load();
             }
         }
     }

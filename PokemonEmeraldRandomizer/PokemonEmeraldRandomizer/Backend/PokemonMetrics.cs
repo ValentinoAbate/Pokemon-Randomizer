@@ -13,13 +13,13 @@ namespace PokemonEmeraldRandomizer.Backend
     public static class PokemonMetrics
     {
         /// <summary> returns a given pokemon's power similarity to all pokemon in the pokemonSet. Output is normalized </summary>
-        public static WeightedSet<PokemonSpecies> PowerSimilarity(IEnumerable<PokemonSpecies> pokemonSet, Dictionary<PokemonSpecies,float> powerScores, PokemonSpecies species)
+        public static WeightedSet<PokemonSpecies> PowerSimilarity(IEnumerable<PokemonSpecies> pokemonSet, Dictionary<PokemonSpecies,float> powerScores, PokemonSpecies species, int maxDifference)
         {
             float myPowerScore = powerScores[species];
             var powerWeighting = new WeightedSet<PokemonSpecies>();          
             foreach (var pokemon in pokemonSet)
             {
-                float similarity = PowerScoreSimilarity(myPowerScore, powerScores[pokemon]);
+                float similarity = PowerScoreSimilarity(myPowerScore, powerScores[pokemon], maxDifference);
                 if (similarity > 0)
                     powerWeighting.Add(pokemon, similarity);
             }
@@ -27,9 +27,8 @@ namespace PokemonEmeraldRandomizer.Backend
             return powerWeighting;
         }
         /// <summary> The method used to compare one power score to another. Returns higher the more similar the scores are </summary>
-        private static float PowerScoreSimilarity(float powerScale, float other)
+        private static float PowerScoreSimilarity(float powerScale, float other, float maxDifference)
         {
-            float maxDifference = 100;
             float difference = Math.Abs(powerScale - other);
             float differenceRating = maxDifference - (difference);
             return differenceRating <= 0 ? 0 : differenceRating;

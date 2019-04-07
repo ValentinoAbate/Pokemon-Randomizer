@@ -66,21 +66,35 @@ namespace PokemonEmeraldRandomizer.Backend
             foreach (PokemonBaseStats pkmn in data.Pokemon)
             {
                 // Mutate Evolution trees
+                foreach (var evo in pkmn.evolvesTo)
+                {
+                    if(settings.FixImpossibleEvos)
+                    {
+                        if(evo.Type == EvolutionType.Trade)
+                        {
+                            evo.Type = EvolutionType.LevelUp;
+                            evo.parameter = 32;
+                        }
+                        else if(evo.Type == EvolutionType.TradeWithItem)
+                            evo.Type = EvolutionType.UseItem;
+                    }
+                }
                 // Set Pokemon Tags (legendary, etc)
                 // Mutate low-consequence base stats
                 // Mutate Pokemon Type
                 if (pkmn.IsSingleTyped)
                 {
-                    if (rand.RandomDouble() < settings.SingleTypeMutationRate)
+                    if (rand.RandomDouble() < settings.SingleTypeRandChance)
                         pkmn.types[0] = pkmn.types[1] = RandomType(data.Metrics, "None");
                 }
                 else
                 {
-                    if (rand.RandomDouble() < settings.DualTypePrimaryMutationRate)
+                    if (rand.RandomDouble() < settings.DualTypePrimaryRandChance)
                         pkmn.types[0] = rand.RandomChoice(data.Metrics.TypeRatiosDualPrimary);
-                    if (rand.RandomDouble() < settings.DualTypeSecondaryMutationRate)
+                    if (rand.RandomDouble() < settings.DualTypeSecondaryRandChance)
                         pkmn.types[1] = rand.RandomChoice(data.Metrics.TypeRatiosDualSecondary);
                 }
+
                 // Mutate battle states and EVs
                 // Mutate Learn Sets
             }
@@ -164,6 +178,9 @@ namespace PokemonEmeraldRandomizer.Backend
                 // Set data type
                 // Set AI flags
                 // Set item stock (if applicable)
+                // Set Battle Type
+                if (rand.RandomDouble() < settings.BattleTypeRandChance)
+                    trainer.isDoubleBattle = rand.RandomDouble() < settings.DoubleBattleChance;
                 // Set pokemon
                 foreach (var pokemon in trainer.pokemon)
                 {
@@ -174,6 +191,9 @@ namespace PokemonEmeraldRandomizer.Backend
                         pokemon.moves = MovesetGenerator.DefaultMoveset(data.PokemonLookup[pokemon.species], pokemon.level);
                     }                 
                 }
+                // Set 1-pokemon battle to solo if appropriate
+                if (settings.MakeSoloPokemonBattlesSingle && trainer.pokemon.Length == 1)
+                    trainer.isDoubleBattle = false;
                 // Class based?
                 // Local environment based?
             }
@@ -238,7 +258,7 @@ namespace PokemonEmeraldRandomizer.Backend
             // Power level similarity
             if (speciesSettings.PowerScaleSimilarityMod > 0)
             {
-                var powerWeighting = PokemonMetrics.PowerSimilarity(combinedWeightings.Items, powerScores, pokemon);
+                var powerWeighting = PokemonMetrics.PowerSimilarity(combinedWeightings.Items, powerScores, pokemon, speciesSettings.PowerScaleThreshold);
                 combinedWeightings.Add(powerWeighting, speciesSettings.PowerScaleSimilarityMod);
                 // Cull if necessary
                 if (speciesSettings.PowerScaleCull)

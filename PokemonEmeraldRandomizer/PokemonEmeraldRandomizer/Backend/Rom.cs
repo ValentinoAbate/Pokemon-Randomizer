@@ -56,6 +56,12 @@ namespace PokemonEmeraldRandomizer.Backend
             return block;
         }
         /// <summary>Write a block of bytes to the given offset</summary>
+        public void WriteBlock(byte[] data)
+        {
+            Array.ConstrainedCopy(data, 0, File, InternalOffset, data.Length);
+            InternalOffset += data.Length;
+        }
+        /// <summary>Write a block of bytes to the given offset</summary>
         public void WriteBlock(int offset, byte[] data)
         {
             Array.ConstrainedCopy(data, 0, File, offset, data.Length);

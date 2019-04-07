@@ -26,15 +26,25 @@ namespace PokemonEmeraldRandomizer
         #region Pokemon Base Stats
 
         #region Typing
-        public double SingleTypeMutationRate { get => window.mutSlSingleType.Value; }
-        public double DualTypePrimaryMutationRate { get => 0.0; }
-        public double DualTypeSecondaryMutationRate { get => 0.0; }
+        public double SingleTypeRandChance { get => window.mutSlSingleType.Value; }
+        public double DualTypePrimaryRandChance { get => 0.0; }
+        public double DualTypeSecondaryRandChance { get => 0.0; }
+        #endregion
+
+        #region Evolution
+        public bool FixImpossibleEvos { get => true; }
         #endregion
 
         #endregion
 
         #region Power Scaling
         public Backend.PowerScaling.Options TieringOptions { get => Backend.PowerScaling.Options.BaseStatsAggregate; }
+        #endregion
+
+        #region Trainer Settings
+        public double BattleTypeRandChance { get => 1; }
+        public double DoubleBattleChance { get => 1; }
+        public bool MakeSoloPokemonBattlesSingle { get => true; }
         #endregion
 
         #region Wild Pokemon
@@ -60,8 +70,26 @@ namespace PokemonEmeraldRandomizer
         }
         public Dictionary<string, SpeciesSettings> speciesSettings = new Dictionary<string, SpeciesSettings>()
         {
-            {"trainer", new SpeciesSettings()},
-            {"wild", new SpeciesSettings() },
+            {"trainer", new SpeciesSettings()
+                {
+                    Noise = 0.01f,
+                    PowerScaleSimilarityMod = 0.15f,
+                    PowerScaleCull = true,
+                    PowerScaleThreshold = 100,
+                    TypeSimilarityMod = 1f,
+                    TypeSimilarityCull = false,
+                }
+            },
+            {"wild", new SpeciesSettings()
+                {
+                    Noise = 0.01f,
+                    PowerScaleSimilarityMod = 0.15f,
+                    PowerScaleCull = true,
+                    PowerScaleThreshold = 250,
+                    TypeSimilarityMod = 1f,
+                    TypeSimilarityCull = false,
+                }
+            },
         };
         public class SpeciesSettings
         {
@@ -74,11 +102,12 @@ namespace PokemonEmeraldRandomizer
             public int BeautyEvolutionLevel { get => 32; }
             #endregion
 
-            public float Noise { get => 0.001f; }
-            public float PowerScaleSimilarityMod { get => 0.15f; }
-            public bool PowerScaleCull { get => true; }
-            public float TypeSimilarityMod { get => 1f; }
-            public bool TypeSimilarityCull { get => false; }
+            public float Noise { get; set; }
+            public float PowerScaleSimilarityMod { get; set; }
+            public bool PowerScaleCull { get; set; }
+            public int PowerScaleThreshold { get; set; }
+            public float TypeSimilarityMod { get; set; }
+            public bool TypeSimilarityCull { get; set; }
         }
         #endregion
     }
