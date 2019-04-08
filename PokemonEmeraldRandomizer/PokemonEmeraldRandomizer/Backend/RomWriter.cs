@@ -61,6 +61,7 @@ namespace PokemonEmeraldRandomizer.Backend
                 rom.WriteUInt16((int)evo.Type);
                 rom.WriteUInt16(evo.parameter);
                 rom.WriteUInt16((int)evo.Pokemon);
+                rom.Skip(2);
             }
         }
         private static void WriteTypeDefinitions(RomData data, Rom file)
