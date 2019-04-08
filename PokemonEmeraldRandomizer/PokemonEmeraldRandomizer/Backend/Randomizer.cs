@@ -76,7 +76,11 @@ namespace PokemonEmeraldRandomizer.Backend
                             evo.parameter = 32;
                         }
                         else if(evo.Type == EvolutionType.TradeWithItem)
+                        {
                             evo.Type = EvolutionType.UseItem;
+                            evo.parameter = (int)Item.TinyMushroom;
+                        }
+                            
                     }
                 }
                 // Set Pokemon Tags (legendary, etc)
