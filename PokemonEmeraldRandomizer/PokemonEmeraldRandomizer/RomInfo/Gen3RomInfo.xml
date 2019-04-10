@@ -48,7 +48,7 @@
 
     <name>Pokémon Emerald (U)</name>
     <version>0</version>
-    <support>partial</support>
+    <support>full</support>
     <!-- May be incorrect -->
     <hash>7b058a7aea5bfbb352026727ebd87e17</hash>
     <!-- 
@@ -87,14 +87,14 @@
 
     <!-- Items -->
 
-    <!-- from dabomstew's UP randomizer source https://github.com/Dabomstew/universal-pokemon-randomizer (untested)-->
+    <!-- from dabomstew's UP randomizer source https://github.com/Dabomstew/universal-pokemon-randomizer -->
     <starterItems offset="0xB117A"/>
     <pcPotion offset="0x5DFEFC"/>
 
     <!-- Static Pokemon -->
 
-    <!-- from dabomstew's UP randomizer source https://github.com/Dabomstew/universal-pokemon-randomizer (untested)-->
-    <starterPokemon offset="0x5B1DF8"/>
+    <!-- offset from dabomstew's UP randomizer source https://github.com/Dabomstew/universal-pokemon-randomizer -->
+    <starterPokemon offset="0x5B1DF8" skip1="0" skip2="0" duplicate="false"/>
 
     <!-- Trainer Battle Definitions -->
 
@@ -161,7 +161,7 @@
     <!-- Static Pokemon -->
 
     <!-- from dabomstew's UP randomizer source https://github.com/Dabomstew/universal-pokemon-randomizer (untested)-->
-    <starterPokemon offset="0x169BB5"/>
+    <starterPokemon offset="0x169BB5" skip1="513" skip2="459" duplicate="true" dupOffset="5"/>
 
     <!-- Trainer Battle Definitions -->
 

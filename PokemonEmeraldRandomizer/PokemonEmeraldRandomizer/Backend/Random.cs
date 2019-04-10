@@ -32,19 +32,19 @@ namespace PokemonEmeraldRandomizer.Backend
 
         #region Random Choice from a collection (With options for weighting)
         /// <summary> Returns an unweighted random choice from the given array </summary> 
-        public T RandomChoice<T>(T[] items)
+        public T Choice<T>(T[] items)
         {
             return items[rand.Next(0, items.Length)];
         }
         /// <summary> Returns an unweighted random choice from the given IEnumerable </summary> 
-        public T RandomChoice<T>(IEnumerable<T> items)
+        public T Choice<T>(IEnumerable<T> items)
         {
             if (items.Count() <= 0)
                 return default;
-            return RandomChoice(items.ToArray());
+            return Choice(items.ToArray());
         }
         /// <summary> Returns a weighted random choice from the given items and float weights </summary> 
-        public T RandomChoice<T>(T[] items, float[] weights)
+        public T Choice<T>(T[] items, float[] weights)
         {
             float totalWeight = weights.Aggregate((a, b) => a + b);
             float randomNumber = (float)rand.NextDouble() * totalWeight;
@@ -57,7 +57,7 @@ namespace PokemonEmeraldRandomizer.Backend
             throw new Exception("No item chosen");
         }
         /// <summary> Returns a weighted random choice from the given items and float weights </summary> 
-        public T RandomChoice<T>(IEnumerable<T> items, IEnumerable<float> weights)
+        public T Choice<T>(IEnumerable<T> items, IEnumerable<float> weights)
         {
             float totalWeight = weights.Aggregate((a, b) => a + b);
             float randomNumber = (float)rand.NextDouble() * totalWeight;
@@ -72,7 +72,7 @@ namespace PokemonEmeraldRandomizer.Backend
             throw new Exception("No item chosen");
         }
         /// <summary> Returns a weighted random choice from the given items and int weights </summary> 
-        public T RandomChoice<T>(T[] items, int[] weights, bool isAbsolute)
+        public T Choice<T>(T[] items, int[] weights, bool isAbsolute)
         {
             // totalWeight is the sum of all weights, or 1 if absolute
             int totalWeight = isAbsolute ? 100 : weights.Aggregate((a, b) => a + b);
@@ -90,9 +90,9 @@ namespace PokemonEmeraldRandomizer.Backend
             throw new Exception("No item chosen");
         }
         /// <summary> Returns a wrighted random choice from the given </summary> 
-        public T RandomChoice<T>(WeightedSet<T> items)
+        public T Choice<T>(WeightedSet<T> items)
         {
-            return RandomChoice(items.Items, items.Weights);
+            return Choice(items.Items, items.Weights);
         }
         #endregion
     }

@@ -25,7 +25,9 @@ namespace PokemonEmeraldRandomizer.Backend
             data.tutorMoves = ReadMoveMappings(data.Rom, data.Info.Offset("moveTutorMoves"), data.Info.Num("moveTutorMoves"));
             #endregion
 
-            data.moveData = ReadMoves(data.Rom, data.Info);
+            data.MoveData = ReadMoves(data.Rom, data.Info);
+
+            #region Base Stats
             // Read the pokemon base stats from the Rom
             data.Pokemon = ReadPokemonBaseStats(data.Rom, data.Info);
             data.PokemonLookup = new Dictionary<PokemonSpecies, PokemonBaseStats>();
@@ -33,14 +35,20 @@ namespace PokemonEmeraldRandomizer.Backend
                 data.PokemonLookup.Add(pokemon.species, pokemon);
             // Link Pokemon to what they evolved from
             data.LinkEvolutions();
-            // data.Starters = ReadStarters(rom);
+            #endregion
+
+            // Read Starters
+            data.Starters = ReadStarters(data.Rom, data.Info);
+            //data.StarterItems = ReadStarterItems(data.Rom, data.Info);
+            data.PcStartItem = (Item)data.Rom.ReadUInt16(data.Info.Offset("pcPotion"));
             // Trainers and associated data
             data.ClassNames = ReadTrainerClassNames(data.Rom, data.Info);
             data.Trainers = ReadTrainers(data.Rom, data.Info, data.ClassNames);
-            // Calculate the balance metrics from the loaded data
+            
             data.TypeDefinitions = ReadTypeEffectivenessData(data.Rom, data.Info);
             data.Maps = new MapManager(data.Rom, data.Info);
             data.Encounters = ReadEncounters(data.Rom, data.Info, data.Maps);
+            // Calculate the balance metrics from the loaded data
             data.CalculateMetrics();
             return data;
         }
@@ -177,8 +185,20 @@ namespace PokemonEmeraldRandomizer.Backend
         }
         #endregion
 
-        // Read the starter pokemon (TODO)
-        private static List<Pokemon> ReadStarters(Rom rom, XmlManager data)
+        // Read the starter pokemon
+        private static List<PokemonSpecies> ReadStarters(Rom rom, XmlManager data)
+        {
+            var starters = new List<PokemonSpecies>();
+            rom.Seek(data.Offset("starterPokemon"));
+            starters.Add((PokemonSpecies)rom.ReadUInt16());
+            rom.Skip(data.IntAttr("starterPokemon", "skip1"));
+            starters.Add((PokemonSpecies)rom.ReadUInt16());
+            rom.Skip(data.IntAttr("starterPokemon", "skip2"));
+            starters.Add((PokemonSpecies)rom.ReadUInt16());
+            return starters;
+        }
+        // Read the starter items
+        private static List<Item> ReadStarterItems(Rom rom, XmlManager data)
         {
             throw new System.NotImplementedException();
         }

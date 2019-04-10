@@ -70,6 +70,45 @@ namespace PokemonEmeraldRandomizer.Backend
         {
             return GetEffectiveness(new TypePair(atType, dfType));
         }
+        // Return the effectiveness of one type pair attacking another type pair
+        public TypeEffectiveness GetEffectiveness(PokemonType atType1, PokemonType atType2, PokemonType dfType1, PokemonType dfType2)
+        {
+            bool atkSingleTyped = atType1 == atType2;
+            bool defSingleTyped = dfType1 == dfType2;
+            if (atkSingleTyped && defSingleTyped)
+                    return GetEffectiveness(atType1, dfType1);
+            var atkTypes = atkSingleTyped ? new PokemonType[1] { atType1 } : new PokemonType[2] { atType1, atType2 };
+            var defTypes = defSingleTyped ? new PokemonType[1] { dfType1 } : new PokemonType[2] { dfType1, dfType2 };
+
+            const int noEffectConst = -100;
+            var scores = new List<int>();
+            foreach(var t in atkTypes)
+            {
+                int score = 0;
+                foreach (var def in defTypes)
+                {
+                    var effect = GetEffectiveness(t, def);
+                    if (effect == TypeEffectiveness.SuperEffective)
+                        ++score;
+                    else if (effect == TypeEffectiveness.NotVeryEffective)
+                        --score;
+                    else if (effect == TypeEffectiveness.NoEffect)
+                    {
+                        score = noEffectConst;
+                        break;
+                    }
+                }
+                if (score >= 1)
+                    return TypeEffectiveness.SuperEffective;
+                scores.Add(score);
+            }
+            if (scores.All((i) => i == noEffectConst))
+                return TypeEffectiveness.NoEffect;
+            else if (scores.All((i) => i <= -1))
+                return TypeEffectiveness.NotVeryEffective;
+            else
+                return TypeEffectiveness.Normal;
+        }
         // Returns true if this type relation is in the chart (i.e. it is not normal damage)
         public bool ContainsRelation(PokemonType atType, PokemonType dfType)
         {

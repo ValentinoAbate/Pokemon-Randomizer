@@ -20,11 +20,34 @@ namespace PokemonEmeraldRandomizer.Backend
             //    writeText(addy("e40004"), "[3172016732AC1F083229610825F00129E40825F30116CD40010003]");
             //    writeText(addy("1fa301"), "[0400e4]");
             //}
+            // Write the pc potion item
+            data.Rom.WriteUInt16(data.Info.Offset("pcPotion"), (int)data.PcStartItem);
+            WriteStarters(data, file, data.Info);
             WritePokemonBaseStats(data, file, data.Info);
             WriteTypeDefinitions(data, file);
             WriteEncounters(data, file, data.Info);
             WriteTrainerBattles(data, file, data.Info);
             return file.File;
+        }
+        private static void WriteStarters(RomData romData, Rom rom, XmlManager data)
+        {
+            // For some reason FRLG need duplicates of the starters stored
+            bool duplicate = bool.Parse(data.Attr("starterPokemon", "duplicate").Value);
+            int dupOffset = 0;
+            if(duplicate)
+                dupOffset = data.IntAttr("starterPokemon", "dupOffset");
+            rom.Seek(data.Offset("starterPokemon"));
+            rom.WriteUInt16((int)romData.Starters[0]);
+            if(duplicate)
+                rom.WriteUInt16(rom.InternalOffset + dupOffset, (int)romData.Starters[0]);
+            rom.Skip(data.IntAttr("starterPokemon", "skip1"));
+            rom.WriteUInt16((int)romData.Starters[1]);
+            if (duplicate)
+                rom.WriteUInt16(rom.InternalOffset + dupOffset, (int)romData.Starters[1]);
+            rom.Skip(data.IntAttr("starterPokemon", "skip2"));
+            rom.WriteUInt16((int)romData.Starters[2]);
+            if (duplicate)
+                rom.WriteUInt16(rom.InternalOffset + dupOffset, (int)romData.Starters[2]);
         }
         private static void WritePokemonBaseStats(RomData romData, Rom rom, XmlManager data)
         {

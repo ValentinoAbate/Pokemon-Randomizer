@@ -27,7 +27,9 @@ namespace PokemonEmeraldRandomizer.Backend
         public Rom Rom { get; }
         // A metrics database calculated from the input ROM data (the base game if the rom being loaded is normal)
         public RomMetrics Metrics { get; private set; }
-        public List<Pokemon> Starters { get; set; }
+        public Item PcStartItem { get; set; }
+        public List<PokemonSpecies> Starters { get; set; }
+        public List<Item> StarterItems { get; set; }
         public List<PokemonBaseStats> Pokemon { get; set; }
         public PokemonBaseStats[] PokemonDexOrder
         {
@@ -44,7 +46,8 @@ namespace PokemonEmeraldRandomizer.Backend
         public TypeEffectivenessChart TypeDefinitions { get; set; }
         public MapManager Maps { get; set; }
         public List<EncounterSet> Encounters { get; set; }
-        public List<MoveData> moveData { get; set; }
+        public List<MoveData> MoveData { get; set; }
+        
 
         #region TM, HM, and tutor move definition arrays
         public Move[] TMMoves;

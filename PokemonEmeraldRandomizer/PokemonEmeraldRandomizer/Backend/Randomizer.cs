@@ -30,6 +30,13 @@ namespace PokemonEmeraldRandomizer.Backend
             var pokemonSet = DefinePokemonSet();
             var types = DefinePokemonTypes();
 
+            #region Combat Hacks (NOTHING YET)
+            // Combat Hacks
+            // Hack combat if applicable
+            // Possible Hacks: Upgrade combat AI, Special/Physical split
+            #endregion
+
+            #region Type Definitions
             // Randomize type traits
             // Generate ??? type traits (INCOMPLETE)
             if (settings.ModifyUnknownType)
@@ -37,37 +44,63 @@ namespace PokemonEmeraldRandomizer.Backend
                 foreach (var type in types)
                 {
                     // Type effectiveness of other type vs ???
-                    var te = rand.RandomChoice(data.Metrics.TypeEffectivenessRatios);
+                    var te = rand.Choice(data.Metrics.TypeEffectivenessRatios);
                     if (te != TypeEffectiveness.Normal) // Only register if not normal effectiveness
                         data.TypeDefinitions.Add(type, PokemonType.Unknown, te, (type == PokemonType.NRM || type == PokemonType.FTG) && te == TypeEffectiveness.NoEffect);
                     // Type effectiveness of ??? vs other type
-                    te = rand.RandomChoice(data.Metrics.TypeEffectivenessRatios);
+                    te = rand.Choice(data.Metrics.TypeEffectivenessRatios);
                     if (te != TypeEffectiveness.Normal) // Only register if not normal effectiveness
                         data.TypeDefinitions.Add(PokemonType.Unknown, type, te, type == PokemonType.GHO);
                 }
             }
-            // Combat Hacks
-            // Hack combat if applicable
-                // Possible Hacks: Upgrade combat AI, Special/Physical split
+            #endregion
+
+            #region Move Definitions (NOTHING YET)
             // Define Move Definitions
             // Hack in new moves if applicable
-                // Possible Hacks: Add GenIV moves (idk if this is possible), Add Fairy moves (should be OK),
-                // add some ???-type moves, procedurally generate new moves. Animations would be a problem
-                    // Ideas: Mystery Power: 60 power ??? move, random chance of a randomly chosen stat buff/debuff or special condition
-                    // Ideas: Unknown Power: 75-80 power ??? move, random chance of a randomly chosen stat buff/debuff or special condition
-                    // Ideas: Cryptic Power: 30 power ???, chance of weirder effects like multi-hit, much higher chance of multiple effects
+            // Possible Hacks: Add GenIV moves (idk if this is possible), Add Fairy moves (should be OK),
+            // add some ???-type moves, procedurally generate new moves. Animations would be a problem
+            // Ideas: Mystery Power: 60 power ??? move, random chance of a randomly chosen stat buff/debuff or special condition
+            // Ideas: Unknown Power: 75-80 power ??? move, random chance of a randomly chosen stat buff/debuff or special condition
+            // Ideas: Cryptic Power: 30 power ???, chance of weirder effects like multi-hit, much higher chance of multiple effects
             // Mutate move definitions (should this come before or after hacks (maybe let user choose))
-                // Change move type, power, etc. (this would be really lame if not at a low mutation rate)
+            // Change move type, power, etc. (this would be really lame if not at a low mutation rate)
+            #endregion
+
+            #region Item Definitions (NOTHING YET)
             // Define Item Definitions
-                // Hack in new items if applicable
-                    // Possible Hacks: Add GenIV items (some might not be possible), add fairy-related items
+            // Hack in new items if applicable
+            // Possible Hacks: Add GenIV items (some might not be possible), add fairy-related items
             // Mutate item definitions
+            #endregion
+
+            #region Pokemon Base Attributes
             // Mutate Pokemon
             foreach (PokemonBaseStats pkmn in data.Pokemon)
             {
                 // Mutate Evolution trees
                 foreach (var evo in pkmn.evolvesTo)
                 {
+                    if(rand.RandomDouble() < settings.DunsparsePlaugeChance)
+                    {
+                        // Add the plague
+                        if(evo.Type == EvolutionType.LevelUp)
+                        {
+                            evo.Type = EvolutionType.LevelUpWithPersonality1;
+                            if(pkmn.evolvesTo[1].Pokemon == PokemonSpecies.SLOWKING)
+                            {
+                                pkmn.evolvesTo[2].Pokemon = PokemonSpecies.DUNSPARCE;
+                                pkmn.evolvesTo[2].Type = EvolutionType.LevelUpWithPersonality2;
+                                pkmn.evolvesTo[2].parameter = evo.parameter;
+                            }
+                            else
+                            {
+                                pkmn.evolvesTo[1].Pokemon = PokemonSpecies.DUNSPARCE;
+                                pkmn.evolvesTo[1].Type = EvolutionType.LevelUpWithPersonality2;
+                                pkmn.evolvesTo[1].parameter = evo.parameter;
+                            }
+                        }
+                    }
                     if(settings.FixImpossibleEvos)
                     {
                         if(evo.Type == EvolutionType.Trade)
@@ -78,7 +111,7 @@ namespace PokemonEmeraldRandomizer.Backend
                         else if(evo.Type == EvolutionType.TradeWithItem)
                         {
                             evo.Type = EvolutionType.UseItem;
-                            evo.parameter = (int)Item.TinyMushroom;
+                            evo.parameter = (int)Item.Fire_Stone;
                         }
                             
                     }
@@ -94,9 +127,9 @@ namespace PokemonEmeraldRandomizer.Backend
                 else
                 {
                     if (rand.RandomDouble() < settings.DualTypePrimaryRandChance)
-                        pkmn.types[0] = rand.RandomChoice(data.Metrics.TypeRatiosDualPrimary);
+                        pkmn.types[0] = rand.Choice(data.Metrics.TypeRatiosDualPrimary);
                     if (rand.RandomDouble() < settings.DualTypeSecondaryRandChance)
-                        pkmn.types[1] = rand.RandomChoice(data.Metrics.TypeRatiosDualSecondary);
+                        pkmn.types[1] = rand.Choice(data.Metrics.TypeRatiosDualSecondary);
                 }
 
                 // Mutate battle states and EVs
@@ -105,15 +138,42 @@ namespace PokemonEmeraldRandomizer.Backend
             // Change pallettes to fit new types
             // Recalculate power scoring
             powerScores = PowerScaling.Calculate(data.Pokemon, settings.TieringOptions);
-            // Mutate Starter Pokemon
+            #endregion
+
+            #region Starters
+            if (settings.RandomizeStarters)
+            {
+                var speciesSettings = settings.GetSpeciesSettings("starter");
+                if(settings.StarterSetting == Settings.StarterPokemonOption.CompletelyRandom)
+                {
+                    for(int i = 0; i < data.Starters.Count; ++i)
+                        data.Starters[i] = RandomSpecies(pokemonSet, data.Starters[i], 5, speciesSettings);
+                }
+                else if (settings.StarterSetting == Settings.StarterPokemonOption.TypeTriangle)
+                {
+                    var triangle = RandomTypeTriangle(pokemonSet, speciesSettings);
+                    if (triangle != null)
+                        data.Starters = triangle;
+                    else // Fall back on completely random
+                    {
+                        for (int i = 0; i < data.Starters.Count; ++i)
+                            data.Starters[i] = RandomSpecies(pokemonSet, data.Starters[i], 5, speciesSettings);
+                    }
+                }
+            }
+            #endregion
+
+            #region Trainer Classes (NOTHING YET)
             // Determine trainer class set
-            // Only double battles?
             // Include FRLG classes in emerald (and vice-versa)?
             // Mutate Trainer classes
             // Theme: type?
             // Theme: move strategy?
             // Theme: hold item?
             // Ace trainers have random theme?
+            #endregion
+
+            #region Maps (NOTHING YET)
             // Mutate Maps
             // Mutate tiles and layout (if applicable)
             // Team magma/aqua/rocket takeover mode?
@@ -125,8 +185,9 @@ namespace PokemonEmeraldRandomizer.Backend
             // Set class
             // Natural trainers? (trainer types are based on environment type)
             //Mutate battle here later?
+            #endregion
 
-            #region Randomize Wild Pokemon (may happen during maps later)
+            #region Wild Pokemon (may happen during maps later)
             // Get the species randomization settings for wild pokemon
             var wildSpeciesSettings = settings.GetSpeciesSettings("wild");
             if (settings.WildPokemonSetting == Settings.WildPokemonOption.CompletelyRandom)
@@ -175,7 +236,7 @@ namespace PokemonEmeraldRandomizer.Backend
 
             #endregion
 
-            #region Randomize Trainer Battles
+            #region Trainer Battles
 
             foreach (var trainer in data.Trainers)
             {
@@ -204,10 +265,19 @@ namespace PokemonEmeraldRandomizer.Backend
 
             #endregion
 
+            #region Field Items (NOTHING YET)
             // Mutate Field Items
-            // Misc Hacks
-            // Potential hacks:
-            // Randomize pickup items, natl pokedex, text speed hack, Lower case name hacks, Dunsparse GOD MODE, Dunsparse Plague mode, Unknown Mods
+            #endregion
+
+            #region Misc
+
+            // Randomize PC starting item
+            if (settings.RandomizePcPotion)
+            {
+                data.PcStartItem = rand.Choice(EnumUtils.GetValues<Item>());
+            }
+           
+            #endregion
 
             data.CalculateMetrics();
             return data;
@@ -242,21 +312,21 @@ namespace PokemonEmeraldRandomizer.Backend
             switch (metric)
             {
                 case "None":
-                    return rand.RandomChoice(metrics.TypeRatiosAll.Items);
+                    return rand.Choice(metrics.TypeRatiosAll.Items);
                 case "Type Occurence (Any)":
-                    return rand.RandomChoice(metrics.TypeRatiosAll);
+                    return rand.Choice(metrics.TypeRatiosAll);
                 case "Type Occurence (Single)":
-                    return rand.RandomChoice(metrics.TypeRatiosSingle);
+                    return rand.Choice(metrics.TypeRatiosSingle);
                 case "Type Occurence (Primary)":
-                    return rand.RandomChoice(metrics.TypeRatiosDualPrimary);
+                    return rand.Choice(metrics.TypeRatiosDualPrimary);
                 case "Type Occurence (Secondary)":
-                    return rand.RandomChoice(metrics.TypeRatiosDualSecondary);
+                    return rand.Choice(metrics.TypeRatiosDualSecondary);
                 default:
                     throw new System.NotImplementedException(metric + " is not a valid metric.");
             }
         }
-        /// <summary>Chose a random species from the input set based on the given species settings</summary> 
-        private PokemonSpecies RandomSpecies(IEnumerable<PokemonSpecies> possiblePokemon, PokemonSpecies pokemon, Settings.SpeciesSettings speciesSettings)
+        /// <summary>Get a wieghted and culled list of possible pokemon</summary>
+        private WeightedSet<PokemonSpecies> SpeciesWeightedSet(IEnumerable<PokemonSpecies> possiblePokemon, PokemonSpecies pokemon, Settings.SpeciesSettings speciesSettings)
         {
             var combinedWeightings = new WeightedSet<PokemonSpecies>(possiblePokemon);
             // Power level similarity
@@ -284,9 +354,14 @@ namespace PokemonEmeraldRandomizer.Backend
                 var noise = new WeightedSet<PokemonSpecies>(possiblePokemon, speciesSettings.Noise);
                 combinedWeightings.Add(noise);
             }
-
+            return combinedWeightings;
+        }
+        /// <summary>Chose a random species from the input set based on the given species settings</summary> 
+        private PokemonSpecies RandomSpecies(IEnumerable<PokemonSpecies> possiblePokemon, PokemonSpecies pokemon, Settings.SpeciesSettings speciesSettings)
+        {
+            var combinedWeightings = SpeciesWeightedSet(possiblePokemon, pokemon, speciesSettings);
             // Actually choose the species
-            return rand.RandomChoice(combinedWeightings);
+            return rand.Choice(combinedWeightings);
         }
         /// <summary>Chose a random species from the input set based on the given species settings.
         /// If speciesSettings.DisableIllegalEvolutions is true, scale impossible evolutions down to their less evolved forms </summary> 
@@ -306,14 +381,14 @@ namespace PokemonEmeraldRandomizer.Backend
             while (!IsPokemonValidLevel(evolvesFrom, level, speciesSettings))
             {
                 // Choose a random element from the pokemon this pokemon evolves from
-                newSpecies = rand.RandomChoice(evolvesFrom).Pokemon;
+                newSpecies = rand.Choice(evolvesFrom).Pokemon;
                 evolvesFrom = data.PokemonLookup[newSpecies].evolvesFrom;
             }
             return newSpecies;
         }
         /// <summary> returns false if the pokemon is an invalid level 
         /// (due to not being high enough level to evolve to the current species) </summary>
-        private static bool IsPokemonValidLevel(List<Evolution> evolvesFrom, int level, Settings.SpeciesSettings speciesSettings)
+        private bool IsPokemonValidLevel(List<Evolution> evolvesFrom, int level, Settings.SpeciesSettings speciesSettings)
         {
             if (evolvesFrom.Count == 0) // basic pokemon
                 return true;
@@ -340,6 +415,53 @@ namespace PokemonEmeraldRandomizer.Backend
                     return true;
             }
             return false;
+        }
+
+        private List<PokemonSpecies> RandomTypeTriangle(IEnumerable<PokemonSpecies> possiblePokemon, Settings.SpeciesSettings speciesSettings)
+        {
+            var set = SpeciesWeightedSet(possiblePokemon, data.Starters[0], speciesSettings);
+            if(speciesSettings.DisableIllegalEvolutions)
+                set.RemoveWhere((p) => !IsPokemonValidLevel(data.PokemonLookup[p].evolvesFrom, 5, speciesSettings));
+            var pool = new WeightedSet<PokemonSpecies>(set);
+            while(pool.Count > 0)
+            {
+                var first = rand.Choice(pool);
+                pool.Remove(first);
+                // Get potential second pokemon
+                var secondPossiblities = SpeciesWeightedSet(set.Items, data.Starters[1], speciesSettings);
+                secondPossiblities.RemoveWhere((p) => !OneWayWeakness(first, p));
+                // Finish the traiangle if possible
+                var triangle = FinishTriangle(set, secondPossiblities, first, speciesSettings);
+                if (triangle != null)
+                    return triangle;
+
+            }
+            return null; // No viable triangle with input spcifications
+        }
+
+        private List<PokemonSpecies> FinishTriangle(WeightedSet<PokemonSpecies> set, WeightedSet<PokemonSpecies> possibleSeconds, PokemonSpecies first, Settings.SpeciesSettings speciesSettings)
+        {
+            while (possibleSeconds.Count > 0)
+            {
+                var second = rand.Choice(possibleSeconds);
+                possibleSeconds.Remove(second);
+                // Get third pokemon
+                var thirdPossiblities = SpeciesWeightedSet(set.Items, data.Starters[2], speciesSettings);
+                thirdPossiblities.RemoveWhere((p) => !(OneWayWeakness(second, p) && OneWayWeakness(p, first)));
+                // If at least one works, choose one randomly
+                if (thirdPossiblities.Count > 0)
+                    return new List<PokemonSpecies> { first, second, rand.Choice(thirdPossiblities) };
+            }
+            return null;
+        }
+
+        private bool OneWayWeakness(PokemonSpecies a, PokemonSpecies b)
+        {
+            var aTypes = data.PokemonLookup[a].types;
+            var bTypes = data.PokemonLookup[b].types;
+            var aVsB = data.TypeDefinitions.GetEffectiveness(aTypes[0], aTypes[1], bTypes[0], bTypes[1]);
+            var bVsA = data.TypeDefinitions.GetEffectiveness(bTypes[0], bTypes[1], aTypes[0], aTypes[1]);
+            return aVsB == TypeEffectiveness.SuperEffective ? !(bVsA == TypeEffectiveness.SuperEffective) : false;
         }
     }
 }

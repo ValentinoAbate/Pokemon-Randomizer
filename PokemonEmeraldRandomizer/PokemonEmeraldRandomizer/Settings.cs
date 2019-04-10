@@ -41,7 +41,7 @@ namespace PokemonEmeraldRandomizer
         public Backend.PowerScaling.Options TieringOptions { get => Backend.PowerScaling.Options.BaseStatsAggregate; }
         #endregion
 
-        #region Trainer Settings
+        #region Trainers
         public double BattleTypeRandChance { get => 1; }
         public double DoubleBattleChance { get => 1; }
         public bool MakeSoloPokemonBattlesSingle { get => true; }
@@ -55,6 +55,24 @@ namespace PokemonEmeraldRandomizer
             GlobalOneToOne,
         }
         public WildPokemonOption WildPokemonSetting { get => WildPokemonOption.AreaOneToOne; }
+        #endregion
+
+        #region Starter Pokemon
+        public enum StarterPokemonOption
+        {
+            CompletelyRandom,
+            TypeTriangle,
+        }
+        public bool RandomizeStarters { get => true; }
+        public StarterPokemonOption StarterSetting { get => StarterPokemonOption.TypeTriangle; }
+        #endregion
+
+        #region Evolution
+        public double DunsparsePlaugeChance { get => 0; }
+        #endregion
+
+        #region Misc
+        public bool RandomizePcPotion { get => true; }
         #endregion
 
         public Settings(MainWindow window)
@@ -72,7 +90,7 @@ namespace PokemonEmeraldRandomizer
         {
             {"trainer", new SpeciesSettings()
                 {
-                    Noise = 0.01f,
+                    Noise = 0.005f,
                     PowerScaleSimilarityMod = 0.15f,
                     PowerScaleCull = true,
                     PowerScaleThreshold = 100,
@@ -82,11 +100,21 @@ namespace PokemonEmeraldRandomizer
             },
             {"wild", new SpeciesSettings()
                 {
-                    Noise = 0.01f,
+                    Noise = 0.005f,
                     PowerScaleSimilarityMod = 0.15f,
                     PowerScaleCull = true,
                     PowerScaleThreshold = 250,
                     TypeSimilarityMod = 1f,
+                    TypeSimilarityCull = false,
+                }
+            },
+            {"starter", new SpeciesSettings()
+                {
+                    Noise = 0.00000f,
+                    PowerScaleSimilarityMod = 1f,
+                    PowerScaleCull = true,
+                    PowerScaleThreshold = 250,
+                    TypeSimilarityMod = 0,
                     TypeSimilarityCull = false,
                 }
             },
@@ -102,11 +130,11 @@ namespace PokemonEmeraldRandomizer
             public int BeautyEvolutionLevel { get => 32; }
             #endregion
 
-            public float Noise { get; set; }
-            public float PowerScaleSimilarityMod { get; set; }
+            public float Noise { get; set; } = 0;
+            public float PowerScaleSimilarityMod { get; set; } = 0;
             public bool PowerScaleCull { get; set; }
             public int PowerScaleThreshold { get; set; }
-            public float TypeSimilarityMod { get; set; }
+            public float TypeSimilarityMod { get; set; } = 0;
             public bool TypeSimilarityCull { get; set; }
         }
         #endregion

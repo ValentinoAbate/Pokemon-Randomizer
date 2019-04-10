@@ -81,6 +81,8 @@ namespace PokemonEmeraldRandomizer.Backend
  
         public void Normalize()
         {
+            if (Count <= 0)
+                return;
             float max = items.Max((kvp) => kvp.Value);
             foreach (var key in items.Keys.ToArray())
                 items[key] = items[key] / max;
