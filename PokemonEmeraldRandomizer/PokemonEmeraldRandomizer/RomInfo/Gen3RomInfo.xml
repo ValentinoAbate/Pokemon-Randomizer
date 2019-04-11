@@ -100,6 +100,18 @@
 
     <trainerBattles num="854" size="40" offset="0x310030"/>
     <trainerClassNames num="66" length="13" offset="0x30FCD4"/>
+    
+    <!-- Special Trainer Battles -->
+
+    <rivals names="[Brendan,May]"/>
+    <reoccuring names="[Wally,Gabby &amp; Ty]"/>
+    <gymLeaders names="[Roxanne,Brawly,Wattson,Flannery,Norman,Winona,Tate&amp;Liza,Juan]"/>
+    <eliteFour names="[Sidney,Phoebe,Glacia,Drake]"/>
+    <champion names="[Wallace]"/>
+    <uber names="[Steven]"/>
+    <teamAdmins names="[Tabitha,Matt,Shelley]"/>
+    <teamLeaders names="[Maxie,Archie]"/>
+    <aceTrainers classNum="48"/>
 
     <!-- Map Data -->
 

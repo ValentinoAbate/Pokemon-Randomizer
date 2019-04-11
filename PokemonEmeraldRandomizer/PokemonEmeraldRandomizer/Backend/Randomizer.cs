@@ -238,30 +238,116 @@ namespace PokemonEmeraldRandomizer.Backend
 
             #region Trainer Battles
 
+            #region Set Up Special Trainers
+            var specialTrainers = new Dictionary<string, List<Trainer>>();
+            var rivals = data.Info.ArrayAttr("rivals", "names");
+            foreach (var name in rivals)
+                specialTrainers.Add(name.ToLower(), new List<Trainer>());
+            var reoccuring = data.Info.ArrayAttr("reoccuring", "names");
+            foreach (var name in data.Info.ArrayAttr("reoccuring", "names"))
+                specialTrainers.Add(name.ToLower(), new List<Trainer>());
+            //foreach (var name in data.Info.ArrayAttr("gymLeaders", "names"))
+            //    specialTrainers.Add(name.ToLower(), new List<Trainer>());
+            //foreach (var name in data.Info.ArrayAttr("eliteFour", "names"))
+            //    specialTrainers.Add(name.ToLower(), new List<Trainer>());
+            //foreach (var name in data.Info.ArrayAttr("champion", "names"))
+            //    specialTrainers.Add(name.ToLower(), new List<Trainer>());
+            //foreach (var name in data.Info.ArrayAttr("uber", "names"))
+            //    specialTrainers.Add(name.ToLower(), new List<Trainer>());
+            //foreach (var name in data.Info.ArrayAttr("teamAdmins", "names"))
+            //    specialTrainers.Add(name.ToLower(), new List<Trainer>());
+            //foreach (var name in data.Info.ArrayAttr("teamLeaders", "names"))
+            //    specialTrainers.Add(name.ToLower(), new List<Trainer>());
+            int aceTrainerClass = data.Info.IntAttr("aceTrainers", "classNum");
+            List<Trainer> aceTrainers = new List<Trainer>();
+            #endregion
+
+            var trainerSpeciesSettings = settings.GetSpeciesSettings("trainer");
+
             foreach (var trainer in data.Trainers)
             {
-                // Set data type
-                // Set AI flags
-                // Set item stock (if applicable)
-                // Set Battle Type
-                if (rand.RandomDouble() < settings.BattleTypeRandChance)
-                    trainer.isDoubleBattle = rand.RandomDouble() < settings.DoubleBattleChance;
-                // Set pokemon
-                foreach (var pokemon in trainer.pokemon)
-                {
-                    pokemon.species = RandomSpecies(pokemonSet, pokemon.species, pokemon.level, settings.GetSpeciesSettings("trainer"));
-                    // Reset special moves if necessary
-                    if (pokemon.dataType == TrainerPokemon.DataType.SpecialMoves || pokemon.dataType == TrainerPokemon.DataType.SpecialMovesAndHeldItem)
-                    {
-                        pokemon.moves = MovesetGenerator.DefaultMoveset(data.PokemonLookup[pokemon.species], pokemon.level);
-                    }                 
-                }
-                // Set 1-pokemon battle to solo if appropriate
-                if (settings.MakeSoloPokemonBattlesSingle && trainer.pokemon.Length == 1)
-                    trainer.isDoubleBattle = false;
-                // Class based?
-                // Local environment based?
+                // Set aside special trainers
+                if (specialTrainers.ContainsKey(trainer.name.ToLower()))
+                    specialTrainers[trainer.name.ToLower()].Add(trainer);
+                else if (trainer.trainerClass == aceTrainerClass)
+                    aceTrainers.Add(trainer);
+                else
+                    RandomizeBattle(trainer, pokemonSet, trainerSpeciesSettings);
+     
             }
+
+            #region Special Trainers
+
+            #region Rivals
+
+            var rivalSpeciesSettings = settings.GetSpeciesSettings("rival");
+            foreach (var trainer in rivals)
+            {
+                var battles = specialTrainers[trainer.ToLower()];
+                battles.Sort((a, b) => a.AvgLvl.CompareTo(b.AvgLvl));
+                if (settings.RivalSetting == Settings.TrainerOption.CompletelyRandom)
+                {
+                    foreach (var battle in battles)
+                        RandomizeBattle(battle, pokemonSet, rivalSpeciesSettings);
+                }
+                else if (settings.RivalSetting == Settings.TrainerOption.KeepAce)
+                {
+                    var starters = new PokemonSpecies[] { battles[0].pokemon[0].species, battles[1].pokemon[0].species, battles[2].pokemon[0].species };
+                    var rival1Battles = battles.Where((b) => b.pokemon.Any((p) => RelatedToOrSelf(p.species, starters[0]))).ToArray();
+                    var rival2Battles = battles.Where((b) => b.pokemon.Any((p) => RelatedToOrSelf(p.species, starters[1]))).ToArray();
+                    var rival3Battles = battles.Where((b) => b.pokemon.Any((p) => RelatedToOrSelf(p.species, starters[2]))).ToArray();
+                    var rivalBattleArr = new Trainer[][] { rival1Battles, rival2Battles, rival3Battles };
+                    for (int i = 0; i < rivalBattleArr.Length; ++i)
+                    {
+                        var battleSet = rivalBattleArr[i];
+                        foreach (var battle in battleSet)
+                        {
+                            RandomizeBattle(battle, pokemonSet, rivalSpeciesSettings);
+                            var pokemon = battle.pokemon[battle.pokemon.Length - 1];
+                            pokemon.species = MaxEvolution(data.Starters[i], pokemon.level, rivalSpeciesSettings);
+                            if (pokemon.HasSpecialMoves)
+                            {
+                                pokemon.moves = MovesetGenerator.DefaultMoveset(data.PokemonLookup[pokemon.species], pokemon.level);
+                            }
+                        }
+                    }                     
+                }
+                else if(settings.RivalSetting == Settings.TrainerOption.Procedural)
+                {
+                    var starters = new PokemonSpecies[] { battles[0].pokemon[0].species, battles[1].pokemon[0].species, battles[2].pokemon[0].species };
+                    var rival1Battles = battles.Where((b) => b.pokemon.Any((p) => RelatedToOrSelf(p.species, starters[0]))).ToArray();
+                    var rival2Battles = battles.Where((b) => b.pokemon.Any((p) => RelatedToOrSelf(p.species, starters[1]))).ToArray();
+                    var rival3Battles = battles.Where((b) => b.pokemon.Any((p) => RelatedToOrSelf(p.species, starters[2]))).ToArray();
+                    PcgBattles(rival1Battles, new PokemonSpecies[] { data.Starters[0] }, pokemonSet, rivalSpeciesSettings);
+                    PcgBattles(rival2Battles, new PokemonSpecies[] { data.Starters[1] }, pokemonSet, rivalSpeciesSettings);
+                    PcgBattles(rival3Battles, new PokemonSpecies[] { data.Starters[2] }, pokemonSet, rivalSpeciesSettings);
+                }              
+            }
+
+            #endregion
+
+            #region Reoccuring Trainers
+
+            foreach(var trainer in reoccuring)
+            {
+                var battles = specialTrainers[trainer.ToLower()];
+                battles.Sort((a, b) => a.AvgLvl.CompareTo(b.AvgLvl));
+                if (settings.RivalSetting == Settings.TrainerOption.CompletelyRandom)
+                {
+                    foreach (var battle in battles)
+                        RandomizeBattle(battle, pokemonSet, trainerSpeciesSettings);
+                }
+                else if (settings.RivalSetting == Settings.TrainerOption.Procedural)
+                {
+                    RandomizeBattle(battles[0], pokemonSet, trainerSpeciesSettings);
+                    PcgBattles(battles, battles[0].pokemon.Select((p) => p.species), pokemonSet, trainerSpeciesSettings);
+                }
+                
+            }
+
+            #endregion
+
+            #endregion
 
             #endregion
 
@@ -394,29 +480,27 @@ namespace PokemonEmeraldRandomizer.Backend
                 return true;
             // Is there at least one valid evolution
             foreach (var evo in evolvesFrom)
-            {
-                if (!evo.EvolvesByLevel) // evolution is valid if not by level
-                {
-                    if (!speciesSettings.SetLevelsOnArtificialEvos)
-                        return true;
-                    int levelReq = 0; // Calculate a level req for randomizer purposes
-                    if (evo.EvolvesByTrade)
-                        levelReq = speciesSettings.TradeEvolutionLevel;
-                    else if (evo.Type == EvolutionType.UseItem)
-                        levelReq = speciesSettings.ItemEvolutionLevel;
-                    else if (evo.Type == EvolutionType.Beauty)
-                        levelReq = speciesSettings.BeautyEvolutionLevel;
-                    else
-                        levelReq = speciesSettings.FriendshipEvolutionLevel;
-                    if (levelReq <= level)
-                        return true;
-                }
-                else if (evo.parameter <= level) // evolution is valid if required level is <= level
+                if (EquivalentLevelReq(evo, speciesSettings) <= level)
                     return true;
-            }
             return false;
         }
-
+        private int EquivalentLevelReq(Evolution evo, Settings.SpeciesSettings speciesSettings)
+        {
+            if (evo.EvolvesByLevel)
+                return evo.parameter;
+            else if (!speciesSettings.SetLevelsOnArtificialEvos)
+                return 0;
+            else if (evo.EvolvesByTrade)
+                return speciesSettings.TradeEvolutionLevel;
+            else if (evo.Type == EvolutionType.UseItem)
+                return speciesSettings.ItemEvolutionLevel;
+            else if (evo.Type == EvolutionType.Beauty)
+                return speciesSettings.BeautyEvolutionLevel;
+            else
+                return speciesSettings.FriendshipEvolutionLevel;
+        }
+        /// <summary> Return 3 pokemon that form a valid type traingle, or null if none exist in the input set 
+        /// Currently type triangles just requires one-way weakness, but allow neutral relations </summary>
         private List<PokemonSpecies> RandomTypeTriangle(IEnumerable<PokemonSpecies> possiblePokemon, Settings.SpeciesSettings speciesSettings)
         {
             var set = SpeciesWeightedSet(possiblePokemon, data.Starters[0], speciesSettings);
@@ -438,7 +522,7 @@ namespace PokemonEmeraldRandomizer.Backend
             }
             return null; // No viable triangle with input spcifications
         }
-
+        /// <summary> Helper method for the RandomTypeTriangle method </summary>
         private List<PokemonSpecies> FinishTriangle(WeightedSet<PokemonSpecies> set, WeightedSet<PokemonSpecies> possibleSeconds, PokemonSpecies first, Settings.SpeciesSettings speciesSettings)
         {
             while (possibleSeconds.Count > 0)
@@ -455,6 +539,7 @@ namespace PokemonEmeraldRandomizer.Backend
             return null;
         }
 
+        /// <summary> Return true if b is weak to a AND a is not weak to b </summary>
         private bool OneWayWeakness(PokemonSpecies a, PokemonSpecies b)
         {
             var aTypes = data.PokemonLookup[a].types;
@@ -462,6 +547,114 @@ namespace PokemonEmeraldRandomizer.Backend
             var aVsB = data.TypeDefinitions.GetEffectiveness(aTypes[0], aTypes[1], bTypes[0], bTypes[1]);
             var bVsA = data.TypeDefinitions.GetEffectiveness(bTypes[0], bTypes[1], aTypes[0], aTypes[1]);
             return aVsB == TypeEffectiveness.SuperEffective ? !(bVsA == TypeEffectiveness.SuperEffective) : false;
+        }
+        /// <summary> return true if pokemon a evolves into or from pokemon b or IS pokemon b</summary>
+        private bool RelatedToOrSelf(PokemonSpecies a, PokemonSpecies b)
+        {
+            return (a == b) || RelatedTo(a,b);
+        }
+        /// <summary> return true if pokemon a evolves into or from pokemon b</summary>
+        private bool RelatedTo(PokemonSpecies a, PokemonSpecies b)
+        {
+            return EvolvesInto(a, b) || EvolvesFrom(a, b);
+        }
+        /// <summary> return true if pokemon a evolves into pokemon b</summary>
+        private bool EvolvesInto(PokemonSpecies a, PokemonSpecies b)
+        {
+            var stats = data.PokemonLookup[a];
+            var evos = stats.evolvesTo;
+            foreach(var evo in evos)
+            {
+                if (evo.Type == EvolutionType.None)
+                    continue;
+                if (evo.Pokemon == b)
+                    return true;
+                if (EvolvesInto(evo.Pokemon, b))
+                    return true;
+            }
+            return false;
+        }
+        /// <summary> return true if pokemon a evolves from pokemon b</summary>
+        private bool EvolvesFrom(PokemonSpecies a, PokemonSpecies b)
+        {
+            var stats = data.PokemonLookup[a];
+            var evos = stats.evolvesFrom;
+            foreach (var evo in evos)
+            {
+                if (evo.Type == EvolutionType.None)
+                    continue;
+                if (evo.Pokemon == b)
+                    return true;
+                if (EvolvesFrom(evo.Pokemon, b))
+                    return true;
+            }
+            return false;
+        }
+        /// <summary> Radnomize the given trainer encounter </summary>
+        private void RandomizeBattle(Trainer trainer, IEnumerable<PokemonSpecies> pokemonSet, Settings.SpeciesSettings speciesSettings)
+        {
+            // Set data type
+            // Set AI flags
+            // Set item stock (if applicable)
+            // Set Battle Type
+            if (rand.RandomDouble() < settings.BattleTypeRandChance)
+                trainer.isDoubleBattle = rand.RandomDouble() < settings.DoubleBattleChance;
+            // Set pokemon
+            foreach (var pokemon in trainer.pokemon)
+            {
+                pokemon.species = RandomSpecies(pokemonSet, pokemon.species, pokemon.level, speciesSettings);
+                // Reset special moves if necessary
+                if (pokemon.HasSpecialMoves)
+                {
+                    pokemon.moves = MovesetGenerator.DefaultMoveset(data.PokemonLookup[pokemon.species], pokemon.level);
+                }
+            }
+            // Set 1-pokemon battle to solo if appropriate
+            if (settings.MakeSoloPokemonBattlesSingle && trainer.pokemon.Length == 1)
+                trainer.isDoubleBattle = false;
+            // Class based?
+            // Local environment based?
+        }
+        /// <summary> Procedurally generate a sequence of battles from a given team seed and a list of template battles </summary>
+        private void PcgBattles(IEnumerable<Trainer> battles, IEnumerable<PokemonSpecies> seed, IEnumerable<PokemonSpecies> pokemonSet, Settings.SpeciesSettings speciesSettings)
+        {
+            var team = new List<PokemonSpecies>(seed);
+            foreach(var battle in battles)
+            {
+                RandomizeBattle(battle, pokemonSet, speciesSettings);
+                for(int i = 0; i < battle.pokemon.Length; ++i)
+                {
+                    // Go from the back of the battle so the ace is last
+                    int j = battle.pokemon.Length - (i + 1);
+                    if (i < team.Count)
+                    {
+                        var pokemon = battle.pokemon[j];
+                        pokemon.species = MaxEvolution(team[i], pokemon.level, speciesSettings);
+                        if (pokemon.HasSpecialMoves)
+                        {
+                            pokemon.moves = MovesetGenerator.DefaultMoveset(data.PokemonLookup[pokemon.species], pokemon.level);
+                        }
+                    }                       
+                    else
+                        team.Add(battle.pokemon[j].species);
+                }
+            }
+        }
+        /// <summary> Return the maximum evolved form of the pokemon at the given level
+        /// returns a lower form if the pokemon is an invalid level 
+        /// returns a random branch for evolution trees that branch </summary>
+        private PokemonSpecies MaxEvolution(PokemonSpecies p, int level, Settings.SpeciesSettings speciesSettings)
+        {
+            var stats = data.PokemonLookup[p];
+            if (!IsPokemonValidLevel(stats.evolvesFrom, level, speciesSettings))
+                return CorrectImpossibleEvo(p, level, speciesSettings);
+            var evos = stats.evolvesTo.Where((evo) => evo.Type != EvolutionType.None && EquivalentLevelReq(evo, speciesSettings) <= level);
+            while(evos.Count() > 0)
+            {
+                stats = data.PokemonLookup[rand.Choice(evos).Pokemon];
+                evos = stats.evolvesTo.Where((evo) => evo.Type != EvolutionType.None && EquivalentLevelReq(evo, speciesSettings) <= level);
+            }
+            return stats.species;
         }
     }
 }

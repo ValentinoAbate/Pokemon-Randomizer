@@ -81,6 +81,11 @@ namespace PokemonEmeraldRandomizer.Backend
         {
             return int.Parse(Attr(element, attribute).Value);
         }
+        /// <summary> returns the given attribute of the element unpacked from an array </summary>
+        public string[] ArrayAttr(string element, string attribute)
+        {
+            return ((string)Attr(element, attribute)).Trim('[', ']').Split(',');
+        }
         /// <summary> returns the given attribute of the element with each element interpreted as an int[] </summary>
         public int[] IntArrayAttr(string element, string attribute)
         {

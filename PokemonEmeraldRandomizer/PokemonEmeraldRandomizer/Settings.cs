@@ -42,6 +42,16 @@ namespace PokemonEmeraldRandomizer
         #endregion
 
         #region Trainers
+        public enum TrainerOption
+        {
+            CompletelyRandom,
+            KeepAce,
+            Procedural,
+        }
+        public TrainerOption RivalSetting { get => TrainerOption.Procedural; }
+        public TrainerOption WallySetting { get => TrainerOption.Procedural; }
+        public TrainerOption GymLeaderSetting { get => TrainerOption.Procedural; }
+        public bool SpecialAceTrainers { get => true; }
         public double BattleTypeRandChance { get => 1; }
         public double DoubleBattleChance { get => 1; }
         public bool MakeSoloPokemonBattlesSingle { get => true; }
@@ -114,6 +124,16 @@ namespace PokemonEmeraldRandomizer
                     PowerScaleSimilarityMod = 1f,
                     PowerScaleCull = true,
                     PowerScaleThreshold = 250,
+                    TypeSimilarityMod = 0,
+                    TypeSimilarityCull = false,
+                }
+            },
+            {"rival", new SpeciesSettings()
+                {
+                    Noise = 0.001f,
+                    PowerScaleSimilarityMod = 1f,
+                    PowerScaleCull = true,
+                    PowerScaleThreshold = 175,
                     TypeSimilarityMod = 0,
                     TypeSimilarityCull = false,
                 }

@@ -18,6 +18,7 @@ namespace PokemonEmeraldRandomizer.Backend
             HeldItem,
             SpecialMovesAndHeldItem,
         }
+        public bool HasSpecialMoves { get => dataType == DataType.SpecialMoves || dataType == DataType.SpecialMovesAndHeldItem; }
         public DataType dataType;
         public PokemonSpecies species;
         public Item heldItem = Item.None;
