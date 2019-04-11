@@ -297,6 +297,7 @@ namespace PokemonEmeraldRandomizer.Backend
                     var rival2Battles = battles.Where((b) => b.pokemon.Any((p) => RelatedToOrSelf(p.species, starters[1]))).ToArray();
                     var rival3Battles = battles.Where((b) => b.pokemon.Any((p) => RelatedToOrSelf(p.species, starters[2]))).ToArray();
                     var rivalBattleArr = new Trainer[][] { rival1Battles, rival2Battles, rival3Battles };
+                    int[] rivalRemap = { 1, 2, 0 };
                     for (int i = 0; i < rivalBattleArr.Length; ++i)
                     {
                         var battleSet = rivalBattleArr[i];
@@ -304,7 +305,7 @@ namespace PokemonEmeraldRandomizer.Backend
                         {
                             RandomizeBattle(battle, pokemonSet, rivalSpeciesSettings);
                             var pokemon = battle.pokemon[battle.pokemon.Length - 1];
-                            pokemon.species = MaxEvolution(data.Starters[i], pokemon.level, rivalSpeciesSettings);
+                            pokemon.species = MaxEvolution(data.Starters[rivalRemap[i]], pokemon.level, rivalSpeciesSettings);
                             if (pokemon.HasSpecialMoves)
                             {
                                 pokemon.moves = MovesetGenerator.DefaultMoveset(data.PokemonLookup[pokemon.species], pokemon.level);
@@ -318,9 +319,9 @@ namespace PokemonEmeraldRandomizer.Backend
                     var rival1Battles = battles.Where((b) => b.pokemon.Any((p) => RelatedToOrSelf(p.species, starters[0]))).ToArray();
                     var rival2Battles = battles.Where((b) => b.pokemon.Any((p) => RelatedToOrSelf(p.species, starters[1]))).ToArray();
                     var rival3Battles = battles.Where((b) => b.pokemon.Any((p) => RelatedToOrSelf(p.species, starters[2]))).ToArray();
-                    PcgBattles(rival1Battles, new PokemonSpecies[] { data.Starters[0] }, pokemonSet, rivalSpeciesSettings);
-                    PcgBattles(rival2Battles, new PokemonSpecies[] { data.Starters[1] }, pokemonSet, rivalSpeciesSettings);
-                    PcgBattles(rival3Battles, new PokemonSpecies[] { data.Starters[2] }, pokemonSet, rivalSpeciesSettings);
+                    PcgBattles(rival1Battles, new PokemonSpecies[] { data.Starters[1] }, pokemonSet, rivalSpeciesSettings);
+                    PcgBattles(rival2Battles, new PokemonSpecies[] { data.Starters[2] }, pokemonSet, rivalSpeciesSettings);
+                    PcgBattles(rival3Battles, new PokemonSpecies[] { data.Starters[0] }, pokemonSet, rivalSpeciesSettings);
                 }              
             }
 
