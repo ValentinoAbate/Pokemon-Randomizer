@@ -111,7 +111,7 @@
     <uber names="[Steven]"/>
     <teamAdmins names="[Tabitha,Matt,Shelley]"/>
     <teamLeaders names="[Maxie,Archie]"/>
-    <aceTrainers classNum="48"/>
+    <aceTrainers classNums="[5,48]"/>
 
     <!-- Map Data -->
 
@@ -180,6 +180,10 @@
     <!-- from thethethethe's forum post: http://pokemonhackersonline.com/showthread.php?t=2586 -->
     <trainerBattles num="743" size="40" offset="0x23EAF0"/>
     <trainerClassNames num="107" length="13" offset="0x23E558"/>
+
+    <!-- Special Trainer Battles -->
+
+    <aceTrainers classNums="[]"/>
 
     <mapBankPointers num="43" size="4" offset="0x3526A8" pointer="0x5524C"/>
     <maps offset="0x849CC" bankLengths="[5,123,60,66,4,6,8,10,6,8,20,10,8,2,10,4,2,2,2,1,1,2,2,3,2,3,2,1,1,1,1,7,5,5,8,8,5,5,1,1,1,2,1]"/>

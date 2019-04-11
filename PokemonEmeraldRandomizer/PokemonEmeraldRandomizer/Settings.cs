@@ -138,6 +138,16 @@ namespace PokemonEmeraldRandomizer
                     TypeSimilarityCull = false,
                 }
             },
+            {"aceTrainer", new SpeciesSettings()
+                {
+                    Noise = 0.001f,
+                    PowerScaleSimilarityMod = 1f,
+                    PowerScaleCull = true,
+                    PowerScaleThreshold = 175,
+                    TypeSimilarityMod = 0,
+                    TypeSimilarityCull = false,
+                }
+            },
         };
         public class SpeciesSettings
         {

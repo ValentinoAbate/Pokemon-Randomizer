@@ -258,7 +258,7 @@ namespace PokemonEmeraldRandomizer.Backend
             //    specialTrainers.Add(name.ToLower(), new List<Trainer>());
             //foreach (var name in data.Info.ArrayAttr("teamLeaders", "names"))
             //    specialTrainers.Add(name.ToLower(), new List<Trainer>());
-            int aceTrainerClass = data.Info.IntAttr("aceTrainers", "classNum");
+            int[] aceTrainerClasses = data.Info.IntArrayAttr("aceTrainers", "classNums");
             List<Trainer> aceTrainers = new List<Trainer>();
             #endregion
 
@@ -269,11 +269,10 @@ namespace PokemonEmeraldRandomizer.Backend
                 // Set aside special trainers
                 if (specialTrainers.ContainsKey(trainer.name.ToLower()))
                     specialTrainers[trainer.name.ToLower()].Add(trainer);
-                else if (trainer.trainerClass == aceTrainerClass)
+                else if (aceTrainerClasses.Contains(trainer.trainerClass))
                     aceTrainers.Add(trainer);
                 else
-                    RandomizeBattle(trainer, pokemonSet, trainerSpeciesSettings);
-     
+                    RandomizeBattle(trainer, pokemonSet, trainerSpeciesSettings);     
             }
 
             #region Special Trainers
@@ -348,6 +347,17 @@ namespace PokemonEmeraldRandomizer.Backend
 
             #endregion
 
+            #region Ace Trainers
+
+            var aceTrainerSpeciesSettings = settings.GetSpeciesSettings("aceTrainer");
+            foreach (var trainer in aceTrainers)
+            {
+                // Ace Trainers are as strong as rivals for now
+                RandomizeBattle(trainer, pokemonSet, aceTrainerSpeciesSettings);
+            }
+
+            #endregion
+
             #endregion
 
             #endregion
@@ -370,7 +380,7 @@ namespace PokemonEmeraldRandomizer.Backend
             return data;
         }
 
-        /// <summary>Define and return the set of valid pokemon (with applicable restrictions)</summary>
+        /// <summary> Define and return the set of valid pokemon (with applicable restrictions)</summary>
         private HashSet<PokemonSpecies> DefinePokemonSet()
         {
             //Start with all for now
@@ -383,7 +393,7 @@ namespace PokemonEmeraldRandomizer.Backend
             // Possible Hacks: Gen IV
             return pokemonSet;
         }
-        /// <summary>Define and return the set of valid types (with applicable restrictions)</summary> 
+        /// <summary> Define and return the set of valid types (with applicable restrictions)</summary> 
         private HashSet<PokemonType> DefinePokemonTypes()
         {
             HashSet<PokemonType> types = EnumUtils.GetValues<PokemonType>().ToHashSet();
@@ -393,7 +403,7 @@ namespace PokemonEmeraldRandomizer.Backend
             return types;
         }
 
-        /// <summary>Chose a random type based on the given metric (OUT OF DATE)</summary> 
+        /// <summary> Chose a random type based on the given metric (OUT OF DATE)</summary> 
         private PokemonType RandomType(RomMetrics metrics, string metric)
         {
             switch (metric)
@@ -412,7 +422,7 @@ namespace PokemonEmeraldRandomizer.Backend
                     throw new System.NotImplementedException(metric + " is not a valid metric.");
             }
         }
-        /// <summary>Get a wieghted and culled list of possible pokemon</summary>
+        /// <summary> Get a wieghted and culled list of possible pokemon</summary>
         private WeightedSet<PokemonSpecies> SpeciesWeightedSet(IEnumerable<PokemonSpecies> possiblePokemon, PokemonSpecies pokemon, Settings.SpeciesSettings speciesSettings)
         {
             var combinedWeightings = new WeightedSet<PokemonSpecies>(possiblePokemon);
@@ -443,14 +453,14 @@ namespace PokemonEmeraldRandomizer.Backend
             }
             return combinedWeightings;
         }
-        /// <summary>Chose a random species from the input set based on the given species settings</summary> 
+        /// <summary> Chose a random species from the input set based on the given species settings</summary> 
         private PokemonSpecies RandomSpecies(IEnumerable<PokemonSpecies> possiblePokemon, PokemonSpecies pokemon, Settings.SpeciesSettings speciesSettings)
         {
             var combinedWeightings = SpeciesWeightedSet(possiblePokemon, pokemon, speciesSettings);
             // Actually choose the species
             return rand.Choice(combinedWeightings);
         }
-        /// <summary>Chose a random species from the input set based on the given species settings.
+        /// <summary> Chose a random species from the input set based on the given species settings.
         /// If speciesSettings.DisableIllegalEvolutions is true, scale impossible evolutions down to their less evolved forms </summary> 
         private PokemonSpecies RandomSpecies(IEnumerable<PokemonSpecies> possiblePokemon, PokemonSpecies pokemon, int level, Settings.SpeciesSettings speciesSettings)
         {
@@ -485,6 +495,7 @@ namespace PokemonEmeraldRandomizer.Backend
                     return true;
             return false;
         }
+        /// <summary> Returns the equivalent required level of an evolution (including non-leveling evolutions if applicable) </summary>
         private int EquivalentLevelReq(Evolution evo, Settings.SpeciesSettings speciesSettings)
         {
             if (evo.EvolvesByLevel)
