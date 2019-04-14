@@ -185,6 +185,44 @@ namespace PokemonEmeraldRandomizer.Backend
 
     public class PokemonBaseStats
     {
+        //Special Pokemon Sets (do better later)
+        public static HashSet<PokemonSpecies> babyPokemon = new HashSet<PokemonSpecies>
+        {
+            PokemonSpecies.AZURILL,
+            PokemonSpecies.CLEFFA,
+            PokemonSpecies.ELEKID,
+            PokemonSpecies.IGGLYBUFF,
+            PokemonSpecies.MAGBY,
+            PokemonSpecies.SMOOCHUM,
+            PokemonSpecies.TOGEPI,
+            PokemonSpecies.PICHU,
+            PokemonSpecies.TYROGUE,
+            PokemonSpecies.WYNAUT,
+        };
+        public static HashSet<PokemonSpecies> legendaries = new HashSet<PokemonSpecies>
+        {
+            PokemonSpecies.ARTICUNO,
+            PokemonSpecies.ZAPDOS,
+            PokemonSpecies.MOLTRES,
+            PokemonSpecies.MEW,
+            PokemonSpecies.MEWTWO,
+            PokemonSpecies.SUICUNE,
+            PokemonSpecies.RAIKOU,
+            PokemonSpecies.ENTEI,
+            PokemonSpecies.LUGIA,
+            PokemonSpecies.HOーOH,
+            PokemonSpecies.CELEBI,
+            PokemonSpecies.REGICE,
+            PokemonSpecies.REGIROCK,
+            PokemonSpecies.REGISTEEL,
+            PokemonSpecies.KYOGRE,
+            PokemonSpecies.GROUDON,
+            PokemonSpecies.RAYQUAZA,
+            PokemonSpecies.DEOXYS,
+            PokemonSpecies.JIRACHI,
+            PokemonSpecies.LATIAS,
+            PokemonSpecies.LATIOS,
+        };
         public readonly PokemonSpecies species;
         public int DexIndex { get { return PokedexUtils.PokedexIndex(species); } }
         public bool IsSingleTyped { get { return types[0] == types[1]; } }

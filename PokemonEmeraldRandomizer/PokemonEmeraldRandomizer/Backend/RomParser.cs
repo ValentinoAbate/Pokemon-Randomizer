@@ -72,7 +72,7 @@ namespace PokemonEmeraldRandomizer.Backend
         {
             rom.Seek(offset);
             Move[] moves = new Move[numToRead];
-            for (int i = 0; i < numToRead; i++, offset += 2)
+            for (int i = 0; i < numToRead; i++)
                 moves[i] = (Move)rom.ReadUInt16();
             return moves;
         }

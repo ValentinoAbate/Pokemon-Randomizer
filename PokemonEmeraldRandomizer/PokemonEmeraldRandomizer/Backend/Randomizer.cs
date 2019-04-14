@@ -81,6 +81,10 @@ namespace PokemonEmeraldRandomizer.Backend
                 // Mutate Evolution trees
                 foreach (var evo in pkmn.evolvesTo)
                 {
+                    if (evo.Type == EvolutionType.None)
+                        continue;
+
+                    #region Dunsparse Plague
                     if(rand.RandomDouble() < settings.DunsparsePlaugeChance)
                     {
                         // Add the plague
@@ -100,8 +104,18 @@ namespace PokemonEmeraldRandomizer.Backend
                                 pkmn.evolvesTo[1].parameter = evo.parameter;
                             }
                         }
+                        else if(evo.Type == EvolutionType.Friendship)
+                        {
+                            evo.Type = rand.RandomDouble() < 0.5 ? EvolutionType.FriendshipDay : EvolutionType.FriendshipNight;
+                            pkmn.evolvesTo[1].Pokemon = PokemonSpecies.DUNSPARCE;
+                            pkmn.evolvesTo[1].Type = evo.Type == EvolutionType.FriendshipDay ? EvolutionType.FriendshipNight : EvolutionType.FriendshipDay;
+                            pkmn.evolvesTo[1].parameter = evo.parameter;
+                        }
                     }
-                    if(settings.FixImpossibleEvos)
+                    #endregion
+
+                    #region ImpossibleEvoFix
+                    if (settings.FixImpossibleEvos)
                     {
                         if(evo.Type == EvolutionType.Trade)
                         {
@@ -112,9 +126,9 @@ namespace PokemonEmeraldRandomizer.Backend
                         {
                             evo.Type = EvolutionType.UseItem;
                             evo.parameter = (int)Item.Fire_Stone;
-                        }
-                            
+                        }                            
                     }
+                    #endregion
                 }
                 // Set Pokemon Tags (legendary, etc)
                 // Mutate low-consequence base stats
@@ -151,7 +165,7 @@ namespace PokemonEmeraldRandomizer.Backend
                 }
                 else if (settings.StarterSetting == Settings.StarterPokemonOption.TypeTriangle)
                 {
-                    var triangle = RandomTypeTriangle(pokemonSet, speciesSettings);
+                    var triangle = RandomTypeTriangle(pokemonSet, speciesSettings, settings.StrongStarterTypeTriangle);
                     if (triangle != null)
                         data.Starters = triangle;
                     else // Fall back on completely random
@@ -373,7 +387,7 @@ namespace PokemonEmeraldRandomizer.Backend
             {
                 data.PcStartItem = rand.Choice(EnumUtils.GetValues<Item>());
             }
-           
+
             #endregion
 
             data.CalculateMetrics();
@@ -451,6 +465,9 @@ namespace PokemonEmeraldRandomizer.Backend
                 var noise = new WeightedSet<PokemonSpecies>(possiblePokemon, speciesSettings.Noise);
                 combinedWeightings.Add(noise);
             }
+            // Remove Legendaries
+            if(speciesSettings.BanLegendaries)
+                combinedWeightings.RemoveWhere((p) => PokemonBaseStats.legendaries.Contains(p));
             return combinedWeightings;
         }
         /// <summary> Chose a random species from the input set based on the given species settings</summary> 
@@ -508,12 +525,16 @@ namespace PokemonEmeraldRandomizer.Backend
                 return speciesSettings.ItemEvolutionLevel;
             else if (evo.Type == EvolutionType.Beauty)
                 return speciesSettings.BeautyEvolutionLevel;
-            else
+            else // Evolves by friendship
+            {
+                if (PokemonBaseStats.babyPokemon.Contains(evo.Pokemon))
+                    return speciesSettings.BabyFriendshipEvolutionLevel;
                 return speciesSettings.FriendshipEvolutionLevel;
+            }             
         }
         /// <summary> Return 3 pokemon that form a valid type traingle, or null if none exist in the input set 
-        /// Currently type triangles just requires one-way weakness, but allow neutral relations </summary>
-        private List<PokemonSpecies> RandomTypeTriangle(IEnumerable<PokemonSpecies> possiblePokemon, Settings.SpeciesSettings speciesSettings)
+        /// Type triangles require one-way weakness, but allow neutral relations in reverse order (unless strong is true) </summary>
+        private List<PokemonSpecies> RandomTypeTriangle(IEnumerable<PokemonSpecies> possiblePokemon, Settings.SpeciesSettings speciesSettings, bool strong = false)
         {
             var set = SpeciesWeightedSet(possiblePokemon, data.Starters[0], speciesSettings);
             if(speciesSettings.DisableIllegalEvolutions)
@@ -525,9 +546,9 @@ namespace PokemonEmeraldRandomizer.Backend
                 pool.Remove(first);
                 // Get potential second pokemon
                 var secondPossiblities = SpeciesWeightedSet(set.Items, data.Starters[1], speciesSettings);
-                secondPossiblities.RemoveWhere((p) => !OneWayWeakness(first, p));
+                secondPossiblities.RemoveWhere((p) => !OneWayWeakness(first, p, strong));
                 // Finish the traiangle if possible
-                var triangle = FinishTriangle(set, secondPossiblities, first, speciesSettings);
+                var triangle = FinishTriangle(set, secondPossiblities, first, speciesSettings, strong);
                 if (triangle != null)
                     return triangle;
 
@@ -535,7 +556,7 @@ namespace PokemonEmeraldRandomizer.Backend
             return null; // No viable triangle with input spcifications
         }
         /// <summary> Helper method for the RandomTypeTriangle method </summary>
-        private List<PokemonSpecies> FinishTriangle(WeightedSet<PokemonSpecies> set, WeightedSet<PokemonSpecies> possibleSeconds, PokemonSpecies first, Settings.SpeciesSettings speciesSettings)
+        private List<PokemonSpecies> FinishTriangle(WeightedSet<PokemonSpecies> set, WeightedSet<PokemonSpecies> possibleSeconds, PokemonSpecies first, Settings.SpeciesSettings speciesSettings, bool strong)
         {
             while (possibleSeconds.Count > 0)
             {
@@ -543,22 +564,24 @@ namespace PokemonEmeraldRandomizer.Backend
                 possibleSeconds.Remove(second);
                 // Get third pokemon
                 var thirdPossiblities = SpeciesWeightedSet(set.Items, data.Starters[2], speciesSettings);
-                thirdPossiblities.RemoveWhere((p) => !(OneWayWeakness(second, p) && OneWayWeakness(p, first)));
+                thirdPossiblities.RemoveWhere((p) => !(OneWayWeakness(second, p, strong) && OneWayWeakness(p, first, strong)));
                 // If at least one works, choose one randomly
                 if (thirdPossiblities.Count > 0)
                     return new List<PokemonSpecies> { first, second, rand.Choice(thirdPossiblities) };
             }
             return null;
         }
-
-        /// <summary> Return true if b is weak to a AND a is not weak to b </summary>
-        private bool OneWayWeakness(PokemonSpecies a, PokemonSpecies b)
+        /// <summary> Return true if b is weak to a AND a is not weak to b 
+        /// If strong is true, b must also not be normally effective against a </summary>
+        private bool OneWayWeakness(PokemonSpecies a, PokemonSpecies b, bool strong = true)
         {
             var aTypes = data.PokemonLookup[a].types;
             var bTypes = data.PokemonLookup[b].types;
             var aVsB = data.TypeDefinitions.GetEffectiveness(aTypes[0], aTypes[1], bTypes[0], bTypes[1]);
             var bVsA = data.TypeDefinitions.GetEffectiveness(bTypes[0], bTypes[1], aTypes[0], aTypes[1]);
-            return aVsB == TypeEffectiveness.SuperEffective ? !(bVsA == TypeEffectiveness.SuperEffective) : false;
+            if(strong)
+                return aVsB == TypeEffectiveness.SuperEffective && !(bVsA == TypeEffectiveness.SuperEffective || bVsA == TypeEffectiveness.Normal);
+            return aVsB == TypeEffectiveness.SuperEffective && !(bVsA == TypeEffectiveness.SuperEffective);
         }
         /// <summary> return true if pokemon a evolves into or from pokemon b or IS pokemon b</summary>
         private bool RelatedToOrSelf(PokemonSpecies a, PokemonSpecies b)
@@ -631,6 +654,7 @@ namespace PokemonEmeraldRandomizer.Backend
         private void PcgBattles(IEnumerable<Trainer> battles, IEnumerable<PokemonSpecies> seed, IEnumerable<PokemonSpecies> pokemonSet, Settings.SpeciesSettings speciesSettings)
         {
             var team = new List<PokemonSpecies>(seed);
+            var highestLevels = new int[6];
             foreach(var battle in battles)
             {
                 RandomizeBattle(battle, pokemonSet, speciesSettings);
@@ -646,6 +670,13 @@ namespace PokemonEmeraldRandomizer.Backend
                         {
                             pokemon.moves = MovesetGenerator.DefaultMoveset(data.PokemonLookup[pokemon.species], pokemon.level);
                         }
+                        //Update with evolved form/highest level to preserve evo chains
+                        if (pokemon.level > highestLevels[i])
+                        {
+                            team[i] = pokemon.species;
+                            highestLevels[i] = pokemon.level;
+                        }
+                            
                     }                       
                     else
                         team.Add(battle.pokemon[j].species);

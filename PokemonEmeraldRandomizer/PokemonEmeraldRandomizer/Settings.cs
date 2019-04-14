@@ -75,6 +75,7 @@ namespace PokemonEmeraldRandomizer
         }
         public bool RandomizeStarters { get => true; }
         public StarterPokemonOption StarterSetting { get => StarterPokemonOption.TypeTriangle; }
+        public bool StrongStarterTypeTriangle { get => true; }
         #endregion
 
         #region Evolution
@@ -110,6 +111,7 @@ namespace PokemonEmeraldRandomizer
             },
             {"wild", new SpeciesSettings()
                 {
+                    BanLegendaries = true,
                     Noise = 0.005f,
                     PowerScaleSimilarityMod = 0.15f,
                     PowerScaleCull = true,
@@ -120,8 +122,9 @@ namespace PokemonEmeraldRandomizer
             },
             {"starter", new SpeciesSettings()
                 {
-                    Noise = 0.00000f,
-                    PowerScaleSimilarityMod = 1f,
+                    BanLegendaries = true,
+                    Noise = 1f,
+                    PowerScaleSimilarityMod = 0.1f,
                     PowerScaleCull = true,
                     PowerScaleThreshold = 250,
                     TypeSimilarityMod = 0,
@@ -156,10 +159,12 @@ namespace PokemonEmeraldRandomizer
             public bool SetLevelsOnArtificialEvos { get => true; }
             public int ItemEvolutionLevel { get => 27; }
             public int TradeEvolutionLevel { get => 32; }
-            public int FriendshipEvolutionLevel { get => 3; }
+            public int FriendshipEvolutionLevel { get => 25; }
             public int BeautyEvolutionLevel { get => 32; }
+            public int BabyFriendshipEvolutionLevel { get => 3; }
             #endregion
 
+            public bool BanLegendaries { get; set; } = false;
             public float Noise { get; set; } = 0;
             public float PowerScaleSimilarityMod { get; set; } = 0;
             public bool PowerScaleCull { get; set; }

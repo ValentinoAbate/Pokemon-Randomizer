@@ -21,6 +21,7 @@ namespace PokemonEmeraldRandomizer.Backend
 
         #region General Random Functions
         public int RandomInt(int min, int max) => rand.Next(min, max);
+        /// <summary> Generate a double in between 0.0 (inclusive) and 1 (exclusive) </summary>
         public double RandomDouble() => rand.NextDouble(); 
         public float RandomFloat(float min, float max)
         {
