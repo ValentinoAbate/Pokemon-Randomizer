@@ -67,6 +67,31 @@ namespace PokemonEmeraldRandomizer.Backend
             // Change move type, power, etc. (this would be really lame if not at a low mutation rate)
             #endregion
 
+            #region TMs, HMs, and Move Tutor Move Mappings
+            var moves = EnumUtils.GetValues<Move>().ToHashSet();
+            moves.Remove(Move.None); // Remove none as a possible choice
+            // Remove HM moves if applicable
+            if(settings.PreventHmMovesInTMsOrMoveTutors)
+                foreach (var move in data.HMMoves)
+                    moves.Remove(move);
+            // Randomize TM mappings
+            for(int i = 0; i < data.TMMoves.Length; ++i)
+            {
+                if (rand.RandomDouble() < settings.TMRandChance)
+                    data.TMMoves[i] = rand.Choice(moves);
+                if (settings.PreventDuplicateTMsAndMoveTutors)
+                    moves.Remove(data.TMMoves[i]);
+            }
+            // Randomize Move Tutor mappings
+            for (int i = 0; i < data.tutorMoves.Length; ++i)
+            {
+                if (rand.RandomDouble() < settings.MoveTutorRandChance)
+                    data.tutorMoves[i] = rand.Choice(moves);
+                if (settings.PreventDuplicateTMsAndMoveTutors)
+                    moves.Remove(data.tutorMoves[i]);
+            }
+            #endregion
+
             #region Item Definitions (NOTHING YET)
             // Define Item Definitions
             // Hack in new items if applicable

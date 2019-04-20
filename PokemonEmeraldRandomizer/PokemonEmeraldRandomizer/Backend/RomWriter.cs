@@ -14,12 +14,12 @@ namespace PokemonEmeraldRandomizer.Backend
         public static byte[] Write(RomData data)
         {
             Rom file = new Rom(data.Rom);
-            //Unlock National pokedex
-            //if (data.NationalDexUnlocked)
-            //{
-            //    writeText(addy("e40004"), "[3172016732AC1F083229610825F00129E40825F30116CD40010003]");
-            //    writeText(addy("1fa301"), "[0400e4]");
-            //}
+            // Write TM definitions
+            WriteMoveMappings(file, data.Info.Offset("tmMoves"), data.TMMoves);
+            // Write HM definitions
+            WriteMoveMappings(file, data.Info.Offset("hmMoves"), data.HMMoves);
+            // Write Move Tutor definitions
+            WriteMoveMappings(file, data.Info.Offset("moveTutorMoves"), data.tutorMoves);
             // Write the pc potion item
             data.Rom.WriteUInt16(data.Info.Offset("pcPotion"), (int)data.PcStartItem);
             WriteStarters(data, file, data.Info);
@@ -28,6 +28,13 @@ namespace PokemonEmeraldRandomizer.Backend
             WriteEncounters(data, file, data.Info);
             WriteTrainerBattles(data, file, data.Info);
             return file.File;
+        }
+        // Read TM, HM, or Move tutor definitions from the rom (depending on args)
+        private static void WriteMoveMappings(Rom rom, int offset, Move[] moves)
+        {
+            rom.Seek(offset);
+            foreach(var move in moves)
+                rom.WriteUInt16((int)move);
         }
         private static void WriteStarters(RomData romData, Rom rom, XmlManager data)
         {
@@ -199,20 +206,20 @@ namespace PokemonEmeraldRandomizer.Backend
             {
                 rom.WriteByte((byte)trainer.dataType);
                 rom.WriteByte((byte)trainer.trainerClass);
-                //// Read Gender (byte 2 bit 0)
+                //// Write Gender (byte 2 bit 0)
                 //gender = (Gender)((rom.Peek() & 0x80) >> 7);
-                //// Read music track index (byte 2 bits 1-7)
-                //musicIndex = (byte)(rom.ReadByte() & 0x7F);
+                //// Write music track index (byte 2 bits 1-7)
+                //musicIndex = (byte)(rom.WriteByte() & 0x7F);
                 rom.Skip(1);
-                // Read sprite index (byte 3)
+                // Write sprite index (byte 3)
                 rom.WriteByte(trainer.spriteIndex);
-                //// Read name (I think bytes 4 - 15?)
-                //name = rom.ReadFixedLengthString(12);
+                //// Write name (I think bytes 4 - 15?)
+                //name = rom.WriteFixedLengthString(12);
                 rom.Skip(12);
-                // Read items (bytes 16-23)
+                // Write items (bytes 16-23)
                 for (int i = 0; i < 4; ++i)
                     rom.WriteUInt16((int)trainer.useItems[i]);
-                // Read double battle (byte 24)
+                // Write double battle (byte 24)
                 rom.WriteByte(Convert.ToByte(trainer.isDoubleBattle));
                 // What is in bytes 25-27?
                 rom.Skip(3);
@@ -229,7 +236,7 @@ namespace PokemonEmeraldRandomizer.Backend
 
                 rom.Save();
                 rom.Seek(trainer.pokemonOffset);
-                #region Read pokemon from pokemonPtr
+                #region Write pokemon from pokemonPtr
                 foreach(var pokemon in trainer.pokemon)
                 {
                     rom.WriteUInt16(pokemon.IVLevel);

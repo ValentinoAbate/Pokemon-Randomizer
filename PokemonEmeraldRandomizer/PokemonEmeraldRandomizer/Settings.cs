@@ -75,11 +75,18 @@ namespace PokemonEmeraldRandomizer
         }
         public bool RandomizeStarters { get => true; }
         public StarterPokemonOption StarterSetting { get => StarterPokemonOption.TypeTriangle; }
-        public bool StrongStarterTypeTriangle { get => true; }
+        public bool StrongStarterTypeTriangle { get => false; }
+        #endregion
+
+        #region TMs, HMs, and Move Tutors
+        public bool PreventHmMovesInTMsOrMoveTutors { get => true; }
+        public bool PreventDuplicateTMsAndMoveTutors { get => true; }
+        public double TMRandChance { get => 1; }
+        public double MoveTutorRandChance { get => 1; }
         #endregion
 
         #region Evolution
-        public double DunsparsePlaugeChance { get => 0; }
+        public double DunsparsePlaugeChance { get => 0.15; }
         #endregion
 
         #region Misc
