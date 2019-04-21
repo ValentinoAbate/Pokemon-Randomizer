@@ -40,6 +40,8 @@ namespace PokemonEmeraldRandomizer.Backend
         }
         /// <summary>Reads a byte from the internal offset</summary>
         public byte WriteByte(byte value) => File[InternalOffset++] = value;
+        /// <summary>Reads a byte from the internal offset</summary>
+        public byte WriteByte(int offset, byte value) => File[offset] = value;
         /// <summary>Read a block of bytes at the internal offset</summary>
         public byte[] ReadBlock(int length)
         {
@@ -65,6 +67,11 @@ namespace PokemonEmeraldRandomizer.Backend
         public void WriteBlock(int offset, byte[] data)
         {
             Array.ConstrainedCopy(data, 0, File, offset, data.Length);
+        }
+        /// <summary>Write a block of bytes to the given offset</summary>
+        public void WriteBlock(int offset, byte[] data, int sourceInd, int length)
+        {
+            Array.ConstrainedCopy(data, sourceInd, File, offset, length);
         }
 
         #region Free Space and Hacking Utils

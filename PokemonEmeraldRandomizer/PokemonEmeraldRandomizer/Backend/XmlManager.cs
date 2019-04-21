@@ -24,7 +24,7 @@ namespace PokemonEmeraldRandomizer.Backend
         private Dictionary<string, XElement> cache = new Dictionary<string, XElement>();
 
         #region Constructors
-        public XmlManager(string path) : this(XElement.Load(path)) { }
+        public XmlManager(string doc) : this(XDocument.Parse(doc).Root) { }
         public XmlManager(XElement root)
         {
             Root = root;

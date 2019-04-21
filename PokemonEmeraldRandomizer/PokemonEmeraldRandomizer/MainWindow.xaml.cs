@@ -87,7 +87,7 @@ namespace PokemonEmeraldRandomizer
             Data = Backend.RomParser.Parse(rawROM);
             RandomizedData = Data;
             IsROMLoaded = true;
-            lblMessageBoxContent.Content = "Pokemon Emerald ROM opened";
+            lblMessageBoxContent.Content = "ROM opened: " + Data.Name + " (" + Data.Code + ")";
         }
 
         #region INotifyPropertyChanged Implementation
@@ -144,7 +144,7 @@ namespace PokemonEmeraldRandomizer
                 Data = Backend.RomParser.Parse(rawROM);
                 RandomizedData = Data;
                 IsROMLoaded = true;
-                lblMessageBoxContent.Content = "Pokemon Emerald ROM opened";
+                lblMessageBoxContent.Content = "ROM opened: " + Data.Name + " (" + Data.Code + ")";
             }
         }
 

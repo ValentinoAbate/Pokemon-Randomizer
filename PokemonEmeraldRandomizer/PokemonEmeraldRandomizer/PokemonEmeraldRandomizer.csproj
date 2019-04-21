@@ -76,8 +76,19 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Backend\IpsPatcher.cs" />
     <Compile Include="Backend\MoveData.cs" />
     <Compile Include="Backend\MovesetGenerator.cs" />
+    <Compile Include="Resources\Patches\Patches.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Patches.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Resources\RomInfo\RomInfo.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>RomInfo.resx</DependentUpon>
+    </Compile>
     <Compile Include="Settings.cs" />
     <Compile Include="Backend\Connection.cs" />
     <Compile Include="Backend\ConnectionData.cs" />
@@ -147,10 +158,20 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <EmbeddedResource Include="Resources\Patches\Patches.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Patches.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\RomInfo\RomInfo.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>RomInfo.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="Resources\Patches\PhysSpecSplitEM1.4.ips" />
+    <None Include="Resources\Patches\PhysSpecSplitFR1.6.ips" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -174,9 +195,13 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="RomInfo\Gen3RomInfo.xml">
+    <Resource Include="Resources\RomInfo\Gen3RomInfo.xml">
       <SubType>Designer</SubType>
     </Resource>
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <Resource Include="Resources\Patches\Credits.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

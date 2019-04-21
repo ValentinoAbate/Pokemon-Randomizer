@@ -12,8 +12,7 @@ namespace PokemonEmeraldRandomizer.Backend
         private static readonly Dictionary<Generation, string> infoPaths = new Dictionary<Generation, string>
         {
             //{RomData.Generation.III, Path.Combine(Directory.GetCurrentDirectory(), "ROMInfo", "Gen3ROMInfo.xml") }
-            // Temporary debug path
-            {RomData.Generation.III, "C:\\Users\\valen\\Documents\\GitHub\\Pokemon-Emerald-Randomizer\\PokemonEmeraldRandomizer\\PokemonEmeraldRandomizer\\RomInfo\\Gen3RomInfo.xml" }
+            {Generation.III, Resources.RomInfo.RomInfo.Gen3RomInfo }
 
         };
         public enum Generation { I,II,III,IV,V,VI,VII }

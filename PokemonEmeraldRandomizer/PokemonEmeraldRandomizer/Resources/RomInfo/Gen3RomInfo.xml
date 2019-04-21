@@ -1,0 +1,192 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<!-- README -->
+<!-- Standard attribute definitionss -->
+<!-- size: the number of bytes in the data if singular or in a single item if a collection of data (int) -->
+<!-- num:  the number of items in the collection (only applies to collections) (int) -->
+<!-- offset: the ROM offset of the data/collection of data (hex string) -->
+<!-- pointer: an offset where a pointer to the offset is usually stored. useful for dealing with hacked roms (hex string) -->
+
+<gen3RomInfo>
+  <versionInfo>
+    <!--16mb-->
+    <file size="16777216"/>
+    <romName size="12" offset="0xA0" format="ASCII"/>
+    <code size ="4" offset="0xAC" format="ASCII"/>
+    <maker size="2" offset="0xB0"/>
+    <version size="1" offset="0xBC"/>
+    <!-- From dabomstew's source. idk what this is -->
+    <headerChecksum offset="0xBD"/>
+  </versionInfo>
+
+  <!-- Gen III Constants -->
+  
+  <constants>
+    <!-- from dabomstew's UP randomizer source https://github.com/Dabomstew/universal-pokemon-randomizer -->
+    <wildPokemon ptrPrefix="0x0348048009E00000FFFF0000" grassSlots="12" surfSlots="5" rockSmashSlots="5" fishSlots="10"/>
+    <mapBanks ptrPrefix="0x80180068890B091808687047"/>
+    <pokedexOrder ptrPrefix="0x0448814208D0481C0004000C05E00000"/>
+    <moveData ptr="0x1CC" num="354"/>
+    <moveNames ptr="0x148"/>
+  </constants>
+  
+  <!-- Emerald Rom Info -->
+
+  <BPEJ0>
+    <!-- Metadata -->
+
+    <name>Pokémon Emerald (J)</name>
+    <support>none</support>
+    <!-- May be incorrect -->
+
+    <!-- Pokemon Base Stats -->
+    <!-- May be incorrect -->
+    <pokemonBaseStats offset="0x2F0D70"/>
+  </BPEJ0>
+  <BPEE0>
+    <!-- Metadata -->
+
+    <name>Pokémon Emerald (U)</name>
+    <version>0</version>
+    <support typeSplit ="true"/>
+    <!-- May be incorrect -->
+    <hash>7b058a7aea5bfbb352026727ebd87e17</hash>
+    <!-- 
+       Most of Emerald's free space is in 0x00! (Thanks Sky0fBlades)
+       Reference: http://pokemonhackersonline.com/archive/index.php/t-5742.html
+       0x00 Free Space (over a million bytes in total)
+       0x9C0B20 to 0xAFFFFF, 0xB98B30 to 0xBFFFFF, 0xD3CEA0 to 0xD437EF, 0xDE4018 to 0xE3CF48, 0xE3CF64 to the End 
+    -->
+    <freeSpace byte="0x00" startAddy="0x9C0B20"/>
+
+    <!-- Type Data -->
+
+    <numTypes>18</numTypes>
+    <!-- The address where the type effectiveness definitions start -->
+    <!-- ADD TERMINATOR INFO -->
+    <typeEffectiveness offset="0x31ace8" separator="[0xfe,0xfe,0x00]" terminator="[0xff,0xff,0x00]"/>
+
+    <!-- Move Data -->
+
+    <!-- TMs, HMs, and Move Tutors -->
+
+    <!-- TM Move mappings -->
+    <tmMoves num="50" size="2" offset="0x615b94"/>
+    <!-- HM move mappings -->
+    <hmMoves num="8" size="2" offset="0x615bf8"/>
+    <!-- MT move mappings -->
+    <moveTutorMoves num="30" size="2" offset="0x61500c"/>
+
+    <!-- Pokemon Definitions -->
+
+    <pokemonBaseStats num="411" size="28" offset="0x3203e8" skip="25" skipAt="251"/>
+    <tmHmCompat size="8" offset="0x31e8a0"/>
+    <moveTutorCompat size="4" offset="0x31e8a0"/>
+    <movesets offset="0x3230dc"/>
+    <evolutions size="40" sizePerEvolution="8" evolutionsPerPokemon="5" offset="0x325344"/>
+
+    <!-- Items -->
+
+    <!-- from dabomstew's UP randomizer source https://github.com/Dabomstew/universal-pokemon-randomizer -->
+    <starterItems offset="0xB117A"/>
+    <pcPotion offset="0x5DFEFC"/>
+
+    <!-- Static Pokemon -->
+
+    <!-- offset from dabomstew's UP randomizer source https://github.com/Dabomstew/universal-pokemon-randomizer -->
+    <starterPokemon offset="0x5B1DF8" skip1="0" skip2="0" duplicate="false"/>
+
+    <!-- Trainer Battle Definitions -->
+
+    <trainerBattles num="854" size="40" offset="0x310030"/>
+    <trainerClassNames num="66" length="13" offset="0x30FCD4"/>
+    
+    <!-- Special Trainer Battles -->
+
+    <rivals names="[Brendan,May]"/>
+    <reoccuring names="[Wally,Gabby &amp; Ty]"/>
+    <gymLeaders names="[Roxanne,Brawly,Wattson,Flannery,Norman,Winona,Tate&amp;Liza,Juan]"/>
+    <eliteFour names="[Sidney,Phoebe,Glacia,Drake]"/>
+    <champion names="[Wallace]"/>
+    <uber names="[Steven]"/>
+    <teamAdmins names="[Tabitha,Matt,Shelley]"/>
+    <teamLeaders names="[Maxie,Archie]"/>
+    <aceTrainers classNums="[5,48]"/>
+
+    <!-- Map Data -->
+
+    <!-- pointer from MEH .ini: https://github.com/shinyquagsire23/MEH (thanks shinyquagsire23) -->
+    <!-- and thethethe's forum post: http://pokemonhackersonline.com/showthread.php?t=2586 -->
+    <mapBankPointers num="34" size="4" offset="0x486578" pointer="0x84AA4"/>
+    <maps offset="0x849CC" bankLengths="[57,5,5,6,7,8,9,7,7,14,8,17,10,23,13,15,15,2,2,2,3,1,1,1,108,61,89,2,1,13,1,1,2,1]"/>
+
+    <!-- Encounter Data -->
+    <encounters offset=""/>
+    
+  </BPEE0>
+
+  <!-- Fire Red Rom Info -->
+
+  <BPRE0>
+    <name>Pokémon Fire Red (U) 1.0</name>
+    <version>0</version>
+
+    <support typeSplit ="true"/>
+    <!-- Def invalid -->
+    <hash>000000000000000000000</hash>
+    <freeSpace byte="0xFF" startAddy="0x800000"/>
+
+    <!-- Type Data -->
+
+    <numTypes>18</numTypes>
+    <!-- The address where the type effectiveness definitions start -->
+    <!-- ADD TERMINATOR INFO -->
+    <typeEffectiveness offset="0x24F050" separator="[0xfe,0xfe,0x00]" terminator="[0xff,0xff,0x00]"/>
+
+    <!-- Move Data -->
+
+    <!-- TMs, HMs, and Move Tutors -->
+
+    <!-- TM Move mappings -->
+    <tmMoves num="50" size="2" offset="0x45A5A4"/>
+    <!-- HM move mappings -->
+    <hmMoves num="8" size="2" offset="0x45A608"/>
+    <!-- MT move mappings -->
+    <moveTutorMoves num="15" size="2" offset="0x459B60"/>
+
+    <!-- Pokemon Definitions -->
+
+    <pokemonBaseStats num="411" size="28" offset="0x2547A0" skip="25" skipAt="251"/>
+    <tmHmCompat size="8" offset="0x252BC8"/>
+    <moveTutorCompat size="2" offset="0x459B7E"/>
+    <movesets offset="0x257494"/>
+    <!-- from thethethethe's forum post: http://pokemonhackersonline.com/showthread.php?t=2586 -->
+    <eggMoves offset="0x25EF0C"/>
+    <evolutions size="40" sizePerEvolution="8" evolutionsPerPokemon="5" offset="0x259754"/>
+
+    <!-- Items -->
+
+    <!-- from dabomstew's UP randomizer source https://github.com/Dabomstew/universal-pokemon-randomizer (untested)-->
+    <starterItems offset="0x000000"/>
+    <pcPotion offset="0x402220"/>
+
+    <!-- Static Pokemon -->
+
+    <!-- from dabomstew's UP randomizer source https://github.com/Dabomstew/universal-pokemon-randomizer (untested)-->
+    <starterPokemon offset="0x169BB5" skip1="513" skip2="459" duplicate="true" dupOffset="5"/>
+
+    <!-- Trainer Battle Definitions -->
+
+    <!-- from thethethethe's forum post: http://pokemonhackersonline.com/showthread.php?t=2586 -->
+    <trainerBattles num="743" size="40" offset="0x23EAF0"/>
+    <trainerClassNames num="107" length="13" offset="0x23E558"/>
+
+    <!-- Special Trainer Battles -->
+
+    <aceTrainers classNums="[]"/>
+
+    <mapBankPointers num="43" size="4" offset="0x3526A8" pointer="0x5524C"/>
+    <maps offset="0x849CC" bankLengths="[5,123,60,66,4,6,8,10,6,8,20,10,8,2,10,4,2,2,2,1,1,2,2,3,2,3,2,1,1,1,1,7,5,5,8,8,5,5,1,1,1,2,1]"/>
+  </BPRE0>
+
+</gen3RomInfo>
