@@ -103,6 +103,7 @@ namespace PokemonEmeraldRandomizer.Backend
             // Mutate Pokemon
             foreach (PokemonBaseStats pkmn in data.Pokemon)
             {
+                #region Evolutions
                 // Mutate Evolution trees
                 foreach (var evo in pkmn.evolvesTo)
                 {
@@ -155,8 +156,10 @@ namespace PokemonEmeraldRandomizer.Backend
                     }
                     #endregion
                 }
-                // Set Pokemon Tags (legendary, etc)
+                #endregion
                 // Mutate low-consequence base stats
+
+                #region Types
                 // Mutate Pokemon Type
                 if (pkmn.IsSingleTyped)
                 {
@@ -170,9 +173,34 @@ namespace PokemonEmeraldRandomizer.Backend
                     if (rand.RandomDouble() < settings.DualTypeSecondaryRandChance)
                         pkmn.types[1] = rand.Choice(data.Metrics.TypeRatiosDualSecondary);
                 }
+                #endregion
 
-                // Mutate battle states and EVs
+                // Mutate battle stats and EVs
                 // Mutate Learn Sets
+                #region TM, HM, and Move tutor Compatibility
+                if(settings.TmMtCompatSetting != Settings.TmMtCompatOption.Unchanged)
+                {
+                    for (int i = 0; i < pkmn.TMCompat.Length; ++i)
+                    {
+                        if (settings.TmMtCompatSetting == Settings.TmMtCompatOption.AllOn)
+                            pkmn.TMCompat[i] = true;
+                        else if (settings.TmMtCompatSetting == Settings.TmMtCompatOption.Random)
+                            pkmn.TMCompat[i] = rand.RandomDouble() < settings.TmMtTrueChance;
+                        else if (settings.TmMtCompatSetting == Settings.TmMtCompatOption.Intelligent)
+                        {
+                            var moveData = data.MoveData[(int)data.TMMoves[i]];
+                            if(pkmn.types.Contains(moveData.type))
+                                pkmn.TMCompat[i] = true;
+                            else if(pkmn.learnSet.Any((l) => l.move == moveData.move))
+                                pkmn.TMCompat[i] = true;
+                            else if(moveData.type == PokemonType.NRM)
+                                pkmn.TMCompat[i] = rand.RandomDouble() < settings.TmMtTrueChance;
+                            else
+                                pkmn.TMCompat[i] = rand.RandomDouble() < settings.TmMtNoise;
+                        }
+                    }
+                }
+                #endregion
             }
             // Change pallettes to fit new types
             // Recalculate power scoring
@@ -415,6 +443,26 @@ namespace PokemonEmeraldRandomizer.Backend
 
             #endregion
 
+            var tmLearns = new Dictionary<PokemonSpecies, List<Move>>();
+            foreach(var pkmn in data.Pokemon)
+            {
+                var moveList = new List<Move>();
+                for (int i = 0; i < pkmn.TMCompat.Length; ++i)
+                    if (pkmn.TMCompat[i])
+                        moveList.Add(data.TMMoves[i]);
+                tmLearns.Add(pkmn.species, moveList);
+            }
+
+            var compTypes = new Dictionary<PokemonSpecies, List<PokemonType>>();
+            foreach (var pkmn in data.Pokemon)
+            {
+                var typeList = new List<PokemonType>();
+                foreach (var t in EnumUtils.GetValues<PokemonType>())
+                    if (IsComplementaryType(pkmn.types, t))
+                        typeList.Add(t);
+                compTypes.Add(pkmn.species, typeList);
+            }
+
             data.CalculateMetrics();
             return data;
         }
@@ -607,6 +655,19 @@ namespace PokemonEmeraldRandomizer.Backend
             if(strong)
                 return aVsB == TypeEffectiveness.SuperEffective && !(bVsA == TypeEffectiveness.SuperEffective || bVsA == TypeEffectiveness.Normal);
             return aVsB == TypeEffectiveness.SuperEffective && !(bVsA == TypeEffectiveness.SuperEffective);
+        }
+        private bool IsComplementaryType(PokemonType[] pokemonType, PokemonType atkType)
+        {
+            var allTypes = EnumUtils.GetValues<PokemonType>();
+            var weakTypes = allTypes.Where((t) => data.TypeDefinitions.GetEffectiveness(t, t, pokemonType[0], pokemonType[1]) == TypeEffectiveness.SuperEffective);           
+            foreach (var t in weakTypes)
+                if (data.TypeDefinitions.GetEffectiveness(atkType, t) == TypeEffectiveness.SuperEffective)
+                    return true;
+            //var resistTypes = allTypes.Where((t) => data.TypeDefinitions.GetEffectiveness(pokemonType[0], pokemonType[1], t, t) == TypeEffectiveness.NotVeryEffective);
+            //foreach (var t in resistTypes)
+            //    if (data.TypeDefinitions.GetEffectiveness(atkType, t) == TypeEffectiveness.SuperEffective)
+            //        return true;
+            return false;
         }
         /// <summary> return true if pokemon a evolves into or from pokemon b or IS pokemon b</summary>
         private bool RelatedToOrSelf(PokemonSpecies a, PokemonSpecies b)

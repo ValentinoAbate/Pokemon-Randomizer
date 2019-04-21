@@ -79,6 +79,17 @@ namespace PokemonEmeraldRandomizer
         #endregion
 
         #region TMs, HMs, and Move Tutors
+        public enum TmMtCompatOption
+        {
+            Unchanged,
+            AllOn,
+            Random,
+            RandomKeepNumber,
+            Intelligent
+        }
+        public TmMtCompatOption TmMtCompatSetting { get => TmMtCompatOption.Intelligent; }
+        public double TmMtTrueChance { get => 0.5; }
+        public double TmMtNoise { get => 0.15; }
         public bool PreventHmMovesInTMsOrMoveTutors { get => true; }
         public bool PreventDuplicateTMsAndMoveTutors { get => true; }
         public double TMRandChance { get => 1; }
@@ -179,6 +190,7 @@ namespace PokemonEmeraldRandomizer
             public float TypeSimilarityMod { get; set; } = 0;
             public bool TypeSimilarityCull { get; set; }
         }
+
         #endregion
     }
 }

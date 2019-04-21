@@ -59,6 +59,11 @@
     -->
     <freeSpace byte="0x00" startAddy="0x9C0B20"/>
 
+    <!-- Hacks and Tweaks -->
+
+    <runIndoors offset="0x11A1E8"/>
+    <textSpeed offset="0x60F094"/>
+
     <!-- Type Data -->
 
     <numTypes>18</numTypes>
@@ -95,6 +100,9 @@
 
     <!-- offset from dabomstew's UP randomizer source https://github.com/Dabomstew/universal-pokemon-randomizer -->
     <starterPokemon offset="0x5B1DF8" skip1="0" skip2="0" duplicate="false"/>
+    <!-- offsets from dabomstew's UP randomizer source https://github.com/Dabomstew/universal-pokemon-randomizer -->
+    <catchingTutOpponent offset="0xB0870"/>
+    <catchingTutPlayer offset="0x139472"/>
 
     <!-- Trainer Battle Definitions -->
 

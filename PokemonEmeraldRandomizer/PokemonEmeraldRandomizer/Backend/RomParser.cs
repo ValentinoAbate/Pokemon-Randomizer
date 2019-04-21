@@ -40,6 +40,7 @@ namespace PokemonEmeraldRandomizer.Backend
             // Read Starters
             data.Starters = ReadStarters(data.Rom, data.Info);
             //data.StarterItems = ReadStarterItems(data.Rom, data.Info);
+            // Read the PC item
             data.PcStartItem = (Item)data.Rom.ReadUInt16(data.Info.Offset("pcPotion"));
             // Trainers and associated data
             data.ClassNames = ReadTrainerClassNames(data.Rom, data.Info);

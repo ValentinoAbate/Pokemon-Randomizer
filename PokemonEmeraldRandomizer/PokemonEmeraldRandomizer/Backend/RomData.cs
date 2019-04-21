@@ -29,6 +29,7 @@ namespace PokemonEmeraldRandomizer.Backend
         public Item PcStartItem { get; set; }
         public List<PokemonSpecies> Starters { get; set; }
         public List<Item> StarterItems { get; set; }
+        public PokemonSpecies CatchingTutPokemon { get; set; }
         public List<PokemonBaseStats> Pokemon { get; set; }
         public PokemonBaseStats[] PokemonDexOrder
         {
