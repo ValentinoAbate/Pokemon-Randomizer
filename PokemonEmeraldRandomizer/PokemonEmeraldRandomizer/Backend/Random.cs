@@ -90,7 +90,7 @@ namespace PokemonEmeraldRandomizer.Backend
             }
             throw new Exception("No item chosen");
         }
-        /// <summary> Returns a wrighted random choice from the given </summary> 
+        /// <summary> Returns a weighted random choice from the given WeightedSet </summary> 
         public T Choice<T>(WeightedSet<T> items)
         {
             return Choice(items.Items, items.Weights);

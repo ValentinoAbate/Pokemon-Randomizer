@@ -97,6 +97,13 @@ namespace PokemonEmeraldRandomizer
         #endregion
 
         #region Evolution
+        public enum EvolutionOption
+        {
+            Unchanged,
+            DisableIllegal,
+            ForceHgihestLegal,
+        }
+
         public double DunsparsePlaugeChance { get => 0.15; }
         #endregion
 
@@ -117,13 +124,15 @@ namespace PokemonEmeraldRandomizer
         }
         public Dictionary<string, SpeciesSettings> speciesSettings = new Dictionary<string, SpeciesSettings>()
         {
-            {"trainer", new SpeciesSettings()
+            {"starter", new SpeciesSettings()
                 {
-                    Noise = 0.005f,
-                    PowerScaleSimilarityMod = 0.15f,
+                    BanLegendaries = true,
+                    Noise = 1f,
+                    PowerScaleSimilarityMod = 0.1f,
                     PowerScaleCull = true,
-                    PowerScaleThreshold = 100,
-                    TypeSimilarityMod = 1f,
+                    PowerThresholdStronger = 250,
+                    PowerThresholdWeaker = 200,
+                    TypeSimilarityMod = 0,
                     TypeSimilarityCull = false,
                 }
             },
@@ -133,38 +142,77 @@ namespace PokemonEmeraldRandomizer
                     Noise = 0.005f,
                     PowerScaleSimilarityMod = 0.15f,
                     PowerScaleCull = true,
-                    PowerScaleThreshold = 250,
+                    PowerThresholdStronger = 250,
+                    PowerThresholdWeaker = 200,
                     TypeSimilarityMod = 1f,
                     TypeSimilarityCull = false,
                 }
             },
-            {"starter", new SpeciesSettings()
+            {"trainer", new SpeciesSettings()
                 {
-                    BanLegendaries = true,
-                    Noise = 1f,
-                    PowerScaleSimilarityMod = 0.1f,
+                    Noise = 0.005f,
+                    PowerScaleSimilarityMod = 0.15f,
                     PowerScaleCull = true,
-                    PowerScaleThreshold = 250,
-                    TypeSimilarityMod = 0,
+                    TypeSimilarityMod = 1f,
                     TypeSimilarityCull = false,
                 }
             },
             {"rival", new SpeciesSettings()
                 {
+                    ForceHighestLegalEvolution = true,
                     Noise = 0.001f,
                     PowerScaleSimilarityMod = 1f,
                     PowerScaleCull = true,
-                    PowerScaleThreshold = 175,
+                    PowerThresholdStronger = 175,
+                    PowerThresholdWeaker = 50,
                     TypeSimilarityMod = 0,
+                    TypeSimilarityCull = false,
+                }
+            },
+            {"champion", new SpeciesSettings()
+                {
+                    ForceHighestLegalEvolution = true,
+                    Noise = 0.001f,
+                    PowerScaleSimilarityMod = 0.15f,
+                    PowerScaleCull = true,
+                    PowerThresholdStronger = 500,
+                    PowerThresholdWeaker = 50,
+                    TypeSimilarityMod = 1f,
+                    TypeSimilarityCull = false,
+                }
+            },
+            {"eliteFour", new SpeciesSettings()
+                {
+                    ForceHighestLegalEvolution = true,
+                    Noise = 0.001f,
+                    PowerScaleSimilarityMod = 0.15f,
+                    PowerScaleCull = true,
+                    PowerThresholdStronger = 300,
+                    PowerThresholdWeaker = 50,
+                    TypeSimilarityMod = 1f,
+                    TypeSimilarityCull = false,
+                }
+            },
+            {"gymLeader", new SpeciesSettings()
+                {
+                    ForceHighestLegalEvolution = true,
+                    Noise = 0.001f,
+                    PowerScaleSimilarityMod = 0.15f,
+                    PowerScaleCull = true,
+                    PowerThresholdStronger = 250,
+                    PowerThresholdWeaker = 50,
+                    TypeSimilarityMod = 1f,
                     TypeSimilarityCull = false,
                 }
             },
             {"aceTrainer", new SpeciesSettings()
                 {
+                    ForceHighestLegalEvolution = true,
                     Noise = 0.001f,
                     PowerScaleSimilarityMod = 1f,
                     PowerScaleCull = true,
-                    PowerScaleThreshold = 175,
+                    PowerThresholdStronger = 175,
+                    PowerThresholdWeaker = 200,
                     TypeSimilarityMod = 0,
                     TypeSimilarityCull = false,
                 }
@@ -182,11 +230,13 @@ namespace PokemonEmeraldRandomizer
             public int BabyFriendshipEvolutionLevel { get => 3; }
             #endregion
 
+            public bool ForceHighestLegalEvolution { get; set; } = false;
             public bool BanLegendaries { get; set; } = false;
             public float Noise { get; set; } = 0;
             public float PowerScaleSimilarityMod { get; set; } = 0;
             public bool PowerScaleCull { get; set; }
-            public int PowerScaleThreshold { get; set; }
+            public int PowerThresholdStronger { get; set; } = 100;
+            public int PowerThresholdWeaker { get; set; } = 100;
             public float TypeSimilarityMod { get; set; } = 0;
             public bool TypeSimilarityCull { get; set; }
         }

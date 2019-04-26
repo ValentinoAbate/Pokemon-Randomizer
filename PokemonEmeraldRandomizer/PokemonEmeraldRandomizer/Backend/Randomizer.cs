@@ -313,18 +313,24 @@ namespace PokemonEmeraldRandomizer.Backend
             var reoccuring = data.Info.ArrayAttr("reoccuring", "names");
             foreach (var name in data.Info.ArrayAttr("reoccuring", "names"))
                 specialTrainers.Add(name.ToLower(), new List<Trainer>());
-            //foreach (var name in data.Info.ArrayAttr("gymLeaders", "names"))
-            //    specialTrainers.Add(name.ToLower(), new List<Trainer>());
-            //foreach (var name in data.Info.ArrayAttr("eliteFour", "names"))
-            //    specialTrainers.Add(name.ToLower(), new List<Trainer>());
-            //foreach (var name in data.Info.ArrayAttr("champion", "names"))
-            //    specialTrainers.Add(name.ToLower(), new List<Trainer>());
-            //foreach (var name in data.Info.ArrayAttr("uber", "names"))
-            //    specialTrainers.Add(name.ToLower(), new List<Trainer>());
-            //foreach (var name in data.Info.ArrayAttr("teamAdmins", "names"))
-            //    specialTrainers.Add(name.ToLower(), new List<Trainer>());
-            //foreach (var name in data.Info.ArrayAttr("teamLeaders", "names"))
-            //    specialTrainers.Add(name.ToLower(), new List<Trainer>());
+            var gymLeaders = data.Info.ArrayAttr("gymLeaders", "names");
+            foreach (var name in gymLeaders)
+                specialTrainers.Add(name.ToLower(), new List<Trainer>());
+            var eliteFour = data.Info.ArrayAttr("eliteFour", "names");
+            foreach (var name in eliteFour)
+                specialTrainers.Add(name.ToLower(), new List<Trainer>());
+            var champions = data.Info.ArrayAttr("champion", "names");
+            foreach (var name in champions)
+                specialTrainers.Add(name.ToLower(), new List<Trainer>());
+            var ubers = data.Info.ArrayAttr("uber", "names");
+            foreach (var name in ubers)
+                specialTrainers.Add(name.ToLower(), new List<Trainer>());
+            var teamAdmins = data.Info.ArrayAttr("teamAdmins", "names");
+            foreach (var name in teamAdmins)
+                specialTrainers.Add(name.ToLower(), new List<Trainer>());
+            var teamLeaders = data.Info.ArrayAttr("teamLeaders", "names");
+            foreach (var name in teamLeaders)
+                specialTrainers.Add(name.ToLower(), new List<Trainer>());
             int[] aceTrainerClasses = data.Info.IntArrayAttr("aceTrainers", "classNums");
             List<Trainer> aceTrainers = new List<Trainer>();
             #endregion
@@ -393,9 +399,154 @@ namespace PokemonEmeraldRandomizer.Backend
 
             #endregion
 
+            #region Ubers
+
+            // Team leaders are as strong as gym leaders for now
+            var uberSpeciesSettings = settings.GetSpeciesSettings("champion");
+            foreach (var trainer in ubers)
+            {
+                var battles = specialTrainers[trainer.ToLower()];
+                battles.Sort((a, b) => a.AvgLvl.CompareTo(b.AvgLvl));
+                if (settings.RivalSetting == Settings.TrainerOption.CompletelyRandom)
+                {
+                    foreach (var battle in battles)
+                        RandomizeBattle(battle, pokemonSet, trainerSpeciesSettings);
+                }
+                else if (settings.RivalSetting == Settings.TrainerOption.Procedural)
+                {
+                    RandomizeBattle(battles[0], pokemonSet, trainerSpeciesSettings);
+                    PcgBattles(battles, battles[0].pokemon.Select((p) => p.species), pokemonSet, uberSpeciesSettings);
+                }
+
+            }
+
+            #endregion
+
+            #region Champions
+
+            var championSpeciesSettings = settings.GetSpeciesSettings("champion");
+            foreach (var trainer in champions)
+            {
+                var battles = specialTrainers[trainer.ToLower()];
+                battles.Sort((a, b) => a.AvgLvl.CompareTo(b.AvgLvl));
+                if (settings.RivalSetting == Settings.TrainerOption.CompletelyRandom)
+                {
+                    foreach (var battle in battles)
+                        RandomizeBattle(battle, pokemonSet, trainerSpeciesSettings);
+                }
+                else if (settings.RivalSetting == Settings.TrainerOption.Procedural)
+                {
+                    RandomizeBattle(battles[0], pokemonSet, trainerSpeciesSettings);
+                    PcgBattles(battles, battles[0].pokemon.Select((p) => p.species), pokemonSet, championSpeciesSettings);
+                }
+
+            }
+
+            #endregion
+
+            #region Elite Four
+
+            var eliteFourSpeciesSettings = settings.GetSpeciesSettings("eliteFour");
+            foreach (var trainer in eliteFour)
+            {
+                var battles = specialTrainers[trainer.ToLower()];
+                battles.Sort((a, b) => a.AvgLvl.CompareTo(b.AvgLvl));
+                if (settings.RivalSetting == Settings.TrainerOption.CompletelyRandom)
+                {
+                    foreach (var battle in battles)
+                        RandomizeBattle(battle, pokemonSet, trainerSpeciesSettings);
+                }
+                else if (settings.RivalSetting == Settings.TrainerOption.Procedural)
+                {
+                    RandomizeBattle(battles[0], pokemonSet, trainerSpeciesSettings);
+                    PcgBattles(battles, battles[0].pokemon.Select((p) => p.species), pokemonSet, eliteFourSpeciesSettings);
+                }
+
+            }
+
+            #endregion
+
+            #region Gym Leaders
+
+            var gymLeaderSpeciesSettings = settings.GetSpeciesSettings("gymLeader");
+            foreach (var trainer in gymLeaders)
+            {
+                var battles = specialTrainers[trainer.ToLower()];
+                battles.Sort((a, b) => a.AvgLvl.CompareTo(b.AvgLvl));
+                if (settings.RivalSetting == Settings.TrainerOption.CompletelyRandom)
+                {
+                    foreach (var battle in battles)
+                        RandomizeBattle(battle, pokemonSet, trainerSpeciesSettings);
+                }
+                else if (settings.RivalSetting == Settings.TrainerOption.Procedural)
+                {
+                    RandomizeBattle(battles[0], pokemonSet, trainerSpeciesSettings);
+                    PcgBattles(battles, battles[0].pokemon.Select((p) => p.species), pokemonSet, gymLeaderSpeciesSettings);
+                }
+
+            }
+
+            #endregion        
+
+            #region Team Leaders
+
+            // Team leaders are as strong as gym leaders for now
+            var teamLeaderSpeciesSettings = settings.GetSpeciesSettings("gymLeader");
+            foreach (var trainer in teamLeaders)
+            {
+                var battles = specialTrainers[trainer.ToLower()];
+                battles.Sort((a, b) => a.AvgLvl.CompareTo(b.AvgLvl));
+                if (settings.RivalSetting == Settings.TrainerOption.CompletelyRandom)
+                {
+                    foreach (var battle in battles)
+                        RandomizeBattle(battle, pokemonSet, trainerSpeciesSettings);
+                }
+                else if (settings.RivalSetting == Settings.TrainerOption.Procedural)
+                {
+                    RandomizeBattle(battles[0], pokemonSet, trainerSpeciesSettings);
+                    PcgBattles(battles, battles[0].pokemon.Select((p) => p.species), pokemonSet, teamLeaderSpeciesSettings);
+                }
+
+            }
+
+            #endregion
+
+            #region Team Admins
+
+            // Team admins are as strong as ace trainers for now
+            var teamAdminSpeciesSettings = settings.GetSpeciesSettings("aceTrainer");
+            foreach (var trainer in teamAdmins)
+            {
+                var battles = specialTrainers[trainer.ToLower()];
+                battles.Sort((a, b) => a.AvgLvl.CompareTo(b.AvgLvl));
+                if (settings.RivalSetting == Settings.TrainerOption.CompletelyRandom)
+                {
+                    foreach (var battle in battles)
+                        RandomizeBattle(battle, pokemonSet, trainerSpeciesSettings);
+                }
+                else if (settings.RivalSetting == Settings.TrainerOption.Procedural)
+                {
+                    RandomizeBattle(battles[0], pokemonSet, trainerSpeciesSettings);
+                    PcgBattles(battles, battles[0].pokemon.Select((p) => p.species), pokemonSet, teamAdminSpeciesSettings);
+                }
+
+            }
+
+            #endregion
+
+            #region Ace Trainers
+
+            var aceTrainerSpeciesSettings = settings.GetSpeciesSettings("aceTrainer");
+            foreach (var trainer in aceTrainers)
+            {
+                RandomizeBattle(trainer, pokemonSet, aceTrainerSpeciesSettings);
+            }
+
+            #endregion         
+
             #region Reoccuring Trainers
 
-            foreach(var trainer in reoccuring)
+            foreach (var trainer in reoccuring)
             {
                 var battles = specialTrainers[trainer.ToLower()];
                 battles.Sort((a, b) => a.AvgLvl.CompareTo(b.AvgLvl));
@@ -409,18 +560,7 @@ namespace PokemonEmeraldRandomizer.Backend
                     RandomizeBattle(battles[0], pokemonSet, trainerSpeciesSettings);
                     PcgBattles(battles, battles[0].pokemon.Select((p) => p.species), pokemonSet, trainerSpeciesSettings);
                 }
-                
-            }
 
-            #endregion
-
-            #region Ace Trainers
-
-            var aceTrainerSpeciesSettings = settings.GetSpeciesSettings("aceTrainer");
-            foreach (var trainer in aceTrainers)
-            {
-                // Ace Trainers are as strong as rivals for now
-                RandomizeBattle(trainer, pokemonSet, aceTrainerSpeciesSettings);
             }
 
             #endregion
@@ -516,7 +656,7 @@ namespace PokemonEmeraldRandomizer.Backend
             // Power level similarity
             if (speciesSettings.PowerScaleSimilarityMod > 0)
             {
-                var powerWeighting = PokemonMetrics.PowerSimilarity(combinedWeightings.Items, powerScores, pokemon, speciesSettings.PowerScaleThreshold);
+                var powerWeighting = PokemonMetrics.PowerSimilarity(combinedWeightings.Items, powerScores, pokemon, speciesSettings.PowerThresholdStronger, speciesSettings.PowerThresholdWeaker);
                 combinedWeightings.Add(powerWeighting, speciesSettings.PowerScaleSimilarityMod);
                 // Cull if necessary
                 if (speciesSettings.PowerScaleCull)
@@ -555,7 +695,9 @@ namespace PokemonEmeraldRandomizer.Backend
         private PokemonSpecies RandomSpecies(IEnumerable<PokemonSpecies> possiblePokemon, PokemonSpecies pokemon, int level, Settings.SpeciesSettings speciesSettings)
         {
             var newSpecies = RandomSpecies(possiblePokemon, pokemon, speciesSettings);
-            if(speciesSettings.DisableIllegalEvolutions)
+            if (speciesSettings.ForceHighestLegalEvolution)
+                newSpecies = MaxEvolution(newSpecies, level, speciesSettings);
+            else if(speciesSettings.DisableIllegalEvolutions)
                 newSpecies = CorrectImpossibleEvo(newSpecies, level, speciesSettings);
             // Actually choose the species
             return newSpecies;
@@ -573,7 +715,7 @@ namespace PokemonEmeraldRandomizer.Backend
             }
             return newSpecies;
         }
-        /// <summary> returns false if the pokemon is an invalid level 
+        /// <summary> returns false if the pokemon is an invalid level. 
         /// (due to not being high enough level to evolve to the current species) </summary>
         private bool IsPokemonValidLevel(List<Evolution> evolvesFrom, int level, Settings.SpeciesSettings speciesSettings)
         {
@@ -605,7 +747,7 @@ namespace PokemonEmeraldRandomizer.Backend
                 return speciesSettings.FriendshipEvolutionLevel;
             }             
         }
-        /// <summary> Return 3 pokemon that form a valid type traingle, or null if none exist in the input set 
+        /// <summary> Return 3 pokemon that form a valid type traingle, or null if none exist in the input set.
         /// Type triangles require one-way weakness, but allow neutral relations in reverse order (unless strong is true) </summary>
         private List<PokemonSpecies> RandomTypeTriangle(IEnumerable<PokemonSpecies> possiblePokemon, Settings.SpeciesSettings speciesSettings, bool strong = false)
         {
@@ -644,7 +786,7 @@ namespace PokemonEmeraldRandomizer.Backend
             }
             return null;
         }
-        /// <summary> Return true if b is weak to a AND a is not weak to b 
+        /// <summary> Return true if b is weak to a AND a is not weak to b. 
         /// If strong is true, b must also not be normally effective against a </summary>
         private bool OneWayWeakness(PokemonSpecies a, PokemonSpecies b, bool strong = true)
         {
@@ -769,8 +911,8 @@ namespace PokemonEmeraldRandomizer.Backend
                 }
             }
         }
-        /// <summary> Return the maximum evolved form of the pokemon at the given level
-        /// returns a lower form if the pokemon is an invalid level 
+        /// <summary> Return the maximum evolved form of the pokemon at the given level.
+        /// returns a lower form if the pokemon is an invalid level.
         /// returns a random branch for evolution trees that branch </summary>
         private PokemonSpecies MaxEvolution(PokemonSpecies p, int level, Settings.SpeciesSettings speciesSettings)
         {
