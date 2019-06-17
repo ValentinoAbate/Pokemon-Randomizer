@@ -51,7 +51,6 @@ namespace PokemonEmeraldRandomizer
         public TrainerOption RivalSetting { get => TrainerOption.Procedural; }
         public TrainerOption WallySetting { get => TrainerOption.Procedural; }
         public TrainerOption GymLeaderSetting { get => TrainerOption.Procedural; }
-        public bool SpecialAceTrainers { get => true; }
         public double BattleTypeRandChance { get => 1; }
         public double DoubleBattleChance { get => 1; }
         public bool MakeSoloPokemonBattlesSingle { get => true; }
@@ -74,7 +73,7 @@ namespace PokemonEmeraldRandomizer
             TypeTriangle,
         }
         public bool RandomizeStarters { get => true; }
-        public StarterPokemonOption StarterSetting { get => StarterPokemonOption.TypeTriangle; }
+        public StarterPokemonOption StarterSetting { get => StarterPokemonOption.CompletelyRandom; }
         public bool StrongStarterTypeTriangle { get => false; }
         #endregion
 
@@ -88,11 +87,11 @@ namespace PokemonEmeraldRandomizer
             Intelligent
         }
         public TmMtCompatOption TmMtCompatSetting { get => TmMtCompatOption.Intelligent; }
-        public double TmMtTrueChance { get => 0.5; }
-        public double TmMtNoise { get => 0.15; }
+        public double TmMtTrueChance { get => 0.42; }
+        public double TmMtNoise { get => 0.10; }
         public bool PreventHmMovesInTMsOrMoveTutors { get => true; }
         public bool PreventDuplicateTMsAndMoveTutors { get => true; }
-        public double TMRandChance { get => 1; }
+        public double TMRandChance { get => 0.5; }
         public double MoveTutorRandChance { get => 1; }
         #endregion
 
@@ -101,10 +100,10 @@ namespace PokemonEmeraldRandomizer
         {
             Unchanged,
             DisableIllegal,
-            ForceHgihestLegal,
+            ForceHighestLegal,
         }
 
-        public double DunsparsePlaugeChance { get => 0.15; }
+        public double DunsparsePlaugeChance { get => 0.001; }
         #endregion
 
         #region Misc
@@ -150,6 +149,7 @@ namespace PokemonEmeraldRandomizer
             },
             {"trainer", new SpeciesSettings()
                 {
+                    BanLegendaries = true,
                     Noise = 0.005f,
                     PowerScaleSimilarityMod = 0.15f,
                     PowerScaleCull = true,
@@ -159,6 +159,7 @@ namespace PokemonEmeraldRandomizer
             },
             {"rival", new SpeciesSettings()
                 {
+                    BanLegendaries = true,
                     ForceHighestLegalEvolution = true,
                     Noise = 0.001f,
                     PowerScaleSimilarityMod = 1f,
@@ -183,6 +184,7 @@ namespace PokemonEmeraldRandomizer
             },
             {"eliteFour", new SpeciesSettings()
                 {
+                    BanLegendaries = true,
                     ForceHighestLegalEvolution = true,
                     Noise = 0.001f,
                     PowerScaleSimilarityMod = 0.15f,
@@ -195,6 +197,7 @@ namespace PokemonEmeraldRandomizer
             },
             {"gymLeader", new SpeciesSettings()
                 {
+                    BanLegendaries = true,
                     ForceHighestLegalEvolution = true,
                     Noise = 0.001f,
                     PowerScaleSimilarityMod = 0.15f,
@@ -207,6 +210,7 @@ namespace PokemonEmeraldRandomizer
             },
             {"aceTrainer", new SpeciesSettings()
                 {
+                    BanLegendaries = true,
                     ForceHighestLegalEvolution = true,
                     Noise = 0.001f,
                     PowerScaleSimilarityMod = 1f,
