@@ -105,7 +105,7 @@ namespace PokemonEmeraldRandomizer.Backend
             // Bytes 36-39 (end of data)
             pokemonOffset = rom.ReadPointer();
             // Save the internal offset before chasing pointers
-            rom.Save();
+            rom.SaveOffset();
 
             #region Read pokemon from pokemonOffset
             rom.Seek(pokemonOffset);
@@ -138,7 +138,7 @@ namespace PokemonEmeraldRandomizer.Backend
             }
             #endregion
             // Return to the trainers
-            rom.Load();
+            rom.LoadOffset();
         }
 
         public override string ToString()

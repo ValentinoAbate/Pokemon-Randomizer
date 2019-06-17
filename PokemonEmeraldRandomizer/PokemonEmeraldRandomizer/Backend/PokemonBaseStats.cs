@@ -257,7 +257,7 @@ namespace PokemonEmeraldRandomizer.Backend
         #endregion
 
         #region Stats
-        private byte[] stats = new byte[6];
+        public byte[] stats = new byte[6];
         public byte Hp { get { return stats[0]; } set { stats[0] = value; } }
         public byte Attack { get { return stats[1]; } set { stats[1] = value; } }
         public byte Defense { get { return stats[2]; } set { stats[2] = value; } }
@@ -266,7 +266,7 @@ namespace PokemonEmeraldRandomizer.Backend
         public byte SpDefense { get { return stats[5]; } set { stats[5] = value; } }
         #endregion
 
-        private byte[] evYields = new byte[6]; // How many evs you get when you defeat this pokemon
+        public int[] evYields = new int[6]; // How many evs you get when you defeat this pokemon
         public PokemonType[] types = new PokemonType[2];
         public Ability[] abilities = new Ability[] { Ability.NONE, Ability.NONE };
         public Item[] heldItems = new Item[] { Item.None, Item.None };
@@ -306,7 +306,7 @@ namespace PokemonEmeraldRandomizer.Backend
             catchRate = data.ReadByte();
             baseExpYield = data.ReadByte();
             // fill in ev yields (stored in the first 12 bits of data[10-11])
-            evYields = Array.ConvertAll(data.ReadBits(12, 2), (i) => (byte)i);
+            evYields = data.ReadBits(12, 2);
             heldItems[0] = (Item)data.ReadUInt16(); // (data[13] * 256 + data[12]);
             heldItems[1] = (Item)data.ReadUInt16(); // (data[15] * 256 + data[14]);
             genderRatio = data.ReadByte();
@@ -325,37 +325,6 @@ namespace PokemonEmeraldRandomizer.Backend
             searchColor = (SearchColor)((searchFlip & 0b1111_1110) >> 1);
             // read flip
             flip = (searchFlip & 0b0000_0001) == 1;
-        }
-        public byte[] ToByteArray()
-        {
-            byte[] data = new byte[28];
-            // fill in stats (hp/at/df/sp/sa/sd)
-            Array.ConstrainedCopy(stats, 0, data, 0, 6);
-            // fill in types
-            data[6] = (byte) types[0];
-            data[7] = (byte) types[1];
-            data[8] = catchRate;
-            data[9] = baseExpYield;
-            // TEMPORARY put EV yields later
-            data[10] = 0x00;
-            data[11] = 0x00;
-            data.WriteUInt16(12, (int)heldItems[0]);
-            data.WriteUInt16(14, (int)heldItems[1]);
-            data[16] = genderRatio;
-            data[17] = eggCycles;
-            data[19] = (byte)growthType;
-            // fill in egg groups
-            data[20] = (byte)eggGroups[0];
-            data[21] = (byte)eggGroups[1];
-            // fill in abilities
-            data[22] = (byte)abilities[0];
-            data[23] = (byte)abilities[1];
-            data[24] = safariZoneRunRate;
-            data[25] = (byte)(((byte)searchColor << 1) + Convert.ToByte(flip));
-            // Padding
-            data[26] = 0x00;
-            data[27] = 0x00;
-            return data;
         }
         public override string ToString()
         {

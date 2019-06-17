@@ -263,7 +263,7 @@ namespace PokemonEmeraldRandomizer.Backend
                 int rockSmashPtr = rom.ReadPointer();
                 int fishPtr = rom.ReadPointer();
                 // Save the internal offset before chasing pointers
-                rom.Save();
+                rom.SaveOffset();
 
                 #region Load the actual Encounter sets for this area
                 if(grassPtr > 0 && grassPtr < rom.Length)
@@ -293,7 +293,7 @@ namespace PokemonEmeraldRandomizer.Backend
                 #endregion
 
                 // Load the saved offset to check the next header
-                rom.Load(); 
+                rom.LoadOffset(); 
             }
 
             return encounters;

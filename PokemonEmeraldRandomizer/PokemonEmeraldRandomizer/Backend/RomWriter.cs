@@ -29,7 +29,7 @@ namespace PokemonEmeraldRandomizer.Backend
             WriteTrainerBattles(data, file, data.Info);
             return file.File;
         }
-        // Read TM, HM, or Move tutor definitions from the rom (depending on args)
+        // Write TM, HM, or Move tutor definitions to the rom (depending on args)
         private static void WriteMoveMappings(Rom rom, int offset, Move[] moves)
         {
             rom.Seek(offset);
@@ -67,6 +67,7 @@ namespace PokemonEmeraldRandomizer.Backend
             int movePtr = data.Offset("movesets");
             int evolutionPtr = data.Offset("evolutions");
             int evolutionSize = data.Size("evolutions");
+            rom.Seek(pkmnPtr);
             for (int i = 0; i < data.Num("pokemonBaseStats"); i++)
             {
                 if (i == (int)data.Attr("pokemonBaseStats", "skipAt")) // potentially skip empty slots
@@ -74,14 +75,40 @@ namespace PokemonEmeraldRandomizer.Backend
                     int skipNum = (int)data.Attr("pokemonBaseStats", "skip");
                     i += skipNum;
                     movePtr += skipNum * 4; // (don't know why this is 4, cuz move segments are variable lengths possibly terminators?)
+                    rom.Skip(pkmnSize * skipNum);
                 }
-                // Create Pokemon
-                //okemonBaseStats pkmn = new PokemonBaseStats(rom, pkmnPtr + (i * pkmnSize), (PokemonSpecies)(i + 1));
+                WriteBaseStatsSingle(romData.PokemonLookup[(PokemonSpecies)(i + 1)], rom);
                 //movePtr = ReadAttacks(rom, movePtr, out pkmn.learnSet);
                 //ReadTMHMCompat(rom, data, tmPtr + (i * tmHmSize), out pkmn.TMCompat, out pkmn.HMCompat);
                 //ReadTutorCompat(rom, data, tutorPtr + (i * tutorSize), out pkmn.moveTutorCompat);
+                rom.SaveOffset();
                 WriteEvolutions(romData.PokemonLookup[(PokemonSpecies)(i + 1)], evolutionPtr + (i * evolutionSize), romData, rom, data);
+                rom.LoadOffset();
             }
+        }
+        private static void WriteBaseStatsSingle(PokemonBaseStats pokemon, Rom rom)
+        {
+            // fill in stats (hp/at/df/sp/sa/sd)
+            rom.WriteBlock(pokemon.stats);
+            // convert types to bytes and write
+            rom.WriteBlock(Array.ConvertAll(pokemon.types, (t) => (byte)t));
+            rom.WriteByte(pokemon.catchRate);
+            rom.WriteByte(pokemon.baseExpYield);
+            // Next two bytes bits 0-11 are ev Yields, in chunks of 2
+            rom.WriteBits(2, pokemon.evYields);
+            rom.WriteUInt16((int)pokemon.heldItems[0]);
+            rom.WriteUInt16((int)pokemon.heldItems[1]);
+            rom.WriteByte(pokemon.genderRatio);
+            rom.WriteByte(pokemon.eggCycles);
+            rom.WriteByte((byte)pokemon.growthType);
+            rom.WriteByte((byte)pokemon.eggGroups[0]);
+            rom.WriteByte((byte)pokemon.eggGroups[1]);
+            rom.WriteByte((byte)pokemon.abilities[0]);
+            rom.WriteByte((byte)pokemon.abilities[1]);
+            rom.WriteByte(pokemon.safariZoneRunRate);
+            rom.WriteByte((byte)(((byte)pokemon.searchColor << 1) + Convert.ToByte(pokemon.flip)));
+            // Padding
+            rom.SetBlock(2, 0x00);
         }
         private static void WriteEvolutions(PokemonBaseStats pokemon, int offset, RomData romData, Rom rom, XmlManager data)
         {
@@ -155,7 +182,7 @@ namespace PokemonEmeraldRandomizer.Backend
                 int rockSmashPtr = rom.ReadPointer();
                 int fishPtr = rom.ReadPointer();
                 // Save the internal offset before chasing pointers
-                rom.Save();
+                rom.SaveOffset();
 
                 #region Load the actual Encounter sets for this area
                 if (grassPtr > 0 && grassPtr < rom.Length)
@@ -181,7 +208,7 @@ namespace PokemonEmeraldRandomizer.Backend
                 #endregion
 
                 // Load the saved offset to check the next header
-                rom.Load();
+                rom.LoadOffset();
             }
         }
         private static void WriteEncounterSet(EncounterSet set, Rom rom, int offset)
@@ -197,7 +224,6 @@ namespace PokemonEmeraldRandomizer.Backend
                 rom.WriteUInt16((int)encounter.pokemon);
             }
         }
-
         private static void WriteTrainerBattles(RomData romData, Rom rom, XmlManager data)
         {
             int numTrainers = data.Num("trainerBattles");
@@ -234,7 +260,7 @@ namespace PokemonEmeraldRandomizer.Backend
                 // Bytes 36-39 (end of data)
                 rom.WritePointer(trainer.pokemonOffset);
 
-                rom.Save();
+                rom.SaveOffset();
                 rom.Seek(trainer.pokemonOffset);
                 #region Write pokemon from pokemonPtr
                 foreach(var pokemon in trainer.pokemon)
@@ -260,7 +286,7 @@ namespace PokemonEmeraldRandomizer.Backend
                     }
                 }
                 #endregion
-                rom.Load();
+                rom.LoadOffset();
             }
         }
     }

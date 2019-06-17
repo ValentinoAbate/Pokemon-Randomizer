@@ -57,7 +57,7 @@ namespace PokemonEmeraldRandomizer.Backend
             System.Array.ConstrainedCopy(File, offset, block, 0, length);
             return block;
         }
-        /// <summary>Write a block of bytes to the given offset</summary>
+        /// <summary>Write a block of bytes to the internal offset</summary>
         public void WriteBlock(byte[] data)
         {
             Array.ConstrainedCopy(data, 0, File, InternalOffset, data.Length);
@@ -145,11 +145,22 @@ namespace PokemonEmeraldRandomizer.Backend
                     WriteUInt(i, ramOffset + newOffset, 4);
             }
         }
+
+        /// <summary> Set entire block to a given byte value at Internal offset</summary>
+        public void SetBlock(int length, byte setTo)
+        {
+            Array.ConstrainedCopy(Enumerable.Repeat(setTo, length).ToArray(), 0, File, InternalOffset, length);
+            InternalOffset += length;
+        }
         /// <summary> Set entire block to a given byte value </summary>
-        public void WipeBlock(int offset, int length, byte setTo)
+        public void SetBlock(int offset, int length, byte setTo)
         {
             Array.ConstrainedCopy(Enumerable.Repeat(setTo, length).ToArray(), 0, File, offset, length);
         }
+        /// <summary> Set entire block to the Free Space value </summary>
+        public void WipeBlock(int length) => SetBlock(length, FreeSpaceByte);
+        /// <summary> Set entire block to the Free Space value </summary>
+        public void WipeBlock(int offset, int length) => SetBlock(offset, length, FreeSpaceByte);
         ///.<summary>A simple class to hold an address in memory with a length</summary>
         public class MemoryBlock
         {
@@ -182,12 +193,12 @@ namespace PokemonEmeraldRandomizer.Backend
             InternalOffset += numBytes;
         }
         /// <summary>Pushes the Rom's internal offset to the SavedOffsets Stack (to be loaded later)</summary>
-        public void Save()
+        public void SaveOffset()
         {
             SavedOffsets.Push(InternalOffset);
         }
         /// <summary>Sets the Rom's internal offset from the SavedOffsets Stack</summary>
-        public void Load()
+        public void LoadOffset()
         {
             if(SavedOffsets.Count > 0)
                 InternalOffset = SavedOffsets.Pop(); ;
@@ -196,16 +207,20 @@ namespace PokemonEmeraldRandomizer.Backend
         public byte ReadByte() => File[InternalOffset++];
         /// <summary>Reads a byte from the given offset</summary>
         public byte ReadByte(int offset) => File[offset];
-        /// <summary>Reads the bits of a byte in chunks of num from the internal offset</summary>
+
+        #region Bitwise Reading/Writing
+
+        /// <summary>Reads the bits of a byte in chunks of chunkSize from the internal offset</summary>
         public int[] ReadBits(int numBits = 8, int chunkSize = 1)
         {
             int numBytes = numBits % 8 == 0 ? numBits / 8 : (numBits / 8) + 1;
             InternalOffset += numBytes;
             return ReadBits(InternalOffset - numBytes, numBits, chunkSize);
         }
-        /// <summary>Reads the bits of a byte in chunks of num from the given offset</summary>
+        /// <summary>Reads the bits of a byte in chunks of chunkSize from the given offset</summary>
         public int[] ReadBits(int offset, int numBits = 8, int chunkSize = 1)
         {
+            // Create a mask for n bits, where n = chunkSize
             int mask = MathUtils.IntPow(2, chunkSize) - 1;
             int numChunks = numBits / chunkSize;
             int chunksPerByte = 8 / chunkSize;
@@ -218,6 +233,31 @@ namespace PokemonEmeraldRandomizer.Backend
             }
             return ret;
         }
+        /// <summary>Writes the input values to bits in chunks of chunkSize at the internal offset</summary>
+        public void WriteBits(int chunkSize, params int[] chunkValues)
+        {
+            WriteBits(InternalOffset, chunkSize, chunkValues);
+            int chunksPerByte = 8 / chunkSize;
+            // Calculate number of bytes and increment offset by that number
+            InternalOffset += (int)Math.Ceiling(chunkValues.Length / (float)chunksPerByte);
+        }
+        /// <summary>Writes the input values to bits in chunks of chunkSize at the given offset</summary>
+        public void WriteBits(int offset, int chunkSize, params int[] chunkValues)
+        {
+            int chunksPerByte = 8 / chunkSize;
+            byte[] byteValues = new byte[(int)Math.Ceiling(chunkValues.Length / (float)chunksPerByte)];
+            int byteIndex = -1;
+            for (int i = 0; i < chunkValues.Length; ++i)
+            {
+                int chunkIndex = i % chunksPerByte;
+                if (chunkIndex == 0)
+                    ++byteIndex;
+                byteValues[byteIndex] += (byte)(chunkValues[i] * MathUtils.IntPow(2, chunkIndex * chunkSize));
+            }
+            for(int i = 0; i < byteValues.Length; ++i)
+                WriteByte(offset + i, byteValues[i]);
+        }
+        #endregion
 
         #region Pattern Searching
         /// <summary> Find all instances of a byte sequence in the ROM </summary>
