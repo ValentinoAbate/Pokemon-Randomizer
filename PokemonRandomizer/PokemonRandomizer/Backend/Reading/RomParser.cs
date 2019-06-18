@@ -59,7 +59,7 @@ namespace PokemonRandomizer.Backend.Reading
         {
             List<MoveData> moveData = new List<MoveData>();
             int moveCount = int.Parse(data.Attr("moveData", "num", data.Constants).Value);
-            int dataOffset = rom.ReadPointer(Utilities.HexUtils.HexToInt(data.Attr("moveData", "ptr", data.Constants).Value));
+            int dataOffset = rom.ReadPointer(HexUtils.HexToInt(data.Attr("moveData", "ptr", data.Constants).Value));
             rom.Seek(dataOffset);
             for (int i = 0; i <= moveCount; i++)
             {
@@ -138,6 +138,7 @@ namespace PokemonRandomizer.Backend.Reading
                 curr = rom.ReadByte(offset);
                 next = rom.ReadByte(offset + 1);
             }
+            moves.SetOriginalCount();
             offset += 2;    //pass final FFFF
             return offset;
         }

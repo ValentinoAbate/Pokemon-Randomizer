@@ -8,6 +8,11 @@ namespace PokemonRandomizer.Backend
 {
     public class LearnSet : IEnumerable<LearnSet.Item>
     {
+        /// <summary>
+        /// The original number of moves in this moveset when read from the rom.
+        /// If -1, this value was never set.
+        /// </summary>
+        public int OriginalCount { get; private set; } = -1;
         private readonly List<Item> items = new List<Item>();
         public void Add(Move mv, int learnLvl)
         {
@@ -17,6 +22,13 @@ namespace PokemonRandomizer.Backend
         public void Sort()
         {
             items.Sort();
+        }
+        /// <summary>
+        /// Sets the original count value to the current count
+        /// </summary>
+        public void SetOriginalCount()
+        {
+            OriginalCount = items.Count;
         }
         public override string ToString()
         {
