@@ -205,6 +205,36 @@ namespace PokemonRandomizer.Backend.Randomization
                     }
                 }
                 #endregion
+
+                #region Catch Rates
+                if(settings.CatchRateSetting != Settings.CatchRateOption.Unchanged)
+                {
+                    // Do not change if KeepLegendaryCatchRates is on AND this pokemon is a legendary
+                    if(!settings.KeepLegendaryCatchRates || !pkmn.IsLegendary)
+                    {
+                        if (settings.CatchRateSetting == Settings.CatchRateOption.CompletelyRandom)
+                            pkmn.catchRate = rand.RandomByte();
+                        else if (settings.CatchRateSetting == Settings.CatchRateOption.AllEasiest)
+                            pkmn.catchRate = 255;
+                        else if (settings.CatchRateSetting == Settings.CatchRateOption.Constant)
+                            pkmn.catchRate = settings.CatchRateConstant;
+                        else // Intelligent
+                        {
+                            // Basic pokemon (or pokemon with only a baby evolution)
+                            if (pkmn.evolvesFrom.Count == 0 || pkmn.IsBasicOrEvolvesFromBaby)
+                            {
+                                if (pkmn.catchRate < settings.IntelligentCatchRateBasicThreshold)
+                                    pkmn.catchRate = settings.IntelligentCatchRateBasicThreshold;
+                            }
+                            else // Evolved pokemon
+                            {
+                                if (pkmn.catchRate < settings.IntelligentCatchRateEvolvedThreshold)
+                                    pkmn.catchRate = settings.IntelligentCatchRateEvolvedThreshold;
+                            }
+                        }
+                    }
+                }
+                #endregion
             }
             // Change pallettes to fit new types
             // Recalculate power scoring
@@ -587,6 +617,7 @@ namespace PokemonRandomizer.Backend.Randomization
 
             #endregion
 
+            #region Debugging / Testing
             var tmLearns = new Dictionary<PokemonSpecies, List<Move>>();
             foreach(var pkmn in data.Pokemon)
             {
@@ -606,6 +637,7 @@ namespace PokemonRandomizer.Backend.Randomization
                         typeList.Add(t);
                 compTypes.Add(pkmn.species, typeList);
             }
+            #endregion
 
             data.CalculateMetrics();
             return data;

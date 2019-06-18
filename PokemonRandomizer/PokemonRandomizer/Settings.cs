@@ -35,6 +35,59 @@ namespace PokemonRandomizer
         public bool FixImpossibleEvos { get => true; }
         #endregion
 
+        #region Catch Rates
+
+        public enum CatchRateOption
+        {
+            Unchanged,
+            CompletelyRandom,
+            Constant,
+            IntelligentEasy,
+            IntelligentNormal,
+            IntelligentHard,
+            AllEasiest,
+        }
+        public CatchRateOption CatchRateSetting { get => CatchRateOption.IntelligentNormal; }
+        public bool KeepLegendaryCatchRates { get => true; }
+
+        public byte CatchRateConstant { get => 100; }
+
+        public byte IntelligentCatchRateBasicThreshold
+        {
+            get
+            {
+                if (intelligentCatchRateBasicThresholds.ContainsKey(CatchRateSetting))
+                    return intelligentCatchRateBasicThresholds[CatchRateSetting];
+                return 255;
+            }
+        }
+
+        public byte IntelligentCatchRateEvolvedThreshold
+        {
+            get
+            {
+                if (intelligentCatchRateEvolvedThresholds.ContainsKey(CatchRateSetting))
+                    return intelligentCatchRateEvolvedThresholds[CatchRateSetting];
+                return 100;
+            }
+        }
+
+        private readonly Dictionary<CatchRateOption, byte> intelligentCatchRateBasicThresholds = new Dictionary<CatchRateOption, byte>()
+        {
+            { CatchRateOption.IntelligentEasy, 190},
+            { CatchRateOption.IntelligentNormal, 150},
+            { CatchRateOption.IntelligentHard, 100},
+        };
+
+        private readonly Dictionary<CatchRateOption, byte> intelligentCatchRateEvolvedThresholds = new Dictionary<CatchRateOption, byte>()
+        {
+            { CatchRateOption.IntelligentEasy, 100},
+            { CatchRateOption.IntelligentNormal, 70},
+            { CatchRateOption.IntelligentHard, 45},
+        };
+
+        #endregion
+
         #endregion
 
         #region Power Scaling

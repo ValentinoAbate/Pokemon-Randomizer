@@ -19,6 +19,12 @@ namespace PokemonRandomizer.Backend.DataStructures
         public float DualTypePercentage { get; }
         public WeightedSet<TypeEffectiveness> TypeEffectivenessRatios { get; }
 
+        #region Catch Rate Data
+
+        public Dictionary<byte, HashSet<PokemonSpecies>> CatchRateCategories { get; } = new Dictionary<byte, HashSet<PokemonSpecies>>();
+
+        #endregion
+
         // Calculates the balancing metrics based on the given data
         public RomMetrics(RomData data)
         {
@@ -54,7 +60,21 @@ namespace PokemonRandomizer.Backend.DataStructures
                 foreach (var defType in EnumUtils.GetValues<PokemonType>())
                     TypeEffectivenessRatios.Add(data.TypeDefinitions.GetEffectiveness(atkType, defType));
             #endregion
+
+            #region Catch Rate Metrics
+            foreach (PokemonBaseStats pkmn in data.Pokemon)
+            {
+                if (!CatchRateCategories.ContainsKey(pkmn.catchRate))
+                    CatchRateCategories.Add(pkmn.catchRate, new HashSet<PokemonSpecies>());
+                CatchRateCategories[pkmn.catchRate].Add(pkmn.species);
+            }
+
             #endregion
+
+            #endregion
+
+
+
         }
     }
 }

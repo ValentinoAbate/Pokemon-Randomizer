@@ -50,8 +50,18 @@ namespace PokemonRandomizer.Backend.DataStructures
             PokemonSpecies.LATIOS,
         };
         public readonly PokemonSpecies species;
+
+        #region Helper Properties
+
         public int DexIndex { get { return PokedexUtils.PokedexIndex(species); } }
         public bool IsSingleTyped { get { return types[0] == types[1]; } }
+        public bool IsLegendary { get => legendaries.Contains(species); }
+
+        public bool IsBasicOrEvolvesFromBaby { get => IsBasic || EvolvesFromBaby; }
+        public bool IsBasic { get => evolvesFrom.Count == 0; }
+        public bool EvolvesFromBaby { get => evolvesFrom.FirstOrDefault((e) => babyPokemon.Contains(e.Pokemon)) != null; }
+
+        #endregion
 
         #region Basic 28 byte Data Structure
 

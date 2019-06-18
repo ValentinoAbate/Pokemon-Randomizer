@@ -20,15 +20,19 @@ namespace PokemonRandomizer.Backend.Randomization
         }
 
         #region General Random Functions
+        /// <summary> Generate an int in between min (inclusive) and max (inclusive) </summary>
         public int RandomInt(int min, int max) => rand.Next(min, max);
         /// <summary> Generate a double in between 0.0 (inclusive) and 1 (exclusive) </summary>
         public double RandomDouble() => rand.NextDouble(); 
-        public float RandomFloat(float min, float max)
+        /// <summary> Generate a random float (untested) </summary>
+        public float RandomFloat()
         {
             double mantissa = (rand.NextDouble() * 2.0) - 1.0;
             double exponent = Math.Pow(2.0, rand.Next(-127, 128));
             return (float)(mantissa * exponent);
         }
+        /// <summary> Generate a byte in between 0 (inclusive) and 255 (inclusive) </summary>
+        public byte RandomByte() => (byte)RandomInt(0, 255);
         #endregion
 
         #region Random Choice from a collection (With options for weighting)
