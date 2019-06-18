@@ -80,12 +80,13 @@ namespace PokemonRandomizer.Backend.Writing
                     movePtr += skipNum * 4; // (don't know why this is 4, cuz move segments are variable lengths possibly terminators?)
                     rom.Skip(pkmnSize * skipNum);
                 }
-                WriteBaseStatsSingle(romData.PokemonLookup[(PokemonSpecies)(i + 1)], rom);
-                //movePtr = ReadAttacks(rom, movePtr, out pkmn.learnSet);
-                //ReadTMHMCompat(rom, data, tmPtr + (i * tmHmSize), out pkmn.TMCompat, out pkmn.HMCompat);
-                //ReadTutorCompat(rom, data, tutorPtr + (i * tutorSize), out pkmn.moveTutorCompat);
+                var stats = romData.PokemonLookup[(PokemonSpecies)(i + 1)];
+                WriteBaseStatsSingle(stats, rom);
                 rom.SaveOffset();
-                WriteEvolutions(romData.PokemonLookup[(PokemonSpecies)(i + 1)], evolutionPtr + (i * evolutionSize), romData, rom, data);
+                //movePtr = ReadAttacks(rom, movePtr, out pkmn.learnSet);
+                WriteTMHMCompat(stats, tmPtr + (i * tmHmSize), rom);
+                WriteTutorCompat(stats, tutorPtr + (i * tutorSize), rom);               
+                WriteEvolutions(stats, evolutionPtr + (i * evolutionSize), romData, rom, data);
                 rom.LoadOffset();
             }
         }
@@ -112,6 +113,20 @@ namespace PokemonRandomizer.Backend.Writing
             rom.WriteByte((byte)(((byte)pokemon.searchColor << 1) + Convert.ToByte(pokemon.flip)));
             // Padding
             rom.SetBlock(2, 0x00);
+        }
+        private static void WriteTMHMCompat(PokemonBaseStats pokemon, int offset, Rom rom)
+        {
+            bool[] tmValues = new bool[pokemon.TMCompat.Count];
+            bool[] hmValues = new bool[pokemon.HMCompat.Count];
+            pokemon.TMCompat.CopyTo(tmValues, 0);
+            pokemon.HMCompat.CopyTo(hmValues, 0);
+            rom.WriteBits(offset, 1, tmValues.Concat(hmValues).Select((b) => b ? 1 : 0).ToArray());
+        }
+        private static void WriteTutorCompat(PokemonBaseStats pokemon, int offset, Rom rom)
+        {
+            bool[] mtValues = new bool[pokemon.moveTutorCompat.Count];
+            pokemon.moveTutorCompat.CopyTo(mtValues,0);
+            rom.WriteBits(offset, 1, mtValues.Select((b) => b ? 1 : 0).ToArray());
         }
         private static void WriteEvolutions(PokemonBaseStats pokemon, int offset, RomData romData, Rom rom, XmlManager data)
         {
