@@ -1,0 +1,11 @@
+This is not a complete list, and will be updated as I think of things and transcribe my notes from other places
+
+PARSING:
+
+MOVESETS:
+- Make all pokemon start off with tackle if they have no damaging moves at lvl 5 or below
+
+WRITING:
+- Write Pokemon movesets to file
+
+CRAZY IDEAS:
