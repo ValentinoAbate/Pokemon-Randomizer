@@ -76,9 +76,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Backend\IpsPatcher.cs" />
-    <Compile Include="Backend\MoveData.cs" />
-    <Compile Include="Backend\MovesetGenerator.cs" />
+    <Compile Include="Backend\Utilities\ByteArrayUtils.cs" />
+    <Compile Include="Backend\Utilities\IpsPatcher.cs" />
+    <Compile Include="Backend\DataStructures\MoveData.cs" />
+    <Compile Include="Backend\Randomization\MovesetGenerator.cs" />
     <Compile Include="Resources\Patches\Patches.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -90,21 +91,21 @@
       <DependentUpon>RomInfo.resx</DependentUpon>
     </Compile>
     <Compile Include="Settings.cs" />
-    <Compile Include="Backend\Connection.cs" />
-    <Compile Include="Backend\ConnectionData.cs" />
-    <Compile Include="Backend\Encounter.cs" />
-    <Compile Include="Backend\EncounterSet.cs" />
-    <Compile Include="Backend\HexUtils.cs" />
-    <Compile Include="Backend\Map.cs" />
-    <Compile Include="Backend\MapManager.cs" />
-    <Compile Include="Backend\MathUtils.cs" />
-    <Compile Include="Backend\PokemonMetrics.cs" />
-    <Compile Include="Backend\PokemonPowerScaling.cs" />
-    <Compile Include="Backend\Rom.cs" />
+    <Compile Include="Backend\DataStructures\Connection.cs" />
+    <Compile Include="Backend\DataStructures\ConnectionData.cs" />
+    <Compile Include="Backend\DataStructures\Encounter.cs" />
+    <Compile Include="Backend\DataStructures\EncounterSet.cs" />
+    <Compile Include="Backend\Utilities\HexUtils.cs" />
+    <Compile Include="Backend\DataStructures\Map.cs" />
+    <Compile Include="Backend\Reading\MapManager.cs" />
+    <Compile Include="Backend\Utilities\MathUtils.cs" />
+    <Compile Include="Backend\Randomization\PokemonMetrics.cs" />
+    <Compile Include="Backend\Randomization\PokemonPowerScaling.cs" />
+    <Compile Include="Backend\Reading\Rom.cs" />
     <Compile Include="Converters\PercentConverter.cs" />
     <Compile Include="CultureUtils\CultureUtils.cs" />
     <Compile Include="Collections\MultiSet.cs" />
-    <Compile Include="Backend\XmlManager.cs" />
+    <Compile Include="Backend\Utilities\XmlManager.cs" />
     <Compile Include="Search\Kmp.cs" />
     <Compile Include="UserControls\MutationRateSlider.xaml.cs">
       <DependentUpon>MutationRateSlider.xaml</DependentUpon>
@@ -117,24 +118,23 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Backend\RomMetrics.cs" />
-    <Compile Include="Backend\EnumUtils.cs" />
-    <Compile Include="Backend\Evolution.cs" />
-    <Compile Include="Backend\Item.cs" />
-    <Compile Include="Backend\LearnSet.cs" />
-    <Compile Include="Backend\PokedexUtils.cs" />
-    <Compile Include="Backend\PokemonBaseStats.cs" />
-    <Compile Include="Backend\Random.cs" />
-    <Compile Include="Backend\RomData.cs" />
-    <Compile Include="Backend\ByteArrayUtils.cs" />
-    <Compile Include="Backend\RomWriter.cs" />
-    <Compile Include="Backend\Randomizer.cs" />
-    <Compile Include="Backend\RomParser.cs" />
-    <Compile Include="Backend\TableReader.cs" />
-    <Compile Include="Backend\Trainer.cs" />
-    <Compile Include="Backend\TrainerPokemon.cs" />
-    <Compile Include="Backend\TypeEffectivenessChart.cs" />
-    <Compile Include="Backend\WeightedSet.cs" />
+    <Compile Include="Backend\Reading\RomMetrics.cs" />
+    <Compile Include="Backend\Utilities\EnumUtils.cs" />
+    <Compile Include="Backend\DataStructures\Evolution.cs" />
+    <Compile Include="Backend\DataStructures\Item.cs" />
+    <Compile Include="Backend\DataStructures\LearnSet.cs" />
+    <Compile Include="Backend\Utilities\PokedexUtils.cs" />
+    <Compile Include="Backend\DataStructures\PokemonBaseStats.cs" />
+    <Compile Include="Backend\Randomization\Random.cs" />
+    <Compile Include="Backend\Reading\RomData.cs" />
+    <Compile Include="Backend\Writing\RomWriter.cs" />
+    <Compile Include="Backend\Randomization\Randomizer.cs" />
+    <Compile Include="Backend\Reading\RomParser.cs" />
+    <Compile Include="Backend\Utilities\TableReader.cs" />
+    <Compile Include="Backend\DataStructures\Trainer.cs" />
+    <Compile Include="Backend\DataStructures\TrainerPokemon.cs" />
+    <Compile Include="Backend\DataStructures\TypeEffectivenessChart.cs" />
+    <Compile Include="Backend\Randomization\WeightedSet.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
