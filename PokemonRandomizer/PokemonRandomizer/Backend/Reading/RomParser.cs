@@ -48,6 +48,7 @@ namespace PokemonRandomizer.Backend.Reading
             data.Trainers = ReadTrainers(data.Rom, data.Info, data.ClassNames);
             
             data.TypeDefinitions = ReadTypeEffectivenessData(data.Rom, data.Info);
+            // Read in the map data
             data.Maps = new MapManager(data.Rom, data.Info);
             data.Encounters = ReadEncounters(data.Rom, data.Info, data.Maps);
             // Calculate the balance metrics from the loaded data

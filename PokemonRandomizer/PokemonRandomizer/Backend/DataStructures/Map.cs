@@ -18,7 +18,7 @@ namespace PokemonRandomizer.Backend.DataStructures
         //Pointer               Map scripts                  0x0816545A
         //Pointer               Connections                  0x0835276C
         //Little endian Short   Music index                  0x012C (Pallet Town)
-        //Little endian Short   Map pointer index?           0x004E
+        //Little endian Short   Map index                    0x004E
         //Byte                  Label index                  0x58 ("Pallet Town")
         //Byte                  Visibility(i.e HM Flash)     0x00
         //Byte                  Weather                      0x02
@@ -27,12 +27,17 @@ namespace PokemonRandomizer.Backend.DataStructures
         //Byte                  Show label on entry          0
         //Byte                  In-battle field model id     0
 
+        // Data structures have been figured out be ShinyQuagsire and are available at
+        // https://github.com/shinyquagsire23/MEH/tree/master/src/us/plxhack/MEH (MEH source)
         public int mapDataOffset;
         public int eventDataOffset;
         public int mapScriptsOffset;
         public int connectionOffset;
         public int music;
-        public int mpInd;
+        /// <summary>
+        /// The map's index (starts at 1). Seems to be meainingless.
+        /// </summary>
+        public int mapIndex;
         /// <summary>
         /// Index of this map's label / name in the table
         /// </summary> 
@@ -111,23 +116,23 @@ namespace PokemonRandomizer.Backend.DataStructures
         /// </summary>
         public byte battleField;
 
-        // Actual connection data
+        // Connection data
         public ConnectionData connections;
-        // The encounters associated with this map (filled externally in RomParser.cs right now)
-        public List<EncounterSet> encounters = new List<EncounterSet>();
+
         public string Name { get; private set; }
 
         public Map(Rom rom, int offset, int labelAddress)
         {
             rom.SaveOffset();
-            // Read Header Data
+
+            #region Read Header Data
             rom.Seek(offset);
             mapDataOffset = rom.ReadPointer();
             eventDataOffset = rom.ReadPointer();
             mapScriptsOffset = rom.ReadPointer();
             connectionOffset = rom.ReadPointer();
             music = rom.ReadUInt16();
-            mpInd = rom.ReadUInt16();
+            mapIndex = rom.ReadUInt16();
             labelIndex = rom.ReadByte();
             visibility = rom.ReadByte();
             weather = rom.ReadByte();
@@ -136,13 +141,18 @@ namespace PokemonRandomizer.Backend.DataStructures
             unknown2 = rom.ReadByte();
             showLabelOnEntry = rom.ReadByte();
             battleField = rom.ReadByte();
-            // Read name
+            #endregion
+
+            #region Read Non-Header Data
+            // Map Nameame
             rom.Seek(rom.ReadPointer(labelAddress + labelIndex * 8 + 4));
             Name = rom.ReadVariableLengthString();
-            // Read actual data
+            
             // Connections
             if (connectionOffset != Rom.nullPointer)
-                connections = new ConnectionData(rom, connectionOffset);          
+                connections = new ConnectionData(rom, connectionOffset);
+            #endregion
+
             rom.LoadOffset();
         }
 

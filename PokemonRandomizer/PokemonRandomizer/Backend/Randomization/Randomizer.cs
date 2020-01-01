@@ -466,11 +466,11 @@ namespace PokemonRandomizer.Backend.Randomization
                 if (settings.RivalSetting == Settings.TrainerOption.CompletelyRandom)
                 {
                     foreach (var battle in battles)
-                        RandomizeBattle(battle, pokemonSet, trainerSpeciesSettings);
+                        RandomizeBattle(battle, pokemonSet, championSpeciesSettings);
                 }
                 else if (settings.RivalSetting == Settings.TrainerOption.Procedural)
                 {
-                    RandomizeBattle(battles[0], pokemonSet, trainerSpeciesSettings);
+                    RandomizeBattle(battles[0], pokemonSet, championSpeciesSettings);
                     PcgBattles(battles, battles[0].pokemon.Select((p) => p.species), pokemonSet, championSpeciesSettings);
                 }
 
@@ -488,11 +488,11 @@ namespace PokemonRandomizer.Backend.Randomization
                 if (settings.RivalSetting == Settings.TrainerOption.CompletelyRandom)
                 {
                     foreach (var battle in battles)
-                        RandomizeBattle(battle, pokemonSet, trainerSpeciesSettings);
+                        RandomizeBattle(battle, pokemonSet, eliteFourSpeciesSettings);
                 }
                 else if (settings.RivalSetting == Settings.TrainerOption.Procedural)
                 {
-                    RandomizeBattle(battles[0], pokemonSet, trainerSpeciesSettings);
+                    RandomizeBattle(battles[0], pokemonSet, eliteFourSpeciesSettings);
                     PcgBattles(battles, battles[0].pokemon.Select((p) => p.species), pokemonSet, eliteFourSpeciesSettings);
                 }
 
@@ -510,11 +510,11 @@ namespace PokemonRandomizer.Backend.Randomization
                 if (settings.RivalSetting == Settings.TrainerOption.CompletelyRandom)
                 {
                     foreach (var battle in battles)
-                        RandomizeBattle(battle, pokemonSet, trainerSpeciesSettings);
+                        RandomizeBattle(battle, pokemonSet, gymLeaderSpeciesSettings);
                 }
                 else if (settings.RivalSetting == Settings.TrainerOption.Procedural)
                 {
-                    RandomizeBattle(battles[0], pokemonSet, trainerSpeciesSettings);
+                    RandomizeBattle(battles[0], pokemonSet, gymLeaderSpeciesSettings);
                     PcgBattles(battles, battles[0].pokemon.Select((p) => p.species), pokemonSet, gymLeaderSpeciesSettings);
                 }
 
@@ -533,11 +533,11 @@ namespace PokemonRandomizer.Backend.Randomization
                 if (settings.RivalSetting == Settings.TrainerOption.CompletelyRandom)
                 {
                     foreach (var battle in battles)
-                        RandomizeBattle(battle, pokemonSet, trainerSpeciesSettings);
+                        RandomizeBattle(battle, pokemonSet, teamLeaderSpeciesSettings);
                 }
                 else if (settings.RivalSetting == Settings.TrainerOption.Procedural)
                 {
-                    RandomizeBattle(battles[0], pokemonSet, trainerSpeciesSettings);
+                    RandomizeBattle(battles[0], pokemonSet, teamLeaderSpeciesSettings);
                     PcgBattles(battles, battles[0].pokemon.Select((p) => p.species), pokemonSet, teamLeaderSpeciesSettings);
                 }
 
@@ -556,11 +556,11 @@ namespace PokemonRandomizer.Backend.Randomization
                 if (settings.RivalSetting == Settings.TrainerOption.CompletelyRandom)
                 {
                     foreach (var battle in battles)
-                        RandomizeBattle(battle, pokemonSet, trainerSpeciesSettings);
+                        RandomizeBattle(battle, pokemonSet, teamAdminSpeciesSettings);
                 }
                 else if (settings.RivalSetting == Settings.TrainerOption.Procedural)
                 {
-                    RandomizeBattle(battles[0], pokemonSet, trainerSpeciesSettings);
+                    RandomizeBattle(battles[0], pokemonSet, teamAdminSpeciesSettings);
                     PcgBattles(battles, battles[0].pokemon.Select((p) => p.species), pokemonSet, teamAdminSpeciesSettings);
                 }
 
