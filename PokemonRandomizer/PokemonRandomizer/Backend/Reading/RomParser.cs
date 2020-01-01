@@ -156,7 +156,7 @@ namespace PokemonRandomizer.Backend.Reading
                 if (p % 8 == 0) mask = 1;
                 BitArray set = p < numTms ? tmCompat : hmCompat;
                 set.Set(p < numTms ? p : p - numTms, (tmHmChunk[p / 8] & mask) > 0);
-                mask = mask << 1;
+                mask <<= 1;
             }
         }
         // Read the move tutor compatibility BitArray at offset
@@ -171,7 +171,7 @@ namespace PokemonRandomizer.Backend.Reading
             {
                 if (p % 8 == 0) mask = 1;
                 tutCompat.Set(p, (tutChunk[p / 8] & mask) > 0);
-                mask = mask << 1;
+                mask <<= 1;
             }
         }
         // Read evolutions
@@ -232,16 +232,8 @@ namespace PokemonRandomizer.Backend.Reading
         {
             #region Find and Seek encounter table
             var encounterPtrPrefix = data.Attr("wildPokemon", "ptrPrefix", data.Constants).Value;
-            var prefixes = rom.FindAll(encounterPtrPrefix);
-            // If no prefix was found, fall back on another method (no other method yet)
-            if (prefixes.Count <= 0)
-                throw new Exception("No wild pokemon ptr prefix found");
-            // If more than 1 prefix was found, fall back on another method (potentially just choose the first)
-            if (prefixes.Count > 1)
-                throw new Exception("Wild pokemon ptr prefix is not unique");
-            // Go to the location in the pointer after the prefix 
-            // ptr is at the location + half the length of the hex string (-1 for the "0x" formatting)
-            rom.Seek(rom.ReadPointer(prefixes[0] + (encounterPtrPrefix.Length / 2) - 1));
+            var ptr = rom.FindFromPrefix(encounterPtrPrefix);
+            rom.Seek(rom.ReadPointer(ptr));
             #endregion
 
             #region Encounter Slots
@@ -326,7 +318,7 @@ namespace PokemonRandomizer.Backend.Reading
         }
 
         // Checks the hash of the rom to see if its the right version (INVALID DUE TO VERSION CHECKING)
-        private static void checkHash(byte[] rawRom, XmlManager data)
+        private static void CheckHash(byte[] rawRom, XmlManager data)
         {
             MD5 mD5 = MD5.Create();
             byte[] bytes = mD5.ComputeHash(rawRom);

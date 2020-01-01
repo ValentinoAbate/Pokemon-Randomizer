@@ -127,6 +127,9 @@
     <!-- and thethethe's forum post: http://pokemonhackersonline.com/showthread.php?t=2586 -->
     <mapBankPointers num="34" size="4" offset="0x486578" pointer="0x84AA4"/>
     <maps offset="0x849CC" bankLengths="[57,5,5,6,7,8,9,7,7,14,8,17,10,23,13,15,15,2,2,2,3,1,1,1,108,61,89,2,1,13,1,1,2,1]"/>
+    <!-- pointer from dabomstew's UP randomizer source https://github.com/Dabomstew/universal-pokemon-randomizer -->
+    <!-- should be true for Ruby and sapphire as well -->
+    <mapLabels ptrPrefix="0xC078288030BC01BC00470000"/>
 
     <!-- Encounter Data -->
     <encounters offset=""/>

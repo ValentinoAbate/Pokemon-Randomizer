@@ -33,6 +33,9 @@ namespace PokemonRandomizer.Backend.DataStructures
         public int connectionOffset;
         public int music;
         public int mpInd;
+        /// <summary>
+        /// Index of this map's label / name in the table
+        /// </summary> 
         public byte labelIndex;
         /// <summary>
         /// Vibility/Flash usage state
@@ -44,7 +47,7 @@ namespace PokemonRandomizer.Backend.DataStructures
         /// </summary>
         public byte visibility;
         /// <summary>
-        /// Weather type. I am currently unsure if this affects in-battle weather
+        /// Weather type. I am currently unsure if this affects in-battle weather.
         /// In Emerald (info from advance-map: http://ampage.no-ip.info/): 
         /// 0x00: In-house weather,
         /// 0x01: Sunny weather with clouds in water,
@@ -112,9 +115,11 @@ namespace PokemonRandomizer.Backend.DataStructures
         public ConnectionData connections;
         // The encounters associated with this map (filled externally in RomParser.cs right now)
         public List<EncounterSet> encounters = new List<EncounterSet>();
+        public string Name { get; private set; }
 
-        public Map(Rom rom, int offset)
+        public Map(Rom rom, int offset, int labelAddress)
         {
+            rom.SaveOffset();
             // Read Header Data
             rom.Seek(offset);
             mapDataOffset = rom.ReadPointer();
@@ -131,10 +136,19 @@ namespace PokemonRandomizer.Backend.DataStructures
             unknown2 = rom.ReadByte();
             showLabelOnEntry = rom.ReadByte();
             battleField = rom.ReadByte();
+            // Read name
+            rom.Seek(rom.ReadPointer(labelAddress + labelIndex * 8 + 4));
+            Name = rom.ReadVariableLengthString();
             // Read actual data
-            if (connectionOffset == Rom.nullPointer)
-                return;
-            connections = new ConnectionData(rom, connectionOffset);
+            // Connections
+            if (connectionOffset != Rom.nullPointer)
+                connections = new ConnectionData(rom, connectionOffset);          
+            rom.LoadOffset();
+        }
+
+        public override string ToString()
+        {
+            return Name ?? "Error: no name";
         }
     }
 }

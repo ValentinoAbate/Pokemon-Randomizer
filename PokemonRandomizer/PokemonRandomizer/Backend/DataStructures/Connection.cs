@@ -8,7 +8,16 @@ namespace PokemonRandomizer.Backend.DataStructures
 {
     public class Connection
     {
-        public int type;
+        public enum Type
+        {
+            Down,
+            Up,
+            Left,
+            Right,
+            Dive,
+            Emerge,
+        }
+        public Type type;
         public int offset;
         public byte bankId;
         public byte mapId;
@@ -16,7 +25,7 @@ namespace PokemonRandomizer.Backend.DataStructures
         /// <summary> Creates a new map connection at the Rom's current internal offset</summary>
         public Connection(Rom rom)
         {
-            type = rom.ReadUInt32();
+            type = (Type)rom.ReadUInt32();
             offset = rom.ReadUInt32();
             bankId = rom.ReadByte();
             mapId = rom.ReadByte();

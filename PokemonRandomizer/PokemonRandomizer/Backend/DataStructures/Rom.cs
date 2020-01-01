@@ -11,6 +11,9 @@ namespace PokemonRandomizer.Backend.DataStructures
     /// </summary>
     public class Rom
     {
+        /// <summary>
+        /// Address rom is loaded into in GBA RAM
+        /// </summary>
         private const int ramOffset = 0x08000000;
         public const int nullPointer = -ramOffset;
         /// <summary>The byte that WriteInFreeSpace(byte[] data) considers free space </summary>
@@ -201,7 +204,7 @@ namespace PokemonRandomizer.Backend.DataStructures
         public void LoadOffset()
         {
             if(SavedOffsets.Count > 0)
-                InternalOffset = SavedOffsets.Pop(); ;
+                InternalOffset = SavedOffsets.Pop();
         }
         /// <summary>Reads a byte from the internal offset</summary>
         public byte ReadByte() => File[InternalOffset++];
@@ -281,6 +284,21 @@ namespace PokemonRandomizer.Backend.DataStructures
         public int FindFirst(byte[] pattern)
         {
             return Search.Kmp.Search(File, pattern);
+        }
+        /// <summary> Find the index after a given pattern prefix. Throws exceptions if the prefix is not found or is a duplicate </summary>
+        public int FindFromPrefix(string prefix) => FindFromPrefix(Utilities.HexUtils.HexToBytes(prefix));
+        /// <summary> Find the index after a given pattern prefix. Throws exceptions if the prefix is not found or is a duplicate </summary>
+        public int FindFromPrefix(byte[] prefix)
+        {
+            var prefixes = FindAll(prefix);
+            // If no prefix was found, throw an exception
+            if (prefixes.Count <= 0)
+                throw new Exception("Error: no prefix found");
+            // If more than 1 prefix was found, throw an exception
+            if (prefixes.Count > 1)
+                throw new Exception("Error: prefix is not unique");
+            // return the location of the prefix + the length of the prefix
+            return prefixes[0] + prefix.Length;
         }
         #endregion
 
