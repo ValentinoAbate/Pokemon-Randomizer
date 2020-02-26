@@ -194,6 +194,26 @@ namespace PokemonRandomizer
             var item = sender as TreeViewItem;
             item.IsSelected = true;
         }
+
+        private void Open_ROM_And_Save_Bypass(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Filter = "GBA ROM files|*.gba";
+            openFileDialog.Title = "Open ROM and Save Bypass";
+            if (openFileDialog.ShowDialog() == true)
+            {
+                byte[] rawROM = File.ReadAllBytes(openFileDialog.FileName);
+                Data = Backend.Reading.RomParser.Parse(rawROM);
+                SaveFileDialog saveFileDialog = new SaveFileDialog();
+                saveFileDialog.Filter = "GBA ROM|*.gba";
+                saveFileDialog.Title = "Save ROM";
+                saveFileDialog.FileName = "testROM.gba";
+                if (saveFileDialog.ShowDialog() == true)
+                {
+                    File.WriteAllBytes(saveFileDialog.FileName, Backend.Writing.RomWriter.Write(Data));
+                }
+            }
+        }
     }
     public static class Commands
     {

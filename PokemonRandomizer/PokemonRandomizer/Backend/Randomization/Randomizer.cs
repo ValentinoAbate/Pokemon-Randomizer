@@ -261,6 +261,14 @@ namespace PokemonRandomizer.Backend.Randomization
                             data.Starters[i] = RandomSpecies(pokemonSet, data.Starters[i], 5, speciesSettings);
                     }
                 }
+                // Make sure all starters have attack moves
+                if(settings.SafeStarterMovesets)
+                {
+                    // Hacky tackle fix
+                    foreach (var pkmn in data.Starters)
+                        if (data.PokemonLookup[pkmn].learnSet[0].move != Move.TACKLE)
+                            data.PokemonLookup[pkmn].learnSet.Add(Move.TACKLE, 1);
+                }
             }
             #endregion
 

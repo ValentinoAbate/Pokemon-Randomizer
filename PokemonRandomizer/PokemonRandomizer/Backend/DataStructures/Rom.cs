@@ -141,12 +141,9 @@ namespace PokemonRandomizer.Backend.DataStructures
         {
             //The offset with the ramOffset component
             int ptr = ramOffset + originalOffset;
-            for (int i = 0; i < File.Length - 3; ++i)
-            {
-                if (ReadUInt(i, 4) == ptr)
-                    // Write a pointer (faster private version - same as WritePointer())
-                    WriteUInt(i, ramOffset + newOffset, 4);
-            }
+            var pointerInstances = FindAll(BitConverter.GetBytes(ptr));
+            foreach(var instance in pointerInstances)
+                WriteUInt(instance, ramOffset + newOffset, 4);
         }
 
         /// <summary> Set entire block to a given byte value at Internal offset</summary>
@@ -350,7 +347,7 @@ namespace PokemonRandomizer.Backend.DataStructures
             for (int i = 0; i < numBytes; i++)
             {
                 File[i + InternalOffset] = unchecked((byte)(value & 0xff));
-                value = value >> 8;
+                value >>= 8;
             }
             InternalOffset += numBytes;
         }
@@ -361,7 +358,7 @@ namespace PokemonRandomizer.Backend.DataStructures
             for (int i = 0; i < numBytes; i++)
             {
                 File[i + offset] = unchecked((byte)(value & 0xff));
-                value = value >> 8;
+                value >>= 8;
             }
         }
         /// <summary>Writes a Unit32 (4 bytes) to the internal offset</summary>

@@ -30,7 +30,8 @@ namespace PokemonRandomizer.Backend.Reading
 
             #region Base Stats
             // Read the pokemon base stats from the Rom
-            data.Pokemon = ReadPokemonBaseStats(data.Rom, data.Info);
+            data.Pokemon = ReadPokemonBaseStats(data.Rom, data.Info, out byte[] skippedData);
+            data.SkippedLearnSetData = skippedData;
             data.PokemonLookup = new Dictionary<PokemonSpecies, PokemonBaseStats>();
             foreach (var pokemon in data.Pokemon)
                 data.PokemonLookup.Add(pokemon.species, pokemon);
@@ -64,8 +65,10 @@ namespace PokemonRandomizer.Backend.Reading
             rom.Seek(dataOffset);
             for (int i = 0; i <= moveCount; i++)
             {
-                var move = new MoveData(rom);
-                move.move = (Move)i;
+                var move = new MoveData(rom)
+                {
+                    move = (Move)i
+                };
                 moveData.Add(move);
             }
             return moveData;
@@ -94,8 +97,9 @@ namespace PokemonRandomizer.Backend.Reading
 
         #region Read Pokemon Base Stats
         // Read the Pokemon base stat definitions from the ROM
-        private static List<PokemonBaseStats> ReadPokemonBaseStats(Rom rom, XmlManager data)
+        private static List<PokemonBaseStats> ReadPokemonBaseStats(Rom rom, XmlManager data, out byte[] skippedData)
         {
+            skippedData = null;
             List<PokemonBaseStats> pokemon = new List<PokemonBaseStats>();
             int pkmnPtr = data.Offset("pokemonBaseStats");
             int pkmnSize = data.Size("pokemonBaseStats");
@@ -111,6 +115,7 @@ namespace PokemonRandomizer.Backend.Reading
                 if (i == (int)data.Attr("pokemonBaseStats", "skipAt")) // potentially skip empty slots
                 {
                     int skipNum = (int)data.Attr("pokemonBaseStats", "skip");
+                    skippedData = rom.ReadBlock(movePtr, skipNum * 4);
                     i += skipNum;
                     movePtr += skipNum * 4; // (don't know why this is 4, cuz move segments are variable lengths possibly terminators?)
                 }
@@ -128,11 +133,14 @@ namespace PokemonRandomizer.Backend.Reading
         private static int ReadAttacks(Rom rom, int offset, out LearnSet moves)
         {
             moves = new LearnSet();
+            moves.OriginalOffset = offset;
             byte curr = rom.ReadByte(offset);
             byte next = rom.ReadByte(offset + 1);
             while (curr != 255 || next != 255)
             {
+                // lvl is in the lvl byte but divided by 2 (lose the last bit)
                 int lvl = next >> 1;
+                // if the move number is over 255, the last bit of the learn level byte is set to 1
                 Move move = (Move)((next % 2) * 256 + curr);
                 moves.Add(move, lvl);
                 offset += 2;

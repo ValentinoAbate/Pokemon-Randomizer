@@ -128,6 +128,12 @@ namespace PokemonRandomizer
         public bool RandomizeStarters { get => true; }
         public StarterPokemonOption StarterSetting { get => StarterPokemonOption.CompletelyRandom; }
         public bool StrongStarterTypeTriangle { get => false; }
+        /// <summary>
+        /// Ensures that all starters have an attacking move at lvl1
+        /// Currently just makes all starters additionally have tackle
+        /// WARNING: enabling this feature causes movesets to expand, which may cause longer write times
+        /// </summary>
+        public bool SafeStarterMovesets { get => true; }
         #endregion
 
         #region TMs, HMs, and Move Tutors
@@ -139,12 +145,12 @@ namespace PokemonRandomizer
             RandomKeepNumber,
             Intelligent
         }
-        public TmMtCompatOption TmMtCompatSetting { get => TmMtCompatOption.Unchanged; }
+        public TmMtCompatOption TmMtCompatSetting { get => TmMtCompatOption.AllOn; }
         public double TmMtTrueChance { get => 0.42; }
         public double TmMtNoise { get => 0.10; }
         public bool PreventHmMovesInTMsOrMoveTutors { get => true; }
         public bool PreventDuplicateTMsAndMoveTutors { get => true; }
-        public double TMRandChance { get => 0.5; }
+        public double TMRandChance { get => 1; }
         public double MoveTutorRandChance { get => 1; }
         #endregion
 
@@ -156,7 +162,7 @@ namespace PokemonRandomizer
             ForceHighestLegal,
         }
 
-        public double DunsparsePlaugeChance { get => 0.001; }
+        public double DunsparsePlaugeChance { get => 0; }
         #endregion
 
         #region Misc

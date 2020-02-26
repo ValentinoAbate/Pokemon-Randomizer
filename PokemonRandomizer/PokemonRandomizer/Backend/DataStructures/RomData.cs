@@ -58,6 +58,8 @@ namespace PokemonRandomizer.Backend.DataStructures
 
         public bool NationalDexUnlocked = false;
 
+        public byte[] SkippedLearnSetData { get; set; }
+
         public RomData(byte[] rawRom)
         {
             InitGeneration(rawRom);
