@@ -18,9 +18,9 @@ namespace PokemonRandomizer.Backend.Writing
         {
             Rom file = new Rom(data.Rom);
             // Write TM definitions
-            WriteMoveMappings(file, data.Info.Offset("tmMoves"), data.TMMoves);
+            WriteMoveMappings(file, data.Info.Offset("tmMoves"), data.TMMoves, data.Info.HexAttr("tmMoves", "duplicateOffset"));
             // Write HM definitions
-            WriteMoveMappings(file, data.Info.Offset("hmMoves"), data.HMMoves);
+            WriteMoveMappings(file, data.Info.Offset("hmMoves"), data.HMMoves, data.Info.HexAttr("hmMoves", "duplicateOffset"));
             // Write Move Tutor definitions
             WriteMoveMappings(file, data.Info.Offset("moveTutorMoves"), data.tutorMoves);
             // Write the pc potion item
@@ -33,11 +33,17 @@ namespace PokemonRandomizer.Backend.Writing
             return file.File;
         }
         // Write TM, HM, or Move tutor definitions to the rom (depending on args)
-        private static void WriteMoveMappings(Rom rom, int offset, Move[] moves)
+        private static void WriteMoveMappings(Rom rom, int offset, Move[] moves, int? altOffset = null)
         {
             rom.Seek(offset);
             foreach(var move in moves)
                 rom.WriteUInt16((int)move);
+            if(altOffset != null)
+            {
+                rom.Seek((int)altOffset);
+                foreach (var move in moves)
+                    rom.WriteUInt16((int)move);
+            }
         }
         private static void WriteStarters(RomData romData, Rom rom, XmlManager data)
         {

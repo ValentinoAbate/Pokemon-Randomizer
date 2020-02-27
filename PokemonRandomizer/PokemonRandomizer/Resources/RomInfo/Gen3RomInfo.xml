@@ -76,9 +76,9 @@
     <!-- TMs, HMs, and Move Tutors -->
 
     <!-- TM Move mappings -->
-    <tmMoves num="50" size="2" offset="0x615b94"/>
+    <tmMoves num="50" size="2" offset="0x615b94" duplicateOffset="0x616040"/>
     <!-- HM move mappings -->
-    <hmMoves num="8" size="2" offset="0x615bf8"/>
+    <hmMoves num="8" size="2" offset="0x615bf8" duplicateOffset="0x6160A4"/>
     <!-- MT move mappings -->
     <moveTutorMoves num="30" size="2" offset="0x61500c"/>
 
