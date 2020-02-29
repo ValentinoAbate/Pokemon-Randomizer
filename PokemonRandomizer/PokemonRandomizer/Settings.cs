@@ -167,6 +167,8 @@ namespace PokemonRandomizer
 
         #region Misc
         public bool RandomizePcPotion { get => true; }
+
+        public bool RunIndoors { get => true; }
         #endregion
 
         public Settings(MainWindow window)

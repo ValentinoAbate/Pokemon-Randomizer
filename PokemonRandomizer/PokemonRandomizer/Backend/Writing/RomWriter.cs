@@ -17,19 +17,22 @@ namespace PokemonRandomizer.Backend.Writing
         public static byte[] Write(RomData data)
         {
             Rom file = new Rom(data.Rom);
+            var info = data.Info;
             // Write TM definitions
-            WriteMoveMappings(file, data.Info.Offset("tmMoves"), data.TMMoves, data.Info.HexAttr("tmMoves", "duplicateOffset"));
+            WriteMoveMappings(file, info.Offset("tmMoves"), data.TMMoves, info.HexAttr("tmMoves", "duplicateOffset"));
             // Write HM definitions
-            WriteMoveMappings(file, data.Info.Offset("hmMoves"), data.HMMoves, data.Info.HexAttr("hmMoves", "duplicateOffset"));
+            WriteMoveMappings(file, info.Offset("hmMoves"), data.HMMoves, info.HexAttr("hmMoves", "duplicateOffset"));
             // Write Move Tutor definitions
-            WriteMoveMappings(file, data.Info.Offset("moveTutorMoves"), data.tutorMoves);
+            WriteMoveMappings(file, info.Offset("moveTutorMoves"), data.tutorMoves);
             // Write the pc potion item
-            data.Rom.WriteUInt16(data.Info.Offset("pcPotion"), (int)data.PcStartItem);
-            WriteStarters(data, file, data.Info);
-            WritePokemonBaseStats(data, file, data.Info);
+            data.Rom.WriteUInt16(info.Offset("pcPotion"), (int)data.PcStartItem);
+            // Write the run indoors hack
+            data.Rom.WriteByte(info.Offset("runIndoors"), 0);
+            WriteStarters(data, file, info);
+            WritePokemonBaseStats(data, file, info);
             WriteTypeDefinitions(data, file);
-            WriteEncounters(data, file, data.Info);
-            WriteTrainerBattles(data, file, data.Info);
+            WriteEncounters(data, file, info);
+            WriteTrainerBattles(data, file, info);
             return file.File;
         }
         // Write TM, HM, or Move tutor definitions to the rom (depending on args)

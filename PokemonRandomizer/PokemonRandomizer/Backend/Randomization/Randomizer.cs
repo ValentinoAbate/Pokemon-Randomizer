@@ -622,6 +622,8 @@ namespace PokemonRandomizer.Backend.Randomization
             {
                 data.PcStartItem = rand.Choice(EnumUtils.GetValues<Item>());
             }
+            // Run indoors hack
+            data.runIndoors = settings.RunIndoors;
 
             #endregion
 
