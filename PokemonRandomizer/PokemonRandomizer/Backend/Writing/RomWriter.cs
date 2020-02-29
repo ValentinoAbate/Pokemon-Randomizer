@@ -7,6 +7,7 @@ using System.IO;
 using PokemonRandomizer.Backend.DataStructures;
 using PokemonRandomizer.Backend.EnumTypes;
 using PokemonRandomizer.Backend.Utilities;
+using PokemonRandomizer.Backend.Scripting;
 
 namespace PokemonRandomizer.Backend.Writing
 {
@@ -16,24 +17,25 @@ namespace PokemonRandomizer.Backend.Writing
     {
         public static byte[] Write(RomData data)
         {
-            Rom file = new Rom(data.Rom);
+            Rom rom = new Rom(data.Rom);
             var info = data.Info;
             // Write TM definitions
-            WriteMoveMappings(file, info.Offset("tmMoves"), data.TMMoves, info.HexAttr("tmMoves", "duplicateOffset"));
+            WriteMoveMappings(rom, info.Offset("tmMoves"), data.TMMoves, info.HexAttr("tmMoves", "duplicateOffset"));
             // Write HM definitions
-            WriteMoveMappings(file, info.Offset("hmMoves"), data.HMMoves, info.HexAttr("hmMoves", "duplicateOffset"));
+            WriteMoveMappings(rom, info.Offset("hmMoves"), data.HMMoves, info.HexAttr("hmMoves", "duplicateOffset"));
             // Write Move Tutor definitions
-            WriteMoveMappings(file, info.Offset("moveTutorMoves"), data.tutorMoves);
+            WriteMoveMappings(rom, info.Offset("moveTutorMoves"), data.tutorMoves);
             // Write the pc potion item
             data.Rom.WriteUInt16(info.Offset("pcPotion"), (int)data.PcStartItem);
             // Write the run indoors hack
             data.Rom.WriteByte(info.Offset("runIndoors"), 0);
-            WriteStarters(data, file, info);
-            WritePokemonBaseStats(data, file, info);
-            WriteTypeDefinitions(data, file);
-            WriteEncounters(data, file, info);
-            WriteTrainerBattles(data, file, info);
-            return file.File;
+            WriteStarters(data, rom, info);
+            WriteCatchingTutOpponent(data, rom, info);
+            WritePokemonBaseStats(data, rom, info);
+            WriteTypeDefinitions(data, rom);
+            WriteEncounters(data, rom, info);
+            WriteTrainerBattles(data, rom, info);
+            return rom.File;
         }
         // Write TM, HM, or Move tutor definitions to the rom (depending on args)
         private static void WriteMoveMappings(Rom rom, int offset, Move[] moves, int? altOffset = null)
@@ -48,48 +50,68 @@ namespace PokemonRandomizer.Backend.Writing
                     rom.WriteUInt16((int)move);
             }
         }
-        private static void WriteStarters(RomData romData, Rom rom, XmlManager data)
+        private static void WriteStarters(RomData romData, Rom rom, XmlManager info)
         {
             // For some reason FRLG need duplicates of the starters stored
-            bool duplicate = bool.Parse(data.Attr("starterPokemon", "duplicate").Value);
+            bool duplicate = bool.Parse(info.Attr("starterPokemon", "duplicate").Value);
             int dupOffset = 0;
             if(duplicate)
-                dupOffset = data.IntAttr("starterPokemon", "dupOffset");
-            rom.Seek(data.Offset("starterPokemon"));
+                dupOffset = info.IntAttr("starterPokemon", "dupOffset");
+            rom.Seek(info.Offset("starterPokemon"));
             rom.WriteUInt16((int)romData.Starters[0]);
             if(duplicate)
                 rom.WriteUInt16(rom.InternalOffset + dupOffset, (int)romData.Starters[0]);
-            rom.Skip(data.IntAttr("starterPokemon", "skip1"));
+            rom.Skip(info.IntAttr("starterPokemon", "skip1"));
             rom.WriteUInt16((int)romData.Starters[1]);
             if (duplicate)
                 rom.WriteUInt16(rom.InternalOffset + dupOffset, (int)romData.Starters[1]);
-            rom.Skip(data.IntAttr("starterPokemon", "skip2"));
+            rom.Skip(info.IntAttr("starterPokemon", "skip2"));
             rom.WriteUInt16((int)romData.Starters[2]);
             if (duplicate)
                 rom.WriteUInt16(rom.InternalOffset + dupOffset, (int)romData.Starters[2]);
         }
-        private static void WritePokemonBaseStats(RomData romData, Rom rom, XmlManager data)
+
+        private static void WriteCatchingTutOpponent(RomData data, Rom rom, XmlManager info)
         {
-            int pkmnPtr = data.Offset("pokemonBaseStats");
-            int pkmnSize = data.Size("pokemonBaseStats");
-            int tmPtr = data.Offset("tmHmCompat");
-            int tmHmSize = data.Size("tmHmCompat");
-            int tutorPtr = data.Offset("moveTutorCompat");
-            int tutorSize = data.Size("moveTutorCompat");
-            int originalMovePtr = data.Offset("movesets");
+            rom.Seek(info.Offset("catchingTutOpponent"));
+            int pkmn = (int)data.CatchingTutPokemon;
+            if(pkmn < 255)
+            {
+                rom.WriteByte((byte)pkmn);
+                rom.WriteByte(Gen3Opcodes.setRegister | Gen3Opcodes.reg1);
+                rom.WriteUInt16(0);
+            }
+            else
+            {
+                rom.WriteByte(0xFF);
+                rom.WriteByte(Gen3Opcodes.setRegister | Gen3Opcodes.reg1);
+                rom.WriteByte((byte)(pkmn - 0xFF));
+                rom.WriteByte(Gen3Opcodes.addRegister | Gen3Opcodes.reg1);
+            }
+        }
+
+        private static void WritePokemonBaseStats(RomData romData, Rom rom, XmlManager info)
+        {
+            int pkmnPtr = info.Offset("pokemonBaseStats");
+            int pkmnSize = info.Size("pokemonBaseStats");
+            int tmPtr = info.Offset("tmHmCompat");
+            int tmHmSize = info.Size("tmHmCompat");
+            int tutorPtr = info.Offset("moveTutorCompat");
+            int tutorSize = info.Size("moveTutorCompat");
+            int originalMovePtr = info.Offset("movesets");
             int movePtr = 0;
-            int evolutionPtr = data.Offset("evolutions");
-            int evolutionSize = data.Size("evolutions");
-            int skipNum = (int)data.Attr("pokemonBaseStats", "skip");
+            int evolutionPtr = info.Offset("evolutions");
+            int evolutionSize = info.Size("evolutions");
+            int skipNum = (int)info.Attr("pokemonBaseStats", "skip");
             Rom moveData = new Rom(new byte[romData.Pokemon.Sum((stats) => (stats.learnSet.Count * 2) + 2) + (skipNum * 4)], 0, 0);
             //If any of the movesets have changed size shit has to get repointed
             bool needToRelocateMoveData = romData.Pokemon.Any((stats) => stats.learnSet.Count != stats.learnSet.OriginalCount);
             // Create a list to hold the repoint tuples so they can be parallelized
             List<Tuple<int, int>> repoints = new List<Tuple<int, int>>(romData.Pokemon.Count);
             int newMoveDataOffset = rom.ScanForFreeSpace(moveData.Length).offset;
-            for (int i = 0; i < data.Num("pokemonBaseStats"); i++)
+            for (int i = 0; i < info.Num("pokemonBaseStats"); i++)
             {
-                if (i == (int)data.Attr("pokemonBaseStats", "skipAt")) // potentially skip empty slots
+                if (i == (int)info.Attr("pokemonBaseStats", "skipAt")) // potentially skip empty slots
                 {
                     i += skipNum;
                     moveData.WriteBlock(movePtr, romData.SkippedLearnSetData);
@@ -104,7 +126,7 @@ namespace PokemonRandomizer.Backend.Writing
                 //movePtr = ReadAttacks(rom, movePtr, out pkmn.learnSet);
                 WriteTMHMCompat(stats, tmPtr + (i * tmHmSize), rom);
                 WriteTutorCompat(stats, tutorPtr + (i * tutorSize), rom);               
-                WriteEvolutions(stats, evolutionPtr + (i * evolutionSize), romData, rom, data);
+                WriteEvolutions(stats, evolutionPtr + (i * evolutionSize), rom);
             }
             // Repoint all of the moveset pointers (could likely be optimized)
             Parallel.ForEach(repoints, (t) => rom.Repoint(t.Item1, t.Item2));
@@ -181,7 +203,7 @@ namespace PokemonRandomizer.Backend.Writing
             pokemon.moveTutorCompat.CopyTo(mtValues,0);
             rom.WriteBits(offset, 1, mtValues.Select((b) => b ? 1 : 0).ToArray());
         }
-        private static void WriteEvolutions(PokemonBaseStats pokemon, int offset, RomData romData, Rom rom, XmlManager data)
+        private static void WriteEvolutions(PokemonBaseStats pokemon, int offset, Rom rom)
         {
             rom.Seek(offset);
             foreach(var evo in pokemon.evolvesTo)
@@ -226,10 +248,10 @@ namespace PokemonRandomizer.Backend.Writing
             }
             #endregion
         }
-        private static void WriteEncounters(RomData romData, Rom rom, XmlManager data)
+        private static void WriteEncounters(RomData romData, Rom rom, XmlManager info)
         {
             #region Find and Seek encounter table
-            var encounterPtrPrefix = data.Attr("wildPokemon", "ptrPrefix", data.Constants).Value;
+            var encounterPtrPrefix = info.Attr("wildPokemon", "ptrPrefix", info.Constants).Value;
             var prefixes = rom.FindAll(encounterPtrPrefix);
             // If no prefix was found, fall back on another method (no other method yet)
             if (prefixes.Count <= 0)
@@ -295,10 +317,10 @@ namespace PokemonRandomizer.Backend.Writing
                 rom.WriteUInt16((int)encounter.pokemon);
             }
         }
-        private static void WriteTrainerBattles(RomData romData, Rom rom, XmlManager data)
+        private static void WriteTrainerBattles(RomData romData, Rom rom, XmlManager info)
         {
-            int numTrainers = data.Num("trainerBattles");
-            rom.Seek(data.Offset("trainerBattles"));
+            int numTrainers = info.Num("trainerBattles");
+            rom.Seek(info.Offset("trainerBattles"));
             foreach(var trainer in romData.Trainers)
             {
                 rom.WriteByte((byte)trainer.dataType);

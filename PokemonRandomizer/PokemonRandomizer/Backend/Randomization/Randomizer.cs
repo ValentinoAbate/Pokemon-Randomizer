@@ -375,6 +375,8 @@ namespace PokemonRandomizer.Backend.Randomization
                 specialTrainers.Add(name.ToLower(), new List<Trainer>());
             int[] aceTrainerClasses = data.Info.IntArrayAttr("aceTrainers", "classNums");
             List<Trainer> aceTrainers = new List<Trainer>();
+            // Add Wally as their own special category
+            specialTrainers.Add("wally", new List<Trainer>());
             #endregion
 
             var trainerSpeciesSettings = settings.GetSpeciesSettings("trainer");
@@ -602,7 +604,38 @@ namespace PokemonRandomizer.Backend.Randomization
                     RandomizeBattle(battles[0], pokemonSet, trainerSpeciesSettings);
                     PcgBattles(battles, battles[0].pokemon.Select((p) => p.species), pokemonSet, trainerSpeciesSettings);
                 }
+            }
 
+            #endregion
+
+            #region Wally
+
+            // Randomize Wally starter if applicable
+            if(settings.RandomizeWallyAce)
+                data.CatchingTutPokemon = RandomSpecies(pokemonSet, data.CatchingTutPokemon, 5, rivalSpeciesSettings);
+            var wallyBattles = specialTrainers["wally"];
+            wallyBattles.Sort((a, b) => a.AvgLvl.CompareTo(b.AvgLvl));
+            if (settings.WallySetting == Settings.TrainerOption.CompletelyRandom)
+            {
+                foreach (var battle in wallyBattles)
+                    RandomizeBattle(battle, pokemonSet, rivalSpeciesSettings);
+            }
+            else if (settings.WallySetting == Settings.TrainerOption.KeepAce)
+            {
+                foreach (var battle in wallyBattles)
+                {
+                    RandomizeBattle(battle, pokemonSet, rivalSpeciesSettings);
+                    var pokemon = battle.pokemon[battle.pokemon.Length - 1];
+                    pokemon.species = MaxEvolution(data.CatchingTutPokemon, pokemon.level, rivalSpeciesSettings);
+                    if (pokemon.HasSpecialMoves)
+                    {
+                        pokemon.moves = MovesetGenerator.DefaultMoveset(data.PokemonLookup[pokemon.species], pokemon.level);
+                    }
+                }
+            }
+            else if (settings.WallySetting == Settings.TrainerOption.Procedural)
+            {
+                PcgBattles(wallyBattles, new PokemonSpecies[] { data.CatchingTutPokemon }, pokemonSet, trainerSpeciesSettings);
             }
 
             #endregion

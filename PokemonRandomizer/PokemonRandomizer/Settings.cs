@@ -101,7 +101,9 @@ namespace PokemonRandomizer
             KeepAce,
             Procedural,
         }
+
         public TrainerOption RivalSetting { get => TrainerOption.Procedural; }
+        public bool RandomizeWallyAce { get => true; }
         public TrainerOption WallySetting { get => TrainerOption.Procedural; }
         public TrainerOption GymLeaderSetting { get => TrainerOption.Procedural; }
         public double BattleTypeRandChance { get => 1; }
@@ -133,7 +135,7 @@ namespace PokemonRandomizer
         /// Currently just makes all starters additionally have tackle
         /// WARNING: enabling this feature causes movesets to expand, which may cause longer write times
         /// </summary>
-        public bool SafeStarterMovesets { get => true; }
+        public bool SafeStarterMovesets { get => false; }
         #endregion
 
         #region TMs, HMs, and Move Tutors
