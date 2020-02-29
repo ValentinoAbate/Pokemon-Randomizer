@@ -11,4 +11,6 @@ Check out their project! https://github.com/Dabomstew/universal-pokemon-randomiz
 
 I don't have an executable release yet, but I'll link one here when I do.
 
+Licensed under the GNU General Public v3.0 license. See the LICENSE file for details!
+
 
