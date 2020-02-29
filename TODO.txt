@@ -1,11 +1,13 @@
 This is not a complete list, and will be updated as I think of things and transcribe my notes from other places
 
-PARSING:
+IDEAS:
+- Make trainer smeargles have random movesets or premade fun ones
+- Make unknown the ??? type instead of psychic
+- Randomize unknown's base stats
+- Add some ??? type attack moves to the game
+- Make gym leader TM based on type and make sure their pokemon know it (if applicable)
+- Champion randomization (the champion could be Brendan/May, wally, or any other reoccuring / special trainer in the game or that is added)
+- Extra reoccuring trainers (you might encounter youngster joey multiple times throughout the game, etc)
 
-MOVESETS:
-- Make all pokemon start off with tackle if they have no damaging moves at lvl 5 or below
-
-WRITING:
-- Write Pokemon movesets to file
-
-CRAZY IDEAS:
+FIXES:
+- pokemon that evolve with stones have bad default movesets due to not learning stuff by level up.
