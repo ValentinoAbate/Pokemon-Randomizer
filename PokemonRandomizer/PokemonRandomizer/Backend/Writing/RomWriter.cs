@@ -45,7 +45,7 @@ namespace PokemonRandomizer.Backend.Writing
             int moveCount = int.Parse(info.Attr("moveData", "num", info.Constants).Value);
             int dataPtrOffset = HexUtils.HexToInt(info.Attr("moveData", "ptr", info.Constants).Value);
             int dataOffset = rom.ReadPointer(dataPtrOffset);
-            if(data.MoveData.Count == moveCount + 1) // original number of moves
+            if(data.MoveData.Count == moveCount + 1) // original number of moves (move 0 is empty)
             {
                 rom.Seek(dataOffset);
                 foreach (var moveData in data.MoveData)
