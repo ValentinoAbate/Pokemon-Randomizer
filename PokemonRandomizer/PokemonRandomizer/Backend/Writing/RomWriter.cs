@@ -51,7 +51,7 @@ namespace PokemonRandomizer.Backend.Writing
                 foreach (var moveData in data.MoveData)
                     WriteMoveDataSingular(rom, moveData);
             }
-            else // repoint necessary (currently broken in some cases, all pp seems to be at 0)
+            else // repoint necessary
             {
                 int dataSize = info.Size("moveData");
                 Rom moveDataBlock = new Rom(new byte[dataSize * data.MoveData.Count], 0, 0);
@@ -60,7 +60,9 @@ namespace PokemonRandomizer.Backend.Writing
                 int? newOffset = rom.WriteInFreeSpaceAndRepoint(moveDataBlock.File, dataOffset);
                 if (newOffset != null)
                 {
-                    //rom.WipeBlock(dataOffset + 4, moveCount * dataSize); breaks;
+                    // Repoint PP data (original offset + 4)
+                    rom.Repoint(dataOffset + 4, (int)newOffset + 4);
+                    rom.WipeBlock(dataOffset, dataSize * moveCount);
                 }
             }
         }
