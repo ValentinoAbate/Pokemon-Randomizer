@@ -60,11 +60,11 @@ namespace PokemonRandomizer.Backend.Reading
             return data;
         }
         // Read the move definitions
-        private static List<MoveData> ReadMoves(Rom rom, XmlManager data)
+        private static List<MoveData> ReadMoves(Rom rom, XmlManager info)
         {
             List<MoveData> moveData = new List<MoveData>();
-            int moveCount = int.Parse(data.Attr("moveData", "num", data.Constants).Value);
-            int dataOffset = rom.ReadPointer(HexUtils.HexToInt(data.Attr("moveData", "ptr", data.Constants).Value));
+            int moveCount = int.Parse(info.Attr("moveData", "num", info.Constants).Value);
+            int dataOffset = rom.ReadPointer(HexUtils.HexToInt(info.Attr("moveData", "ptr", info.Constants).Value));
             rom.Seek(dataOffset);
             for (int i = 0; i <= moveCount; i++)
             {

@@ -25,6 +25,8 @@ namespace PokemonRandomizer.Backend.Writing
             WriteMoveMappings(rom, info.Offset("hmMoves"), data.HMMoves, info.HexAttr("hmMoves", "duplicateOffset"));
             // Write Move Tutor definitions
             WriteMoveMappings(rom, info.Offset("moveTutorMoves"), data.tutorMoves);
+            // Write the move definitions
+            WriteMoveData(data, rom, info);
             // Write the pc potion item
             data.Rom.WriteUInt16(info.Offset("pcPotion"), (int)data.PcStartItem);
             // Write the run indoors hack
@@ -37,6 +39,48 @@ namespace PokemonRandomizer.Backend.Writing
             WriteTrainerBattles(data, rom, info);
             return rom.File;
         }
+
+        private static void WriteMoveData(RomData data, Rom rom, XmlManager info)
+        {;
+            int moveCount = int.Parse(info.Attr("moveData", "num", info.Constants).Value);
+            int dataPtrOffset = HexUtils.HexToInt(info.Attr("moveData", "ptr", info.Constants).Value);
+            int dataOffset = rom.ReadPointer(dataPtrOffset);
+            if(data.MoveData.Count == moveCount + 1) // original number of moves
+            {
+                rom.Seek(dataOffset);
+                foreach (var moveData in data.MoveData)
+                    WriteMoveDataSingular(rom, moveData);
+            }
+            else // repoint necessary (currently broken in some cases, all pp seems to be at 0)
+            {
+                int dataSize = info.Size("moveData");
+                Rom moveDataBlock = new Rom(new byte[dataSize * data.MoveData.Count], 0, 0);
+                foreach (var moveData in data.MoveData)
+                    WriteMoveDataSingular(moveDataBlock, moveData);
+                int? newOffset = rom.WriteInFreeSpaceAndRepoint(moveDataBlock.File, dataOffset);
+                if (newOffset != null)
+                {
+                    //rom.WipeBlock(dataOffset + 4, moveCount * dataSize); breaks;
+                }
+            }
+        }
+
+        private static void WriteMoveDataSingular(Rom rom, MoveData data)
+        {
+            rom.WriteByte((byte)data.effect);
+            rom.WriteByte(data.power);
+            rom.WriteByte((byte)data.type);
+            rom.WriteByte(data.accuracy);
+            rom.WriteByte(data.pp);
+            rom.WriteByte(data.effectChance);
+            rom.WriteByte((byte)data.targets);
+            rom.WriteByte(data.priority);
+            byte[] flags = new byte[1];
+            data.flags.CopyTo(flags, 0);
+            rom.WriteByte(flags[0]);
+            rom.WipeBlock(3); // three bytes of 0x00
+        }
+
         // Write TM, HM, or Move tutor definitions to the rom (depending on args)
         private static void WriteMoveMappings(Rom rom, int offset, Move[] moves, int? altOffset = null)
         {
@@ -140,27 +184,6 @@ namespace PokemonRandomizer.Backend.Writing
                 rom.Repoint(originalMovePtr, (int)newMoveDataOffset);
             }
         }
-
-        // Read the attacks starting at offset (returns the index after completion)
-        private static int WriteAttacks(Rom data, LearnSet moves, int offset)
-        {
-            foreach(var move in moves)
-            {
-                // Write the first byte of the move
-                data.WriteByte(offset, (byte)move.move);
-                // if the move number is over 255, the last bit of the learn level byte is set to 1
-                if ((int)move.move > 255)
-                    data.WriteByte(offset + 1, (byte)(move.learnLvl * 2 + 1));
-                else
-                    data.WriteByte(offset + 1, (byte)(move.learnLvl * 2));
-                offset += 2;
-            }
-            data.WriteByte(offset, 0xff);
-            data.WriteByte(offset + 1, 0xff);
-            offset += 2;    //pass final FFFF
-            return offset;
-        }
-
         private static void WriteBaseStatsSingle(PokemonBaseStats pokemon, int offset, Rom rom)
         {
             rom.SaveOffset();
@@ -189,6 +212,27 @@ namespace PokemonRandomizer.Backend.Writing
             rom.SetBlock(2, 0x00);
             rom.LoadOffset();
         }
+
+        // Read the attacks starting at offset (returns the index after completion)
+        private static int WriteAttacks(Rom rom, LearnSet moves, int offset)
+        {
+            foreach(var move in moves)
+            {
+                // Write the first byte of the move
+                rom.WriteByte(offset, (byte)move.move);
+                // if the move number is over 255, the last bit of the learn level byte is set to 1
+                if ((int)move.move > 255)
+                    rom.WriteByte(offset + 1, (byte)(move.learnLvl * 2 + 1));
+                else
+                    rom.WriteByte(offset + 1, (byte)(move.learnLvl * 2));
+                offset += 2;
+            }
+            rom.WriteByte(offset, 0xff);
+            rom.WriteByte(offset + 1, 0xff);
+            offset += 2;    //pass final FFFF
+            return offset;
+        }
+
         private static void WriteTMHMCompat(PokemonBaseStats pokemon, int offset, Rom rom)
         {
             bool[] tmValues = new bool[pokemon.TMCompat.Count];
@@ -214,7 +258,7 @@ namespace PokemonRandomizer.Backend.Writing
                 rom.Skip(2);
             }
         }
-        private static void WriteTypeDefinitions(RomData data, Rom file)
+        private static void WriteTypeDefinitions(RomData data, Rom rom)
         {
             #region Convert TypeChart to byte[]
             List<byte> typeData = new List<byte>();
@@ -238,13 +282,11 @@ namespace PokemonRandomizer.Backend.Writing
             //Move and Repoint if necessary
             if (data.TypeDefinitions.Count > data.TypeDefinitions.InitCount)
             {
-                int? newOffset = file.WriteInFreeSpace(typeData.ToArray());
-                if (newOffset != null)
-                    file.Repoint(data.Info.Offset("typeEffectiveness"), (int)newOffset);
+                rom.WriteInFreeSpaceAndRepoint(typeData.ToArray(), data.Info.Offset("typeEffectiveness"));
             }
             else
             {
-                file.WriteBlock(data.Info.Offset("typeEffectiveness"), typeData.ToArray());
+                rom.WriteBlock(data.Info.Offset("typeEffectiveness"), typeData.ToArray());
             }
             #endregion
         }

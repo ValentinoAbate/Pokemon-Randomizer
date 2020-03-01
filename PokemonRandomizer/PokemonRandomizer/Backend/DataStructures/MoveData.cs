@@ -20,7 +20,7 @@ namespace PokemonRandomizer.Backend.DataStructures
 
         public enum MoveEffect
         {
-            //Need to do science here
+            //See Move effects.txt
         }
 
         public enum Targets
@@ -39,15 +39,15 @@ namespace PokemonRandomizer.Backend.DataStructures
 
         public Move move;
         public MoveEffect effect;
-        public int power;
+        public byte power;
         public PokemonType type;
-        public int accuracy;
-        public int pp;
-        public int effectChance;
+        public byte accuracy;
+        public byte pp;
+        public byte effectChance;
         public Targets targets;
         // This byte is signed, If it is strictly less than 0x80 (128) then it is positive. 
         // If not, the actual value equals: -1 * (256 - Current Value). Example: value 0xFE (254) must be treated as -2 instead.
-        public int priority;
+        public byte priority;
         // Flags documentation
         public bool Contact { get => flags[0]; }               // 0 - This moves makes contact with the target.
         public bool AffectedByProtect { get => flags[1]; }     // 1 - This move is affected by Protect.
@@ -69,7 +69,7 @@ namespace PokemonRandomizer.Backend.DataStructures
             targets = (Targets)rom.ReadByte();
             priority = rom.ReadByte();
             flags = new BitArray(new byte[]{ rom.ReadByte() });
-            rom.Skip(3);
+            rom.Skip(3); // three bytes of 0x00
         }
 
         public override string ToString()

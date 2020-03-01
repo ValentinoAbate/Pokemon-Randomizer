@@ -127,9 +127,9 @@ namespace PokemonRandomizer.Backend.DataStructures
         /// <summary> <para>Write a chunk of data into the first availible block of free space. </para>
         /// <para>Uses the  address "RomUtils.StartAddy" and the  byte "RomUtils.FreeSpaceByte" which are set in the RomData constructor</para> 
         /// Returns null if no big enough block is found, else returns the offset of the block </summary>
-        public int? WriteInFreeSpace(byte[] data, int? startAddy = null)
+        public int? WriteInFreeSpace(byte[] data, int? startOffset = null)
         {
-            int? blockOffset = ScanForFreeSpaceOffset(FreeSpaceByte, startAddy ?? SearchStartOffset, data.Length);
+            int? blockOffset = ScanForFreeSpaceOffset(FreeSpaceByte, startOffset ?? SearchStartOffset, data.Length);
             if (blockOffset == null)
                 return null;
             System.Array.ConstrainedCopy(data, 0, File, (int)blockOffset, data.Length);
@@ -144,6 +144,15 @@ namespace PokemonRandomizer.Backend.DataStructures
             var pointerInstances = FindAll(BitConverter.GetBytes(ptr));
             foreach(var instance in pointerInstances)
                 WriteUInt(instance, ramOffset + newOffset, 4);
+        }
+
+        public int? WriteInFreeSpaceAndRepoint(byte[] data, int originalOffset, int? startOffset = null)
+        {
+            var newOffset = WriteInFreeSpace(data, startOffset);
+            if (newOffset == null)
+                return null;
+            Repoint(originalOffset, (int)newOffset);
+            return newOffset;
         }
 
         /// <summary> Set entire block to a given byte value at Internal offset</summary>

@@ -191,93 +191,10 @@ namespace PokemonRandomizer.Backend.DataStructures
             }
             #endregion
 
-            #region TODO
-            //int[] TMlist = new int[8];
-
-            //actualOrder = new String[411];
-            //for (int i = 0; i < 411; i++, ptr += 8)
-            //{
-            //    sb = new StringBuilder("");
-            //    if (i >= 251 && i < 276) continue;
-            //    for (int p = 0; p < 8; p++)
-            //    {      //get TM list
-            //        TMlist[p] = rom[ptr + p];
-            //    }
-            //    sb.append(String.format("%-10s", arPkmn[i]));
-            //    sb.append(" |");
-
-            //    int TMptr = 1;
-            //    for (int entry : TMlist)
-            //    {   //print data
-            //        for (int j = 1; j < 256; j *= 2, TMptr++)
-            //        {
-            //            if (TMptr >= 58) break;
-            //            if ((entry & j) > 0)
-            //            {
-            //                sb.append(" X");
-            //            }
-            //            else
-            //            {
-            //                sb.append(" -");
-            //            }
-            //            if (TMptr % 5 == 0)
-            //            {
-            //                sb.append("|");
-            //            }
-            //        }
-            //    }
-            //    sb.append("\n");
-            //    actualOrder[i] = sb.toString();
-            //}
-            //for (int i = 0; i < order.length; i++)
-            //{
-            //    if (i % 50 == 0)
-            //    {            //print header every 50 entries
-            //        outLs.Add("\n" + header);
-            //    }
-            //    outLs.Add(String.format("%03d.", i + 1) + actualOrder[order[i] - 1]);
-            //}
-
-            ////Lati@s-----------------------------------------------------------------------------------
-            //outLs.Add("\r\n\r\n" + divider);
-            //outLs.Add("   Lati@s choices");
-            //outLs.Add(divider);
-            //int latios = byteToInt(rom[addy("242ba7")]) + byteToInt(rom[addy("242ba8")]) * 256;
-            //int latias = byteToInt(rom[addy("242bba")]) + byteToInt(rom[addy("242bbb")]) * 256;
-            //outLs.Add(decodeText(addy("5ee14b"), 3) + "\t" + pkmn[latias - 1]);
-            //outLs.Add(decodeText(addy("5ee14f"), 4) + "\t" + pkmn[latios - 1]);
-
-
-            ////Pickup Item List------------------------------------------------------------------------------
-            //outLs.Add("\r\n\r\n" + divider);
-            //outLs.Add("   Pickup Item List");
-            //outLs.Add(divider);
-
-
-
-            //ptr = addy("31c440");
-            //String[] itemList = ak.getItemList();
-            //int item;
-            //String[] pickup = new String[29];
-            //for (int i = 0; i < 29; i++, ptr += 2)
-            //{
-            //    item = byteToInt(rom[ptr]) + byteToInt(rom[ptr + 1]) * 256;
-            //    pickup[i] = itemList[item];
-            //}
-            //for (int i = 0; i < 10; i++)
-            //{
-            //    outLs.Add("L:" + ((10 * i) + 1) + "-" + (10 * (i + 1)));
-            //    outLs.Add("  30% - " + pickup[i]);
-            //    outLs.print("  10% - " + pickup[i + 1]);
-            //    for (int j = 2; j < 7; j++)
-            //    {
-            //        outLs.print(", " + pickup[i + j]);
-            //    } outLs.Add("");
-            //    outLs.Add("   5% - " + pickup[i + 7]);
-            //    outLs.Add("   3% - " + pickup[i + 8]);
-            //    outLs.Add("   1% - " + pickup[i + 18] + ", " + pickup[i + 19]);
-            //}
-            #endregion
+            foreach(var move in MoveData)
+            {
+                outLs.Add(move.ToString() + " - effect: " + move.effect.ToString());
+            }
 
             return outLs.ToArray();
         }
