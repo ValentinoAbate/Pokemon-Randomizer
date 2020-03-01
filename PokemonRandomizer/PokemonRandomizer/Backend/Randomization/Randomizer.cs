@@ -67,6 +67,8 @@ namespace PokemonRandomizer.Backend.Randomization
             // Ideas: Mystery Power: 60 power ??? move, random chance of a randomly chosen stat buff/debuff or special condition
             // Ideas: Unknown Power: 75-80 power ??? move, random chance of a randomly chosen stat buff/debuff or special condition
             // Ideas: Cryptic Power: 30 power ???, chance of weirder effects like multi-hit, much higher chance of multiple effects
+            // Ideas: Strange power: 30-90 power, ??? random target (higher chance of weird targets)
+            // Ideas: Enigma: 1-150 power, ???, low chance of any bonus effect
             // Mutate move definitions (should this come before or after hacks (maybe let user choose))
             // Change move type, power, etc. (this would be really lame if not at a low mutation rate)
             #endregion
@@ -168,7 +170,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 if (pkmn.IsSingleTyped)
                 {
                     if (rand.RandomDouble() < settings.SingleTypeRandChance)
-                        pkmn.types[0] = pkmn.types[1] = RandomType(data.Metrics, "None");
+                        pkmn.types[0] = pkmn.types[1] = rand.Choice(data.Metrics.TypeRatiosSingle);
                 }
                 else
                 {
@@ -235,6 +237,16 @@ namespace PokemonRandomizer.Backend.Randomization
                     }
                 }
                 #endregion
+            }
+            // Set unknown typing if selected
+            if(settings.OverrideUnknownType)
+            {
+                var unknownPokeData = data.PokemonLookup[PokemonSpecies.UNOWN];
+                unknownPokeData.types[0] = PokemonType.Unknown;
+                if (rand.RandomDouble() < settings.UnknownDualTypeChance)
+                    unknownPokeData.types[1] = rand.Choice(data.Metrics.TypeRatiosDualSecondary);
+                else
+                    unknownPokeData.types[1] = PokemonType.Unknown;
             }
             // Change pallettes to fit new types
             // Recalculate power scoring
@@ -683,6 +695,7 @@ namespace PokemonRandomizer.Backend.Randomization
             #endregion
 
             data.CalculateMetrics();
+
             return data;
         }
 

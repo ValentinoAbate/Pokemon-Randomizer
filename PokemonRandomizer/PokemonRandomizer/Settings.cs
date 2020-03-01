@@ -20,7 +20,19 @@ namespace PokemonRandomizer
         #endregion
 
         #region Type Relation Definitions
-        public bool ModifyUnknownType { get => (bool)window.cbModifyUnknownType.IsChecked; }
+        /// <summary>
+        /// Should the randomizer modify the type traits of the ??? type?
+        /// </summary>
+        public bool ModifyUnknownType { get => true; } //(bool)window.cbModifyUnknownType.IsChecked; }
+        /// <summary>
+        /// Should the randomizer override UNKNOWN (the pokemon)'s type to the ??? type?
+        /// </summary>
+        public bool OverrideUnknownType { get => true; }
+        /// <summary>
+        /// How often should the randomizer give UNKNOWN (the pokemon) a secondary type?
+        /// 0.0 - 1.0
+        /// </summary>
+        public double UnknownDualTypeChance { get => 0.0; }
         #endregion
 
         #region Pokemon Base Stats

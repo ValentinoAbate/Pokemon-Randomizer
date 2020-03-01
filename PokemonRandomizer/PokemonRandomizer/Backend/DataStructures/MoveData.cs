@@ -26,7 +26,7 @@ namespace PokemonRandomizer.Backend.DataStructures
         public enum Targets
         {
             SelectedTarget = 0,
-            Special = 1, // Specific to certain attacks (counter is enemy, mtronone could hit anything)
+            Special = 1, // Specific to certain attacks (counter is enemy, metronone could hit anything)
             Unused = 2,
             Random = 4,
             BothEnemies = 8,
