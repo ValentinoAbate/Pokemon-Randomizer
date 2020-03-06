@@ -16,6 +16,8 @@ namespace PokemonRandomizer.Backend.DataStructures
         /// </summary>
         private const int ramOffset = 0x08000000;
         public const int nullPointer = -ramOffset;
+        public const int pointerSize = 4; //size of a pointer in bytes
+        public const byte pointerPrefix = 0x08; //conmes at the beginning of a pointer
         /// <summary>The byte that WriteInFreeSpace(byte[] data) considers free space </summary>
         public byte FreeSpaceByte { get; }
         /// <summary>The offset that WriteInFreeSpace(byte[] data) starts searching at </summary>
@@ -25,7 +27,7 @@ namespace PokemonRandomizer.Backend.DataStructures
         public int Length { get => File.Length; }
         public byte[] File {get;}
 
-        /// <summary> Initilize a new Rom with applicable data </summary>
+        /// <summary> Initilize a new Rom from raw data </summary>
         public Rom(byte[] rawRom, byte freeSpaceByte, int searchStartOffset)
         {
             FreeSpaceByte = freeSpaceByte;
@@ -41,6 +43,9 @@ namespace PokemonRandomizer.Backend.DataStructures
             File = toCopy.File;
             InternalOffset = 0;  
         }
+        /// <summary> Initilize an Empty Rom with a given length </summary>
+        public Rom(int length, byte freeSpaceByte = 0x00, int searchStartOffset = 0)
+            : this(new byte[length], freeSpaceByte, searchStartOffset) { }
         /// <summary>Reads a byte from the internal offset</summary>
         public byte WriteByte(byte value) => File[InternalOffset++] = value;
         /// <summary>Reads a byte from the internal offset</summary>
@@ -136,14 +141,46 @@ namespace PokemonRandomizer.Backend.DataStructures
             return blockOffset;
         }
         /// <summary> Repoint all pointers to an offset to a target offset. 
-        /// Argument given is assumed to by a 24-bit ROM address, and is converted to a 32-bit RAM address</summary>
+        /// Argument given is assumed to be a 24-bit ROM address, and is converted to a 32-bit RAM address</summary>
         public void Repoint(int originalOffset, int newOffset)
         {
             //The offset with the ramOffset component
             int ptr = ramOffset + originalOffset;
             var pointerInstances = FindAll(BitConverter.GetBytes(ptr));
-            foreach(var instance in pointerInstances)
-                WriteUInt(instance, ramOffset + newOffset, 4);
+            foreach (var instance in pointerInstances)
+                WritePointer(instance, newOffset);
+        }
+        /// <summary> 
+        /// Preform many repoint operations in the same call, much more efficiently than calling repoint multiple times.
+        /// Scans through the ROM and caches all pointer locations in a dictionary, then repoints.
+        /// Argument given is assumed to be a List of Tuples of 24-bit ROM addresses, which are converted to 32-bit RAM addressese
+        /// The first int in the Tuple is the original pointer value, and the second int is new value
+        /// </summary>
+        public void RepointMany(List<Tuple<int, int>> repoints)
+        {
+            // A cahcing dictionary of pointer values to known locations
+            var locations = new Dictionary<int, List<int>>();
+            // Build caching dictionary
+            for(int i = 0; i < Length - pointerSize + 1; i++)
+            {
+                if(File[i + pointerSize - 1] == pointerPrefix)
+                {
+                    int ptrValue = ReadPointer(i);
+                    if (locations.ContainsKey(ptrValue))
+                        locations[ptrValue].Add(i);
+                    else
+                        locations.Add(ptrValue, new List<int>() { i });
+                }
+            }
+            // Preform repoints
+            foreach(var repoint in repoints)
+            {
+                // If there were no pointers of the given value found, skip
+                if (!locations.ContainsKey(repoint.Item1))
+                    continue;
+                foreach (var ptr in locations[repoint.Item1])
+                    WritePointer(ptr, repoint.Item2);
+            }
         }
 
         public int? WriteInFreeSpaceAndRepoint(byte[] data, int originalOffset, int? startOffset = null)
@@ -311,9 +348,7 @@ namespace PokemonRandomizer.Backend.DataStructures
         #region Number Reading and Writing (UInt16, 32, etc)
         private int ReadUInt(int numBytes)
         {
-            int ret = 0;
-            for (int i = 0; i < numBytes; ++i)
-                ret += (File[InternalOffset + i] << (i * 8));
+            int ret = ReadUInt(InternalOffset, numBytes);
             InternalOffset += numBytes;
             return ret;
         }
@@ -340,7 +375,7 @@ namespace PokemonRandomizer.Backend.DataStructures
         /// This method returns the 24-bit ROM address unless readRamAddy is set to true. To get the RAM adress, simply add ramOffset</summary>
         public int ReadPointer(int offset, bool readRamAddy = false)
         {
-            return readRamAddy ? ReadUInt(offset, 4) : ReadUInt(offset, 3);
+            return readRamAddy ? ReadUInt(offset, pointerSize) : ReadUInt(offset, pointerSize - 1);
         }
         /// <summary> Reads a pointer from the File at the internal offset.
         /// A pointer on gen 3 ROMs is stored as a 32-bit number which points to a location in RAM where the game would be running
@@ -348,16 +383,12 @@ namespace PokemonRandomizer.Backend.DataStructures
         /// This method returns the 24-bit ROM address unless readRamAddy is set to true. To get the RAM adress, simply add ramOffset</summary>
         public int ReadPointer(bool readRamAddy = false)
         {
-            return readRamAddy ? ReadUInt(4) : ReadUInt(4) - ramOffset;
+            return readRamAddy ? ReadUInt(pointerSize) : ReadUInt(pointerSize) - ramOffset;
         }
         /// <summary>Writes a UInt of specified number of bytes to the internalOffset </summary>
         private void WriteUInt(int value, int numBytes)
         {
-            for (int i = 0; i < numBytes; i++)
-            {
-                File[i + InternalOffset] = unchecked((byte)(value & 0xff));
-                value >>= 8;
-            }
+            WriteUInt(InternalOffset, value, numBytes);
             InternalOffset += numBytes;
         }
         /// <summary>Writes a UInt of specified number of bytes.
@@ -382,13 +413,13 @@ namespace PokemonRandomizer.Backend.DataStructures
         /// If the number given is a 24-bit ROM address, it is converted to a 32-bit RAM adress by adding ramOffset </summary>
         public void WritePointer(int value, bool isRomAddy = true)
         {
-            WriteUInt(isRomAddy ? ramOffset + value : value, 4);
+            WriteUInt(isRomAddy ? ramOffset + value : value, pointerSize);
         }
         /// <summary>Writes a pointer to the File (a 32-bit number).
         /// If the number given is a 24-bit ROM address, it is converted to a 32-bit RAM adress by adding ramOffset </summary>
         public void WritePointer(int offset, int value, bool isRomAddy = true)
         {
-            WriteUInt(offset, isRomAddy ? ramOffset + value : value, 4);
+            WriteUInt(offset, isRomAddy ? ramOffset + value : value, pointerSize);
         }
         #endregion
 

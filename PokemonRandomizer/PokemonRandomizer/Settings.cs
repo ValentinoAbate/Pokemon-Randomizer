@@ -147,7 +147,7 @@ namespace PokemonRandomizer
         /// Currently just makes all starters additionally have tackle
         /// WARNING: enabling this feature causes movesets to expand, which may cause longer write times
         /// </summary>
-        public bool SafeStarterMovesets { get => false; }
+        public bool SafeStarterMovesets { get => true; }
         #endregion
 
         #region TMs, HMs, and Move Tutors

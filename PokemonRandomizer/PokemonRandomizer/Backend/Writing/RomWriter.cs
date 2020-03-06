@@ -19,6 +19,7 @@ namespace PokemonRandomizer.Backend.Writing
         {
             Rom rom = new Rom(data.Rom);
             var info = data.Info;
+            var repoints = new RepointList();
             // Write TM definitions
             WriteMoveMappings(rom, info.Offset("tmMoves"), data.TMMoves, info.HexAttr("tmMoves", "duplicateOffset"));
             // Write HM definitions
@@ -26,26 +27,28 @@ namespace PokemonRandomizer.Backend.Writing
             // Write Move Tutor definitions
             WriteMoveMappings(rom, info.Offset("moveTutorMoves"), data.tutorMoves);
             // Write the move definitions
-            WriteMoveData(data, rom, info);
+            WriteMoveData(data, rom, info, ref repoints);
             // Write the pc potion item
             data.Rom.WriteUInt16(info.Offset("pcPotion"), (int)data.PcStartItem);
             // Write the run indoors hack
             data.Rom.WriteByte(info.Offset("runIndoors"), 0);
             WriteStarters(data, rom, info);
             WriteCatchingTutOpponent(data, rom, info);
-            WritePokemonBaseStats(data, rom, info);
-            WriteTypeDefinitions(data, rom);
+            WritePokemonBaseStats(data, rom, info, ref repoints);
+            WriteTypeDefinitions(data, rom, ref repoints);
             WriteEncounters(data, rom, info);
             WriteTrainerBattles(data, rom, info);
+            // Perform all of the repoint operations
+            rom.RepointMany(repoints);
             return rom.File;
         }
 
-        private static void WriteMoveData(RomData data, Rom rom, XmlManager info)
+        private static void WriteMoveData(RomData data, Rom rom, XmlManager info, ref RepointList repoints)
         {;
             int moveCount = int.Parse(info.Attr("moveData", "num", info.Constants).Value);
             int dataPtrOffset = HexUtils.HexToInt(info.Attr("moveData", "ptr", info.Constants).Value);
             int dataOffset = rom.ReadPointer(dataPtrOffset);
-            if(data.MoveData.Count == moveCount + 1) // original number of moves (move 0 is empty)
+            if (data.MoveData.Count == moveCount + 1) // original number of moves (move 0 is empty)
             {
                 rom.Seek(dataOffset);
                 foreach (var moveData in data.MoveData)
@@ -54,14 +57,20 @@ namespace PokemonRandomizer.Backend.Writing
             else // repoint necessary
             {
                 int dataSize = info.Size("moveData");
-                Rom moveDataBlock = new Rom(new byte[dataSize * data.MoveData.Count], 0, 0);
+                // Creat an empty rom block to write to
+                Rom moveDataBlock = new Rom(dataSize * data.MoveData.Count);
                 foreach (var moveData in data.MoveData)
                     WriteMoveDataSingular(moveDataBlock, moveData);
-                int? newOffset = rom.WriteInFreeSpaceAndRepoint(moveDataBlock.File, dataOffset);
+                int? newOffset = rom.WriteInFreeSpace(moveDataBlock.File);
                 if (newOffset != null)
                 {
-                    // Repoint PP data (original offset + 4)
-                    rom.Repoint(dataOffset + 4, (int)newOffset + 4);
+                    const int ppOffset = 4;
+                    int newOffsetInt = (int)newOffset;
+                    // Log repoint for main movedata
+                    repoints.Add(dataOffset, newOffsetInt);
+                    // Log repoint for PP data (original offset + 4)
+                    repoints.Add(dataOffset + ppOffset, newOffsetInt + ppOffset);
+                    // Wipe the old moveData location
                     rom.WipeBlock(dataOffset, dataSize * moveCount);
                 }
             }
@@ -80,16 +89,16 @@ namespace PokemonRandomizer.Backend.Writing
             byte[] flags = new byte[1];
             data.flags.CopyTo(flags, 0);
             rom.WriteByte(flags[0]);
-            rom.WipeBlock(3); // three bytes of 0x00
+            rom.SetBlock(3, 0x00); // three bytes of 0x00
         }
 
         // Write TM, HM, or Move tutor definitions to the rom (depending on args)
         private static void WriteMoveMappings(Rom rom, int offset, Move[] moves, int? altOffset = null)
         {
             rom.Seek(offset);
-            foreach(var move in moves)
+            foreach (var move in moves)
                 rom.WriteUInt16((int)move);
-            if(altOffset != null)
+            if (altOffset != null)
             {
                 rom.Seek((int)altOffset);
                 foreach (var move in moves)
@@ -101,11 +110,11 @@ namespace PokemonRandomizer.Backend.Writing
             // For some reason FRLG need duplicates of the starters stored
             bool duplicate = bool.Parse(info.Attr("starterPokemon", "duplicate").Value);
             int dupOffset = 0;
-            if(duplicate)
+            if (duplicate)
                 dupOffset = info.IntAttr("starterPokemon", "dupOffset");
             rom.Seek(info.Offset("starterPokemon"));
             rom.WriteUInt16((int)romData.Starters[0]);
-            if(duplicate)
+            if (duplicate)
                 rom.WriteUInt16(rom.InternalOffset + dupOffset, (int)romData.Starters[0]);
             rom.Skip(info.IntAttr("starterPokemon", "skip1"));
             rom.WriteUInt16((int)romData.Starters[1]);
@@ -121,7 +130,7 @@ namespace PokemonRandomizer.Backend.Writing
         {
             rom.Seek(info.Offset("catchingTutOpponent"));
             int pkmn = (int)data.CatchingTutPokemon;
-            if(pkmn < 255)
+            if (pkmn < 255)
             {
                 rom.WriteByte((byte)pkmn);
                 rom.WriteByte(Gen3Opcodes.setRegister | Gen3Opcodes.reg1);
@@ -136,7 +145,7 @@ namespace PokemonRandomizer.Backend.Writing
             }
         }
 
-        private static void WritePokemonBaseStats(RomData romData, Rom rom, XmlManager info)
+        private static void WritePokemonBaseStats(RomData romData, Rom rom, XmlManager info, ref RepointList repoints)
         {
             int pkmnPtr = info.Offset("pokemonBaseStats");
             int pkmnSize = info.Size("pokemonBaseStats");
@@ -149,12 +158,13 @@ namespace PokemonRandomizer.Backend.Writing
             int evolutionPtr = info.Offset("evolutions");
             int evolutionSize = info.Size("evolutions");
             int skipNum = (int)info.Attr("pokemonBaseStats", "skip");
-            Rom moveData = new Rom(new byte[romData.Pokemon.Sum((stats) => (stats.learnSet.Count * 2) + 2) + (skipNum * 4)], 0, 0);
-            //If any of the movesets have changed size shit has to get repointed
+            // Create an empty ROM block to write the learnsetData to
+            Rom moveData = new Rom(romData.Pokemon.Sum((stats) => (stats.learnSet.Count * 2) + 2) + (skipNum * 4));
+            // If any of the movesets have changed we will have to perform repoint operations
             bool needToRelocateMoveData = romData.Pokemon.Any((stats) => stats.learnSet.Count != stats.learnSet.OriginalCount);
-            // Create a list to hold the repoint tuples so they can be parallelized
-            List<Tuple<int, int>> repoints = new List<Tuple<int, int>>(romData.Pokemon.Count);
-            int newMoveDataOffset = rom.ScanForFreeSpace(moveData.Length).offset;
+            // Find a block to write to in so we can log repoints if we need to
+            int newMoveDataOffset = needToRelocateMoveData ? rom.ScanForFreeSpace(moveData.Length).offset : 0;
+            // Main writing loop
             for (int i = 0; i < info.Num("pokemonBaseStats"); i++)
             {
                 if (i == (int)info.Attr("pokemonBaseStats", "skipAt")) // potentially skip empty slots
@@ -165,25 +175,23 @@ namespace PokemonRandomizer.Backend.Writing
                 }
                 var stats = romData.PokemonLookup[(PokemonSpecies)(i + 1)];
                 WriteBaseStatsSingle(stats, pkmnPtr + (i * pkmnSize), rom);
+                // Log a repoint if necessary
                 if (needToRelocateMoveData)
-                    repoints.Add(new Tuple<int, int>(stats.learnSet.OriginalOffset, newMoveDataOffset + movePtr));
+                    repoints.Add(stats.learnSet.OriginalOffset, newMoveDataOffset + movePtr);
+                // Write moveset
                 movePtr = WriteAttacks(moveData, stats.learnSet, movePtr);
-
-                //movePtr = ReadAttacks(rom, movePtr, out pkmn.learnSet);
                 WriteTMHMCompat(stats, tmPtr + (i * tmHmSize), rom);
-                WriteTutorCompat(stats, tutorPtr + (i * tutorSize), rom);               
+                WriteTutorCompat(stats, tutorPtr + (i * tutorSize), rom);
                 WriteEvolutions(stats, evolutionPtr + (i * evolutionSize), rom);
             }
-            // Repoint all of the moveset pointers (could likely be optimized)
-            Parallel.ForEach(repoints, (t) => rom.Repoint(t.Item1, t.Item2));
             // If we don't need to repoint move data, write it in it's original location
             if (!needToRelocateMoveData)
                 rom.WriteBlock(originalMovePtr, moveData.File);
-            else // else move and repoint
+            else // else move and log repoint
             {
                 rom.WriteBlock(newMoveDataOffset, moveData.File);
-                rom.SetBlock(originalMovePtr, moveData.File.Length, rom.FreeSpaceByte);
-                rom.Repoint(originalMovePtr, (int)newMoveDataOffset);
+                rom.WipeBlock(originalMovePtr, moveData.File.Length);
+                repoints.Add(originalMovePtr, (int)newMoveDataOffset);
             }
         }
         private static void WriteBaseStatsSingle(PokemonBaseStats pokemon, int offset, Rom rom)
@@ -215,10 +223,10 @@ namespace PokemonRandomizer.Backend.Writing
             rom.LoadOffset();
         }
 
-        // Read the attacks starting at offset (returns the index after completion)
+        // Write the attacks starting at offset (returns the index after completion)
         private static int WriteAttacks(Rom rom, LearnSet moves, int offset)
         {
-            foreach(var move in moves)
+            foreach (var move in moves)
             {
                 // Write the first byte of the move
                 rom.WriteByte(offset, (byte)move.move);
@@ -246,13 +254,13 @@ namespace PokemonRandomizer.Backend.Writing
         private static void WriteTutorCompat(PokemonBaseStats pokemon, int offset, Rom rom)
         {
             bool[] mtValues = new bool[pokemon.moveTutorCompat.Count];
-            pokemon.moveTutorCompat.CopyTo(mtValues,0);
+            pokemon.moveTutorCompat.CopyTo(mtValues, 0);
             rom.WriteBits(offset, 1, mtValues.Select((b) => b ? 1 : 0).ToArray());
         }
         private static void WriteEvolutions(PokemonBaseStats pokemon, int offset, Rom rom)
         {
             rom.Seek(offset);
-            foreach(var evo in pokemon.evolvesTo)
+            foreach (var evo in pokemon.evolvesTo)
             {
                 rom.WriteUInt16((int)evo.Type);
                 rom.WriteUInt16(evo.parameter);
@@ -260,7 +268,7 @@ namespace PokemonRandomizer.Backend.Writing
                 rom.Skip(2);
             }
         }
-        private static void WriteTypeDefinitions(RomData data, Rom rom)
+        private static void WriteTypeDefinitions(RomData data, Rom rom, ref RepointList repoints)
         {
             #region Convert TypeChart to byte[]
             List<byte> typeData = new List<byte>();
@@ -284,7 +292,10 @@ namespace PokemonRandomizer.Backend.Writing
             //Move and Repoint if necessary
             if (data.TypeDefinitions.Count > data.TypeDefinitions.InitCount)
             {
-                rom.WriteInFreeSpaceAndRepoint(typeData.ToArray(), data.Info.Offset("typeEffectiveness"));
+                int oldOffset = data.Info.Offset("typeEffectiveness");
+                int? newOffset = rom.WriteInFreeSpace(typeData.ToArray());
+                if(newOffset != null)
+                    repoints.Add(oldOffset, (int)newOffset);                   
             }
             else
             {
@@ -310,7 +321,7 @@ namespace PokemonRandomizer.Backend.Writing
 
             var encounterIter = romData.Encounters.GetEnumerator();
             // Iterate until the ending marker (0xff, 0xff)
-            while(rom.Peek() != 0xff || rom.Peek(1) != 0xff)
+            while (rom.Peek() != 0xff || rom.Peek(1) != 0xff)
             {
                 // skip bank, map, and padding
                 rom.Skip(4);
@@ -365,7 +376,7 @@ namespace PokemonRandomizer.Backend.Writing
         {
             int numTrainers = info.Num("trainerBattles");
             rom.Seek(info.Offset("trainerBattles"));
-            foreach(var trainer in romData.Trainers)
+            foreach (var trainer in romData.Trainers)
             {
                 rom.WriteByte((byte)trainer.dataType);
                 rom.WriteByte((byte)trainer.trainerClass);
@@ -400,7 +411,7 @@ namespace PokemonRandomizer.Backend.Writing
                 rom.SaveOffset();
                 rom.Seek(trainer.pokemonOffset);
                 #region Write pokemon from pokemonPtr
-                foreach(var pokemon in trainer.pokemon)
+                foreach (var pokemon in trainer.pokemon)
                 {
                     rom.WriteUInt16(pokemon.IVLevel);
                     rom.WriteUInt16(pokemon.level);
@@ -424,6 +435,13 @@ namespace PokemonRandomizer.Backend.Writing
                 }
                 #endregion
                 rom.LoadOffset();
+            }
+        }
+        private class RepointList : List<Tuple<int, int>>
+        {
+            public void Add(int oldOffset, int newOffset)
+            {
+                Add(new Tuple<int, int>(oldOffset, newOffset));
             }
         }
     }
