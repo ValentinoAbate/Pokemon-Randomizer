@@ -72,6 +72,19 @@ namespace PokemonRandomizer.Backend.DataStructures
             rom.Skip(3); // three bytes of 0x00
         }
 
+        public MoveData(MoveData toCopy)
+        {
+            effect = toCopy.effect;
+            power = toCopy.power;
+            type = toCopy.type;
+            accuracy = toCopy.accuracy;
+            pp = toCopy.pp;
+            effectChance = toCopy.effectChance;
+            targets = toCopy.targets;
+            priority = toCopy.priority;
+            flags = new BitArray(toCopy.flags);
+        }
+
         public override string ToString()
         {
             return move.ToDisplayString();

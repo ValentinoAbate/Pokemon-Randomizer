@@ -1,0 +1,9 @@
+069A50 - Start of execution
+
+if special or #9, branch to 069BC2
+if #9, set r5 to 0 and branch to 069DD4
+??? type working as special attack - set 069BC2 - 069BCE to nop / 0x00 and set 069BCF to 0xE0
+	- Seems to be working with special attack boosts and special defense reductions
+	- this seems to make all attacks be special attacks though
+??? type working as special attack - set 069BCF to 0xD2 (bhs)
+	- Working with stat effects and power. Phsyical attacks are properly separate

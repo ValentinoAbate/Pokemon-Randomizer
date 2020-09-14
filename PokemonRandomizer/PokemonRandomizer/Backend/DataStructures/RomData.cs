@@ -57,7 +57,8 @@ namespace PokemonRandomizer.Backend.DataStructures
         #endregion
 
         public bool nationalDexUnlocked = false;
-        public bool runIndoors = false;
+        public bool RunIndoors { get; set; } = false;
+        public bool UseUnknownTypeForMoves { get; set; } = false;
 
         public byte[] SkippedLearnSetData { get; set; }
 

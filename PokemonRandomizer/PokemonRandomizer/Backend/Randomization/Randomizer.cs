@@ -668,7 +668,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 data.PcStartItem = rand.Choice(EnumUtils.GetValues<Item>());
             }
             // Run indoors hack
-            data.runIndoors = settings.RunIndoors;
+            data.RunIndoors = settings.RunIndoors;
 
             #endregion
 
@@ -692,6 +692,9 @@ namespace PokemonRandomizer.Backend.Randomization
                         typeList.Add(t);
                 compTypes.Add(pkmn.species, typeList);
             }
+
+            //data.UseUnknownTypeForMoves = true;
+            //data.MoveData[(int)Move.TACKLE].type = PokemonType.Unknown;
             #endregion
 
             data.CalculateMetrics();

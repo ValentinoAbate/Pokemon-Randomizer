@@ -15,7 +15,7 @@ namespace PokemonRandomizer
         public bool SetSeed { get => (bool)window.cbSeed.IsChecked; }
         #endregion
 
-        #region Type Hacks
+        #region Type Hacks (WIP, NOTHING YET)
         public bool AddFairyType { get => false; }
         #endregion
 
@@ -59,7 +59,7 @@ namespace PokemonRandomizer
             IntelligentHard,
             AllEasiest,
         }
-        public CatchRateOption CatchRateSetting { get => CatchRateOption.IntelligentNormal; }
+        public CatchRateOption CatchRateSetting { get => CatchRateOption.CompletelyRandom; }
         public bool KeepLegendaryCatchRates { get => true; }
 
         public byte CatchRateConstant { get => 100; }
@@ -99,7 +99,6 @@ namespace PokemonRandomizer
         };
 
         #endregion
-
         #endregion
 
         #region Power Scaling
@@ -145,7 +144,6 @@ namespace PokemonRandomizer
         /// <summary>
         /// Ensures that all starters have an attacking move at lvl1
         /// Currently just makes all starters additionally have tackle
-        /// WARNING: enabling this feature causes movesets to expand, which may cause longer write times
         /// </summary>
         public bool SafeStarterMovesets { get => true; }
         #endregion
@@ -176,7 +174,7 @@ namespace PokemonRandomizer
             ForceHighestLegal,
         }
 
-        public double DunsparsePlaugeChance { get => 0; }
+        public double DunsparsePlaugeChance { get => 0.30; }
         #endregion
 
         #region Misc
@@ -224,7 +222,8 @@ namespace PokemonRandomizer
             },
             {"trainer", new SpeciesSettings()
                 {
-                    BanLegendaries = true,
+                    BanLegendaries = false,
+                    ForceHighestLegalEvolution = true,
                     Noise = 0.005f,
                     PowerScaleSimilarityMod = 0.15f,
                     PowerScaleCull = true,
@@ -234,7 +233,7 @@ namespace PokemonRandomizer
             },
             {"rival", new SpeciesSettings()
                 {
-                    BanLegendaries = true,
+                    BanLegendaries = false,
                     ForceHighestLegalEvolution = true,
                     Noise = 0.001f,
                     PowerScaleSimilarityMod = 1f,
@@ -259,7 +258,7 @@ namespace PokemonRandomizer
             },
             {"eliteFour", new SpeciesSettings()
                 {
-                    BanLegendaries = true,
+                    BanLegendaries = false,
                     ForceHighestLegalEvolution = true,
                     Noise = 0.001f,
                     PowerScaleSimilarityMod = 0.15f,
@@ -272,7 +271,7 @@ namespace PokemonRandomizer
             },
             {"gymLeader", new SpeciesSettings()
                 {
-                    BanLegendaries = true,
+                    BanLegendaries = false,
                     ForceHighestLegalEvolution = true,
                     Noise = 0.001f,
                     PowerScaleSimilarityMod = 0.15f,
@@ -285,7 +284,7 @@ namespace PokemonRandomizer
             },
             {"aceTrainer", new SpeciesSettings()
                 {
-                    BanLegendaries = true,
+                    BanLegendaries = false,
                     ForceHighestLegalEvolution = true,
                     Noise = 0.001f,
                     PowerScaleSimilarityMod = 1f,

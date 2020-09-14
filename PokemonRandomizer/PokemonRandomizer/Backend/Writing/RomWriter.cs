@@ -20,6 +20,9 @@ namespace PokemonRandomizer.Backend.Writing
             Rom rom = new Rom(data.Rom);
             var info = data.Info;
             var repoints = new RepointList();
+
+            // Main Data
+
             // Write TM definitions
             WriteMoveMappings(rom, info.Offset("tmMoves"), data.TMMoves, info.HexAttr("tmMoves", "duplicateOffset"));
             // Write HM definitions
@@ -28,16 +31,29 @@ namespace PokemonRandomizer.Backend.Writing
             WriteMoveMappings(rom, info.Offset("moveTutorMoves"), data.tutorMoves);
             // Write the move definitions
             WriteMoveData(data, rom, info, ref repoints);
-            // Write the pc potion item
-            data.Rom.WriteUInt16(info.Offset("pcPotion"), (int)data.PcStartItem);
-            // Write the run indoors hack
-            data.Rom.WriteByte(info.Offset("runIndoors"), 0);
             WriteStarters(data, rom, info);
             WriteCatchingTutOpponent(data, rom, info);
             WritePokemonBaseStats(data, rom, info, ref repoints);
             WriteTypeDefinitions(data, rom, ref repoints);
             WriteEncounters(data, rom, info);
             WriteTrainerBattles(data, rom, info);
+
+            // Hacks and tweaks
+
+            // Write the pc potion item
+            data.Rom.WriteUInt16(info.Offset("pcPotion"), (int)data.PcStartItem);
+            // Make ??? a valid type for moves if applicable
+            if (data.UseUnknownTypeForMoves)
+            {
+                // Hack the ??? type to be a valid type (Uses SP.ATK and SP.DEF)
+                rom.WriteByte(0x069BCF, 0xD2);
+            }
+            // Write the run indoors hack if applicable
+            if (data.RunIndoors)
+            {
+                data.Rom.WriteByte(info.Offset("runIndoors"), 0);
+            }
+
             // Perform all of the repoint operations
             rom.RepointMany(repoints);
             return rom.File;

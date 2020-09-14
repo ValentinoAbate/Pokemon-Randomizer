@@ -8,6 +8,15 @@ IDEAS:
 - Make gym leader TM based on type and make sure their pokemon know it (if applicable)
 - Champion randomization (the champion could be Brendan/May, wally, or any other reoccuring / special trainer in the game or that is added)
 - Extra reoccuring trainers (you might encounter youngster joey multiple times throughout the game, etc)
+- Map weather randomization
+	- Allow option between just outdoors or all
+	- Have weighting for weather type (and maybe a choice between how often clear vs extreme weather happens
+
+FEATURES:
+- Settings preset saving (possibly in JSON or XML)
+- Item randomization (field items)
 
 FIXES:
-- pokemon that evolve with stones have bad default movesets due to not learning stuff by level up.
+- Pokemon that evolve with stones have bad default movesets due to not learning stuff by level up.
+- Saving a ROM more than once without closing the program crashes it
+- Expanding the movesets (probably just repointing the pokemon data table) and expanding the move data table (probably just repointing the move data table) causes softlocks on battle start in the output ROM
