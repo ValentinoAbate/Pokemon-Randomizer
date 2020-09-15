@@ -189,14 +189,16 @@ namespace PokemonRandomizer
         }
 
         #region Species Randomization
+
+
         /// <summary> get the species randomization settings associated with a speific target group </summary>
-        public SpeciesSettings GetSpeciesSettings(string target)
+        public SpeciesSettings GetSpeciesSettings(SpeciesSettings.Class target)
         {
             return speciesSettings[target];
         }
-        public Dictionary<string, SpeciesSettings> speciesSettings = new Dictionary<string, SpeciesSettings>()
+        public Dictionary<SpeciesSettings.Class, SpeciesSettings> speciesSettings = new Dictionary<SpeciesSettings.Class, SpeciesSettings>()
         {
-            {"starter", new SpeciesSettings()
+            {SpeciesSettings.Class.Starter, new SpeciesSettings()
                 {
                     BanLegendaries = true,
                     Noise = 1f,
@@ -208,7 +210,7 @@ namespace PokemonRandomizer
                     TypeSimilarityCull = false,
                 }
             },
-            {"wild", new SpeciesSettings()
+            {SpeciesSettings.Class.Wild, new SpeciesSettings()
                 {
                     BanLegendaries = true,
                     Noise = 0.005f,
@@ -220,7 +222,7 @@ namespace PokemonRandomizer
                     TypeSimilarityCull = false,
                 }
             },
-            {"trainer", new SpeciesSettings()
+            {SpeciesSettings.Class.Trainer, new SpeciesSettings()
                 {
                     BanLegendaries = false,
                     ForceHighestLegalEvolution = true,
@@ -231,7 +233,19 @@ namespace PokemonRandomizer
                     TypeSimilarityCull = false,
                 }
             },
-            {"rival", new SpeciesSettings()
+            {SpeciesSettings.Class.AceTrainer, new SpeciesSettings()
+                {
+                    BanLegendaries = false,
+                    ForceHighestLegalEvolution = true,
+                    Noise = 0.001f,
+                    PowerScaleSimilarityMod = 1f,
+                    PowerScaleCull = true,
+                    PowerThresholdStronger = 175,
+                    TypeSimilarityMod = 0,
+                    TypeSimilarityCull = false,
+                }
+            },
+            {SpeciesSettings.Class.Rival, new SpeciesSettings()
                 {
                     BanLegendaries = false,
                     ForceHighestLegalEvolution = true,
@@ -244,34 +258,27 @@ namespace PokemonRandomizer
                     TypeSimilarityCull = false,
                 }
             },
-            {"champion", new SpeciesSettings()
+            {SpeciesSettings.Class.GymLeader, new SpeciesSettings()
                 {
+                    BanLegendaries = false,
+                    IllegalEvolutionLeeway = 2,
+                    ItemEvolutionLevel = 20,
+                    FriendshipEvolutionLevel = 20,
+                    TradeEvolutionLevel = 30,
                     ForceHighestLegalEvolution = true,
                     Noise = 0.001f,
                     PowerScaleSimilarityMod = 0.15f,
                     PowerScaleCull = true,
-                    PowerThresholdStronger = 500,
+                    PowerThresholdStronger = 200,
                     PowerThresholdWeaker = 50,
                     TypeSimilarityMod = 1f,
                     TypeSimilarityCull = false,
                 }
             },
-            {"eliteFour", new SpeciesSettings()
+            {SpeciesSettings.Class.EliteFour, new SpeciesSettings()
                 {
                     BanLegendaries = false,
-                    ForceHighestLegalEvolution = true,
-                    Noise = 0.001f,
-                    PowerScaleSimilarityMod = 0.15f,
-                    PowerScaleCull = true,
-                    PowerThresholdStronger = 300,
-                    PowerThresholdWeaker = 50,
-                    TypeSimilarityMod = 1f,
-                    TypeSimilarityCull = false,
-                }
-            },
-            {"gymLeader", new SpeciesSettings()
-                {
-                    BanLegendaries = false,
+                    RestrictIllegalEvolutions = false,
                     ForceHighestLegalEvolution = true,
                     Noise = 0.001f,
                     PowerScaleSimilarityMod = 0.15f,
@@ -282,41 +289,55 @@ namespace PokemonRandomizer
                     TypeSimilarityCull = false,
                 }
             },
-            {"aceTrainer", new SpeciesSettings()
+            {SpeciesSettings.Class.Champion, new SpeciesSettings()
                 {
                     BanLegendaries = false,
+                    RestrictIllegalEvolutions = false,
                     ForceHighestLegalEvolution = true,
                     Noise = 0.001f,
-                    PowerScaleSimilarityMod = 1f,
+                    PowerScaleSimilarityMod = 0.15f,
                     PowerScaleCull = true,
-                    PowerThresholdStronger = 175,
-                    PowerThresholdWeaker = 200,
-                    TypeSimilarityMod = 0,
+                    PowerThresholdStronger = 300,
+                    PowerThresholdWeaker = 50,
+                    TypeSimilarityMod = 1f,
                     TypeSimilarityCull = false,
                 }
             },
         };
         public class SpeciesSettings
         {
+            public enum Class
+            { 
+                Starter,
+                Wild,
+                Trainer,
+                AceTrainer,
+                Rival,
+                GymLeader,
+                EliteFour,
+                Champion,
+            }
+
             #region Evolution Settings
-            public bool DisableIllegalEvolutions { get => true; }
+            public bool RestrictIllegalEvolutions { get; set; } = true;
+            public int IllegalEvolutionLeeway { get; set; } = 0;
+            public bool ForceHighestLegalEvolution { get; set; } = false;
             public bool SetLevelsOnArtificialEvos { get => true; }
-            public int ItemEvolutionLevel { get => 27; }
-            public int TradeEvolutionLevel { get => 32; }
-            public int FriendshipEvolutionLevel { get => 25; }
+            public int ItemEvolutionLevel { get; set; } = 27;
+            public int TradeEvolutionLevel { get; set; } = 32;
+            public int FriendshipEvolutionLevel { get; set; } = 25;
             public int BeautyEvolutionLevel { get => 32; }
             public int BabyFriendshipEvolutionLevel { get => 3; }
             #endregion
 
-            public bool ForceHighestLegalEvolution { get; set; } = false;
             public bool BanLegendaries { get; set; } = false;
             public float Noise { get; set; } = 0;
             public float PowerScaleSimilarityMod { get; set; } = 0;
-            public bool PowerScaleCull { get; set; }
+            public bool PowerScaleCull { get; set; } = false;
             public int PowerThresholdStronger { get; set; } = 100;
             public int PowerThresholdWeaker { get; set; } = 100;
             public float TypeSimilarityMod { get; set; } = 0;
-            public bool TypeSimilarityCull { get; set; }
+            public bool TypeSimilarityCull { get; set; } = false;
         }
 
         #endregion

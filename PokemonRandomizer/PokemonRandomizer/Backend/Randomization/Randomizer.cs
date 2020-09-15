@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms.VisualStyles;
 using PokemonRandomizer.Backend.DataStructures;
 using PokemonRandomizer.Backend.EnumTypes;
 using PokemonRandomizer.Backend.Utilities;
@@ -256,7 +257,7 @@ namespace PokemonRandomizer.Backend.Randomization
             #region Starters
             if (settings.RandomizeStarters)
             {
-                var speciesSettings = settings.GetSpeciesSettings("starter");
+                var speciesSettings = settings.GetSpeciesSettings(Settings.SpeciesSettings.Class.Starter);
                 if(settings.StarterSetting == Settings.StarterPokemonOption.CompletelyRandom)
                 {
                     for(int i = 0; i < data.Starters.Count; ++i)
@@ -310,7 +311,7 @@ namespace PokemonRandomizer.Backend.Randomization
 
             #region Wild Pokemon (may happen during maps later)
             // Get the species randomization settings for wild pokemon
-            var wildSpeciesSettings = settings.GetSpeciesSettings("wild");
+            var wildSpeciesSettings = settings.GetSpeciesSettings(Settings.SpeciesSettings.Class.Wild);
             if (settings.WildPokemonSetting == Settings.WildPokemonOption.CompletelyRandom)
             {
                 foreach (var encounterSet in data.Encounters)
@@ -334,7 +335,7 @@ namespace PokemonRandomizer.Backend.Randomization
                     foreach (var enc in encounterSet)
                     {
                         enc.pokemon = mapping[enc.pokemon];
-                        if (wildSpeciesSettings.DisableIllegalEvolutions)
+                        if (wildSpeciesSettings.RestrictIllegalEvolutions)
                             enc.pokemon = CorrectImpossibleEvo(enc.pokemon, enc.level, wildSpeciesSettings);
                     }
                 }
@@ -349,7 +350,7 @@ namespace PokemonRandomizer.Backend.Randomization
                     foreach (var enc in encounterSet)
                     {
                         enc.pokemon = mapping[enc.pokemon];
-                        if (wildSpeciesSettings.DisableIllegalEvolutions)
+                        if (wildSpeciesSettings.RestrictIllegalEvolutions)
                             enc.pokemon = CorrectImpossibleEvo(enc.pokemon, enc.level, wildSpeciesSettings);
                     }
                 }
@@ -361,37 +362,28 @@ namespace PokemonRandomizer.Backend.Randomization
 
             #region Set Up Special Trainers
             var specialTrainers = new Dictionary<string, List<Trainer>>();
-            var rivals = data.Info.ArrayAttr("rivals", "names");
-            foreach (var name in rivals)
-                specialTrainers.Add(name.ToLower(), new List<Trainer>());
-            var reoccuring = data.Info.ArrayAttr("reoccuring", "names");
-            foreach (var name in data.Info.ArrayAttr("reoccuring", "names"))
-                specialTrainers.Add(name.ToLower(), new List<Trainer>());
-            var gymLeaders = data.Info.ArrayAttr("gymLeaders", "names");
-            foreach (var name in gymLeaders)
-                specialTrainers.Add(name.ToLower(), new List<Trainer>());
-            var eliteFour = data.Info.ArrayAttr("eliteFour", "names");
-            foreach (var name in eliteFour)
-                specialTrainers.Add(name.ToLower(), new List<Trainer>());
-            var champions = data.Info.ArrayAttr("champion", "names");
-            foreach (var name in champions)
-                specialTrainers.Add(name.ToLower(), new List<Trainer>());
-            var ubers = data.Info.ArrayAttr("uber", "names");
-            foreach (var name in ubers)
-                specialTrainers.Add(name.ToLower(), new List<Trainer>());
-            var teamAdmins = data.Info.ArrayAttr("teamAdmins", "names");
-            foreach (var name in teamAdmins)
-                specialTrainers.Add(name.ToLower(), new List<Trainer>());
-            var teamLeaders = data.Info.ArrayAttr("teamLeaders", "names");
-            foreach (var name in teamLeaders)
-                specialTrainers.Add(name.ToLower(), new List<Trainer>());
+            string[] AddTrainersFromArrayAttr(string attName)
+            {
+                var names = data.Info.ArrayAttr(attName, "names");
+                foreach (var name in names)
+                    specialTrainers.Add(name.ToLower(), new List<Trainer>());
+                return names;
+            };
+            var rivals = AddTrainersFromArrayAttr("rivals");
+            var reoccuring = AddTrainersFromArrayAttr("reoccuring");
+            var gymLeaders = AddTrainersFromArrayAttr("gymLeaders");
+            var eliteFour = AddTrainersFromArrayAttr("eliteFour");
+            var champions = AddTrainersFromArrayAttr("champion");
+            var ubers = AddTrainersFromArrayAttr("uber");
+            var teamAdmins = AddTrainersFromArrayAttr("teamAdmins");
+            var teamLeaders = AddTrainersFromArrayAttr("teamLeaders");
             int[] aceTrainerClasses = data.Info.IntArrayAttr("aceTrainers", "classNums");
             List<Trainer> aceTrainers = new List<Trainer>();
             // Add Wally as their own special category
             specialTrainers.Add("wally", new List<Trainer>());
             #endregion
 
-            var trainerSpeciesSettings = settings.GetSpeciesSettings("trainer");
+            var trainerSpeciesSettings = settings.GetSpeciesSettings(Settings.SpeciesSettings.Class.Trainer);
 
             foreach (var trainer in data.Trainers)
             {
@@ -408,7 +400,7 @@ namespace PokemonRandomizer.Backend.Randomization
 
             #region Rivals
 
-            var rivalSpeciesSettings = settings.GetSpeciesSettings("rival");
+            var rivalSpeciesSettings = settings.GetSpeciesSettings(Settings.SpeciesSettings.Class.Rival);
             foreach (var trainer in rivals)
             {
                 var battles = specialTrainers[trainer.ToLower()];
@@ -458,8 +450,8 @@ namespace PokemonRandomizer.Backend.Randomization
 
             #region Ubers
 
-            // Team leaders are as strong as gym leaders for now
-            var uberSpeciesSettings = settings.GetSpeciesSettings("champion");
+            // Ubers use champion settings for now
+            var uberSpeciesSettings = settings.GetSpeciesSettings(Settings.SpeciesSettings.Class.Champion);
             foreach (var trainer in ubers)
             {
                 var battles = specialTrainers[trainer.ToLower()];
@@ -481,7 +473,7 @@ namespace PokemonRandomizer.Backend.Randomization
 
             #region Champions
 
-            var championSpeciesSettings = settings.GetSpeciesSettings("champion");
+            var championSpeciesSettings = settings.GetSpeciesSettings(Settings.SpeciesSettings.Class.Champion);
             foreach (var trainer in champions)
             {
                 var battles = specialTrainers[trainer.ToLower()];
@@ -503,7 +495,7 @@ namespace PokemonRandomizer.Backend.Randomization
 
             #region Elite Four
 
-            var eliteFourSpeciesSettings = settings.GetSpeciesSettings("eliteFour");
+            var eliteFourSpeciesSettings = settings.GetSpeciesSettings(Settings.SpeciesSettings.Class.EliteFour);
             foreach (var trainer in eliteFour)
             {
                 var battles = specialTrainers[trainer.ToLower()];
@@ -525,7 +517,7 @@ namespace PokemonRandomizer.Backend.Randomization
 
             #region Gym Leaders
 
-            var gymLeaderSpeciesSettings = settings.GetSpeciesSettings("gymLeader");
+            var gymLeaderSpeciesSettings = settings.GetSpeciesSettings(Settings.SpeciesSettings.Class.GymLeader);
             foreach (var trainer in gymLeaders)
             {
                 var battles = specialTrainers[trainer.ToLower()];
@@ -548,7 +540,7 @@ namespace PokemonRandomizer.Backend.Randomization
             #region Team Leaders
 
             // Team leaders are as strong as gym leaders for now
-            var teamLeaderSpeciesSettings = settings.GetSpeciesSettings("gymLeader");
+            var teamLeaderSpeciesSettings = settings.GetSpeciesSettings(Settings.SpeciesSettings.Class.GymLeader);
             foreach (var trainer in teamLeaders)
             {
                 var battles = specialTrainers[trainer.ToLower()];
@@ -571,7 +563,7 @@ namespace PokemonRandomizer.Backend.Randomization
             #region Team Admins
 
             // Team admins are as strong as ace trainers for now
-            var teamAdminSpeciesSettings = settings.GetSpeciesSettings("aceTrainer");
+            var teamAdminSpeciesSettings = settings.GetSpeciesSettings(Settings.SpeciesSettings.Class.AceTrainer);
             foreach (var trainer in teamAdmins)
             {
                 var battles = specialTrainers[trainer.ToLower()];
@@ -593,7 +585,7 @@ namespace PokemonRandomizer.Backend.Randomization
 
             #region Ace Trainers
 
-            var aceTrainerSpeciesSettings = settings.GetSpeciesSettings("aceTrainer");
+            var aceTrainerSpeciesSettings = settings.GetSpeciesSettings(Settings.SpeciesSettings.Class.AceTrainer);
             foreach (var trainer in aceTrainers)
             {
                 RandomizeBattle(trainer, pokemonSet, aceTrainerSpeciesSettings);
@@ -794,7 +786,7 @@ namespace PokemonRandomizer.Backend.Randomization
             var newSpecies = RandomSpecies(possiblePokemon, pokemon, speciesSettings);
             if (speciesSettings.ForceHighestLegalEvolution)
                 newSpecies = MaxEvolution(newSpecies, level, speciesSettings);
-            else if(speciesSettings.DisableIllegalEvolutions)
+            else if(speciesSettings.RestrictIllegalEvolutions)
                 newSpecies = CorrectImpossibleEvo(newSpecies, level, speciesSettings);
             // Actually choose the species
             return newSpecies;
@@ -820,7 +812,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 return true;
             // Is there at least one valid evolution
             foreach (var evo in evolvesFrom)
-                if (EquivalentLevelReq(evo, speciesSettings) <= level)
+                if (EquivalentLevelReq(evo, speciesSettings) - speciesSettings.IllegalEvolutionLeeway <= level)
                     return true;
             return false;
         }
@@ -849,7 +841,7 @@ namespace PokemonRandomizer.Backend.Randomization
         private List<PokemonSpecies> RandomTypeTriangle(IEnumerable<PokemonSpecies> possiblePokemon, Settings.SpeciesSettings speciesSettings, bool strong = false)
         {
             var set = SpeciesWeightedSet(possiblePokemon, data.Starters[0], speciesSettings);
-            if(speciesSettings.DisableIllegalEvolutions)
+            if(speciesSettings.RestrictIllegalEvolutions)
                 set.RemoveWhere((p) => !IsPokemonValidLevel(data.PokemonLookup[p].evolvesFrom, 5, speciesSettings));
             var pool = new WeightedSet<PokemonSpecies>(set);
             while(pool.Count > 0)
@@ -1016,8 +1008,10 @@ namespace PokemonRandomizer.Backend.Randomization
         private PokemonSpecies MaxEvolution(PokemonSpecies p, int level, Settings.SpeciesSettings speciesSettings)
         {
             var stats = data.PokemonLookup[p];
-            if (!IsPokemonValidLevel(stats.evolvesFrom, level, speciesSettings))
+            // If illegal evolutions are disabled, and the pokemon is an illegal level, correct the impossible evolution
+            if (speciesSettings.RestrictIllegalEvolutions && !IsPokemonValidLevel(stats.evolvesFrom, level, speciesSettings))
                 return CorrectImpossibleEvo(p, level, speciesSettings);
+            // Else evolve the pokemon until you can't anymore
             var evos = stats.evolvesTo.Where((evo) => evo.Type != EvolutionType.None && EquivalentLevelReq(evo, speciesSettings) <= level);
             while(evos.Count() > 0)
             {
