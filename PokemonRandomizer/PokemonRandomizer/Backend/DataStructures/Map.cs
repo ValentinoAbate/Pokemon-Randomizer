@@ -52,22 +52,22 @@ namespace PokemonRandomizer.Backend.DataStructures
         /// </summary>
         public byte visibility;
         /// <summary>
-        /// Weather type. I am currently unsure if this affects in-battle weather.
+        /// Weather type. Affects in-battle weather
         /// In Emerald (info from advance-map: http://ampage.no-ip.info/): 
         /// 0x00: In-house weather,
         /// 0x01: Sunny weather with clouds in water,
         /// 0x02: Regular weather,
-        /// 0x03: Rainy weather,
-        /// 0x04: Three snow flakes,
-        /// 0x05: Rain with thunder storm,
+        /// 0x03: Rainy weather (Rain in battle),
+        /// 0x04: Three snow flakes (Hail in battle w/ hail hack),
+        /// 0x05: Rain with thunder storm (Rain in battle),
         /// 0x06: Steady mist,
-        /// 0x07: Steady snow,
-        /// 0x08: Sand storm,
+        /// 0x07: Steady snow (Hail in battle w/ hail hack),
+        /// 0x08: Sand storm (Sandstorm in battle),
         /// 0x09: Mist from top right corner,
         /// 0x0A: Dense bright mist,
         /// 0x0B: Cloudy,
-        /// 0x0C: Underground flashes,
-        /// 0x0D: Heavy rain with thunderstorm,
+        /// 0x0C: Underground flashes (Strong sunlight in battle),
+        /// 0x0D: Heavy rain with thunderstorm (Rain in battle),
         /// 0x0E: Underwater mist,
         /// 0x0F - 0xFF: Unknown/unused,
         /// </summary>

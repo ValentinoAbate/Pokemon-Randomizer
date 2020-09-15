@@ -50,11 +50,11 @@ namespace PokemonRandomizer.Backend.Randomization
                     // Type effectiveness of other type vs ???
                     var te = rand.Choice(data.Metrics.TypeEffectivenessRatios);
                     if (te != TypeEffectiveness.Normal) // Only register if not normal effectiveness
-                        data.TypeDefinitions.Add(type, PokemonType.Unknown, te, (type == PokemonType.NRM || type == PokemonType.FTG) && te == TypeEffectiveness.NoEffect);
+                        data.TypeDefinitions.Set(type, PokemonType.Unknown, te, (type == PokemonType.NRM || type == PokemonType.FTG) && te == TypeEffectiveness.NoEffect);
                     // Type effectiveness of ??? vs other type
                     te = rand.Choice(data.Metrics.TypeEffectivenessRatios);
                     if (te != TypeEffectiveness.Normal) // Only register if not normal effectiveness
-                        data.TypeDefinitions.Add(PokemonType.Unknown, type, te, type == PokemonType.GHO);
+                        data.TypeDefinitions.Set(PokemonType.Unknown, type, te, type == PokemonType.GHO);
                 }
             }
             #endregion

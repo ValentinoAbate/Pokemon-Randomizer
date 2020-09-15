@@ -40,13 +40,17 @@ namespace PokemonRandomizer.Backend.DataStructures
         // Helper method to make it easier to add to the list
         public void Add(PokemonType atType, PokemonType dfType, TypeEffectiveness e, bool ignoreAfterForesight = false)
         {
+            var dict = ignoreAfterForesight ? this.ignoreAfterForesight : typeRelations;
+            var tPair = new TypePair(atType, dfType);
+            if (dict.ContainsKey(tPair))
+                return;
             // Add the new type relation to the proper list
-            (ignoreAfterForesight ? this.ignoreAfterForesight : typeRelations).Add(new TypePair(atType, dfType), e); 
+            dict.Add(tPair, e); 
         }
         // Set value of type relation (add if not present, else update)
         public void Set(PokemonType atType, PokemonType dfType, TypeEffectiveness e, bool ignoreAfterForesight = false)
         {
-            var dict = (ignoreAfterForesight ? this.ignoreAfterForesight : typeRelations);
+            var dict = ignoreAfterForesight ? this.ignoreAfterForesight : typeRelations;
             var tPair = new TypePair(atType, dfType);
             if (dict.ContainsKey(tPair))
             {

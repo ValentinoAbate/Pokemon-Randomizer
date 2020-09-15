@@ -41,9 +41,9 @@ namespace PokemonRandomizer.Backend.Writing
             // Hacks and tweaks
 
             // Write the pc potion item
-            data.Rom.WriteUInt16(info.Offset("pcPotion"), (int)data.PcStartItem);
-            // Make ??? a valid type for moves if applicable
-            if (data.UseUnknownTypeForMoves)
+            rom.WriteUInt16(info.Offset("pcPotion"), (int)data.PcStartItem);
+            // Make ??? a valid type for moves if applicable. Currently only supported for emerald
+            if (data.UseUnknownTypeForMoves && data.Code == "BPEE")
             {
                 // Hack the ??? type to be a valid type (Uses SP.ATK and SP.DEF)
                 rom.WriteByte(0x069BCF, 0xD2);
@@ -51,7 +51,38 @@ namespace PokemonRandomizer.Backend.Writing
             // Write the run indoors hack if applicable
             if (data.RunIndoors)
             {
-                data.Rom.WriteByte(info.Offset("runIndoors"), 0);
+                rom.WriteByte(info.Offset("runIndoors"), 0);
+            }
+            // Apply hail weather hack if applicable. Currently only supported for emerald
+            if(data.SnowyWeatherApplysHail && data.Code == "BPEE")
+            {
+                // Hail Weather Hack. Makes the weather types "steady snow" and "three snowflakes" cause hail in battle
+                // Hack routine compiled from bluRose's ASM routine. Thanks blueRose (https://www.pokecommunity.com/member.php?u=471720)!
+                // Emerald offsets from Panda Face (https://www.pokecommunity.com/member.php?u=660920)
+                // Three snow flake spawning issue fix from ShinyDragonHunter (https://www.pokecommunity.com/member.php?u=241758)
+                // Thread with all relevant posts: https://www.pokecommunity.com/showthread.php?t=351387&page=2
+                var hailRoutine = new byte[]
+                {
+                    0x08, 0x4B, 0x19, 0x88, 0x80, 0x22, 0x10, 0x1C, 0x08, 0x40, 0x00, 0x28, 0x07, 0xD1, 0x1A, 0x80,
+                    0x05, 0x49, 0x0D, 0x20, 0x08, 0x74, 0x53, 0x46, 0xCB, 0x75, 0x05, 0x48, 0x00, 0x47, 0x03, 0x48,
+                    0x00, 0x47, 0x00, 0x00, 0xCC, 0x43, 0x02, 0x02, 0x74, 0x44, 0x02, 0x02, 0x4D, 0x2B, 0x04, 0x08,
+                    0x43, 0x2B, 0x04, 0x08
+                };
+                int? hailHackroutineOffset = rom.WriteInFreeSpace(hailRoutine);
+                if (hailHackroutineOffset != null)
+                {
+                    // Three snow flakes
+                    rom.WritePointer(0x42AB8, (int)hailHackroutineOffset);
+                    // Steady snow
+                    rom.WritePointer(0x42AC4, (int)hailHackroutineOffset);
+                    var hailMessageBlock = new byte[] { 0xF3, 0x00 };
+                    //Three snow flakes
+                    rom.WriteBlock(0x5CC922, hailMessageBlock);
+                    // Steady snow
+                    rom.WriteBlock(0x5CC928, hailMessageBlock);
+                    // Fix Three snow flakes spawning issue
+                    rom.WriteBlock(0xAD39E, new byte[] { 0x4B, 0xE0 });
+                }
             }
 
             // Perform all of the repoint operations
@@ -91,7 +122,6 @@ namespace PokemonRandomizer.Backend.Writing
                 }
             }
         }
-
         private static void WriteMoveDataSingular(Rom rom, MoveData data)
         {
             rom.WriteByte((byte)data.effect);
@@ -160,7 +190,6 @@ namespace PokemonRandomizer.Backend.Writing
                 rom.WriteByte(Gen3Opcodes.addRegister | Gen3Opcodes.reg1);
             }
         }
-
         private static void WritePokemonBaseStats(RomData romData, Rom rom, XmlManager info, ref RepointList repoints)
         {
             int pkmnPtr = info.Offset("pokemonBaseStats");
@@ -258,7 +287,6 @@ namespace PokemonRandomizer.Backend.Writing
             offset += 2;    //pass final FFFF
             return offset;
         }
-
         private static void WriteTMHMCompat(PokemonBaseStats pokemon, int offset, Rom rom)
         {
             bool[] tmValues = new bool[pokemon.TMCompat.Count];

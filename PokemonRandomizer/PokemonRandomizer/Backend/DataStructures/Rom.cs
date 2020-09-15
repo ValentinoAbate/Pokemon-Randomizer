@@ -89,7 +89,7 @@ namespace PokemonRandomizer.Backend.DataStructures
             List<MemoryBlock> blocks = new List<MemoryBlock>();
             for (int offset = startAddy ?? SearchStartOffset; offset < File.Length; ++offset)
             {
-                if (File[offset] != FreeSpaceByte)
+                if (File[offset] != FreeSpaceByte || offset % 4 != 0)
                     continue;
                 int start = offset;
                 while (++offset < File.Length && File[offset] == FreeSpaceByte)
@@ -105,7 +105,7 @@ namespace PokemonRandomizer.Backend.DataStructures
         {
             for (int offset = startAddy ?? SearchStartOffset; offset < File.Length; ++offset)
             {
-                if (File[offset] != FreeSpaceByte)
+                if (File[offset] != FreeSpaceByte || offset % 4 != 0)
                     continue;
                 int start = offset;
                 while (++offset < File.Length && File[offset] == FreeSpaceByte)
@@ -120,7 +120,7 @@ namespace PokemonRandomizer.Backend.DataStructures
         {
             for (int offset = startAddy; offset < File.Length; ++offset)
             {
-                if (File[offset] != freeSpace)
+                if (File[offset] != freeSpace || offset % 4 != 0)
                     continue;
                 int start = offset;
                 while (++offset < File.Length && File[offset] == freeSpace)
@@ -130,8 +130,8 @@ namespace PokemonRandomizer.Backend.DataStructures
             return null;
         }
         /// <summary> <para>Write a chunk of data into the first availible block of free space. </para>
-        /// <para>Uses the  address "RomUtils.StartAddy" and the  byte "RomUtils.FreeSpaceByte" which are set in the RomData constructor</para> 
-        /// Returns null if no big enough block is found, else returns the offset of the block </summary>
+        /// <para>Uses the offset "SearchStartOffset" and the  byte "FreeSpaceByte" which are set in the Rom constructor</para> 
+        /// Returns null if no big enough block is found, else returns the ROM offset of the block </summary>
         public int? WriteInFreeSpace(byte[] data, int? startOffset = null)
         {
             int? blockOffset = ScanForFreeSpaceOffset(FreeSpaceByte, startOffset ?? SearchStartOffset, data.Length);

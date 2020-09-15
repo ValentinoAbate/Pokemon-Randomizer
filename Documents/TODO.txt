@@ -2,7 +2,6 @@ This is not a complete list, and will be updated as I think of things and transc
 
 IDEAS:
 - Make trainer smeargles have random movesets or premade fun ones
-- Make unknown the ??? type instead of psychic
 - Randomize unknown's base stats
 - Add some ??? type attack moves to the game
 - Make gym leader TM based on type and make sure their pokemon know it (if applicable)
@@ -20,3 +19,5 @@ FIXES:
 - Pokemon that evolve with stones have bad default movesets due to not learning stuff by level up.
 - Saving a ROM more than once without closing the program crashes it
 - Expanding the movesets (probably just repointing the pokemon data table) and expanding the move data table (probably just repointing the move data table) causes softlocks on battle start in the output ROM
+	- Pretty sure I fixed this by ensuring data written in free space always gets written at an address divisible by 4.
+- Some pokemon can't learn any TMs, even with full compatibility on
