@@ -24,6 +24,19 @@ namespace PokemonRandomizer.Backend
         public Entry this[int index] { get => items[index]; set => items[index] = value; }
 
         private readonly List<Entry> items = new List<Entry>();
+
+        public LearnSet()
+        {
+
+        }
+
+        public LearnSet(LearnSet toCopy)
+        {
+            OriginalCount = toCopy.OriginalCount;
+            OriginalOffset = toCopy.OriginalOffset;
+            items.AddRange(toCopy);
+        }
+
         public void Add(Move mv, int learnLvl)
         {
             items.Add(new Entry(mv, learnLvl));
@@ -32,6 +45,10 @@ namespace PokemonRandomizer.Backend
         public void Sort()
         {
             items.Sort();
+        }
+        public void RemoveWhere(Predicate<Entry> pred)
+        {
+            items.RemoveAll(pred);
         }
         /// <summary>
         /// Sets the original count value to the current count

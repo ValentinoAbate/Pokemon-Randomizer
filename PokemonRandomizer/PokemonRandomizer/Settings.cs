@@ -157,7 +157,7 @@ namespace PokemonRandomizer
             RandomKeepNumber,
             Intelligent
         }
-        public TmMtCompatOption TmMtCompatSetting { get => TmMtCompatOption.AllOn; }
+        public TmMtCompatOption TmMtCompatSetting { get => TmMtCompatOption.Intelligent; }
         public double TmMtTrueChance { get => 0.42; }
         public double TmMtNoise { get => 0.10; }
         public bool PreventHmMovesInTMsOrMoveTutors { get => true; }

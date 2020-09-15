@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Security.Cryptography;
-using PokemonRandomizer.Backend.DataStructures;
+﻿using PokemonRandomizer.Backend.DataStructures;
 using PokemonRandomizer.Backend.EnumTypes;
 using PokemonRandomizer.Backend.Utilities;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace PokemonRandomizer.Backend.Reading
 {
@@ -334,26 +330,6 @@ namespace PokemonRandomizer.Backend.Reading
             }
             ret.InitCount = ret.Count;
             return ret;
-        }
-
-        // Checks the hash of the rom to see if its the right version (INVALID DUE TO VERSION CHECKING)
-        private static void CheckHash(byte[] rawRom, XmlManager info)
-        {
-            MD5 mD5 = MD5.Create();
-            byte[] bytes = mD5.ComputeHash(rawRom);
-            // Create a new Stringbuilder to collect the byte and create a string.
-            StringBuilder sBuilder = new StringBuilder();
-            // Loop through each byte of the hashed data and format each one as a hexadecimal string.
-            for (int i = 0; i < bytes.Length; i++)
-            {
-                sBuilder.Append(bytes[i].ToString("x2"));
-            }
-            string hash = sBuilder.ToString();
-            if (hash != info.StringElt("hash"))
-            {
-                System.Windows.MessageBox.Show("The base ROM does not match the target ROM. This program was intended for!\n\nMD5: "
-                                                + hash + "\nExpected: " + info.StringElt("hash"), "WARNING: ", System.Windows.MessageBoxButton.OK);
-            }
         }
     }
 }

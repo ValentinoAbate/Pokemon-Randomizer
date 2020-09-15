@@ -49,8 +49,6 @@
     <name>Pokémon Emerald (U)</name>
     <version>0</version>
     <support typeSplit ="true"/>
-    <!-- May be incorrect -->
-    <hash>7b058a7aea5bfbb352026727ebd87e17</hash>
     <!-- 
        Most of Emerald's free space is in 0x00! (Thanks Sky0fBlades)
        Reference: http://pokemonhackersonline.com/archive/index.php/t-5742.html
@@ -140,15 +138,12 @@
     <version>0</version>
 
     <support typeSplit ="true"/>
-    <!-- Def invalid -->
-    <hash>000000000000000000000</hash>
     <freeSpace byte="0xFF" startAddy="0x800000"/>
 
     <!-- Type Data -->
 
     <numTypes>18</numTypes>
     <!-- The address where the type effectiveness definitions start -->
-    <!-- ADD TERMINATOR INFO -->
     <typeEffectiveness offset="0x24F050" separator="[0xfe,0xfe,0x00]" terminator="[0xff,0xff,0x00]"/>
 
     <!-- Move Data -->

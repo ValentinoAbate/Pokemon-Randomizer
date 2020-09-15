@@ -436,7 +436,8 @@ namespace PokemonRandomizer.Backend.Randomization
                             pokemon.species = MaxEvolution(data.Starters[rivalRemap[i]], pokemon.level, rivalSpeciesSettings);
                             if (pokemon.HasSpecialMoves)
                             {
-                                pokemon.moves = MovesetGenerator.DefaultMoveset(data.PokemonLookup[pokemon.species], pokemon.level);
+                                //pokemon.moves = MovesetGenerator.DefaultMoveset(data.PokemonLookup[pokemon.species], pokemon.level);
+                                pokemon.moves = MovesetGenerator.SmartMoveSet(rand, data, data.PokemonLookup[pokemon.species], pokemon.level);
                             }
                         }
                     }                     
@@ -641,7 +642,8 @@ namespace PokemonRandomizer.Backend.Randomization
                     pokemon.species = MaxEvolution(data.CatchingTutPokemon, pokemon.level, rivalSpeciesSettings);
                     if (pokemon.HasSpecialMoves)
                     {
-                        pokemon.moves = MovesetGenerator.DefaultMoveset(data.PokemonLookup[pokemon.species], pokemon.level);
+                        //pokemon.moves = MovesetGenerator.DefaultMoveset(data.PokemonLookup[pokemon.species], pokemon.level);
+                        pokemon.moves = MovesetGenerator.SmartMoveSet(rand, data, data.PokemonLookup[pokemon.species], pokemon.level);
                     }
                 }
             }
@@ -964,7 +966,8 @@ namespace PokemonRandomizer.Backend.Randomization
                 // Reset special moves if necessary
                 if (pokemon.HasSpecialMoves)
                 {
-                    pokemon.moves = MovesetGenerator.DefaultMoveset(data.PokemonLookup[pokemon.species], pokemon.level);
+                    //pokemon.moves = MovesetGenerator.DefaultMoveset(data.PokemonLookup[pokemon.species], pokemon.level);
+                    pokemon.moves = MovesetGenerator.SmartMoveSet(rand, data, data.PokemonLookup[pokemon.species], pokemon.level);
                 }
             }
             // Set 1-pokemon battle to solo if appropriate
@@ -991,7 +994,8 @@ namespace PokemonRandomizer.Backend.Randomization
                         pokemon.species = MaxEvolution(team[i], pokemon.level, speciesSettings);
                         if (pokemon.HasSpecialMoves)
                         {
-                            pokemon.moves = MovesetGenerator.DefaultMoveset(data.PokemonLookup[pokemon.species], pokemon.level);
+                            //pokemon.moves = MovesetGenerator.DefaultMoveset(data.PokemonLookup[pokemon.species], pokemon.level);
+                            pokemon.moves = MovesetGenerator.SmartMoveSet(rand, data, data.PokemonLookup[pokemon.species], pokemon.level);
                         }
                         //Update with evolved form/highest level to preserve evo chains
                         if (pokemon.level > highestLevels[i])
