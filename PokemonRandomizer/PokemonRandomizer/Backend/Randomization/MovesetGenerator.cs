@@ -12,7 +12,7 @@ namespace PokemonRandomizer.Backend.Randomization
         {
             var learnSet = pokemon.learnSet;
             var moves = new Stack<Move>();
-            foreach(var item in learnSet)
+            foreach (var item in learnSet)
             {
                 if (item.learnLvl > level)
                     break;
@@ -25,18 +25,43 @@ namespace PokemonRandomizer.Backend.Randomization
 
         public static Move[] SmartMoveSet(Random rand, RomData data, PokemonBaseStats pokemon, int level)
         {
-            MoveData GetData(LearnSet.Entry e) => data.MoveData[(int)e.move];
-            int PowerComparison(LearnSet.Entry e1, LearnSet.Entry e2) => GetData(e2).power.CompareTo(GetData(e1).power);
+            MoveData GetData(Move m) => data.MoveData[(int)m];
+            bool IsStab(Move m) => pokemon.types.Contains(GetData(m).type);
             // Initialize move choices
-            List<LearnSet.Entry> availableMoves = new List<LearnSet.Entry>();
-            availableMoves.AddRange(pokemon.learnSet.Where((e) => e.learnLvl <= level));
+            var availableMoves = new Dictionary<Move, int>();
+            foreach(var entry in pokemon.learnSet.Where((e) => e.learnLvl <= level))
+            {
+                var move = entry.move;
+                var learnLevel = entry.learnLvl;
+                if (availableMoves.ContainsKey(move))
+                {
+                    if (availableMoves[move] < learnLevel)
+                        availableMoves[move] = learnLevel;
+                }
+                else
+                {
+                    availableMoves.Add(move, learnLevel);
+                }
+            }
             // Add movesets from evolved from
             for (var pkmn = pokemon; pkmn.evolvesFrom.Count > 0; pkmn = data.PokemonLookup[pkmn.evolvesFrom[0].Pokemon])
             {
-                availableMoves.AddRange(pkmn.learnSet.Where((e) => e.learnLvl <= level));
+                foreach(var entry in pkmn.learnSet.Where((e) => e.learnLvl <= level))
+                {
+                    var move = entry.move;
+                    var learnLevel = entry.learnLvl;
+                    if (availableMoves.ContainsKey(move))
+                    {
+                        if(availableMoves[move] < learnLevel)
+                            availableMoves[move] = learnLevel;
+                    }
+                    else
+                    {
+                        availableMoves.Add(move, learnLevel);
+                    }
+                }
             }
-            // Remove duplicate moves
-            availableMoves = availableMoves.Distinct().ToList();
+
             //var highestPower = availableMoves.Max((m) => data.MoveData[(int)m].power);
             //for (int i = 0; i < pokemon.TMCompat.Length; ++i)
             //{
@@ -48,109 +73,66 @@ namespace PokemonRandomizer.Backend.Randomization
             Move[] ret = new Move[4] { Move.None, Move.None, Move.None, Move.None };
             if (availableMoves.Count <= 0)
                 return ret;
-
-            IEnumerable<LearnSet.Entry> GetNonStabMoves() => availableMoves.Where((e) => GetData(e).power > 0 && !pokemon.types.Contains(GetData(e).type));
-            IEnumerable<LearnSet.Entry> GetZeroPowerMoves() => availableMoves.Where((e) => GetData(e).power <= 0);
-            float PowerWeightScale(LearnSet.Entry e) => (float)Math.Pow(GetData(e).power, 2);
-            float LevelWeightScale(LearnSet.Entry e) => (float)Math.Pow(e.learnLvl, 2);
-            // Choose first move
-
-            // Try and find the most powerful STAB move available for type 1
-            var type1StabMoves = availableMoves.Where((e) => GetData(e).power > 0 && GetData(e).type == pokemon.types[0]).ToList();
-            var nonStabMoves =  new WeightedSet<LearnSet.Entry>(GetNonStabMoves(), PowerWeightScale);
-            var noPowerMoves = new WeightedSet<LearnSet.Entry>(GetZeroPowerMoves(), LevelWeightScale);
-            if (type1StabMoves.Count > 0)
+            IEnumerable<Move> GetAttackMoves() => availableMoves.Keys.Where((m) => GetData(m).power > 0);
+            //IEnumerable<LearnSet.Entry> GetNonStabMoves() => GetAttackMoves().Where((e) => !pokemon.types.Contains(GetData(e).type));
+            IEnumerable<Move> GetZeroPowerMoves() => availableMoves.Keys.Where((m) => GetData(m).power <= 0);
+            float PowerWeightScale(Move e) => (float)Math.Pow(GetData(e).EffectivePower * (IsStab(e) ? 1.5 : 1), 3);
+            float RedundantTypeFactor(Move m)
             {
-                type1StabMoves.Sort(PowerComparison);
-                ret[0] = type1StabMoves[0].move;
+                int ind = ret.ToList().FindIndex((m2) => m2 != Move.None && GetData(m).type == GetData(m2).type);
+                return ind == -1 ? 1 : 0.25f;
+
+            }
+            float TypeWeightScale(Move m) => (IsStab(m) ? 2f : 1) * RedundantTypeFactor(m);
+            float LevelWeightScale(Move e) => (float)Math.Pow(availableMoves[e], 2);
+            float LevelWeightScaleLinear(Move e) => Math.Max(1, availableMoves[e] / 4);
+            float LevelWeightScaleLog(Move e) => (float)Math.Max(1, Math.Log(availableMoves[e]));
+            Move FallbackMoveChoice() => rand.Choice(new WeightedSet<Move>(availableMoves.Keys, LevelWeightScale));
+
+            // Choose first move - attempt to choose an attack move
+            var attackMoves = new WeightedSet<Move>(GetAttackMoves(), (e) => PowerWeightScale(e) * TypeWeightScale(e) * LevelWeightScaleLog(e));
+            if (attackMoves.Count > 0)
+            {
+                ret[0] = rand.Choice(attackMoves);
             }
             else
             {
-                // Choose the highest powered non-stab move
-                if (nonStabMoves.Count > 0)
-                {
-                    ret[0] = rand.Choice(nonStabMoves).move;
-                }
-                else
-                {
-                    ret[0] = rand.Choice(availableMoves).move;
-                }
+                ret[0] = FallbackMoveChoice();
             }
-            availableMoves.RemoveAll((e) => e.move == ret[0]);
+            availableMoves.Remove(ret[0]);
             if (availableMoves.Count <= 0)
                 return ret;
-            nonStabMoves = new WeightedSet<LearnSet.Entry>(GetNonStabMoves(), PowerWeightScale);
-            noPowerMoves = new WeightedSet<LearnSet.Entry>(GetZeroPowerMoves(), LevelWeightScale);
-            // Choose second move
 
-            if (pokemon.IsSingleTyped)
+            // Choose second move - attempt to choose another attack move
+            attackMoves = new WeightedSet<Move>(GetAttackMoves(), (e) => PowerWeightScale(e) * TypeWeightScale(e) * LevelWeightScaleLog(e));
+            if (attackMoves.Count > 0)
             {
-                // Choose the highest powered non-stab move
-                if (nonStabMoves.Count > 0)
-                {
-                    ret[1] = rand.Choice(nonStabMoves).move;
-                }
-                else
-                {
-                    ret[1] = rand.Choice(availableMoves).move;
-                }
-            }
-            else // Dual-Typed
-            {
-                // Try and find the most powerful STAB move available for type 2
-                var type2StabMoves = availableMoves.Where((e) => GetData(e).power > 0 && GetData(e).type == pokemon.types[1]).ToList();
-                if(type2StabMoves.Count > 0)
-                {
-                    type2StabMoves.Sort(PowerComparison);
-                    ret[1] = type2StabMoves[0].move;
-                }
-                else
-                {
-                    // Choose the highest powered non-stab move
-                    if (nonStabMoves.Count > 0)
-                    {
-                        ret[1] = rand.Choice(nonStabMoves).move;
-                    }
-                    else
-                    {
-                        ret[1] = rand.Choice(availableMoves).move;
-                    }
-                }
-            }
-            availableMoves.RemoveAll((e) => e.move == ret[1]);
-            if (availableMoves.Count <= 0)
-                return ret;
-            nonStabMoves = new WeightedSet<LearnSet.Entry>(GetNonStabMoves(), PowerWeightScale);
-            noPowerMoves = new WeightedSet<LearnSet.Entry>(GetZeroPowerMoves(), LevelWeightScale);
-            // Choose third move
-
-            if (!pokemon.IsSingleTyped && nonStabMoves.Count > 0 && nonStabMoves.Max((e) => GetData(e.Key).power) >= 60)
-            {
-                ret[2] = rand.Choice(nonStabMoves).move;
-            }
-            else if (noPowerMoves.Count > 0)
-            {
-                ret[2] = rand.Choice(noPowerMoves).move;
+                ret[1] = rand.Choice(attackMoves);
             }
             else
             {
-                ret[2] = rand.Choice(availableMoves).move;
+                ret[1] = FallbackMoveChoice();
             }
-            availableMoves.RemoveAll((e) => e.move == ret[2]);
+            availableMoves.Remove(ret[1]);
             if (availableMoves.Count <= 0)
                 return ret;
-            nonStabMoves = new WeightedSet<LearnSet.Entry>(GetNonStabMoves(), PowerWeightScale);
-            noPowerMoves = new WeightedSet<LearnSet.Entry>(GetZeroPowerMoves(), LevelWeightScale);
-            // Choose fourth move
 
+            // Choose third move - Attempt to choose a status move
+            var noPowerMoves = new WeightedSet<Move>(GetZeroPowerMoves(), LevelWeightScale);
             if (noPowerMoves.Count > 0)
             {
-                ret[3] = rand.Choice(noPowerMoves).move;
+                ret[2] = rand.Choice(noPowerMoves);
             }
             else
             {
-                ret[3] = rand.Choice(availableMoves).move;
+                ret[2] = FallbackMoveChoice();
             }
+            availableMoves.Remove(ret[2]);
+            if (availableMoves.Count <= 0)
+                return ret;
+
+            // Choose fourth move
+            ret[3] = FallbackMoveChoice();
 
             return ret;
         }

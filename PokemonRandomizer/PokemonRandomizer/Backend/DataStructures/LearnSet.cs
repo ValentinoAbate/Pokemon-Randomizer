@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using PokemonRandomizer.Backend.EnumTypes;
 using PokemonRandomizer.Backend.Utilities;
 
@@ -131,6 +132,7 @@ namespace PokemonRandomizer.Backend
             {
                 return learnLvl.CompareTo(other.learnLvl);
             }
+
             public override string ToString()
             {
                 return learnLvl + ": " + move.ToDisplayString();

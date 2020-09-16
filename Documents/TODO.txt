@@ -7,6 +7,7 @@ IDEAS:
 - Make gym leader TM based on type and make sure their pokemon know it (if applicable)
 - Champion randomization (the champion could be Brendan/May, wally, or any other reoccuring / special trainer in the game or that is added)
 - Extra reoccuring trainers (you might encounter youngster joey multiple times throughout the game, etc)
+- Smeargle Hell: A certain percentage of moves have their effects replaced with sketch
 - Map weather randomization
 	- Allow option between just outdoors or all
 	- Have weighting for weather type (and maybe a choice between how often clear vs extreme weather happens
