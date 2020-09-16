@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace PokemonRandomizer.Backend
+﻿namespace PokemonRandomizer.Backend
 {
     public enum Item : ushort
     {

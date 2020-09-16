@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace PokemonRandomizer
 {
     public class Settings
     {
-        private MainWindow window;
+        private readonly MainWindow window;
 
         #region Seeding
         public string Seed { get => window.tbSeed.Text; }
@@ -253,7 +249,7 @@ namespace PokemonRandomizer
                     PowerScaleSimilarityMod = 1f,
                     PowerScaleCull = true,
                     PowerThresholdStronger = 175,
-                    PowerThresholdWeaker = 50,
+                    PowerThresholdWeaker = 100,
                     TypeSimilarityMod = 0,
                     TypeSimilarityCull = false,
                 }
@@ -270,7 +266,7 @@ namespace PokemonRandomizer
                     PowerScaleSimilarityMod = 0.15f,
                     PowerScaleCull = true,
                     PowerThresholdStronger = 200,
-                    PowerThresholdWeaker = 50,
+                    PowerThresholdWeaker = 200,
                     TypeSimilarityMod = 1f,
                     TypeSimilarityCull = false,
                 }
@@ -284,7 +280,7 @@ namespace PokemonRandomizer
                     PowerScaleSimilarityMod = 0.15f,
                     PowerScaleCull = true,
                     PowerThresholdStronger = 250,
-                    PowerThresholdWeaker = 50,
+                    PowerThresholdWeaker = 200,
                     TypeSimilarityMod = 1f,
                     TypeSimilarityCull = false,
                 }
@@ -298,7 +294,7 @@ namespace PokemonRandomizer
                     PowerScaleSimilarityMod = 0.15f,
                     PowerScaleCull = true,
                     PowerThresholdStronger = 300,
-                    PowerThresholdWeaker = 50,
+                    PowerThresholdWeaker = 100,
                     TypeSimilarityMod = 1f,
                     TypeSimilarityCull = false,
                 }

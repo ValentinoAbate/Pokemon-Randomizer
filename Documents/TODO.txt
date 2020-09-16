@@ -11,6 +11,7 @@ IDEAS:
 - Map weather randomization
 	- Allow option between just outdoors or all
 	- Have weighting for weather type (and maybe a choice between how often clear vs extreme weather happens
+- Ability-based synergies for smart moveset generation (get sunny day if you have chlorophil, etc)
 
 FEATURES:
 - Settings preset saving (possibly in JSON or XML)
@@ -18,6 +19,7 @@ FEATURES:
 
 FIXES:
 - Pokemon that evolve with stones have bad default movesets due to not learning stuff by level up.
+	- Still an issue, but fixed in smart moveset generation. Currently no fix for default movesets
 - Saving a ROM more than once without closing the program crashes it
 - Expanding the movesets (probably just repointing the pokemon data table) and expanding the move data table (probably just repointing the move data table) causes softlocks on battle start in the output ROM
 	- Pretty sure I fixed this by ensuring data written in free space always gets written at an address divisible by 4.

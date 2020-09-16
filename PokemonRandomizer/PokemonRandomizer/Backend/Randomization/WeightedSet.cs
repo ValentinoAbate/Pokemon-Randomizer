@@ -25,7 +25,7 @@ namespace PokemonRandomizer.Backend.Randomization
             }
         }
 
-        private Dictionary<T, float> items = new Dictionary<T, float>();
+        private readonly Dictionary<T, float> items = new Dictionary<T, float>();
 
         #region Constructors
         public WeightedSet() { }

@@ -719,25 +719,6 @@ namespace PokemonRandomizer.Backend.Randomization
             return types;
         }
 
-        /// <summary> Chose a random type based on the given metric (OUT OF DATE)</summary> 
-        private PokemonType RandomType(RomMetrics metrics, string metric)
-        {
-            switch (metric)
-            {
-                case "None":
-                    return rand.Choice(metrics.TypeRatiosAll.Items);
-                case "Type Occurence (Any)":
-                    return rand.Choice(metrics.TypeRatiosAll);
-                case "Type Occurence (Single)":
-                    return rand.Choice(metrics.TypeRatiosSingle);
-                case "Type Occurence (Primary)":
-                    return rand.Choice(metrics.TypeRatiosDualPrimary);
-                case "Type Occurence (Secondary)":
-                    return rand.Choice(metrics.TypeRatiosDualSecondary);
-                default:
-                    throw new System.NotImplementedException(metric + " is not a valid metric.");
-            }
-        }
         /// <summary> Get a wieghted and culled list of possible pokemon</summary>
         private WeightedSet<PokemonSpecies> SpeciesWeightedSet(IEnumerable<PokemonSpecies> possiblePokemon, PokemonSpecies pokemon, Settings.SpeciesSettings speciesSettings)
         {

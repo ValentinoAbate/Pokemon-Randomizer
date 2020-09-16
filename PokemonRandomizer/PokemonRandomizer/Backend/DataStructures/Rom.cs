@@ -156,7 +156,7 @@ namespace PokemonRandomizer.Backend.DataStructures
         /// Argument given is assumed to be a List of Tuples of 24-bit ROM addresses, which are converted to 32-bit RAM addressese
         /// The first int in the Tuple is the original pointer value, and the second int is new value
         /// </summary>
-        public void RepointMany(List<Tuple<int, int>> repoints)
+        public void RepointMany(List<System.Tuple<int, int>> repoints)
         {
             // A cahcing dictionary of pointer values to known locations
             var locations = new Dictionary<int, List<int>>();

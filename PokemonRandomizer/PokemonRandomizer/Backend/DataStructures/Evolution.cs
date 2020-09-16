@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using PokemonRandomizer.Backend.EnumTypes;
+﻿using PokemonRandomizer.Backend.EnumTypes;
 using PokemonRandomizer.Backend.Utilities;
 
 namespace PokemonRandomizer.Backend.DataStructures
 {
-        public enum EvolutionType
+    public enum EvolutionType
         {
             None,                       // 0x0000 - No Evolution in this slot
             Friendship,                 // 0x0001 - Evolves by friendship without regards to time of day

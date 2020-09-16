@@ -131,8 +131,59 @@ namespace PokemonRandomizer.Backend.Randomization
             if (availableMoves.Count <= 0)
                 return ret;
 
+            var fourthMoveChoice = new WeightedSet<Move>(availableMoves.Keys, LevelWeightScale);
+            var currentMoves = ret.Where((m) => m != Move.None).Select((m) => GetData(m));
+            var metrics = new List<WeightedSet<Move>.Metric>();
+            const float needSynergy = 10000;
+            const float preferSynergy = needSynergy / 2;
+            const float weakSynergy = needSynergy / 10;
+
+            // Apply synergy metrics
+
+            // Move Synergies
+            void CalculateMoveSynergy(Func<MoveData, bool> currMovePred, Predicate<MoveData> moveChoicePred, float intensity)
+            {
+                int count = currentMoves.Count(currMovePred);
+                if (currentMoves.Count(currMovePred) > 0)
+                {
+                    metrics.Add((m) => (moveChoicePred(GetData(m)) ? intensity : 1) * count);
+                }
+            }
+
+            // Nightmare or Dream Eater + Sleep move Synergy
+            CalculateMoveSynergy((m) => m.effect == MoveData.MoveEffect.DreamEater || m.effect == MoveData.MoveEffect.StatusNightmare,
+                             (m) => m.effect == MoveData.MoveEffect.StatusSleep, needSynergy);
+            // Snore or Sleep Talk + Rest Synergy
+            CalculateMoveSynergy((m) => m.effect == MoveData.MoveEffect.SleepTalk || m.effect == MoveData.MoveEffect.DamageFailUnlessAsleepFlinchChance,
+                 (m) => m.effect == MoveData.MoveEffect.Rest, needSynergy);
+            // Rollout or Ice Ball + Defense Curl Synergy
+            CalculateMoveSynergy((m) => m.effect == MoveData.MoveEffect.MultiTurnBuildup,
+                             (m) => m.effect == MoveData.MoveEffect.DefPlus1AndPrepForRoll, preferSynergy);
+            // Spit Up or Swallow + Stockpile Synergy
+            CalculateMoveSynergy((m) => m.effect == MoveData.MoveEffect.SpitUp || m.effect == MoveData.MoveEffect.Swallow,
+                             (m) => m.effect == MoveData.MoveEffect.Stockpile, needSynergy);
+            // Spit Up or Swallow + Stockpile Synergy
+            CalculateMoveSynergy((m) => m.effect == MoveData.MoveEffect.SpitUp || m.effect == MoveData.MoveEffect.Swallow,
+                             (m) => m.effect == MoveData.MoveEffect.Stockpile, needSynergy);
+            // Sun Move + Sun
+            CalculateMoveSynergy((m) => m.effect == MoveData.MoveEffect.Solarbeam || m.effect == MoveData.MoveEffect.RecoverHpWeather2,
+                             (m) => m.effect == MoveData.MoveEffect.WeatherSun, preferSynergy);
+            // Fire Move + Sun
+            CalculateMoveSynergy((m) => m.type == PokemonType.FIR, (m) => m.effect == MoveData.MoveEffect.WeatherSun, weakSynergy);
+            // Rain move + Rain
+            CalculateMoveSynergy((m) => m.effect == MoveData.MoveEffect.Thunder,
+                             (m) => m.effect == MoveData.MoveEffect.WeatherRain, preferSynergy);
+            // Water Move + Rain
+            CalculateMoveSynergy((m) => m.type == PokemonType.WAT, (m) => m.effect == MoveData.MoveEffect.WeatherRain, weakSynergy);
+            // Weather Ball + Weather (Rain / Sun / Hail)
+            CalculateMoveSynergy((m) => m.effect == MoveData.MoveEffect.WeatherBall,
+                                 (m) => m.effect == MoveData.MoveEffect.WeatherRain || m.effect == MoveData.MoveEffect.WeatherSun 
+                                     || m.effect == MoveData.MoveEffect.WeatherHail, needSynergy);
+            // Weather Ball + Sandstorm
+            CalculateMoveSynergy((m) => m.effect == MoveData.MoveEffect.WeatherBall,
+                                  (m) => m.effect == MoveData.MoveEffect.WeatherSandstorm, weakSynergy);
             // Choose fourth move
-            ret[3] = FallbackMoveChoice();
+            ret[3] = rand.Choice(new WeightedSet<Move>(availableMoves.Keys, (m) => LevelWeightScale(m) * Math.Max(1, metrics.Sum((metric) => metric(m)))));
 
             return ret;
         }
