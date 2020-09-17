@@ -298,15 +298,62 @@ namespace PokemonRandomizer.Backend.Randomization
 
             #region Maps (NOTHING YET)
 
+            data.SnowyWeatherApplysHail = settings.UseHailHack;
             // Mutate Maps (currently just iterate though the maps, but may want to construct and traverse a graph later)
             foreach(var map in data.Maps.All)
             {
-
+                // If the map names is empty, just continue
+                if (string.IsNullOrEmpty(map.Name))
+                    continue;
                 // Mutate Maps
                 // Mutate Weather
-                if(map.IsOutdoors)
+                if(settings.WeatherSetting != Settings.WeatherOption.Unchanged)
                 {
-                    map.weather = 0x03;
+                    bool gymOverride = settings.OverrideAllowGymWeather && map.battleField == 0x01;
+                    bool banWeatherChange = 
+                    (
+                        (settings.OnlyChangeClearWeather && map.weather != Map.Weather.Clear && map.weather != Map.Weather.Cloudy && map.weather != Map.Weather.House) ||
+                        (!settings.ChangeHouseWeather && map.mapType == Map.Type.Inside) ||
+                        (!settings.ChangeSecretBaseWeather && map.mapType == Map.Type.SecretBase)
+                    );
+                    if((gymOverride || !banWeatherChange) && rand.RandomDouble() < settings.WeatherRandChance)
+                    {
+                        WeightedSet<Map.Weather> choices;
+                        if(settings.WeatherSetting == Settings.WeatherOption.Weighted)
+                        {
+                            choices = new WeightedSet<Map.Weather>(settings.WeatherWeights);
+                        }
+                        else if(settings.WeatherSetting == Settings.WeatherOption.RandomInBattleEffect)
+                        {
+                            var weatherTypes = EnumUtils.GetValues<Map.Weather>().Where((w) => Map.AffectsBattle(w, settings.UseHailHack));
+                            choices = new WeightedSet<Map.Weather>(weatherTypes, 1);
+                        }
+                        else
+                        {
+                            choices = new WeightedSet<Map.Weather>(EnumUtils.GetValues<Map.Weather>(), 1);
+                        }
+                        if(settings.SafeWeather && !gymOverride)
+                        {
+                            if (!(map.mapType == Map.Type.Underwater))
+                                choices.RemoveIfPresent(Map.Weather.UnderwaterMist);
+                            if(!map.IsOutdoors)
+                            {
+                                choices.RemoveIfPresent(Map.Weather.ClearWithCloudsInWater);
+                                choices.RemoveIfPresent(Map.Weather.Clear);
+                                choices.RemoveIfPresent(Map.Weather.Cloudy);
+                                choices.RemoveIfPresent(Map.Weather.Rain);
+                                choices.RemoveIfPresent(Map.Weather.RainThunderstorm);
+                                choices.RemoveIfPresent(Map.Weather.RainHeavyThunderstrorm);
+                                choices.RemoveIfPresent(Map.Weather.Sandstorm);
+                                choices.RemoveIfPresent(Map.Weather.Snow);
+                                choices.RemoveIfPresent(Map.Weather.SnowSteady);
+                                choices.RemoveIfPresent(Map.Weather.StrongSunlight);
+                            }
+                        }
+                        if(choices.Count > 0)
+                            map.weather = rand.Choice(choices);
+                    }
+
                 }
                 // Mutate tiles and layout (if applicable)
                 // Team magma/aqua/rocket takeover mode?
@@ -322,10 +369,11 @@ namespace PokemonRandomizer.Backend.Randomization
             #endregion
 
             #region Wild Pokemon (may happen during maps later)
-            // Get the species randomization settings for wild pokemon
-            var wildSpeciesSettings = settings.GetSpeciesSettings(Settings.SpeciesSettings.Class.Wild);
+
             if (settings.WildPokemonSetting == Settings.WildPokemonOption.CompletelyRandom)
             {
+                // Get the species randomization settings for wild pokemon
+                var wildSpeciesSettings = settings.GetSpeciesSettings(Settings.SpeciesSettings.Class.Wild);
                 foreach (var encounterSet in data.Encounters)
                 {
                     foreach (var enc in encounterSet)
@@ -336,7 +384,8 @@ namespace PokemonRandomizer.Backend.Randomization
             }
             else if(settings.WildPokemonSetting == Settings.WildPokemonOption.AreaOneToOne)
             {
-                
+                // Get the species randomization settings for wild pokemon
+                var wildSpeciesSettings = settings.GetSpeciesSettings(Settings.SpeciesSettings.Class.Wild);
                 foreach (var encounterSet in data.Encounters)
                 {
                     // Get all unique species in the encounter set
@@ -354,6 +403,8 @@ namespace PokemonRandomizer.Backend.Randomization
             }
             else if(settings.WildPokemonSetting == Settings.WildPokemonOption.GlobalOneToOne)
             {
+                // Get the species randomization settings for wild pokemon
+                var wildSpeciesSettings = settings.GetSpeciesSettings(Settings.SpeciesSettings.Class.Wild);
                 var mapping = new Dictionary<PokemonSpecies, PokemonSpecies>();
                 foreach (var s in pokemonSet)
                     mapping.Add(s, RandomSpecies(pokemonSet, s, wildSpeciesSettings));

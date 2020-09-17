@@ -94,6 +94,12 @@ namespace PokemonRandomizer.Backend.Randomization
         {
             items.Remove(item);
         }
+
+        public void RemoveIfPresent(T item)
+        {
+            if (items.ContainsKey(item))
+                items.Remove(item);
+        }
         public void RemoveWhere(Predicate<T> predicate)
         {
             foreach (var key in items.Keys.ToArray())

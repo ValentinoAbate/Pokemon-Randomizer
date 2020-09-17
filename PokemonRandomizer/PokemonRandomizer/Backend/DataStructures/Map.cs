@@ -15,6 +15,33 @@
             /// 0x0A - 0xFF: Unknown/unused
         }
 
+        public enum Weather : byte
+        {
+            House,
+            ClearWithCloudsInWater,
+            Clear,
+            Rain,
+            Snow,
+            RainThunderstorm,
+            MistSteady,
+            SnowSteady,
+            Sandstorm,
+            MistFromTopRight,
+            MistDenseBright,
+            Cloudy,
+            StrongSunlight,
+            RainHeavyThunderstrorm,
+            UnderwaterMist,             /// 0x0C: Underground flashes (Strong sunlight in battle),
+                                        /// 0x0F - 0xFF: Unknown/unused,
+        }
+
+        public static bool AffectsBattle(Weather w, bool hailHackEnabled)
+        {
+            return w == Weather.Rain || w == Weather.RainThunderstorm || w == Weather.RainHeavyThunderstrorm ||
+                w == Weather.Sandstorm || w == Weather.StrongSunlight || (hailHackEnabled && (w == Weather.Snow || w == Weather.SnowSteady));
+        }
+
+
         // Header data!
 
         //Example from https://datacrystal.romhacking.net/wiki/Pok%C3%A9mon_3rd_Generation
@@ -78,7 +105,7 @@
         /// 0x0E: Underwater mist,
         /// 0x0F - 0xFF: Unknown/unused,
         /// </summary>
-        public byte weather;
+        public Weather weather;
         /// <summary>
         /// I'm not sure what this value actually changes. Maybe label style?
         /// In Emerald (info from advance-map: http://ampage.no-ip.info/): 

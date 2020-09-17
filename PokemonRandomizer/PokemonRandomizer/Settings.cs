@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using PokemonRandomizer.Backend.DataStructures;
+using PokemonRandomizer.Backend.Randomization;
+using System.Collections.Generic;
 
 namespace PokemonRandomizer
 {
@@ -125,11 +127,12 @@ namespace PokemonRandomizer
         #region Wild Pokemon
         public enum WildPokemonOption
         {
+            Unchanged,
             CompletelyRandom,
             AreaOneToOne,
             GlobalOneToOne,
         }
-        public WildPokemonOption WildPokemonSetting { get => WildPokemonOption.AreaOneToOne; }
+        public WildPokemonOption WildPokemonSetting => WildPokemonOption.AreaOneToOne;
         #endregion
 
         #region Starter Pokemon
@@ -150,10 +153,36 @@ namespace PokemonRandomizer
 
         #region Maps
 
-        public enum WeatherSettings
+        public enum WeatherOption
         {
-            CompletelyRandom
+            Unchanged,
+            CompletelyRandom,
+            RandomInBattleEffect,
+            // Add a balanced in battle effect setting
+            Weighted,
+            //Storms (Local Area Based) - Add later
         }
+
+        public WeatherOption WeatherSetting => WeatherOption.RandomInBattleEffect;
+        public double WeatherRandChance => 0.1;
+        // Need to make more specific later
+        public bool SafeWeather => true;
+        public bool OverrideAllowGymWeather => true;
+        public bool OnlyChangeClearWeather => true;
+        public bool ChangeHouseWeather => false;
+        public bool ChangeSecretBaseWeather => false;
+        public bool UseHailHack => true;
+
+        public WeightedSet<Map.Weather> WeatherWeights { get; } = new WeightedSet<Map.Weather>
+        {
+            { Map.Weather.Rain, 0.85f },
+            { Map.Weather.RainThunderstorm, 0.125f },
+            { Map.Weather.RainHeavyThunderstrorm, 0.025f },
+            { Map.Weather.Snow, 0.9f },
+            { Map.Weather.SnowSteady, 0.1f },
+            { Map.Weather.StrongSunlight, 1 },
+            { Map.Weather.Sandstorm, 0.8f },
+        };
 
         #endregion
 

@@ -52,7 +52,7 @@ namespace PokemonRandomizer.Backend.DataStructures
                 mapIndex = rom.ReadUInt16(),
                 labelIndex = rom.ReadByte(),
                 visibility = rom.ReadByte(),
-                weather = rom.ReadByte(),
+                weather = (Map.Weather)rom.ReadByte(),
                 mapType = (Map.Type)rom.ReadByte(),
                 unknown = rom.ReadByte(),
                 unknown2 = rom.ReadByte(),
@@ -117,7 +117,7 @@ namespace PokemonRandomizer.Backend.DataStructures
             rom.WriteUInt16(map.mapIndex);
             rom.WriteByte(map.labelIndex);
             rom.WriteByte(map.visibility);
-            rom.WriteByte(map.weather);
+            rom.WriteByte((byte)map.weather);
             rom.WriteByte((byte)map.mapType);
             rom.WriteByte(map.unknown);
             rom.WriteByte(map.unknown2);
