@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using System.Windows.Forms.VisualStyles;
 using PokemonRandomizer.Backend.DataStructures;
 using PokemonRandomizer.Backend.EnumTypes;
@@ -307,6 +308,11 @@ namespace PokemonRandomizer.Backend.Randomization
             // Set class
             // Natural trainers? (trainer types are based on environment type)
             //Mutate battle here later?
+            // Mutate Weather (currently just iterate though the maps, but may want to construct a graph later)
+            foreach(var map in data.Maps.All)
+            {
+                map.weather = 0x03;
+            }
             #endregion
 
             #region Wild Pokemon (may happen during maps later)

@@ -37,6 +37,7 @@ namespace PokemonRandomizer.Backend.Writing
             WriteTypeDefinitions(data, rom, ref repoints);
             WriteEncounters(data, rom, info);
             WriteTrainerBattles(data, rom, info);
+            WriteMapData(data, rom, info);
 
             // Hacks and tweaks
 
@@ -171,7 +172,6 @@ namespace PokemonRandomizer.Backend.Writing
             if (duplicate)
                 rom.WriteUInt16(rom.InternalOffset + dupOffset, (int)romData.Starters[2]);
         }
-
         private static void WriteCatchingTutOpponent(RomData data, Rom rom, XmlManager info)
         {
             rom.Seek(info.Offset("catchingTutOpponent"));
@@ -416,6 +416,9 @@ namespace PokemonRandomizer.Backend.Writing
                 rom.WriteUInt16((int)encounter.pokemon);
             }
         }
+        /// <summary>
+        /// Write the trainer battles to the output file. Doesn't write all data (currently unfinished)
+        /// </summary>
         private static void WriteTrainerBattles(RomData romData, Rom rom, XmlManager info)
         {
             int numTrainers = info.Num("trainerBattles");
@@ -480,6 +483,10 @@ namespace PokemonRandomizer.Backend.Writing
                 #endregion
                 rom.LoadOffset();
             }
+        }
+        private static void WriteMapData(RomData romData, Rom rom, XmlManager info)
+        {
+            romData.Maps.Write(rom, info);
         }
         private class RepointList : List<Tuple<int, int>>
         {

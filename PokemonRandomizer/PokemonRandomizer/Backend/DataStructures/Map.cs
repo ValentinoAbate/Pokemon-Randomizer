@@ -113,42 +113,7 @@
         // Connection data
         public ConnectionData connections;
 
-        public string Name { get; private set; }
-
-        public Map(Rom rom, int offset, int labelAddress)
-        {
-            rom.SaveOffset();
-
-            #region Read Header Data
-            rom.Seek(offset);
-            mapDataOffset = rom.ReadPointer();
-            eventDataOffset = rom.ReadPointer();
-            mapScriptsOffset = rom.ReadPointer();
-            connectionOffset = rom.ReadPointer();
-            music = rom.ReadUInt16();
-            mapIndex = rom.ReadUInt16();
-            labelIndex = rom.ReadByte();
-            visibility = rom.ReadByte();
-            weather = rom.ReadByte();
-            mapType = rom.ReadByte();
-            unknown = rom.ReadByte();
-            unknown2 = rom.ReadByte();
-            showLabelOnEntry = rom.ReadByte();
-            battleField = rom.ReadByte();
-            #endregion
-
-            #region Read Non-Header Data
-            // Map Nameame
-            rom.Seek(rom.ReadPointer(labelAddress + labelIndex * 8 + 4));
-            Name = rom.ReadVariableLengthString();
-            
-            // Connections
-            if (connectionOffset != Rom.nullPointer)
-                connections = new ConnectionData(rom, connectionOffset);
-            #endregion
-
-            rom.LoadOffset();
-        }
+        public string Name { get; set; }
 
         public override string ToString()
         {

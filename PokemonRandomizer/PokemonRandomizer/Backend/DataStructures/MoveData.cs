@@ -280,6 +280,9 @@ namespace PokemonRandomizer.Backend.DataStructures
                         return 71;
                     case MoveEffect.DamageTiredAfterUse:
                         return (int)Math.Floor(power / 1.5);
+                    case MoveEffect.DelayedAttack:
+                    case MoveEffect.SkullBash:
+                        return (int)Math.Floor(power * 0.75);
                     default:
                         return power;
                 }
