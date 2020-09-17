@@ -1,18 +1,45 @@
 This is not a complete list, and will be updated as I think of things and transcribe my notes from other places
 
 IDEAS:
-- Make trainer smeargles have random movesets or premade fun ones
 - Randomize unknown's base stats
 - Add some ??? type attack moves to the game
-- Make gym leader TM based on type and make sure their pokemon know it (if applicable)
-- Champion randomization (the champion could be Brendan/May, wally, or any other reoccuring / special trainer in the game or that is added)
-- Extra reoccuring trainers (you might encounter youngster joey multiple times throughout the game, etc)
-- Smeargle Hell: A certain percentage of moves have their effects replaced with sketch
-- Ability-based synergies for smart moveset generation (get sunny day if you have chlorophil, etc)
-
+	- Start by randomizing Hidden Power
+- Gym / Leader Overhaul
+	- Make gym leader TM based on type and make sure their pokemon know it (if applicable)
+	- Add option to randomize gym type
+	- Place hints in traner and sign dialog about upcoming gym info and / location of cool items
+- Trainer / Event Ideas
+	- Champion randomization (the champion could be Brendan/May, wally, or any other reoccuring / special trainer in the game or that is added)
+	- Extra reoccuring trainers (you might encounter youngster joey multiple times throughout the game, etc)
+	- Ambushes (Events that trigger when you reach certain places like rival battle)
+		- Could be more rival / wally battles, or an extra reocurring trainer	
+	- Add more Wally Battles
+	- Randomize Rival Battle Locations
+	- (Em/Ru/Sap - Add a final rival battle before victory road or something)
+	- Secret Agents (any non-trainer NPC may become a trainer)
+		- Allow limiters that when removed can extend this to pokemon centers, etx
+- Improve Moveset Generation
+	- Ability-based synergies for smart moveset generation (get sunny day if you have chlorophil, etc)
+	- Stat-based synergies (prefer moves that suit your attack stats)
+	- Make trainer smeargles have random movesets or premade fun ones
+- Make procedurally generated battle sequences retain moves from previous levels
+	- Keep TM moves fairly consistant
+	- If pokemon learned something on a lower evolution, have the option to keep that (esp. for dunsparse plague)
+- Trainer Type Theming (class / gym - based)
+- Area Type theming (Forest likely to have grass / bug etc)
+- Encounter Bank Type theming (prefer water in fishing spots, etc)
 FEATURES:
+- FireRed compatibility
+- Gen IV compatibility
 - Settings preset saving (possibly in JSON or XML)
+- ROM Data XML export (randomized rom exports its offsets so it can be re-randomized)
 - Item randomization (field items)
+- Item randomization (stores)
+- In-Game Trade Randomization
+- ROM string writing
+- TM Text setting
+- Multi-Rom Data aggregation
+	- For instance, use emerald as a base but pull additional classes and moveset updates from FireRed
 
 FIXES:
 - Pokemon that evolve with stones have bad default movesets due to not learning stuff by level up.
@@ -20,3 +47,7 @@ FIXES:
 - Expanding the movesets (probably just repointing the pokemon data table) and expanding the move data table (probably just repointing the move data table) causes softlocks on battle start in the output ROM
 	- Pretty sure I fixed this by ensuring data written in free space always gets written at an address divisible by 4.
 - Some pokemon can't learn any TMs, even with full compatibility on
+- Move Tutor Randomization might not work
+
+REALLY BAD IDEA CORNER:
+- Smeargle Hell: A certain percentage of moves have their effects replaced with sketch

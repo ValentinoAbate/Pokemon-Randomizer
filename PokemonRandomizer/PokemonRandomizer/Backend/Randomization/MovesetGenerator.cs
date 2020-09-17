@@ -85,7 +85,8 @@ namespace PokemonRandomizer.Backend.Randomization
             }
             float TypeWeightScale(Move m) => (IsStab(m) ? 2f : 1) * RedundantTypeFactor(m);
             float LevelWeightScale(Move e) => (float)Math.Pow(availableMoves[e], 2);
-            float LevelWeightScaleLinear(Move e) => Math.Max(1, availableMoves[e] / 4);
+            float LevelWeightScaleSmall(Move e) => (float)Math.Pow(availableMoves[e], 1.5);
+            //float LevelWeightScaleLinear(Move e) => Math.Max(1, availableMoves[e] / 4);
             float LevelWeightScaleLog(Move e) => (float)Math.Max(1, Math.Log(availableMoves[e]));
             Move FallbackMoveChoice() => rand.Choice(new WeightedSet<Move>(availableMoves.Keys, LevelWeightScale));
 
@@ -118,7 +119,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 return ret;
 
             // Choose third move - Attempt to choose a status move
-            var noPowerMoves = new WeightedSet<Move>(GetZeroPowerMoves(), LevelWeightScale);
+            var noPowerMoves = new WeightedSet<Move>(GetZeroPowerMoves(), LevelWeightScaleSmall);
             if (noPowerMoves.Count > 0)
             {
                 ret[2] = rand.Choice(noPowerMoves);
@@ -134,7 +135,7 @@ namespace PokemonRandomizer.Backend.Randomization
             var fourthMoveChoice = new WeightedSet<Move>(availableMoves.Keys, LevelWeightScale);
             var currentMoves = ret.Where((m) => m != Move.None).Select((m) => GetData(m));
             var metrics = new List<WeightedSet<Move>.Metric>();
-            const float needSynergy = 10000;
+            const float needSynergy = 12500;
             const float preferSynergy = needSynergy / 2;
             const float weakSynergy = needSynergy / 10;
 
