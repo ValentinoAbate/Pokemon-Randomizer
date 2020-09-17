@@ -110,11 +110,11 @@
     <!-- Special Trainer Battles -->
 
     <rivals names="[Brendan,May]"/>
-    <reoccuring names="[Gabby &amp; Ty]"/>
     <gymLeaders names="[Roxanne,Brawly,Wattson,Flannery,Norman,Winona,Tate&amp;Liza,Juan]"/>
     <eliteFour names="[Sidney,Phoebe,Glacia,Drake]"/>
     <champion names="[Wallace]"/>
     <uber names="[Steven]"/>
+    <teamGrunts names="[Grunt]"/>
     <teamAdmins names="[Tabitha,Matt,Shelly]"/>
     <teamLeaders names="[Maxie,Archie]"/>
     <aceTrainers classNums="[5,48]"/>

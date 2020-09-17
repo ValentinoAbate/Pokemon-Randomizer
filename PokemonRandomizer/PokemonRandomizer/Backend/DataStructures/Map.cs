@@ -2,6 +2,19 @@
 {
     public class Map
     {
+        public enum Type : byte
+        {
+            Village = 1,
+            City,
+            Route,
+            Underground,
+            Underwater,
+            /// 0x06 - 0x07: Unknown/unused,
+            Inside = 8,
+            SecretBase,
+            /// 0x0A - 0xFF: Unknown/unused
+        }
+
         // Header data!
 
         //Example from https://datacrystal.romhacking.net/wiki/Pok%C3%A9mon_3rd_Generation
@@ -80,7 +93,7 @@
         /// 0x09: Secret base,
         /// 0x0A - 0xFF: Unknown/unused
         /// </summary>
-        public byte mapType;
+        public Type mapType;
         public byte unknown;
         public byte unknown2;
         /// <summary>
@@ -114,6 +127,8 @@
         public ConnectionData connections;
 
         public string Name { get; set; }
+
+        public bool IsOutdoors => mapType == Type.Route || mapType == Type.City || mapType == Type.Village;
 
         public override string ToString()
         {

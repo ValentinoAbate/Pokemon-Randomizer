@@ -297,21 +297,27 @@ namespace PokemonRandomizer.Backend.Randomization
             #endregion
 
             #region Maps (NOTHING YET)
-            // Mutate Maps
-            // Mutate tiles and layout (if applicable)
-            // Team magma/aqua/rocket takeover mode?
-            // Set metadata (environent, etc)
-            // Mutate Trainers (should be per map later?)
-            // Set Trainer positions (and some base tags maybe) and add scripts
-            // Sleeper agents? (Random non-npc trainers become trainers)
-            // Set tags (gym trainer, gym leader, elite 4, rival, reoccuring, etc)
-            // Set class
-            // Natural trainers? (trainer types are based on environment type)
-            //Mutate battle here later?
-            // Mutate Weather (currently just iterate though the maps, but may want to construct a graph later)
+
+            // Mutate Maps (currently just iterate though the maps, but may want to construct and traverse a graph later)
             foreach(var map in data.Maps.All)
             {
-                map.weather = 0x03;
+
+                // Mutate Maps
+                // Mutate Weather
+                if(map.IsOutdoors)
+                {
+                    map.weather = 0x03;
+                }
+                // Mutate tiles and layout (if applicable)
+                // Team magma/aqua/rocket takeover mode?
+                // Set metadata (environent, etc)
+                // Mutate Trainers (should be per map later?)
+                // Set Trainer positions (and some base tags maybe) and add scripts
+                // Sleeper agents? (Random non-npc trainers become trainers)
+                // Set tags (gym trainer, gym leader, elite 4, rival, reoccuring, etc)
+                // Set class
+                // Natural trainers? (trainer types are based on environment type)
+                //Mutate battle here later?
             }
             #endregion
 
@@ -375,31 +381,67 @@ namespace PokemonRandomizer.Backend.Randomization
                     specialTrainers.Add(name.ToLower(), new List<Trainer>());
                 return names;
             };
-            var rivals = AddTrainersFromArrayAttr("rivals");
-            var reoccuring = AddTrainersFromArrayAttr("reoccuring");
-            var gymLeaders = AddTrainersFromArrayAttr("gymLeaders");
-            var eliteFour = AddTrainersFromArrayAttr("eliteFour");
-            var champions = AddTrainersFromArrayAttr("champion");
-            var ubers = AddTrainersFromArrayAttr("uber");
-            var teamAdmins = AddTrainersFromArrayAttr("teamAdmins");
-            var teamLeaders = AddTrainersFromArrayAttr("teamLeaders");
-            int[] aceTrainerClasses = data.Info.IntArrayAttr("aceTrainers", "classNums");
-            List<Trainer> aceTrainers = new List<Trainer>();
+            var rivalNames = AddTrainersFromArrayAttr("rivals");
+            var gymLeaderNames = AddTrainersFromArrayAttr("gymLeaders");
+            var eliteFourNames = AddTrainersFromArrayAttr("eliteFour");
+            var championsNames = AddTrainersFromArrayAttr("champion");
+            var uberNames = AddTrainersFromArrayAttr("uber");
+            var teamAdminNames = AddTrainersFromArrayAttr("teamAdmins");
+            var teamLeaderNames = AddTrainersFromArrayAttr("teamLeaders");
+            var aceTrainerClasses = data.Info.IntArrayAttr("aceTrainers", "classNums");
+            var aceTrainerNames = new List<string>();
+            var reoccuringNames = new List<string>();
+            var teamGruntNames = data.Info.ArrayAttr("teamGrunts", "names").Select((name) => name.ToLower()).ToArray();
+            var gruntBattles = new List<Trainer>();
             // Add Wally as their own special category
             specialTrainers.Add("wally", new List<Trainer>());
             #endregion
 
-            var trainerSpeciesSettings = settings.GetSpeciesSettings(Settings.SpeciesSettings.Class.Trainer);
-
+            var normalTrainers = new Dictionary<string, Trainer>();
+            // Classify trainers
             foreach (var trainer in data.Trainers)
             {
-                // Set aside special trainers
-                if (specialTrainers.ContainsKey(trainer.name.ToLower()))
-                    specialTrainers[trainer.name.ToLower()].Add(trainer);
-                else if (aceTrainerClasses.Contains(trainer.trainerClass))
-                    aceTrainers.Add(trainer);
-                else
-                    RandomizeBattle(trainer, pokemonSet, trainerSpeciesSettings);     
+                string name = trainer.name.ToLower();
+                // All grunts have the same names but are not reoccuring trainers
+                if(teamGruntNames.Contains(name))
+                {
+                    gruntBattles.Add(trainer);
+                }
+                else if (specialTrainers.ContainsKey(name)) // Already a known special trainer, add to the special trainers dictionary
+                {
+                    specialTrainers[name].Add(trainer);
+                }
+                else if (aceTrainerClasses.Contains(trainer.trainerClass)) // new Ace trainer, add to speical trainers
+                {
+                    if (!specialTrainers.ContainsKey(name))
+                    {
+                        specialTrainers.Add(name, new List<Trainer>());
+                        aceTrainerNames.Add(name);
+                    }
+                    specialTrainers[name].Add(trainer);
+                }
+                else if (normalTrainers.ContainsKey(name)) // new reocurring trainer
+                {
+                    specialTrainers.Add(name, new List<Trainer> { normalTrainers[name], trainer });
+                    normalTrainers.Remove(name);
+                    reoccuringNames.Add(name);
+                }
+                else // Normal (or potentially reocurring trainer)
+                {
+                    normalTrainers.Add(name, trainer);
+                }
+            }
+
+            var trainerSpeciesSettings = settings.GetSpeciesSettings(Settings.SpeciesSettings.Class.Trainer);
+            // Randomize Normal Trainers
+            foreach (var trainer in normalTrainers.Values)
+            {
+                RandomizeBattle(trainer, pokemonSet, trainerSpeciesSettings);
+            }
+            // Randomize Team Grunts
+            foreach (var trainer in gruntBattles)
+            {
+                RandomizeBattle(trainer, pokemonSet, trainerSpeciesSettings);
             }
 
             #region Special Trainers
@@ -407,7 +449,7 @@ namespace PokemonRandomizer.Backend.Randomization
             #region Rivals
 
             var rivalSpeciesSettings = settings.GetSpeciesSettings(Settings.SpeciesSettings.Class.Rival);
-            foreach (var trainer in rivals)
+            foreach (var trainer in rivalNames)
             {
                 var battles = specialTrainers[trainer.ToLower()];
                 battles.Sort((a, b) => a.AvgLvl.CompareTo(b.AvgLvl));
@@ -454,175 +496,10 @@ namespace PokemonRandomizer.Backend.Randomization
 
             #endregion
 
-            #region Ubers
-
-            // Ubers use champion settings for now
-            var uberSpeciesSettings = settings.GetSpeciesSettings(Settings.SpeciesSettings.Class.Champion);
-            foreach (var trainer in ubers)
-            {
-                var battles = specialTrainers[trainer.ToLower()];
-                battles.Sort((a, b) => a.AvgLvl.CompareTo(b.AvgLvl));
-                if (settings.RivalSetting == Settings.TrainerOption.CompletelyRandom)
-                {
-                    foreach (var battle in battles)
-                        RandomizeBattle(battle, pokemonSet, trainerSpeciesSettings);
-                }
-                else if (settings.RivalSetting == Settings.TrainerOption.Procedural)
-                {
-                    RandomizeBattle(battles[0], pokemonSet, trainerSpeciesSettings);
-                    PcgBattles(battles, battles[0].pokemon.Select((p) => p.species), pokemonSet, uberSpeciesSettings);
-                }
-
-            }
-
-            #endregion
-
-            #region Champions
-
-            var championSpeciesSettings = settings.GetSpeciesSettings(Settings.SpeciesSettings.Class.Champion);
-            foreach (var trainer in champions)
-            {
-                var battles = specialTrainers[trainer.ToLower()];
-                battles.Sort((a, b) => a.AvgLvl.CompareTo(b.AvgLvl));
-                if (settings.RivalSetting == Settings.TrainerOption.CompletelyRandom)
-                {
-                    foreach (var battle in battles)
-                        RandomizeBattle(battle, pokemonSet, championSpeciesSettings);
-                }
-                else if (settings.RivalSetting == Settings.TrainerOption.Procedural)
-                {
-                    RandomizeBattle(battles[0], pokemonSet, championSpeciesSettings);
-                    PcgBattles(battles, battles[0].pokemon.Select((p) => p.species), pokemonSet, championSpeciesSettings);
-                }
-
-            }
-
-            #endregion
-
-            #region Elite Four
-
-            var eliteFourSpeciesSettings = settings.GetSpeciesSettings(Settings.SpeciesSettings.Class.EliteFour);
-            foreach (var trainer in eliteFour)
-            {
-                var battles = specialTrainers[trainer.ToLower()];
-                battles.Sort((a, b) => a.AvgLvl.CompareTo(b.AvgLvl));
-                if (settings.RivalSetting == Settings.TrainerOption.CompletelyRandom)
-                {
-                    foreach (var battle in battles)
-                        RandomizeBattle(battle, pokemonSet, eliteFourSpeciesSettings);
-                }
-                else if (settings.RivalSetting == Settings.TrainerOption.Procedural)
-                {
-                    RandomizeBattle(battles[0], pokemonSet, eliteFourSpeciesSettings);
-                    PcgBattles(battles, battles[0].pokemon.Select((p) => p.species), pokemonSet, eliteFourSpeciesSettings);
-                }
-
-            }
-
-            #endregion
-
-            #region Gym Leaders
-
-            var gymLeaderSpeciesSettings = settings.GetSpeciesSettings(Settings.SpeciesSettings.Class.GymLeader);
-            foreach (var trainer in gymLeaders)
-            {
-                var battles = specialTrainers[trainer.ToLower()];
-                battles.Sort((a, b) => a.AvgLvl.CompareTo(b.AvgLvl));
-                if (settings.RivalSetting == Settings.TrainerOption.CompletelyRandom)
-                {
-                    foreach (var battle in battles)
-                        RandomizeBattle(battle, pokemonSet, gymLeaderSpeciesSettings);
-                }
-                else if (settings.RivalSetting == Settings.TrainerOption.Procedural)
-                {
-                    RandomizeBattle(battles[0], pokemonSet, gymLeaderSpeciesSettings);
-                    PcgBattles(battles, battles[0].pokemon.Select((p) => p.species), pokemonSet, gymLeaderSpeciesSettings);
-                }
-
-            }
-
-            #endregion        
-
-            #region Team Leaders
-
-            // Team leaders are as strong as gym leaders for now
-            var teamLeaderSpeciesSettings = settings.GetSpeciesSettings(Settings.SpeciesSettings.Class.GymLeader);
-            foreach (var trainer in teamLeaders)
-            {
-                var battles = specialTrainers[trainer.ToLower()];
-                battles.Sort((a, b) => a.AvgLvl.CompareTo(b.AvgLvl));
-                if (settings.RivalSetting == Settings.TrainerOption.CompletelyRandom)
-                {
-                    foreach (var battle in battles)
-                        RandomizeBattle(battle, pokemonSet, teamLeaderSpeciesSettings);
-                }
-                else if (settings.RivalSetting == Settings.TrainerOption.Procedural)
-                {
-                    RandomizeBattle(battles[0], pokemonSet, teamLeaderSpeciesSettings);
-                    PcgBattles(battles, battles[0].pokemon.Select((p) => p.species), pokemonSet, teamLeaderSpeciesSettings);
-                }
-
-            }
-
-            #endregion
-
-            #region Team Admins
-
-            // Team admins are as strong as ace trainers for now
-            var teamAdminSpeciesSettings = settings.GetSpeciesSettings(Settings.SpeciesSettings.Class.AceTrainer);
-            foreach (var trainer in teamAdmins)
-            {
-                var battles = specialTrainers[trainer.ToLower()];
-                battles.Sort((a, b) => a.AvgLvl.CompareTo(b.AvgLvl));
-                if (settings.RivalSetting == Settings.TrainerOption.CompletelyRandom)
-                {
-                    foreach (var battle in battles)
-                        RandomizeBattle(battle, pokemonSet, teamAdminSpeciesSettings);
-                }
-                else if (settings.RivalSetting == Settings.TrainerOption.Procedural)
-                {
-                    RandomizeBattle(battles[0], pokemonSet, teamAdminSpeciesSettings);
-                    PcgBattles(battles, battles[0].pokemon.Select((p) => p.species), pokemonSet, teamAdminSpeciesSettings);
-                }
-
-            }
-
-            #endregion
-
-            #region Ace Trainers
-
-            var aceTrainerSpeciesSettings = settings.GetSpeciesSettings(Settings.SpeciesSettings.Class.AceTrainer);
-            foreach (var trainer in aceTrainers)
-            {
-                RandomizeBattle(trainer, pokemonSet, aceTrainerSpeciesSettings);
-            }
-
-            #endregion         
-
-            #region Reoccuring Trainers
-
-            foreach (var trainer in reoccuring)
-            {
-                var battles = specialTrainers[trainer.ToLower()];
-                battles.Sort((a, b) => a.AvgLvl.CompareTo(b.AvgLvl));
-                if (settings.RivalSetting == Settings.TrainerOption.CompletelyRandom)
-                {
-                    foreach (var battle in battles)
-                        RandomizeBattle(battle, pokemonSet, trainerSpeciesSettings);
-                }
-                else if (settings.RivalSetting == Settings.TrainerOption.Procedural)
-                {
-                    RandomizeBattle(battles[0], pokemonSet, trainerSpeciesSettings);
-                    PcgBattles(battles, battles[0].pokemon.Select((p) => p.species), pokemonSet, trainerSpeciesSettings);
-                }
-            }
-
-            #endregion
-
             #region Wally
 
             // Randomize Wally starter if applicable
-            if(settings.RandomizeWallyAce)
+            if (settings.RandomizeWallyAce)
                 data.CatchingTutPokemon = RandomSpecies(pokemonSet, data.CatchingTutPokemon, 5, rivalSpeciesSettings);
             var wallyBattles = specialTrainers["wally"];
             wallyBattles.Sort((a, b) => a.AvgLvl.CompareTo(b.AvgLvl));
@@ -651,6 +528,38 @@ namespace PokemonRandomizer.Backend.Randomization
             }
 
             #endregion
+
+            void SpecialTrainerRandomization(IEnumerable<string> trainerNames, Settings.SpeciesSettings speciesSettings, Settings.TrainerOption option)
+            {
+                foreach (var trainer in trainerNames)
+                {
+                    var battles = specialTrainers[trainer.ToLower()];
+                    battles.Sort((a, b) => a.AvgLvl.CompareTo(b.AvgLvl));
+                    if (option == Settings.TrainerOption.CompletelyRandom)
+                    {
+                        foreach (var battle in battles)
+                            RandomizeBattle(battle, pokemonSet, speciesSettings);
+                    }
+                    else if (option == Settings.TrainerOption.Procedural)
+                    {
+                        RandomizeBattle(battles[0], pokemonSet, speciesSettings);
+                        PcgBattles(battles, battles[0].pokemon.Select((p) => p.species), pokemonSet, speciesSettings);
+                    }
+                }
+            }
+
+            // Ubers use champion settings for now
+            SpecialTrainerRandomization(uberNames, settings.GetSpeciesSettings(Settings.SpeciesSettings.Class.Champion), settings.GymLeaderSetting);
+            SpecialTrainerRandomization(championsNames, settings.GetSpeciesSettings(Settings.SpeciesSettings.Class.Champion), settings.GymLeaderSetting);
+            SpecialTrainerRandomization(eliteFourNames, settings.GetSpeciesSettings(Settings.SpeciesSettings.Class.EliteFour), settings.GymLeaderSetting);
+            SpecialTrainerRandomization(gymLeaderNames, settings.GetSpeciesSettings(Settings.SpeciesSettings.Class.GymLeader), settings.GymLeaderSetting);
+            // Team Leaders are as strong as gym leaders for now
+            SpecialTrainerRandomization(teamLeaderNames, settings.GetSpeciesSettings(Settings.SpeciesSettings.Class.GymLeader), settings.GymLeaderSetting);   
+            // Team Admins are as strong as ace trainers for now
+            SpecialTrainerRandomization(teamAdminNames, settings.GetSpeciesSettings(Settings.SpeciesSettings.Class.AceTrainer), settings.GymLeaderSetting);
+            SpecialTrainerRandomization(aceTrainerNames, settings.GetSpeciesSettings(Settings.SpeciesSettings.Class.AceTrainer), settings.ReoccuringTrainerSetting);
+            // Reoccurring Trainers use normal trainer settings
+            SpecialTrainerRandomization(reoccuringNames, settings.GetSpeciesSettings(Settings.SpeciesSettings.Class.Trainer), settings.ReoccuringTrainerSetting);
 
             #endregion
 

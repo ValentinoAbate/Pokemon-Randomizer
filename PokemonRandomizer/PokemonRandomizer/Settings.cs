@@ -113,8 +113,12 @@ namespace PokemonRandomizer
         public bool RandomizeWallyAce { get => true; }
         public TrainerOption WallySetting { get => TrainerOption.Procedural; }
         public TrainerOption GymLeaderSetting { get => TrainerOption.Procedural; }
+        public TrainerOption ReoccuringTrainerSetting { get => TrainerOption.Procedural; }
         public double BattleTypeRandChance { get => 1; }
         public double DoubleBattleChance { get => 1; }
+        /// <summary>
+        /// WARNING: Setting this to false will cause these battles to be anomalous
+        /// </summary>
         public bool MakeSoloPokemonBattlesSingle { get => true; }
         #endregion
 
@@ -142,6 +146,15 @@ namespace PokemonRandomizer
         /// Currently just makes all starters additionally have tackle
         /// </summary>
         public bool SafeStarterMovesets { get => true; }
+        #endregion
+
+        #region Maps
+
+        public enum WeatherSettings
+        {
+            CompletelyRandom
+        }
+
         #endregion
 
         #region TMs, HMs, and Move Tutors
