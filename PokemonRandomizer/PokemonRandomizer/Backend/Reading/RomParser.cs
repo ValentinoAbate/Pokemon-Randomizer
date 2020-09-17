@@ -131,8 +131,10 @@ namespace PokemonRandomizer.Backend.Reading
         // Read the attacks starting at offset (returns the index after completion)
         private static int ReadAttacks(Rom rom, int offset, out LearnSet moves)
         {
-            moves = new LearnSet();
-            moves.OriginalOffset = offset;
+            moves = new LearnSet
+            {
+                OriginalOffset = offset
+            };
             byte curr = rom.ReadByte(offset);
             byte next = rom.ReadByte(offset + 1);
             while (curr != 255 || next != 255)

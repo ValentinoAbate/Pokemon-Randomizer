@@ -145,7 +145,7 @@ namespace PokemonRandomizer.Backend.DataStructures
             Pursuit,
             ClearField,
             DamageFlat20,
-            RecoverHpWeather1,
+            RecoverHpWeather1 = 132,
             RecoverHpWeather2,
             RecoverHpWeather3,
             HiddenPower,
@@ -175,7 +175,7 @@ namespace PokemonRandomizer.Backend.DataStructures
             Stockpile,
             SpitUp,
             Swallow,
-            WeatherHail,
+            WeatherHail = 164,
             Torment,
             StatusConfuseSpAtkPlus2,
             StatusBurn,
@@ -224,6 +224,7 @@ namespace PokemonRandomizer.Backend.DataStructures
             WaterSport,
             SpAtkSpDefPlus1,
             DragonDance,
+            Camouflage,
             //See Move effects.txt
         }
 

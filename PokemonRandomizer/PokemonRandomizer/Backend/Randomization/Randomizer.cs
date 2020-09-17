@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing.Text;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -307,54 +308,7 @@ namespace PokemonRandomizer.Backend.Randomization
                     continue;
                 // Mutate Maps
                 // Mutate Weather
-                if(settings.WeatherSetting != Settings.WeatherOption.Unchanged)
-                {
-                    bool gymOverride = settings.OverrideAllowGymWeather && map.battleField == 0x01;
-                    bool banWeatherChange = 
-                    (
-                        (settings.OnlyChangeClearWeather && map.weather != Map.Weather.Clear && map.weather != Map.Weather.Cloudy && map.weather != Map.Weather.House) ||
-                        (!settings.ChangeHouseWeather && map.mapType == Map.Type.Inside) ||
-                        (!settings.ChangeSecretBaseWeather && map.mapType == Map.Type.SecretBase)
-                    );
-                    if((gymOverride || !banWeatherChange) && rand.RandomDouble() < settings.WeatherRandChance)
-                    {
-                        WeightedSet<Map.Weather> choices;
-                        if(settings.WeatherSetting == Settings.WeatherOption.Weighted)
-                        {
-                            choices = new WeightedSet<Map.Weather>(settings.WeatherWeights);
-                        }
-                        else if(settings.WeatherSetting == Settings.WeatherOption.RandomInBattleEffect)
-                        {
-                            var weatherTypes = EnumUtils.GetValues<Map.Weather>().Where((w) => Map.AffectsBattle(w, settings.UseHailHack));
-                            choices = new WeightedSet<Map.Weather>(weatherTypes, 1);
-                        }
-                        else
-                        {
-                            choices = new WeightedSet<Map.Weather>(EnumUtils.GetValues<Map.Weather>(), 1);
-                        }
-                        if(settings.SafeWeather && !gymOverride)
-                        {
-                            if (!(map.mapType == Map.Type.Underwater))
-                                choices.RemoveIfPresent(Map.Weather.UnderwaterMist);
-                            if(!map.IsOutdoors)
-                            {
-                                choices.RemoveIfPresent(Map.Weather.ClearWithCloudsInWater);
-                                choices.RemoveIfPresent(Map.Weather.Clear);
-                                choices.RemoveIfPresent(Map.Weather.Cloudy);
-                                choices.RemoveIfPresent(Map.Weather.Rain);
-                                choices.RemoveIfPresent(Map.Weather.RainThunderstorm);
-                                choices.RemoveIfPresent(Map.Weather.RainHeavyThunderstrorm);
-                                choices.RemoveIfPresent(Map.Weather.Sandstorm);
-                                choices.RemoveIfPresent(Map.Weather.Snow);
-                                choices.RemoveIfPresent(Map.Weather.SnowSteady);
-                                choices.RemoveIfPresent(Map.Weather.StrongSunlight);
-                            }
-                        }
-                        if(choices.Count > 0)
-                            map.weather = rand.Choice(choices);
-                    }
-
-                }
+                RandomizeWeather(map, settings);
                 // Mutate tiles and layout (if applicable)
                 // Team magma/aqua/rocket takeover mode?
                 // Set metadata (environent, etc)
@@ -966,6 +920,51 @@ namespace PokemonRandomizer.Backend.Randomization
                 evos = stats.evolvesTo.Where((evo) => evo.Type != EvolutionType.None && EquivalentLevelReq(evo, speciesSettings) <= level);
             }
             return stats.species;
+        }
+
+        private void RandomizeWeather(Map map, Settings s)
+        {
+            if (s.WeatherSetting == Settings.WeatherOption.Unchanged)
+                return;
+            // Local method to finish choosing the weather
+            void ChooseWeather(Map map, Settings s, bool gymOverride)
+            {
+                var choices = new WeightedSet<Map.Weather>(s.WeatherWeights);
+                if (s.SafeUnderwaterWeather && !(map.mapType == Map.Type.Underwater))
+                {
+                    choices.RemoveIfPresent(Map.Weather.UnderwaterMist);
+                }
+                if (!gymOverride && s.SafeInsideWeather && !map.IsOutdoors)
+                {
+                    choices.RemoveIfPresent(Map.Weather.ClearWithCloudsInWater);
+                    choices.RemoveIfPresent(Map.Weather.Clear);
+                    choices.RemoveIfPresent(Map.Weather.Cloudy);
+                    choices.RemoveIfPresent(Map.Weather.Rain);
+                    choices.RemoveIfPresent(Map.Weather.RainThunderstorm);
+                    choices.RemoveIfPresent(Map.Weather.RainHeavyThunderstrorm);
+                    choices.RemoveIfPresent(Map.Weather.Sandstorm);
+                    choices.RemoveIfPresent(Map.Weather.Snow);
+                    choices.RemoveIfPresent(Map.Weather.SnowSteady);
+                    choices.RemoveIfPresent(Map.Weather.StrongSunlight);
+                }
+                if (choices.Count > 0)
+                    map.weather = rand.Choice(choices);
+            }
+            // If Gym override is set and the map is a gym, proceed with randomization
+            if (s.OverrideAllowGymWeather && map.battleField == 0x01)
+            {
+                if(rand.RandomDouble() < s.GymWeatherRandChance)
+                {
+                    ChooseWeather(map, s, true);
+                }
+            }
+            else if((!s.OnlyChangeClearWeather || Map.IsWeatherClear(map.weather)) && s.WeatherRandChance.ContainsKey(map.mapType))
+            {
+                if(rand.RandomDouble() < s.WeatherRandChance[map.mapType])
+                {
+                    ChooseWeather(map, s, false);
+                }
+            }
         }
     }
 }

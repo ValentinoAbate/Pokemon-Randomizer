@@ -71,21 +71,23 @@ namespace PokemonRandomizer
         #endregion
 
         private Backend.DataStructures.RomData Data { get; set; }
-        private Backend.DataStructures.RomData RandomizedData { get; set; }
+        private string[] LastRandomizationInfo { get; set; }
+
+        private const string romFileFilter = "GBA ROM|*.gba";
+        private const string saveRomPrompt = "Save ROM";
+        private const string openRomPrompt = "Open ROM";
 
         public MainWindow()
         {
             IsROMLoaded = false;
             InitializeComponent();
             this.DataContext = this;
-            //OpenTestROM("C:\\Users\\valen\\Desktop\\Pokemon - Emerald Version (U).gba");
         }
 
-        private void OpenTestROM(string path)
+        private void OpenRomNoWindow(string path)
         {
             byte[] rawROM = File.ReadAllBytes(path);
             Data = Backend.Reading.RomParser.Parse(rawROM);
-            RandomizedData = Data;
             IsROMLoaded = true;
             lblMessageBoxContent.Content = "ROM opened: " + Data.Name + " (" + Data.Code + ")";
         }
@@ -135,48 +137,57 @@ namespace PokemonRandomizer
 
         private void Open_ROM(object sender, RoutedEventArgs e)
         {
-            OpenFileDialog openFileDialog = new OpenFileDialog();
-            openFileDialog.Filter = "GBA ROM files|*.gba";
-            openFileDialog.Title = "Open ROM";
+            var openFileDialog = new OpenFileDialog
+            {
+                Filter = romFileFilter,
+                Title = openRomPrompt
+            };
             if (openFileDialog.ShowDialog() == true)
             {
                 byte[] rawROM = File.ReadAllBytes(openFileDialog.FileName);
                 Data = Backend.Reading.RomParser.Parse(rawROM);
-                RandomizedData = Data;
                 IsROMLoaded = true;
                 lblMessageBoxContent.Content = "ROM opened: " + Data.Name + " (" + Data.Code + ")";
+                LastRandomizationInfo = Data.ToStringArray();
             }
         }
 
         private void Save_ROM(object sender, RoutedEventArgs e)
         {
-            SaveFileDialog saveFileDialog = new SaveFileDialog();
-            saveFileDialog.Filter = "GBA ROM|*.gba";
-            saveFileDialog.Title = "Save ROM";
+            var saveFileDialog = new SaveFileDialog
+            {
+                Filter = romFileFilter,
+                Title = saveRomPrompt
+            };
             if (saveFileDialog.ShowDialog() == true)
             {
                 var randomzier = new Backend.Randomization.Randomizer(Data, new Settings(this));
-                RandomizedData = randomzier.Randomize();
-                File.WriteAllBytes(saveFileDialog.FileName, Backend.Writing.RomWriter.Write(RandomizedData));
+                var randomizedData = randomzier.Randomize();
+                File.WriteAllBytes(saveFileDialog.FileName, Backend.Writing.RomWriter.Write(randomizedData));
+                LastRandomizationInfo = randomizedData.ToStringArray();
             }
         }
 
         private void Generate_Info_Doc(object sender, RoutedEventArgs e)
         {
-            SaveFileDialog saveFileDialog = new SaveFileDialog();
-            saveFileDialog.Filter = "txt file|*.txt";
-            saveFileDialog.Title = "Generate Info Docs";
+            var saveFileDialog = new SaveFileDialog
+            {
+                Filter = "txt file|*.txt",
+                Title = "Generate Info Docs"
+            };
             if (saveFileDialog.ShowDialog() == true)
             {
-                File.WriteAllLines(saveFileDialog.FileName, RandomizedData.ToStringArray());
+                File.WriteAllLines(saveFileDialog.FileName, LastRandomizationInfo);
             }
         }
 
         private void Convert_Table(object sender, RoutedEventArgs e)
         {
-            OpenFileDialog openFileDialog = new OpenFileDialog();
-            openFileDialog.Filter = ".csv files|*.csv";
-            openFileDialog.Title = "Convert csv";
+            var openFileDialog = new OpenFileDialog
+            {
+                Filter = ".csv file|*.csv",
+                Title = "Convert csv"
+            };
             if (openFileDialog.ShowDialog() == true)
             {
                 Backend.Utilities.TableReader.TableToDictFormat(openFileDialog.FileName, ',', 15);
@@ -197,17 +208,22 @@ namespace PokemonRandomizer
 
         private void Open_ROM_And_Save_Bypass(object sender, RoutedEventArgs e)
         {
-            OpenFileDialog openFileDialog = new OpenFileDialog();
-            openFileDialog.Filter = "GBA ROM files|*.gba";
-            openFileDialog.Title = "Open ROM and Save Bypass";
+            var openFileDialog = new OpenFileDialog
+            {
+                Filter = romFileFilter,
+                Title = "Open ROM and Save (Bypass Randomization)"
+            };
             if (openFileDialog.ShowDialog() == true)
             {
                 byte[] rawROM = File.ReadAllBytes(openFileDialog.FileName);
                 Data = Backend.Reading.RomParser.Parse(rawROM);
-                SaveFileDialog saveFileDialog = new SaveFileDialog();
-                saveFileDialog.Filter = "GBA ROM|*.gba";
-                saveFileDialog.Title = "Save ROM";
-                saveFileDialog.FileName = "testROM.gba";
+                LastRandomizationInfo = Data.ToStringArray();
+                var saveFileDialog = new SaveFileDialog
+                {
+                    Filter = romFileFilter,
+                    Title = saveRomPrompt,
+                    FileName = "testROM.gba"
+                };
                 if (saveFileDialog.ShowDialog() == true)
                 {
                     File.WriteAllBytes(saveFileDialog.FileName, Backend.Writing.RomWriter.Write(Data));

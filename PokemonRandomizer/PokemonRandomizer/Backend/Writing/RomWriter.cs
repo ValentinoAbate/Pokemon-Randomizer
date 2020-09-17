@@ -421,7 +421,7 @@ namespace PokemonRandomizer.Backend.Writing
         /// </summary>
         private static void WriteTrainerBattles(RomData romData, Rom rom, XmlManager info)
         {
-            int numTrainers = info.Num("trainerBattles");
+            //int numTrainers = info.Num("trainerBattles"); // Needed later for determining if expansion is necessary
             rom.Seek(info.Offset("trainerBattles"));
             foreach (var trainer in romData.Trainers)
             {

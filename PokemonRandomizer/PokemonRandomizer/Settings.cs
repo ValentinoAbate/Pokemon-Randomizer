@@ -1,5 +1,6 @@
 ﻿using PokemonRandomizer.Backend.DataStructures;
 using PokemonRandomizer.Backend.Randomization;
+using PokemonRandomizer.Backend.Utilities;
 using System.Collections.Generic;
 
 namespace PokemonRandomizer
@@ -157,23 +158,47 @@ namespace PokemonRandomizer
         {
             Unchanged,
             CompletelyRandom,
-            RandomInBattleEffect,
-            // Add a balanced in battle effect setting
-            Weighted,
+            InBattleWeather,
+            CustomWeighting,
             //Storms (Local Area Based) - Add later
         }
 
-        public WeatherOption WeatherSetting => WeatherOption.RandomInBattleEffect;
-        public double WeatherRandChance => 0.1;
-        // Need to make more specific later
-        public bool SafeWeather => true;
+        public WeatherOption WeatherSetting => WeatherOption.InBattleWeather;
+        /// <summary>
+        /// If true, ensures that underwater weather won't be put anywhere except for underwater maps
+        /// </summary>
+        public bool SafeUnderwaterWeather => true;
+        /// <summary>
+        /// If true, outside weather won't be put inside
+        /// </summary>
+        public bool SafeInsideWeather => true;
+        /// <summary>
+        /// Allows gym maps to have weather even if inside maps aren't weather randomized
+        /// Allows outside weather to be put in gyms
+        /// Uses GymWeatherRandChance instead of the normal chance
+        /// </summary>
         public bool OverrideAllowGymWeather => true;
+        /// <summary>
+        /// The chance that a gym will have weather if OverrideAllowGymWeather is tru
+        /// </summary>
+        public double GymWeatherRandChance => 0.33;
+        /// <summary>
+        /// If this is true, only maps that started with clear weather will be random (the desert will still have sandstorm, etc)
+        /// </summary>
         public bool OnlyChangeClearWeather => true;
-        public bool ChangeHouseWeather => false;
-        public bool ChangeSecretBaseWeather => false;
+        /// <summary>
+        /// If this is true, snow and steady snow will be considered battle weather and will actually make hail happen
+        /// </summary>
         public bool UseHailHack => true;
-
-        public WeightedSet<Map.Weather> WeatherWeights { get; } = new WeightedSet<Map.Weather>
+        private const double defaultWeatherRandChance = 0.2;
+        /// <summary>
+        /// The chance any given map type will have its weather randomized. If the map type is not in this map, that type of map will not be randomized
+        /// </summary>
+        public Dictionary<Map.Type, double> WeatherRandChance { get; } = new Dictionary<Map.Type, double>
+        {
+            { Map.Type.Route, defaultWeatherRandChance }
+        };
+        private readonly WeightedSet<Map.Weather> customWeights = new WeightedSet<Map.Weather>
         {
             { Map.Weather.Rain, 0.85f },
             { Map.Weather.RainThunderstorm, 0.125f },
@@ -183,6 +208,41 @@ namespace PokemonRandomizer
             { Map.Weather.StrongSunlight, 1 },
             { Map.Weather.Sandstorm, 0.8f },
         };
+        private readonly WeightedSet<Map.Weather> battleWeatherBalancedWeights = new WeightedSet<Map.Weather>
+        {
+            { Map.Weather.Rain, 0.85f },
+            { Map.Weather.RainThunderstorm, 0.125f },
+            { Map.Weather.RainHeavyThunderstrorm, 0.025f },
+            { Map.Weather.Snow, 0.75f },
+            { Map.Weather.SnowSteady, 0.1f },
+            { Map.Weather.StrongSunlight, 0.9f },
+            { Map.Weather.Sandstorm, 0.6f },
+        };
+        /// <summary>
+        /// Weighting for each weather type. Depenend on the current weather setting
+        /// May split weather settings by map type
+        /// </summary>
+        public WeightedSet<Map.Weather> WeatherWeights 
+        { 
+            get
+            {
+                switch (WeatherSetting)
+                {
+                    case WeatherOption.InBattleWeather:
+                        if(!UseHailHack)
+                        {
+                            var modWeights = new WeightedSet<Map.Weather>(battleWeatherBalancedWeights);
+                            modWeights.RemoveWhere((w) => Map.WeatherAffectsBattle(w, UseHailHack));
+                            return modWeights;
+                        }
+                        return battleWeatherBalancedWeights;
+                    case WeatherOption.CustomWeighting:
+                        return customWeights;
+                    default:
+                        return new WeightedSet<Map.Weather>(EnumUtils.GetValues<Map.Weather>(), 1); ;
+                }
+            }
+        }
 
         #endregion
 

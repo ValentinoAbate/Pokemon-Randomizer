@@ -161,6 +161,7 @@
 160 - stockpile
 161 - spit up
 162 - swallow
+163 - Unused / Unknown
 164 - hail (hail)
 165 - torment (torment)
 166 - confuse and SP.ATK +2 (flatter)
@@ -210,3 +211,4 @@
 210 - water sport
 211 - SP.ATK +1, SP.DEF +1 (Calm mind)
 212 - dragon dance
+213 - Camouflage
