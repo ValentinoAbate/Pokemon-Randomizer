@@ -1,0 +1,15 @@
+Base Rules:
+- If a pokemon faints in battle, it is considered dead. It must be either released or put in a special PC box
+- You must nickname all of your pokemon
+- You can only catch the first pokemon you run into on any route. If you kill or fail to catch it, you may not catch a pokemon on this route.
+	- You may, however catch any shiny pokemon (except the red gyarados in S/G).
+Optional Difficulty Rules:
+- A black/whiteout is considered a player death, and ends the run.
+- No items in battle
+- You must play on set
+- Unless randomized, you must release your started if it goes above level 10.
+- You can only use each full heal once (pokecenters, etc)
+Optional QOL rules:
+- Dupes Clause: If you run into a pokemon you currently have, you may skip it. You may skip an amount of that pokemon equal to the number you have alive.
+Optional Flavor Rules:
+- You must name your player character your preferred name

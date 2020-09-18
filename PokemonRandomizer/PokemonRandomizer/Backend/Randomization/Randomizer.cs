@@ -324,7 +324,7 @@ namespace PokemonRandomizer.Backend.Randomization
 
             #region Wild Pokemon (may happen during maps later)
 
-            if (settings.WildPokemonSetting == Settings.WildPokemonOption.CompletelyRandom)
+            if (settings.WildPokemonSetting == Settings.WildPokemonOption.Individual)
             {
                 // Get the species randomization settings for wild pokemon
                 var wildSpeciesSettings = settings.GetSpeciesSettings(Settings.SpeciesSettings.Class.Wild);
@@ -336,7 +336,47 @@ namespace PokemonRandomizer.Backend.Randomization
                     }
                 }
             }
-            else if(settings.WildPokemonSetting == Settings.WildPokemonOption.AreaOneToOne)
+            else if(settings.WildPokemonSetting == Settings.WildPokemonOption.IndividualAreaWeights)
+            {
+                // Get the species randomization settings for wild pokemon
+                var wildSpeciesSettings = settings.GetSpeciesSettings(Settings.SpeciesSettings.Class.Wild);
+                foreach (var encounterSet in data.Encounters)
+                {
+                    var typeSample = encounterSet.Select((e) => e.pokemon).Distinct();
+                    foreach (var enc in encounterSet)
+                    {
+                        enc.pokemon = RandomSpeciesTypeGroup(pokemonSet, enc.pokemon, enc.level, typeSample, wildSpeciesSettings);
+                    }
+                }
+            }
+            else if(settings.WildPokemonSetting == Settings.WildPokemonOption.AreaOneToOne || settings.WildPokemonSetting == Settings.WildPokemonOption.AreaOneToOneAreaWeights)
+            {
+                // Get the species randomization settings for wild pokemon
+                var wildSpeciesSettings = settings.GetSpeciesSettings(Settings.SpeciesSettings.Class.Wild);
+                foreach (var encounterSet in data.Encounters)
+                {
+                    // Get all unique species in the encounter set
+                    var species = encounterSet.Select((e) => e.pokemon).Distinct();
+                    var mapping = new Dictionary<PokemonSpecies, PokemonSpecies>();
+                    if(settings.WildPokemonSetting == Settings.WildPokemonOption.AreaOneToOneAreaWeights)
+                    {
+                        foreach (var s in species)
+                            mapping.Add(s, RandomSpeciesTypeGroup(pokemonSet, s, species, wildSpeciesSettings));
+                    }
+                    else
+                    {
+                        foreach (var s in species)
+                            mapping.Add(s, RandomSpecies(pokemonSet, s, wildSpeciesSettings));
+                    }
+                    foreach (var enc in encounterSet)
+                    {
+                        enc.pokemon = mapping[enc.pokemon];
+                        if (wildSpeciesSettings.RestrictIllegalEvolutions)
+                            enc.pokemon = CorrectImpossibleEvo(enc.pokemon, enc.level, wildSpeciesSettings);
+                    }
+                }
+            }
+            else if (settings.WildPokemonSetting == Settings.WildPokemonOption.AreaOneToOneAreaWeights)
             {
                 // Get the species randomization settings for wild pokemon
                 var wildSpeciesSettings = settings.GetSpeciesSettings(Settings.SpeciesSettings.Class.Wild);
@@ -639,7 +679,7 @@ namespace PokemonRandomizer.Backend.Randomization
             return types;
         }
 
-        /// <summary> Get a wieghted and culled list of possible pokemon</summary>
+        /// <summary> Get a weighted and culled list of possible pokemon</summary>
         private WeightedSet<PokemonSpecies> SpeciesWeightedSet(IEnumerable<PokemonSpecies> possiblePokemon, PokemonSpecies pokemon, Settings.SpeciesSettings speciesSettings)
         {
             var combinedWeightings = new WeightedSet<PokemonSpecies>(possiblePokemon);
@@ -672,6 +712,39 @@ namespace PokemonRandomizer.Backend.Randomization
             if(speciesSettings.BanLegendaries)
                 combinedWeightings.RemoveWhere((p) => PokemonBaseStats.legendaries.Contains(p));
             return combinedWeightings;
+        }
+
+        private WeightedSet<PokemonSpecies> SpeciesWeightedSetTypeGroup(IEnumerable<PokemonSpecies> possiblePokemon, PokemonSpecies pokemon, IEnumerable<PokemonSpecies> typeGroup, Settings.SpeciesSettings speciesSettings)
+        {
+            var baseWeights = SpeciesWeightedSet(possiblePokemon, pokemon, speciesSettings);
+            if(speciesSettings.TypeSimilarityMod > 0)
+            {
+                foreach (var typeSample in typeGroup)
+                {
+                    if (typeSample == pokemon)
+                        continue;
+                    baseWeights.Add(PokemonMetrics.TypeSimilarity(baseWeights.Items, data, typeSample), speciesSettings.TypeSimilarityMod);
+                }
+            }
+            return baseWeights;
+        }
+        /// <summary> Chose a random species from the input set based on the given species settings and the type sample given</summary> 
+        private PokemonSpecies RandomSpeciesTypeGroup(IEnumerable<PokemonSpecies> possiblePokemon, PokemonSpecies pokemon, int level, IEnumerable<PokemonSpecies> typeGroup, Settings.SpeciesSettings speciesSettings)
+        {
+            var newSpecies = RandomSpeciesTypeGroup(possiblePokemon, pokemon, typeGroup, speciesSettings);
+            if (speciesSettings.ForceHighestLegalEvolution)
+                newSpecies = MaxEvolution(newSpecies, level, speciesSettings);
+            else if (speciesSettings.RestrictIllegalEvolutions)
+                newSpecies = CorrectImpossibleEvo(newSpecies, level, speciesSettings);
+            // Actually choose the species
+            return newSpecies;
+        }
+        /// <summary> Chose a random species from the input set based on the given species settings and the type sample given</summary> 
+        private PokemonSpecies RandomSpeciesTypeGroup(IEnumerable<PokemonSpecies> possiblePokemon, PokemonSpecies pokemon, IEnumerable<PokemonSpecies> typeGroup, Settings.SpeciesSettings speciesSettings)
+        {
+            var combinedWeightings = SpeciesWeightedSetTypeGroup(possiblePokemon, pokemon, typeGroup, speciesSettings);
+            // Actually choose the species
+            return rand.Choice(combinedWeightings);
         }
         /// <summary> Chose a random species from the input set based on the given species settings</summary> 
         private PokemonSpecies RandomSpecies(IEnumerable<PokemonSpecies> possiblePokemon, PokemonSpecies pokemon, Settings.SpeciesSettings speciesSettings)
@@ -852,9 +925,12 @@ namespace PokemonRandomizer.Backend.Randomization
             // Set Battle Type
             if (rand.RandomDouble() < settings.BattleTypeRandChance)
                 trainer.isDoubleBattle = rand.RandomDouble() < settings.DoubleBattleChance;
+            // Get type sample
+            //var typeSample = trainer.pokemon.Select((p) => p.species);
             // Set pokemon
             foreach (var pokemon in trainer.pokemon)
             {
+                //pokemon.species = RandomSpeciesTypeGroup(pokemonSet, pokemon.species, pokemon.level, typeSample, speciesSettings);
                 pokemon.species = RandomSpecies(pokemonSet, pokemon.species, pokemon.level, speciesSettings);
                 // Reset special moves if necessary
                 if (pokemon.HasSpecialMoves)

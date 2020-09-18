@@ -15,10 +15,13 @@ namespace PokemonRandomizer
         #endregion
 
         #region Type Hacks (WIP, NOTHING YET)
+
         public bool AddFairyType { get => false; }
+
         #endregion
 
         #region Type Relation Definitions
+
         /// <summary>
         /// Should the randomizer modify the type traits of the ??? type?
         /// </summary>
@@ -32,6 +35,7 @@ namespace PokemonRandomizer
         /// 0.0 - 1.0
         /// </summary>
         public double UnknownDualTypeChance { get => 0.0; }
+
         #endregion
 
         #region Pokemon Base Stats
@@ -43,7 +47,9 @@ namespace PokemonRandomizer
         #endregion
 
         #region Evolution
+
         public bool FixImpossibleEvos { get => true; }
+
         #endregion
 
         #region Catch Rates
@@ -60,9 +66,7 @@ namespace PokemonRandomizer
         }
         public CatchRateOption CatchRateSetting { get => CatchRateOption.CompletelyRandom; }
         public bool KeepLegendaryCatchRates { get => true; }
-
         public byte CatchRateConstant { get => 100; }
-
         public byte IntelligentCatchRateBasicThreshold
         {
             get
@@ -72,7 +76,6 @@ namespace PokemonRandomizer
                 return 255;
             }
         }
-
         public byte IntelligentCatchRateEvolvedThreshold
         {
             get
@@ -89,7 +92,6 @@ namespace PokemonRandomizer
             { CatchRateOption.IntelligentNormal, 150},
             { CatchRateOption.IntelligentHard, 100},
         };
-
         private readonly Dictionary<CatchRateOption, byte> intelligentCatchRateEvolvedThresholds = new Dictionary<CatchRateOption, byte>()
         {
             { CatchRateOption.IntelligentEasy, 100},
@@ -98,6 +100,7 @@ namespace PokemonRandomizer
         };
 
         #endregion
+
         #endregion
 
         #region Power Scaling
@@ -105,13 +108,13 @@ namespace PokemonRandomizer
         #endregion
 
         #region Trainers
+
         public enum TrainerOption
         {
             CompletelyRandom,
             KeepAce,
             Procedural,
         }
-
         public TrainerOption RivalSetting { get => TrainerOption.Procedural; }
         public bool RandomizeWallyAce { get => true; }
         public TrainerOption WallySetting { get => TrainerOption.Procedural; }
@@ -129,11 +132,13 @@ namespace PokemonRandomizer
         public enum WildPokemonOption
         {
             Unchanged,
-            CompletelyRandom,
+            Individual,
+            IndividualAreaWeights,
             AreaOneToOne,
+            AreaOneToOneAreaWeights,
             GlobalOneToOne,
         }
-        public WildPokemonOption WildPokemonSetting => WildPokemonOption.AreaOneToOne;
+        public WildPokemonOption WildPokemonSetting => WildPokemonOption.AreaOneToOneAreaWeights;
         #endregion
 
         #region Starter Pokemon
@@ -247,6 +252,7 @@ namespace PokemonRandomizer
         #endregion
 
         #region TMs, HMs, and Move Tutors
+
         public enum TmMtCompatOption
         {
             Unchanged,
@@ -262,23 +268,26 @@ namespace PokemonRandomizer
         public bool PreventDuplicateTMsAndMoveTutors { get => true; }
         public double TMRandChance { get => 1; }
         public double MoveTutorRandChance { get => 1; }
+
         #endregion
 
         #region Evolution
+
         public enum EvolutionOption
         {
             Unchanged,
             DisableIllegal,
             ForceHighestLegal,
         }
-
         public double DunsparsePlaugeChance { get => 0.30; }
+
         #endregion
 
         #region Misc
-        public bool RandomizePcPotion { get => true; }
 
+        public bool RandomizePcPotion { get => true; }
         public bool RunIndoors { get => true; }
+
         #endregion
 
         public Settings(MainWindow window)
@@ -287,7 +296,6 @@ namespace PokemonRandomizer
         }
 
         #region Species Randomization
-
 
         /// <summary> get the species randomization settings associated with a speific target group </summary>
         public SpeciesSettings GetSpeciesSettings(SpeciesSettings.Class target)
