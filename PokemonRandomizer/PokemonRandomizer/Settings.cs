@@ -133,12 +133,10 @@ namespace PokemonRandomizer
         {
             Unchanged,
             Individual,
-            IndividualAreaWeights,
             AreaOneToOne,
-            AreaOneToOneAreaWeights,
             GlobalOneToOne,
         }
-        public WildPokemonOption WildPokemonSetting => WildPokemonOption.AreaOneToOneAreaWeights;
+        public WildPokemonOption WildPokemonSetting => WildPokemonOption.AreaOneToOne;
         #endregion
 
         #region Starter Pokemon
@@ -310,7 +308,7 @@ namespace PokemonRandomizer
                     Noise = 1f,
                     PowerScaleSimilarityMod = 0.1f,
                     PowerScaleCull = true,
-                    PowerThresholdStronger = 250,
+                    PowerThresholdStronger = 300,
                     PowerThresholdWeaker = 200,
                     TypeSimilarityMod = 0,
                     TypeSimilarityCull = false,
@@ -319,10 +317,12 @@ namespace PokemonRandomizer
             {SpeciesSettings.Class.Wild, new SpeciesSettings()
                 {
                     BanLegendaries = true,
-                    Noise = 0.005f,
-                    PowerScaleSimilarityMod = 0.15f,
+                    WeightType = SpeciesSettings.WeightingType.Group,
+                    //Sharpness = 1.1f,
+                    Noise = 0.001f,
+                    PowerScaleSimilarityMod = 0.1f,
                     PowerScaleCull = true,
-                    PowerThresholdStronger = 250,
+                    PowerThresholdStronger = 300,
                     PowerThresholdWeaker = 200,
                     TypeSimilarityMod = 1f,
                     TypeSimilarityCull = false,
@@ -332,8 +332,9 @@ namespace PokemonRandomizer
                 {
                     BanLegendaries = false,
                     ForceHighestLegalEvolution = true,
+                    Sharpness = 1.1f,
                     Noise = 0.005f,
-                    PowerScaleSimilarityMod = 0.15f,
+                    PowerScaleSimilarityMod = 0.1f,
                     PowerScaleCull = true,
                     TypeSimilarityMod = 1f,
                     TypeSimilarityCull = false,
@@ -372,8 +373,10 @@ namespace PokemonRandomizer
                     FriendshipEvolutionLevel = 20,
                     TradeEvolutionLevel = 30,
                     ForceHighestLegalEvolution = true,
-                    Noise = 0.001f,
-                    PowerScaleSimilarityMod = 0.25f,
+                    WeightType = SpeciesSettings.WeightingType.Group,
+                    Sharpness = 2,
+                    Noise = 0.0001f,
+                    PowerScaleSimilarityMod = 0.1f,
                     PowerScaleCull = true,
                     PowerThresholdStronger = 200,
                     PowerThresholdWeaker = 300,
@@ -386,8 +389,10 @@ namespace PokemonRandomizer
                     BanLegendaries = false,
                     RestrictIllegalEvolutions = false,
                     ForceHighestLegalEvolution = true,
-                    Noise = 0.001f,
-                    PowerScaleSimilarityMod = 0.25f,
+                    WeightType = SpeciesSettings.WeightingType.Group,
+                    Sharpness = 2,
+                    Noise = 0.0001f,
+                    PowerScaleSimilarityMod = 0.1f,
                     PowerScaleCull = true,
                     PowerThresholdStronger = 250,
                     PowerThresholdWeaker = 300,
@@ -400,8 +405,10 @@ namespace PokemonRandomizer
                     BanLegendaries = false,
                     RestrictIllegalEvolutions = false,
                     ForceHighestLegalEvolution = true,
-                    Noise = 0.001f,
-                    PowerScaleSimilarityMod = 0.25f,
+                    WeightType = SpeciesSettings.WeightingType.Group,
+                    Sharpness = 2,
+                    Noise = 0.0001f,
+                    PowerScaleSimilarityMod = 0.1f,
                     PowerScaleCull = true,
                     PowerThresholdStronger = 300,
                     PowerThresholdWeaker = 300,
@@ -413,7 +420,7 @@ namespace PokemonRandomizer
         public class SpeciesSettings
         {
             public enum Class
-            { 
+            {
                 Starter,
                 Wild,
                 Trainer,
@@ -424,6 +431,13 @@ namespace PokemonRandomizer
                 Champion,
             }
 
+            public enum WeightingType
+            {
+                Individual,
+                Group,
+            }
+
+
             #region Evolution Settings
             public bool RestrictIllegalEvolutions { get; set; } = true;
             public int IllegalEvolutionLeeway { get; set; } = 0;
@@ -433,10 +447,12 @@ namespace PokemonRandomizer
             public int TradeEvolutionLevel { get; set; } = 32;
             public int FriendshipEvolutionLevel { get; set; } = 25;
             public int BeautyEvolutionLevel { get => 32; }
-            public int BabyFriendshipEvolutionLevel { get => 3; }
+            public int BabyFriendshipEvolutionLevel { get; set; } = 10;
             #endregion
 
             public bool BanLegendaries { get; set; } = false;
+            public WeightingType WeightType { get; set; } = WeightingType.Individual;
+            public float Sharpness { get; set; } = 0;
             public float Noise { get; set; } = 0;
             public float PowerScaleSimilarityMod { get; set; } = 0;
             public bool PowerScaleCull { get; set; } = false;

@@ -32,17 +32,18 @@ namespace PokemonRandomizer.Backend.Randomization
         private static float PowerScoreSimilarity(float powerScale, float other, float maxStronger, float maxWeaker)
         {
             float difference = powerScale - other;
+            float maxDeviation = Math.Max(maxStronger, maxWeaker);
             if (difference == 0) // Same power
-                return Math.Max(maxStronger, maxWeaker);
-            else if(difference < 0) // Other is stronger
+                return maxDeviation;
+            else if (difference < 0) // Other is stronger
             {
-                float differenceRating = maxStronger - (difference);
-                return differenceRating <= 0 ? 0 : differenceRating;
+                float differenceRating = maxStronger + difference; // Difference must be negative
+                return differenceRating <= 0 ? 0 : maxDeviation + difference;
             }
             else // Other is weaker
             {
-                float differenceRating = maxWeaker - (difference);
-                return differenceRating <= 0 ? 0 : differenceRating;
+                float differenceRating = maxWeaker - difference; // Difference must be positive
+                return differenceRating <= 0 ? 0 : maxDeviation - difference;
             }
         }
 
@@ -69,7 +70,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 var matches = self.types.Intersect(other.types).Count();
                 if (matches == 2)
                     return 1;
-                return matches == 1 ? 0.8f : 0;
+                return matches == 1 ? 0.95f : 0;
             }
         }
     }

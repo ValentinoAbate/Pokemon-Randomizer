@@ -134,7 +134,7 @@ namespace PokemonRandomizer.Backend.Randomization
 
             var fourthMoveChoice = new WeightedSet<Move>(availableMoves.Keys, LevelWeightScale);
             var currentMoves = ret.Where((m) => m != Move.None).Select((m) => GetData(m));
-            var metrics = new List<WeightedSet<Move>.Metric>();
+            var metrics = new List<Func<Move, float>>();
             const float needSynergy = 12500;
             const float preferSynergy = needSynergy / 2;
             const float weakSynergy = needSynergy / 10;

@@ -8,8 +8,6 @@ namespace PokemonRandomizer.Backend.Randomization
 
     public class WeightedSet<T> : IEnumerable<KeyValuePair<T, float>>
     {
-        public delegate float Metric(T item);
-
         public IEnumerable<T> Items { get => items.Keys; }
         public IEnumerable<float> Weights { get => items.Values; }
         public float Count { get => items.Count; }
@@ -55,7 +53,7 @@ namespace PokemonRandomizer.Backend.Randomization
         /// <summary>
         /// Creates a weighted set where the weight of each value given is the value of the metric function evaluated with the item
         /// </summary>
-        public WeightedSet(IEnumerable<T> items, Metric weight)
+        public WeightedSet(IEnumerable<T> items, Func<T, float> weight)
         {
             foreach (var item in items)
                 Add(item, weight(item));
@@ -90,12 +88,49 @@ namespace PokemonRandomizer.Backend.Randomization
                 items.Add(item, weight);
             }
         }
+        public void Add(Func<T, float> m)
+        {
+            var keys = new List<T>(Items);
+            foreach (var key in keys)
+                Add(key, m(key));
+        }
+        public void Multiply(float multiplier)
+        {
+            foreach (var item in items.Keys.ToArray())
+                Multiply(item, multiplier);
+        }
+        public void Multiply(T item, float multiplier)
+        {
+            if (items.ContainsKey(item))
+            {
+                if (items[item] * multiplier < 0)
+                {
+                    Remove(item);
+                }
+                else
+                {
+                    items[item] *= multiplier;
+                }
+            }
+        }
+        public void Multiply(Func<T, float> m)
+        {
+            var keys = new List<T>(Items);
+            foreach (var key in keys)
+                Multiply(key, m(key));
+        }
+        public void Map(Func<T, float> m)
+        {
+            var keys = new List<T>(Items);
+            foreach (var key in keys)
+                items[key] = m(key);
+        }
+
         public void Remove(T item)
         {
             items.Remove(item);
         }
-
-        public void RemoveIfPresent(T item)
+        public void RemoveIfContains(T item)
         {
             if (items.ContainsKey(item))
                 items.Remove(item);
@@ -111,7 +146,6 @@ namespace PokemonRandomizer.Backend.Randomization
         {
             return items.ContainsKey(item);
         }
-
         public void Normalize()
         {
             if (Count <= 0)
@@ -120,11 +154,14 @@ namespace PokemonRandomizer.Backend.Randomization
             foreach (var key in items.Keys.ToArray())
                 items[key] = items[key] / max;
         }
-        public void ApplyMetric(Metric m)
+        public WeightedSet<T2> Distribution<T2>(Func<T, T2> selector)
         {
-            var keys = new List<T>(Items);
-            foreach (var key in keys)
-                Add(key, m(key));
+            var ret = new WeightedSet<T2>();
+            foreach(var kvp in items)
+            {
+                ret.Add(selector(kvp.Key), kvp.Value);
+            }
+            return ret;
         }
 
         public override string ToString()
