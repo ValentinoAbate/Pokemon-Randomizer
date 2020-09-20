@@ -1,10 +1,7 @@
-﻿using System;
+﻿using PokemonRandomizer.Backend.EnumTypes;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using PokemonRandomizer.Backend.EnumTypes;
 
 namespace PokemonRandomizer.Backend.DataStructures
 {
