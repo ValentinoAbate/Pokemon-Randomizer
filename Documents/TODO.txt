@@ -38,6 +38,7 @@ FEATURES:
 - In-Game Trade Randomization
 - ROM string writing
 - TM Text setting
+- Move Tutor Compat randomization (use the same scheme as TM randomization)
 - Multi-Rom Data aggregation
 	- For instance, use emerald as a base but pull additional classes and moveset updates from FireRed
 

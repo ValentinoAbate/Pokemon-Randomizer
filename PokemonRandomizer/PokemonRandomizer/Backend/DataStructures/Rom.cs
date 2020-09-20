@@ -301,8 +301,7 @@ namespace PokemonRandomizer.Backend.DataStructures
                     ++byteIndex;
                 byteValues[byteIndex] += (byte)(chunkValues[i] * Utilities.MathUtils.IntPow(2, chunkIndex * chunkSize));
             }
-            for(int i = 0; i < byteValues.Length; ++i)
-                WriteByte(offset + i, byteValues[i]);
+            WriteBlock(offset, byteValues);
         }
         #endregion
 

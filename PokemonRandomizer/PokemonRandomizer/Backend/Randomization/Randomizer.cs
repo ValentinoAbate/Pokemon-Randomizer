@@ -1095,14 +1095,14 @@ namespace PokemonRandomizer.Backend.Randomization
             if (s.WeatherSetting == Settings.WeatherOption.Unchanged)
                 return;
             // Local method to finish choosing the weather
-            void ChooseWeather(Map map, Settings s, bool gymOverride)
+            void ChooseWeather(Map m, Settings s2, bool gymOverride)
             {
-                var choices = new WeightedSet<Map.Weather>(s.WeatherWeights);
-                if (s.SafeUnderwaterWeather && !(map.mapType == Map.Type.Underwater))
+                var choices = new WeightedSet<Map.Weather>(s2.WeatherWeights);
+                if (s2.SafeUnderwaterWeather && !(m.mapType == Map.Type.Underwater))
                 {
                     choices.RemoveIfContains(Map.Weather.UnderwaterMist);
                 }
-                if (!gymOverride && s.SafeInsideWeather && !map.IsOutdoors)
+                if (!gymOverride && s2.SafeInsideWeather && !m.IsOutdoors)
                 {
                     choices.RemoveIfContains(Map.Weather.ClearWithCloudsInWater);
                     choices.RemoveIfContains(Map.Weather.Clear);
@@ -1116,7 +1116,7 @@ namespace PokemonRandomizer.Backend.Randomization
                     choices.RemoveIfContains(Map.Weather.StrongSunlight);
                 }
                 if (choices.Count > 0)
-                    map.weather = rand.Choice(choices);
+                    m.weather = rand.Choice(choices);
             }
             // If Gym override is set and the map is a gym, proceed with randomization
             if (s.OverrideAllowGymWeather && map.battleField == 0x01)

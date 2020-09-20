@@ -55,7 +55,7 @@ namespace PokemonRandomizer.Backend.Writing
                 rom.WriteByte(info.Offset("runIndoors"), 0);
             }
             // Apply hail weather hack if applicable. Currently only supported for emerald
-            if(data.SnowyWeatherApplysHail && data.Code == "BPEE")
+            if (data.SnowyWeatherApplysHail && data.Code == "BPEE")
             {
                 // Hail Weather Hack. Makes the weather types "steady snow" and "three snowflakes" cause hail in battle
                 // Hack routine compiled from bluRose's ASM routine. Thanks blueRose (https://www.pokecommunity.com/member.php?u=471720)!
@@ -226,7 +226,7 @@ namespace PokemonRandomizer.Backend.Writing
                 // Write moveset
                 movePtr = WriteAttacks(moveData, stats.learnSet, movePtr);
                 WriteTMHMCompat(stats, tmPtr + (i * tmHmSize), rom);
-                WriteTutorCompat(stats, tutorPtr + (i * tutorSize), rom);
+                //WriteTutorCompat(stats, tutorPtr + (i * tutorSize), rom);
                 WriteEvolutions(stats, evolutionPtr + (i * evolutionSize), rom);
             }
             // If we don't need to repoint move data, write it in it's original location
