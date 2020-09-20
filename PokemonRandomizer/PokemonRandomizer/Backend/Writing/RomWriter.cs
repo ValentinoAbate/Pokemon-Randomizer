@@ -196,7 +196,7 @@ namespace PokemonRandomizer.Backend.Writing
             int pkmnSize = info.Size("pokemonBaseStats");
             int tmPtr = info.Offset("tmHmCompat");
             int tmHmSize = info.Size("tmHmCompat");
-            int tutorPtr = info.Offset("moveTutorCompat");
+            int tutorPtr = info.Offset("moveTutorMoves") + info.Num("moveTutorMoves") * info.Size("moveTutorMoves");
             int tutorSize = info.Size("moveTutorCompat");
             int originalMovePtr = info.Offset("movesets");
             int movePtr = 0;

@@ -84,7 +84,8 @@
 
     <pokemonBaseStats num="411" size="28" offset="0x3203e8" skip="25" skipAt="251"/>
     <tmHmCompat size="8" offset="0x31e8a0"/>
-    <moveTutorCompat size="4" offset="0x31e8a0"/>
+    <!-- Move Tutor compat offset is determined from the move mappings offset. Default offset is given here. -->
+    <moveTutorCompat size="4" offset="0x615048"/>
     <movesets offset="0x3230dc"/>
     <evolutions size="40" sizePerEvolution="8" evolutionsPerPokemon="5" offset="0x325344"/>
 
