@@ -7,8 +7,9 @@ Optional Difficulty Rules:
 - A black/whiteout is considered a player death, and ends the run.
 - No items in battle
 - You must play on set
-- Unless randomized, you must release your started if it goes above level 10.
+- Unless randomized, you must release your starter if it goes above level 10.
 - You can only use each full heal once (pokecenters, etc)
+- You cannot use the EXP Share or the Lucky Egg (if given to you by an event)
 Optional QOL rules:
 - Dupes Clause: If you run into a pokemon you currently have, you may skip it. You may skip an amount of that pokemon equal to the number you have alive.
 Optional Flavor Rules:

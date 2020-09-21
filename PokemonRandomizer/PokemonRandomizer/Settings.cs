@@ -25,11 +25,11 @@ namespace PokemonRandomizer
         /// <summary>
         /// Should the randomizer modify the type traits of the ??? type?
         /// </summary>
-        public bool ModifyUnknownType { get => true; } //(bool)window.cbModifyUnknownType.IsChecked; }
+        public bool ModifyUnknownType { get => false; } //(bool)window.cbModifyUnknownType.IsChecked; }
         /// <summary>
         /// Should the randomizer override UNKNOWN (the pokemon)'s type to the ??? type?
         /// </summary>
-        public bool OverrideUnknownType { get => true; }
+        public bool OverrideUnknownType { get => false; }
         /// <summary>
         /// How often should the randomizer give UNKNOWN (the pokemon) a secondary type?
         /// 0.0 - 1.0
@@ -146,7 +146,7 @@ namespace PokemonRandomizer
             TypeTriangle,
         }
         public bool RandomizeStarters { get => true; }
-        public StarterPokemonOption StarterSetting { get => StarterPokemonOption.CompletelyRandom; }
+        public StarterPokemonOption StarterSetting { get => StarterPokemonOption.TypeTriangle; }
         public bool StrongStarterTypeTriangle { get => false; }
         /// <summary>
         /// Ensures that all starters have an attacking move at lvl1
@@ -166,7 +166,7 @@ namespace PokemonRandomizer
             //Storms (Local Area Based) - Add later
         }
 
-        public WeatherOption WeatherSetting => WeatherOption.InBattleWeather;
+        public WeatherOption WeatherSetting => WeatherOption.CustomWeighting;
         /// <summary>
         /// If true, ensures that underwater weather won't be put anywhere except for underwater maps
         /// </summary>
@@ -184,7 +184,7 @@ namespace PokemonRandomizer
         /// <summary>
         /// The chance that a gym will have weather if OverrideAllowGymWeather is tru
         /// </summary>
-        public double GymWeatherRandChance => 0.33;
+        public double GymWeatherRandChance => 0.5;
         /// <summary>
         /// If this is true, only maps that started with clear weather will be random (the desert will still have sandstorm, etc)
         /// </summary>
@@ -193,7 +193,7 @@ namespace PokemonRandomizer
         /// If this is true, snow and steady snow will be considered battle weather and will actually make hail happen
         /// </summary>
         public bool UseHailHack => true;
-        private const double defaultWeatherRandChance = 0.2;
+        private const double defaultWeatherRandChance = 0.33;
         /// <summary>
         /// The chance any given map type will have its weather randomized. If the map type is not in this map, that type of map will not be randomized
         /// </summary>
@@ -261,7 +261,7 @@ namespace PokemonRandomizer
         }
         public TmMtCompatOption TmMtCompatSetting { get => TmMtCompatOption.Intelligent; }
         public double TmMtTrueChance { get => 0.42; }
-        public double TmMtNoise { get => 0.10; }
+        public double TmMtNoise { get => 0.15; }
         public bool PreventHmMovesInTMsOrMoveTutors { get => true; }
         public bool PreventDuplicateTMsAndMoveTutors { get => true; }
         public double TMRandChance { get => 1; }
@@ -277,7 +277,7 @@ namespace PokemonRandomizer
             DisableIllegal,
             ForceHighestLegal,
         }
-        public double DunsparsePlaugeChance { get => 0.30; }
+        public double DunsparsePlaugeChance { get => 0.25; }
 
         #endregion
 
