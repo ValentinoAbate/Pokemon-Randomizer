@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Drawing.Text;
 using System.Linq;
@@ -80,7 +81,7 @@ namespace PokemonRandomizer.Backend.Randomization
             var moves = EnumUtils.GetValues<Move>().ToHashSet();
             moves.Remove(Move.None); // Remove none as a possible choice
             // Remove HM moves if applicable
-            if(settings.PreventHmMovesInTMsOrMoveTutors)
+            if(settings.PreventHmMovesInTMsAndMoveTutors)
                 foreach (var move in data.HMMoves)
                     moves.Remove(move);
             // Randomize TM mappings
@@ -189,25 +190,80 @@ namespace PokemonRandomizer.Backend.Randomization
                 #region TM, HM, and Move tutor Compatibility
                 if(settings.TmMtCompatSetting != Settings.TmMtCompatOption.Unchanged)
                 {
-                    for (int i = 0; i < pkmn.TMCompat.Length; ++i)
+                    if (settings.TmMtCompatSetting == Settings.TmMtCompatOption.AllOn)
                     {
-                        if (settings.TmMtCompatSetting == Settings.TmMtCompatOption.AllOn)
-                            pkmn.TMCompat[i] = true;
-                        else if (settings.TmMtCompatSetting == Settings.TmMtCompatOption.Random)
-                            pkmn.TMCompat[i] = rand.RandomDouble() < settings.TmMtTrueChance;
-                        else if (settings.TmMtCompatSetting == Settings.TmMtCompatOption.Intelligent)
+                        pkmn.TMCompat.SetAll(true);
+                        pkmn.moveTutorCompat.SetAll(true);
+                        for (int i = 0; i < pkmn.TMCompat.Length; ++i)
                         {
-                            var moveData = data.MoveData[(int)data.TMMoves[i]];
-                            if(pkmn.types.Contains(moveData.type))
-                                pkmn.TMCompat[i] = true;
-                            else if(pkmn.learnSet.Any((l) => l.move == moveData.move))
-                                pkmn.TMCompat[i] = true;
-                            else if(moveData.type == PokemonType.NRM)
-                                pkmn.TMCompat[i] = rand.RandomDouble() < settings.TmMtTrueChance;
-                            else
-                                pkmn.TMCompat[i] = rand.RandomDouble() < settings.TmMtNoise;
+                            pkmn.TMCompat[i] = true;
+                        }
+                        for (int i = 0; i < pkmn.moveTutorCompat.Length; ++i)
+                        {
+                            pkmn.moveTutorCompat[i] = true;
                         }
                     }
+                    else if (settings.TmMtCompatSetting == Settings.TmMtCompatOption.Random)
+                    {
+                        for (int i = 0; i < pkmn.TMCompat.Length; ++i)
+                        {
+                            pkmn.TMCompat[i] = rand.RandomDouble() < settings.TmMtTrueChance;
+                        }
+                        for (int i = 0; i < pkmn.moveTutorCompat.Length; ++i)
+                        {
+                            pkmn.moveTutorCompat[i] = rand.RandomDouble() < settings.TmMtTrueChance;
+                        }
+                    }
+                    else if (settings.TmMtCompatSetting == Settings.TmMtCompatOption.RandomKeepNumber)
+                    {
+                        static void RandomKeepNumber(BitArray arr, Random rand)
+                        {
+                            int compatCount = 0;
+                            // Find the number of trues
+                            foreach (bool b in arr)
+                            {
+                                if (b)
+                                {
+                                    ++compatCount;
+                                }
+                            }
+                            // Wipe the compatibility array
+                            arr.SetAll(false);
+                            var choices = Enumerable.Range(0, arr.Length).ToList();
+                            for (int i = 0; i < compatCount; ++i)
+                            {
+                                int choice = rand.Choice(choices);
+                                arr.Set(choice, true);
+                                choices.Remove(choice);
+                            }
+                        }
+                        RandomKeepNumber(pkmn.TMCompat, rand);
+                        RandomKeepNumber(pkmn.moveTutorCompat, rand);
+                    }
+                    else if (settings.TmMtCompatSetting == Settings.TmMtCompatOption.Intelligent)
+                    {
+                        void SetCompatIntelligent(BitArray arr, int ind, Move[] moveList)
+                        {
+                            var moveData = data.MoveData[(int)moveList[ind]];
+                            if (pkmn.types.Contains(moveData.type))
+                                arr[ind] = true;
+                            else if (pkmn.learnSet.Any((l) => l.move == moveData.move))
+                                arr[ind] = true;
+                            else if (moveData.type == PokemonType.NRM)
+                                arr[ind] = rand.RandomDouble() < settings.TmMtTrueChance;
+                            else
+                                arr[ind] = rand.RandomDouble() < settings.TmMtNoise;
+                        }
+                        for (int i = 0; i < pkmn.TMCompat.Length; ++i)
+                        {
+                            SetCompatIntelligent(pkmn.TMCompat, i, data.TMMoves);
+                        }
+                        for (int i = 0; i < pkmn.moveTutorCompat.Length; ++i)
+                        {
+                            SetCompatIntelligent(pkmn.moveTutorCompat, i, data.tutorMoves);
+                        }
+                    }
+
                 }
                 #endregion
 
@@ -220,7 +276,7 @@ namespace PokemonRandomizer.Backend.Randomization
                         if (settings.CatchRateSetting == Settings.CatchRateOption.CompletelyRandom)
                             pkmn.catchRate = rand.RandomByte();
                         else if (settings.CatchRateSetting == Settings.CatchRateOption.AllEasiest)
-                            pkmn.catchRate = 255;
+                            pkmn.catchRate = byte.MaxValue;
                         else if (settings.CatchRateSetting == Settings.CatchRateOption.Constant)
                             pkmn.catchRate = settings.CatchRateConstant;
                         else // Intelligent

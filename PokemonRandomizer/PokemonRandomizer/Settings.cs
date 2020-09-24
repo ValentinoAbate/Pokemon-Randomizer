@@ -259,10 +259,10 @@ namespace PokemonRandomizer
             RandomKeepNumber,
             Intelligent
         }
-        public TmMtCompatOption TmMtCompatSetting { get => TmMtCompatOption.Intelligent; }
+        public TmMtCompatOption TmMtCompatSetting { get => TmMtCompatOption.RandomKeepNumber; }
         public double TmMtTrueChance { get => 0.42; }
         public double TmMtNoise { get => 0.15; }
-        public bool PreventHmMovesInTMsOrMoveTutors { get => true; }
+        public bool PreventHmMovesInTMsAndMoveTutors { get => true; }
         public bool PreventDuplicateTMsAndMoveTutors { get => true; }
         public double TMRandChance { get => 1; }
         public double MoveTutorRandChance { get => 1; }

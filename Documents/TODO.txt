@@ -7,7 +7,10 @@ IDEAS:
 - Gym / Leader Overhaul
 	- Make gym leader TM based on type and make sure their pokemon know it (if applicable)
 	- Add option to randomize gym type
-	- Place hints in traner and sign dialog about upcoming gym info and / location of cool items
+	- Add option to shuffle gym leaders (like wattson could become gym 1, etc)
+		- Add option to include rivals, elite4, etc in pool
+		- Add option to take characters from other same-gen roms (firered gym leaders, etc)
+	- Place hints in trainer and sign dialog about upcoming gym info and / location of cool items
 - Trainer / Event Ideas
 	- Champion randomization (the champion could be Brendan/May, wally, or any other reoccuring / special trainer in the game or that is added)
 	- Extra reoccuring trainers (you might encounter youngster joey multiple times throughout the game, etc)
@@ -18,6 +21,10 @@ IDEAS:
 	- (Em/Ru/Sap - Add a final rival battle before victory road or something)
 	- Secret Agents (any non-trainer NPC may become a trainer)
 		- Allow limiters that when removed can extend this to pokemon centers, etx
+	- Difficulty: All trainers use good AI
+- Learnset Randomization
+	- Learnsets sometimes include egg moves
+		- Use avg power / level  and/or avg learn / level to determine where to put the learn
 - Improve Moveset Generation
 	- Ability-based synergies for smart moveset generation (get sunny day if you have chlorophil, etc)
 	- Stat-based synergies (prefer moves that suit your attack stats)
@@ -25,12 +32,20 @@ IDEAS:
 - Make procedurally generated battle sequences retain moves from previous levels
 	- Keep TM moves fairly consistant
 	- If pokemon learned something on a lower evolution, have the option to keep that (esp. for dunsparse plague)
-- Trainer Type Theming (class / gym - based)
-- Area Type theming (Forest likely to have grass / bug etc)
-- Encounter Bank Type theming (prefer water in fishing spots, etc)
-- TM Randomization
+- Trainer Randomization
+	- Trainer Type Theming (class / gym - based)?
+- Wild Pokemon Randomization
+	- Area Type theming (Forest likely to have grass / bug etc)
+	- Encounter Bank Type theming (prefer water in fishing spots, etc)
+	- Encounter Bank ratio weighting (number of times that pokemon appears in that encounter slot in the input ROM)
+- TM Compat Randomization
 	- Intelligent - record original TM / MT learns and turn those moves on if present
+	- Intelligent - use original TM / MT learn type ratios to guide new move choices
+	- Intelligent - turn on egg moves if present
+	- Intelligent - potentially keep number to a certain degree (pmkn with no compat stay that way - Magikarp, Wobbufett etc.). Maybe a new setting - IntelligentKeepNumber / NumberAware
 	- Preserve noise and normal TMs through evolutionary lines
+- TM / MT Randomization
+	- Rare move setting - Weight move choices inversely proportional to number of occurences in learnsets
 - Raining routes should auto-water berries
 FEATURES:
 - FireRed compatibility
@@ -38,14 +53,15 @@ FEATURES:
 - Settings preset saving (possibly in JSON or XML)
 - ROM Data XML export (randomized rom exports its offsets so it can be re-randomized)
 - Item randomization (field items)
+	- Use cost as optional weighting
 - Item randomization (stores)
 - In-Game Trade Randomization
 - ROM string writing
 - TM Text setting
-- Move Tutor Compat randomization (use the same scheme as TM randomization)
-	- Need to properly find the index for the MT compat data
 - Multi-Rom Data aggregation
 	- For instance, use emerald as a base but pull additional classes and moveset updates from FireRed
+- Berry Tree Randomization
+- Egg move reading / writing
 
 FIXES:
 - Pokemon that evolve with stones have bad default movesets due to not learning stuff by level up.
@@ -53,5 +69,6 @@ FIXES:
 - Expanding the movesets (probably just repointing the pokemon data table) and expanding the move data table (probably just repointing the move data table) causes softlocks on battle start in the output ROM
 	- Pretty sure I fixed this by ensuring data written in free space always gets written at an address divisible by 4.
 - Snow looks weird in some areas
-REALLY BAD IDEA CORNER:
+DUMB IDEA CORNER:
 - Smeargle Hell: A certain percentage of moves have their effects replaced with sketch
+- Nice Brendan Hack: Edits Brendan's lines so he's not a jerk and respects women
