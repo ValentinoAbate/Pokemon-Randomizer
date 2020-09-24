@@ -196,8 +196,9 @@ namespace PokemonRandomizer.Backend.Writing
             int pkmnSize = info.Size("pokemonBaseStats");
             int tmPtr = info.Offset("tmHmCompat");
             int tmHmSize = info.Size("tmHmCompat");
-            int tutorPtr = info.Offset("moveTutorMoves") + info.Num("moveTutorMoves") * info.Size("moveTutorMoves");
             int tutorSize = info.Size("moveTutorCompat");
+            // Need an extra +4 to skip the null pokemon. Determined from the move tutor move table's offset
+            int tutorPtr = info.Offset("moveTutorMoves") + info.Num("moveTutorMoves") * info.Size("moveTutorMoves") + tutorSize;
             int originalMovePtr = info.Offset("movesets");
             int movePtr = 0;
             int evolutionPtr = info.Offset("evolutions");
@@ -226,7 +227,7 @@ namespace PokemonRandomizer.Backend.Writing
                 // Write moveset
                 movePtr = WriteAttacks(moveData, stats.learnSet, movePtr);
                 WriteTMHMCompat(stats, tmPtr + (i * tmHmSize), rom);
-                //WriteTutorCompat(stats, tutorPtr + (i * tutorSize), rom);
+                WriteTutorCompat(stats, tutorPtr + (i * tutorSize), rom);
                 WriteEvolutions(stats, evolutionPtr + (i * evolutionSize), rom);
             }
             // If we don't need to repoint move data, write it in it's original location

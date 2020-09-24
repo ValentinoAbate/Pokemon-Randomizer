@@ -104,8 +104,9 @@ namespace PokemonRandomizer.Backend.Reading
             int pkmnSize = info.Size("pokemonBaseStats");
             int tmPtr = info.Offset("tmHmCompat");
             int tmHmSize = info.Size("tmHmCompat");
-            int tutorPtr = info.Offset("moveTutorMoves") + info.Num("moveTutorMoves") * info.Size("moveTutorMoves");
             int tutorSize = info.Size("moveTutorCompat");
+            // Need an extra +4 to skip the null pokemon. Determined from the move tutor move table's offset
+            int tutorPtr = info.Offset("moveTutorMoves") + info.Num("moveTutorMoves") * info.Size("moveTutorMoves") + tutorSize;
             int movePtr = info.Offset("movesets");
             int evolutionPtr = info.Offset("evolutions");
             int evolutionSize = info.Size("evolutions");
@@ -122,7 +123,7 @@ namespace PokemonRandomizer.Backend.Reading
                 PokemonBaseStats pkmn = new PokemonBaseStats(rom, pkmnPtr + (i * pkmnSize), (PokemonSpecies)(i + 1));
                 movePtr = ReadAttacks(rom, movePtr, out pkmn.learnSet);
                 ReadTMHMCompat(rom, info, tmPtr + (i * tmHmSize), out pkmn.TMCompat, out pkmn.HMCompat);
-                //ReadTutorCompat(rom, info, tutorPtr + (i * tutorSize), out pkmn.moveTutorCompat);
+                ReadTutorCompat(rom, info, tutorPtr + (i * tutorSize), out pkmn.moveTutorCompat);
                 ReadEvolutions(rom, info, evolutionPtr + (i * evolutionSize), out pkmn.evolvesTo);
                 pokemon.Add(pkmn);
             }

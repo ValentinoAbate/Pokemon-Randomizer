@@ -84,7 +84,7 @@
 
     <pokemonBaseStats num="411" size="28" offset="0x3203e8" skip="25" skipAt="251"/>
     <tmHmCompat size="8" offset="0x31e8a0"/>
-    <!-- Move Tutor compat offset is determined from the move mappings offset. Default offset is given here. -->
+    <!-- Move Tutor compat offset is determined from the move mappings offset. Default offset is given here (bulbasaur is actually +4 from here) -->
     <moveTutorCompat size="4" offset="0x615048"/>
     <movesets offset="0x3230dc"/>
     <evolutions size="40" sizePerEvolution="8" evolutionsPerPokemon="5" offset="0x325344"/>
@@ -164,7 +164,7 @@
     <tmHmCompat size="8" offset="0x252BC8"/>
     <moveTutorCompat size="2" offset="0x459B7E"/>
     <movesets offset="0x257494"/>
-    <!-- from thethethethe's forum post: http://pokemonhackersonline.com/showthread.php?t=2586 -->
+    <!-- from thethethethe's forum post (archived on the wayback machine): https://web.archive.org/web/20180316234519/http://pokemonhackersonline.com/showthread.php?t=2586 -->
     <eggMoves offset="0x25EF0C"/>
     <evolutions size="40" sizePerEvolution="8" evolutionsPerPokemon="5" offset="0x259754"/>
 
