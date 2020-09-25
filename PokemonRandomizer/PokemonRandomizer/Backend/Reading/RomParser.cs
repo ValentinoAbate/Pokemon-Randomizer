@@ -25,6 +25,8 @@ namespace PokemonRandomizer.Backend.Reading
 
             data.MoveData = ReadMoves(data.Rom, info);
 
+            var eggMoves = ReadEggMoves(data.Rom, info);
+
             #region Base Stats
             // Read the pokemon base stats from the Rom
             data.Pokemon = ReadPokemonBaseStats(data.Rom, info, out byte[] skippedData);
@@ -79,6 +81,37 @@ namespace PokemonRandomizer.Backend.Reading
             Move[] moves = new Move[numToRead];
             for (int i = 0; i < numToRead; i++)
                 moves[i] = (Move)rom.ReadUInt16();
+            return moves;
+        }
+
+        private static Dictionary<PokemonSpecies, List<Move>> ReadEggMoves(Rom rom, XmlManager info)
+        {
+            rom.SaveOffset();
+            int ptr = info.Pointer("eggMoves");
+            int offset = rom.ReadPointer(ptr);
+            // Internal offset should now be 3321304
+            rom.Seek(ptr);
+            int pkmnSigniture = info.HexAttr("eggMoves", "pokemonSigniture");
+            var moves = new Dictionary<PokemonSpecies, List<Move>>();
+            var pkmn = (PokemonSpecies)0;
+            int counter = 0;
+            while (++counter < 3000)
+            {
+                int number = rom.ReadUInt16();
+                if (number > pkmnSigniture + 1000 || number < 0)
+                    break;
+                if(number >= pkmnSigniture)
+                {
+                    pkmn = (PokemonSpecies)(number - pkmnSigniture);
+                    if ((int)pkmn > 0)
+                        moves.Add(pkmn, new List<Move>());
+                }
+                else
+                {
+                    moves[pkmn].Add((Move)number);
+                }
+            }
+            rom.LoadOffset();
             return moves;
         }
 

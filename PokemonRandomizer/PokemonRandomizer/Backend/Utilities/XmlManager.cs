@@ -71,6 +71,11 @@ namespace PokemonRandomizer.Backend.Utilities
         {
             return HexAttr(element, "offset");
         }
+        /// <summary> returns the "pointer" (pointer) attribute of the element converted from hex string to int </summary>
+        public int Pointer(string element)
+        {
+            return HexAttr(element, "offset");
+        }
         /// <summary> returns the given attribute of the element converted from hex string to int </summary> 
         public int HexAttr(string element, string attribute)
         {
