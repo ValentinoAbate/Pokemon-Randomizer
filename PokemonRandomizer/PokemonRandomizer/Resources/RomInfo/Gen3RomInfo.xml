@@ -88,7 +88,7 @@
     <moveTutorCompat size="4" offset="0x615048"/>
     <movesets offset="0x3230dc"/>
     <!-- pointer found in Hex Editor Advance's Table reference file. offset found from following pointer -->
-    <eggMoves offset="0x32ADD8" pointer ="0x0703F0" pokemonSigniture ="0x4E20"/> 
+    <eggMoves offset="0x32ADD8" pointer="0x0703F0" pokemonSigniture="0x4E20"/>
     <evolutions size="40" sizePerEvolution="8" evolutionsPerPokemon="5" offset="0x325344"/>
 
     <!-- Items -->

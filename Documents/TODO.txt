@@ -61,8 +61,11 @@ FEATURES:
 - Multi-Rom Data aggregation
 	- For instance, use emerald as a base but pull additional classes and moveset updates from FireRed
 - Berry Tree Randomization
-- Egg move reading / writing
-
+- Egg move data model setting and writing
+- Safe pointer prefix data offset find
+CLEANUP:
+- Change all "ptr" attributes in rom info to "pointer"
+- Add options to use XMLManager helper methods with constants
 FIXES:
 - Pokemon that evolve with stones have bad default movesets due to not learning stuff by level up.
 	- Still an issue, but fixed in smart moveset generation. Currently no fix for default movesets

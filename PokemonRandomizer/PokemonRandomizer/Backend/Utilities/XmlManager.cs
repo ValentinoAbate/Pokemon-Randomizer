@@ -1,14 +1,18 @@
-﻿using System;
+﻿using PokemonRandomizer.Backend.DataStructures;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml.Linq;
 
 namespace PokemonRandomizer.Backend.Utilities
 {
     public class XmlManager
-    {       
+    {
+        public const string offsetAttr = "offset";
+        public const string pointerAttr = "pointer";
+        public const string numAttr = "num";
+        public const string sizeAttr = "size";
+
         public XElement Root { get; }
         private XElement searchRoot;
         public XElement Constants
@@ -56,25 +60,78 @@ namespace PokemonRandomizer.Backend.Utilities
         {
             return Convert.ToInt32(hex, 16);
         }
-        /// <summary> returns the "num" (amount of entries) attribute of the given element </summary>
+        /// <summary>
+        /// Finds the offset of the specified data using various methods.
+        /// If no method successfully finds a valid offset, return null.
+        /// If "isAtValidOffset" == null, any offset in the rom is considered valid.
+        /// TODO: Add pointer prefix method
+        /// TODO: Check that the thing at the "pointer" location is actually a pointer
+        /// </summary>
+        public int? FindOffset(string element, Rom rom, Func<Rom, int, bool> isValidOffset = null)
+        {
+            if (HasPointer(element))
+            {
+                int offset = rom.ReadPointer(Pointer(element));
+                if(rom.IsValidOffset(offset))
+                {
+                    if (isValidOffset == null || isValidOffset(rom, offset))
+                        return offset;
+                }
+            }
+            else if(HasOffset(element))
+            {
+                int offset = Offset(element);
+                if (rom.IsValidOffset(offset))
+                {
+                    if (isValidOffset == null || isValidOffset(rom, offset))
+                        return offset;
+                }
+            }
+            return null;
+        }
+        /// <summary>
+        /// Set the Rom's internal offset to the offset of the specified data (found using FindOffset).
+        /// Returns false if no valid offset is found
+        /// </summary>
+        public bool FindAndSeekOffset(string element, Rom rom, Func<Rom, int, bool> isValidOffset = null)
+        {
+            int? offset = FindOffset(element, rom, isValidOffset);
+            if(offset != null)
+            {
+                rom.Seek((int)offset);
+                return true;
+            }
+            return false;
+        }
+        /// <summary> returns the "num" (amount of entries) attribute of the given element. Expects an integer value </summary>
         public int Num(string element)
         {
-            return (int)Attr(element, "num");
+            return (int)Attr(element, numAttr);
         }
-        /// <summary> returns the "size" (size in bytes) attribute of the given element </summary>
+        /// <summary> returns the "size" (size in bytes) attribute of the given element. Expects an integer value </summary>
         public int Size(string element)
         {
-            return (int)Attr(element, "size");
+            return (int)Attr(element, sizeAttr);
+        }
+        /// <summary> returns true if the element has an "offset" (offset) attribute </summary>
+        public bool HasOffset(string element)
+        {
+            return HasElementWithAttr(element, offsetAttr);
         }
         /// <summary> returns the "offset" (offset) attribute of the element converted from hex string to int </summary>
         public int Offset(string element)
         {
-            return HexAttr(element, "offset");
+            return HexAttr(element, offsetAttr);
+        }
+        /// <summary> returns true if the element has a "pointer" (pointer) attribute </summary>
+        public bool HasPointer(string element)
+        {
+            return HasElementWithAttr(element, pointerAttr);
         }
         /// <summary> returns the "pointer" (pointer) attribute of the element converted from hex string to int </summary>
         public int Pointer(string element)
         {
-            return HexAttr(element, "offset");
+            return HexAttr(element, pointerAttr);
         }
         /// <summary> returns the given attribute of the element converted from hex string to int </summary> 
         public int HexAttr(string element, string attribute)
@@ -107,7 +164,15 @@ namespace PokemonRandomizer.Backend.Utilities
             return (string)Element(element);
         }
         #endregion
-
+        /// <summary>
+        /// Returns true if the given element exists and has the given attribute.
+        /// If the element is cached, it is looked up,
+        /// else it is searched for (with SearchRoot as the search root Node)
+        /// </summary>
+        public bool HasElementWithAttr(string element, string attribute)
+        {
+            return Attr(element, attribute) != null;
+        }
         /// <summary>
         /// Finds an element by name and returns the given attribute.
         /// If the element is cached, it is looked up,
@@ -115,7 +180,7 @@ namespace PokemonRandomizer.Backend.Utilities
         /// </summary>
         public XAttribute Attr(string element, string attribute)
         {
-            return Element(element).Attribute(attribute);
+            return Element(element)?.Attribute(attribute);
         }
         /// <summary>
         /// Finds an element by name and returns the given attribute.
@@ -124,7 +189,16 @@ namespace PokemonRandomizer.Backend.Utilities
         /// </summary>
         public XAttribute Attr(string element, string attribute, XElement root)
         {
-            return Element(element, root).Attribute(attribute);
+            return Element(element, root)?.Attribute(attribute);
+        }
+        /// <summary>
+        /// Returns tru if the element exists, else false. If the element is cached, it is looked up,
+        /// else it is searched for (with SearchRoot as the search root Node)
+        /// <para>If cache == true, then the element (if found) and all elements searched through will be cached</para>
+        /// </summary>
+        public bool HasElement(string element, bool cache = true)
+        {
+            return Element(element, cache) != null;
         }
         /// <summary>
         /// Finds an element by name. If the element is cached, it is looked up,

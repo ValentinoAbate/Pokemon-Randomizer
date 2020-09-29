@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace PokemonRandomizer.Backend.DataStructures
 {
@@ -225,6 +224,10 @@ namespace PokemonRandomizer.Backend.DataStructures
         }
         #endregion
 
+        public bool IsValidOffset(int offset)
+        {
+            return offset >= 0 && offset < Length;
+        }
         /// <summary>Sets the Rom's internal offset</summary>
         public void Seek(int offset)
         {

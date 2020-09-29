@@ -86,15 +86,19 @@ namespace PokemonRandomizer.Backend.Reading
 
         private static Dictionary<PokemonSpecies, List<Move>> ReadEggMoves(Rom rom, XmlManager info)
         {
+            const string eggMoveElt = "eggMoves";
             rom.SaveOffset();
-            int ptr = info.Pointer("eggMoves");
-            int offset = rom.ReadPointer(ptr);
-            // Internal offset should now be 3321304
-            rom.Seek(ptr);
-            int pkmnSigniture = info.HexAttr("eggMoves", "pokemonSigniture");
+            // Find the offset of the eggMoves if we have the data
+            if (!info.FindAndSeekOffset(eggMoveElt, rom))
+            {
+                rom.LoadOffset();
+                return new Dictionary<PokemonSpecies, List<Move>>();
+            }
+            int pkmnSigniture = info.HexAttr(eggMoveElt, "pokemonSigniture");
             var moves = new Dictionary<PokemonSpecies, List<Move>>();
             var pkmn = (PokemonSpecies)0;
             int counter = 0;
+            // Limit on loop just in case we are at the wrong place
             while (++counter < 3000)
             {
                 int number = rom.ReadUInt16();
