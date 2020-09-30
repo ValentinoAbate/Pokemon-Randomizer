@@ -158,6 +158,16 @@ namespace PokemonRandomizer.Backend.Utilities
         {
             return Array.ConvertAll(((string)Attr(element, attribute)).Trim('[', ']').Split(','), HexToInt);
         }
+        /// <summary>
+        /// Safely gets an array attribute if it exists. else returns an empty array.
+        /// ArrayGetter should either be: ArrayAttr, IntArrayAttr, or HexArrayAttr
+        /// </summary>
+        public T[] SafeArrayAttr<T>(string element, string attribute, Func<string, string, T[]> arrayGetter)
+        {
+            if (!HasElementWithAttr(element, attribute))
+                return new T[0];
+            return arrayGetter(element, attribute);
+        }
         /// <summary> returns the given element's content as a string </summary> 
         public string StringElt(string element)
         {

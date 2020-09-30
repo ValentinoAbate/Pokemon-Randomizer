@@ -51,7 +51,7 @@ namespace PokemonRandomizer.Backend.Reading
             // Read type definitions
             data.TypeDefinitions = ReadTypeEffectivenessData(data.Rom, info);
             // Read in the map data
-            data.Maps = new MapManager(data.Rom, info);
+            data.Maps = new MapManager(data, info);
             data.Encounters = ReadEncounters(data.Rom, info, data.Maps);
             // Calculate the balance metrics from the loaded data
             data.CalculateMetrics();
@@ -138,6 +138,7 @@ namespace PokemonRandomizer.Backend.Reading
         private static List<PokemonBaseStats> ReadPokemonBaseStats(Rom rom, XmlManager info, out byte[] skippedData)
         {
             skippedData = null;
+            int? offsetCheck = null;
             List<PokemonBaseStats> pokemon = new List<PokemonBaseStats>();
             int pkmnPtr = info.Offset("pokemonBaseStats");
             int pkmnSize = info.Size("pokemonBaseStats");
@@ -147,8 +148,14 @@ namespace PokemonRandomizer.Backend.Reading
             // Need an extra +4 to skip the null pokemon. Determined from the move tutor move table's offset
             int tutorPtr = info.Offset("moveTutorMoves") + info.Num("moveTutorMoves") * info.Size("moveTutorMoves") + tutorSize;
             int movePtr = info.Offset("movesets");
-            int evolutionPtr = info.Offset("evolutions");
-            int evolutionSize = info.Size("evolutions");
+            // Setup evolution offset
+            const string evolutionsElt = "evolutions";
+            offsetCheck = info.FindOffset(evolutionsElt, rom);
+            if (offsetCheck == null)
+                return pokemon;
+            int evolutionSize = info.Size(evolutionsElt);
+            // Add evolution size to skip the null pokemon
+            int evolutionOffset = (int)offsetCheck + evolutionSize;
             for (int i = 0; i < info.Num("pokemonBaseStats"); i++)
             {
                 if (i == (int)info.Attr("pokemonBaseStats", "skipAt")) // potentially skip empty slots
@@ -163,7 +170,7 @@ namespace PokemonRandomizer.Backend.Reading
                 movePtr = ReadAttacks(rom, movePtr, out pkmn.learnSet);
                 ReadTMHMCompat(rom, info, tmPtr + (i * tmHmSize), out pkmn.TMCompat, out pkmn.HMCompat);
                 ReadTutorCompat(rom, info, tutorPtr + (i * tutorSize), out pkmn.moveTutorCompat);
-                ReadEvolutions(rom, info, evolutionPtr + (i * evolutionSize), out pkmn.evolvesTo);
+                ReadEvolutions(rom, info, evolutionOffset + (i * evolutionSize), out pkmn.evolvesTo);
                 pokemon.Add(pkmn);
             }
             return pokemon;

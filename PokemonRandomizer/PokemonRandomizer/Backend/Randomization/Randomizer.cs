@@ -459,9 +459,9 @@ namespace PokemonRandomizer.Backend.Randomization
 
             #region Set Up Special Trainers
             var specialTrainers = new Dictionary<string, List<Trainer>>();
-            string[] AddTrainersFromArrayAttr(string attName)
+            string[] AddTrainersFromArrayAttr(string element)
             {
-                var names = data.Info.ArrayAttr(attName, "names");
+                var names = data.Info.SafeArrayAttr(element, "names", data.Info.ArrayAttr);
                 foreach (var name in names)
                     specialTrainers.Add(name.ToLower(), new List<Trainer>());
                 return names;
@@ -473,10 +473,11 @@ namespace PokemonRandomizer.Backend.Randomization
             var uberNames = AddTrainersFromArrayAttr("uber");
             var teamAdminNames = AddTrainersFromArrayAttr("teamAdmins");
             var teamLeaderNames = AddTrainersFromArrayAttr("teamLeaders");
-            var aceTrainerClasses = data.Info.IntArrayAttr("aceTrainers", "classNums");
+            var aceTrainerClasses = data.Info.SafeArrayAttr("aceTrainers", "classNums", data.Info.IntArrayAttr);
             var aceTrainerNames = new List<string>();
             var reoccuringNames = new List<string>();
-            var teamGruntNames = data.Info.ArrayAttr("teamGrunts", "names").Select((name) => name.ToLower()).ToArray();
+            // Safely initialize the team grunt names if supported
+            var teamGruntNames = data.Info.SafeArrayAttr("teamGrunts", "names", data.Info.ArrayAttr).Select((name) => name.ToLower()).ToArray();
             var gruntBattles = new List<Trainer>();
             // Add Wally as their own special category
             specialTrainers.Add("wally", new List<Trainer>());

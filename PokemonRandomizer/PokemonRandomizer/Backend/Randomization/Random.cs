@@ -6,7 +6,7 @@ namespace PokemonRandomizer.Backend.Randomization
 {
     public class Random
     {
-        private System.Random rand;
+        private readonly System.Random rand;
         public Random()
         {
             rand = new System.Random();

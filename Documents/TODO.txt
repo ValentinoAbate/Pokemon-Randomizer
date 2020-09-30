@@ -48,7 +48,15 @@ IDEAS:
 	- Rare move setting - Weight move choices inversely proportional to number of occurences in learnsets
 - Raining routes should auto-water berries
 FEATURES:
-- FireRed compatibility
+- FireRed v1, LeafGreen v0 + v1, Sapphire v0 + v1.1, and Ruby v0 + v1.1 compatibility
+- Enable for FireRed
+	- Starter Reading / Writing
+	- Add special trainer data to XML
+	- Map writing
+	- PC potion writing
+	- Run indoors hack
+	- Catching tut writing (very low priority, may never add) (maybe add a skip)
+	- Snow weather hack
 - Gen IV compatibility
 - Settings preset saving (possibly in JSON or XML)
 - ROM Data XML export (randomized rom exports its offsets so it can be re-randomized)

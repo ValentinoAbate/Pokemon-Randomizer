@@ -7,40 +7,43 @@ namespace PokemonRandomizer.Backend.DataStructures
     public class MapManager
     {
         public List<Map> All => mapBanks.SelectMany((bank) => bank).ToList();
-        private readonly Map[][] mapBanks;
-        public MapManager(Rom rom, XmlManager data)
+        private readonly Map[][] mapBanks = new Map[0][];
+        public MapManager(RomData data, XmlManager info)
         {
+            var rom = data.Rom;
             // Read data from XML file
-            int bankPtrOffset = data.Offset("mapBankPointers");
-            int ptrSize = data.Size("mapBankPointers");
-            mapBanks = new Map[data.Num("mapBankPointers")][];
-            int[] bankLengths = data.IntArrayAttr("maps", "bankLengths");
-            int labelOffset = rom.ReadPointer(rom.FindFromPrefix(data.Attr("mapLabels", "ptrPrefix").Value));
+            int bankPtrOffset = info.Offset("mapBankPointers");
+            int ptrSize = info.Size("mapBankPointers");
+            mapBanks = new Map[info.Num("mapBankPointers")][];
+            int[] bankLengths = info.IntArrayAttr("maps", "bankLengths");
+            int labelOffset = rom.ReadPointer(rom.FindFromPrefix(info.Attr("mapLabels", "ptrPrefix").Value));
             // Construct map data structures
             for (int i = 0; i < mapBanks.Length; ++i)
             {
                 int bankPtr = rom.ReadPointer(bankPtrOffset + (i * ptrSize));
-                mapBanks[i] = LoadBank(rom, bankPtr, bankLengths[i], labelOffset);
+                mapBanks[i] = LoadBank(data, bankPtr, bankLengths[i], labelOffset);
             }
         }
 
-        private Map[] LoadBank(Rom rom, int offset, int numMaps, int labelOffset)
+        private Map[] LoadBank(RomData data, int offset, int numMaps, int labelOffset)
         {
+            var rom = data.Rom;
             Map[] maps = new Map[numMaps];
             for (int i = 0; i < maps.Length; ++i)
             {
                 int mapAddy = rom.ReadPointer(offset + (i * 4));
-                maps[i] = LoadMap(rom, mapAddy, labelOffset);
+                maps[i] = LoadMap(data, mapAddy, labelOffset);
             }
             return maps;
         }
 
-        private Map LoadMap(Rom rom, int offset, int labelOffset)
+        private Map LoadMap(RomData data, int offset, int labelOffset)
         {
+            var rom = data.Rom;
             rom.SaveOffset();
             rom.Seek(offset);
 
-            #region Construct Map Qith Header Data
+            #region Construct Map With Header Data
 
             var map = new Map()
             {
@@ -63,9 +66,21 @@ namespace PokemonRandomizer.Backend.DataStructures
             #endregion
 
             #region Read Non-Header Data
-            // Map Nameame
-            rom.Seek(rom.ReadPointer(labelOffset + map.labelIndex * 8 + 4));
+
+            if(data.IsRubySapphireOrEmerald)
+            {
+                // Read Map Label (RSE)
+                rom.Seek(rom.ReadPointer(labelOffset + map.labelIndex * 8 + 4));
                 map.Name = rom.ReadVariableLengthString();
+            }
+            else if(data.IsFireRedOrLeafGreen)
+            {
+                // Don't know why this magic number is here
+                const int frlgMapLabelsStart = 0x58;
+                // Read Map Label (FRLG)
+                rom.Seek(rom.ReadPointer(labelOffset + (map.labelIndex - frlgMapLabelsStart) * 4));
+                map.Name = rom.ReadVariableLengthString();
+            }
 
             // Connections
             if (map.connectionOffset != Rom.nullPointer)
@@ -125,7 +140,7 @@ namespace PokemonRandomizer.Backend.DataStructures
             rom.WriteByte(map.battleField);
             #endregion
 
-            #region Write Non-Header Data (Unimplemented
+            #region Write Non-Header Data (Unimplemented)
             // Write Map Name
             //rom.Seek(rom.ReadPointer(labelOffset + map.labelIndex * 8 + 4));
             //    rom.ReadVariableLengthString();

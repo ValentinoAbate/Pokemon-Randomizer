@@ -89,7 +89,7 @@
     <movesets offset="0x3230dc"/>
     <!-- pointer found in Hex Editor Advance's Table reference file. offset found from following pointer -->
     <eggMoves offset="0x32ADD8" pointer="0x0703F0" pokemonSigniture="0x4E20"/>
-    <evolutions size="40" sizePerEvolution="8" evolutionsPerPokemon="5" offset="0x325344"/>
+    <evolutions size="40" sizePerEvolution="8" evolutionsPerPokemon="5" offset="0x32531C" pointer="0x06D140"/>
 
     <!-- Items -->
 
@@ -127,8 +127,8 @@
     <!-- pointer from MEH .ini: https://github.com/shinyquagsire23/MEH (thanks shinyquagsire23) -->
     <!-- and thethethe's forum post: http://pokemonhackersonline.com/showthread.php?t=2586 -->
     <mapBankPointers num="34" size="4" offset="0x486578" pointer="0x84AA4"/>
-    <maps offset="0x849CC" bankLengths="[57,5,5,6,7,8,9,7,7,14,8,17,10,23,13,15,15,2,2,2,3,1,1,1,108,61,89,2,1,13,1,1,2,1]"/>
-    <!-- pointer from dabomstew's UP randomizer source https://github.com/Dabomstew/universal-pokemon-randomizer -->
+    <maps bankLengths="[57,5,5,6,7,8,9,7,7,14,8,17,10,23,13,15,15,2,2,2,3,1,1,1,108,61,89,2,1,13,1,1,2,1]"/>
+    <!-- pointer prefix from dabomstew's UP randomizer source https://github.com/Dabomstew/universal-pokemon-randomizer -->
     <!-- should be true for Ruby and sapphire as well -->
     <mapLabels ptrPrefix="0xC078288030BC01BC00470000"/>
     
@@ -169,7 +169,7 @@
     <!-- offset from thethethethe's forum post (archived on the wayback machine): https://web.archive.org/web/20180316234519/http://pokemonhackersonline.com/showthread.php?t=2586 -->
     <!-- pointer found in Hex Editor Advance's Table reference file -->
     <eggMoves offset="0x25EF0C" pointer="0x045C50" pokemonSigniture ="0x4E20"/>
-    <evolutions size="40" sizePerEvolution="8" evolutionsPerPokemon="5" offset="0x259754"/>
+    <evolutions size="40" sizePerEvolution="8" evolutionsPerPokemon="5" offset="0x259754" pointer="0x042F6C"/>
 
     <!-- Items -->
 
@@ -180,7 +180,7 @@
     <!-- Static Pokemon -->
 
     <!-- from dabomstew's UP randomizer source https://github.com/Dabomstew/universal-pokemon-randomizer (untested)-->
-    <starterPokemon offset="0x169BB5" skip1="513" skip2="459" duplicate="true" dupOffset="5"/>
+    <starterPokemon offset="0x169BB5" skip1="3" skip2="3" duplicate="true" dupOffset="5"/>
 
     <!-- Trainer Battle Definitions -->
 
@@ -190,10 +190,13 @@
 
     <!-- Special Trainer Battles -->
 
-    <aceTrainers classNums="[]"/>
+    <aceTrainers classNums="[9,93,86]"/>
 
     <mapBankPointers num="43" size="4" offset="0x3526A8" pointer="0x5524C"/>
-    <maps offset="0x849CC" bankLengths="[5,123,60,66,4,6,8,10,6,8,20,10,8,2,10,4,2,2,2,1,1,2,2,3,2,3,2,1,1,1,1,7,5,5,8,8,5,5,1,1,1,2,1]"/>
+    <maps bankLengths="[5,123,60,66,4,6,8,10,6,8,20,10,8,2,10,4,2,2,2,1,1,2,2,3,2,3,2,1,1,1,1,7,5,5,8,8,5,5,1,1,1,2,1]"/>
+    <!-- pointer prefix from dabomstew's UP randomizer source https://github.com/Dabomstew/universal-pokemon-randomizer -->
+    <!-- should work for leaf green as well -->
+    <mapLabels ptrPrefix="0xAC470000AE470000B0470000"/>
   </BPRE0>
 
 </gen3RomInfo>

@@ -31,19 +31,30 @@ namespace PokemonRandomizer.Backend.Writing
             WriteMoveMappings(rom, info.Offset("moveTutorMoves"), data.tutorMoves);
             // Write the move definitions
             WriteMoveData(data, rom, info, ref repoints);
-            WriteStarters(data, rom, info);
-            WriteCatchingTutOpponent(data, rom, info);
+            // Starter Writing currently only supported for RSE
+            if(data.IsRubySapphireOrEmerald)
+            {
+                WriteStarters(data, rom, info);
+            }
+            // Catching tut currently only supported on BPEE
+            if(data.Code == RomData.gameCodeEm)
+            {
+                WriteCatchingTutOpponent(data, rom, info);
+            }
             WritePokemonBaseStats(data, rom, info, ref repoints);
             WriteTypeDefinitions(data, rom, ref repoints);
             WriteEncounters(data, rom, info);
             WriteTrainerBattles(data, rom, info);
-            WriteMapData(data, rom, info);
+            if(data.IsRubySapphireOrEmerald)
+            {
+                WriteMapData(data, rom, info);
+            }
 
             // Hacks and tweaks
 
             // Write the pc potion item
             int? pcPotionOffset = info.FindOffset("pcPotion", rom);
-            if(pcPotionOffset != null)
+            if (pcPotionOffset != null && data.Code == RomData.gameCodeEm)
             {
                 rom.WriteUInt16((int)pcPotionOffset, (int)data.PcStartItem);
             }
@@ -52,19 +63,19 @@ namespace PokemonRandomizer.Backend.Writing
             {
                 int? offset = info.FindOffset("runIndoors", rom);
                 // If hack is supported
-                if(offset != null)
+                if (offset != null)
                 {
                     rom.WriteByte((int)offset, 0x00);
                 }
             }
             // Make ??? a valid type for moves if applicable. Currently only supported for emerald
-            if (data.UseUnknownTypeForMoves && data.Code == "BPEE")
+            if (data.UseUnknownTypeForMoves && data.Code == RomData.gameCodeEm)
             {
                 // Hack the ??? type to be a valid type (Uses SP.ATK and SP.DEF)
                 rom.WriteByte(0x069BCF, 0xD2);
             }
             // Apply hail weather hack if applicable. Currently only supported for emerald
-            if (data.SnowyWeatherApplysHail && data.Code == "BPEE")
+            if (data.SnowyWeatherApplysHail && data.Code == RomData.gameCodeEm)
             {
                 // Hail Weather Hack. Makes the weather types "steady snow" and "three snowflakes" cause hail in battle
                 // Hack routine compiled from bluRose's ASM routine. Thanks blueRose (https://www.pokecommunity.com/member.php?u=471720)!
@@ -115,7 +126,7 @@ namespace PokemonRandomizer.Backend.Writing
             {
                 int dataSize = info.Size("moveData");
                 // Creat an empty rom block to write to
-                Rom moveDataBlock = new Rom(dataSize * data.MoveData.Count);
+                Rom moveDataBlock = new Rom(dataSize * data.MoveData.Count, rom.FreeSpaceByte);
                 foreach (var moveData in data.MoveData)
                     WriteMoveDataSingular(moveDataBlock, moveData);
                 int? newOffset = rom.WriteInFreeSpace(moveDataBlock.File);
@@ -154,7 +165,8 @@ namespace PokemonRandomizer.Backend.Writing
             rom.Seek(offset);
             foreach (var move in moves)
                 rom.WriteUInt16((int)move);
-            if (altOffset != null)
+            // 0 check guards against alt offset not existing. Will make better in the future
+            if (altOffset != null && (int)altOffset != 0)
             {
                 rom.Seek((int)altOffset);
                 foreach (var move in moves)
@@ -201,6 +213,7 @@ namespace PokemonRandomizer.Backend.Writing
         }
         private static void WritePokemonBaseStats(RomData romData, Rom rom, XmlManager info, ref RepointList repoints)
         {
+            int? offsetCheck = null;
             int pkmnPtr = info.Offset("pokemonBaseStats");
             int pkmnSize = info.Size("pokemonBaseStats");
             int tmPtr = info.Offset("tmHmCompat");
@@ -210,11 +223,17 @@ namespace PokemonRandomizer.Backend.Writing
             int tutorPtr = info.Offset("moveTutorMoves") + info.Num("moveTutorMoves") * info.Size("moveTutorMoves") + tutorSize;
             int originalMovePtr = info.Offset("movesets");
             int movePtr = 0;
-            int evolutionPtr = info.Offset("evolutions");
-            int evolutionSize = info.Size("evolutions");
+            // Setup evolution offset
+            const string evolutionsElt = "evolutions";
+            offsetCheck = info.FindOffset(evolutionsElt, rom);
+            if (offsetCheck == null)
+                return;
+            int evolutionSize = info.Size(evolutionsElt);
+            // Add evolution size to skip the null pokemon
+            int evolutionOffset = (int)offsetCheck + evolutionSize;
             int skipNum = (int)info.Attr("pokemonBaseStats", "skip");
             // Create an empty ROM block to write the learnsetData to
-            Rom moveData = new Rom(romData.Pokemon.Sum((stats) => (stats.learnSet.Count * 2) + 2) + (skipNum * 4));
+            Rom moveData = new Rom(romData.Pokemon.Sum((stats) => (stats.learnSet.Count * 2) + 2) + (skipNum * 4), rom.FreeSpaceByte);
             // If any of the movesets have changed we will have to perform repoint operations
             bool needToRelocateMoveData = romData.Pokemon.Any((stats) => stats.learnSet.Count != stats.learnSet.OriginalCount);
             // Find a block to write to in so we can log repoints if we need to
@@ -237,7 +256,7 @@ namespace PokemonRandomizer.Backend.Writing
                 movePtr = WriteAttacks(moveData, stats.learnSet, movePtr);
                 WriteTMHMCompat(stats, tmPtr + (i * tmHmSize), rom);
                 WriteTutorCompat(stats, tutorPtr + (i * tutorSize), rom);
-                WriteEvolutions(stats, evolutionPtr + (i * evolutionSize), rom);
+                WriteEvolutions(stats, evolutionOffset + (i * evolutionSize), rom);
             }
             // If we don't need to repoint move data, write it in it's original location
             if (!needToRelocateMoveData)

@@ -44,7 +44,7 @@ namespace PokemonRandomizer.Backend.DataStructures
             InternalOffset = 0;  
         }
         /// <summary> Initilize an Empty Rom with a given length </summary>
-        public Rom(int length, byte freeSpaceByte = 0x00, int searchStartOffset = 0)
+        public Rom(int length, byte freeSpaceByte, int searchStartOffset = 0)
             : this(new byte[length], freeSpaceByte, searchStartOffset) { }
         /// <summary>Reads a byte from the internal offset</summary>
         public byte WriteByte(byte value) => File[InternalOffset++] = value;

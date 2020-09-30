@@ -10,6 +10,11 @@ namespace PokemonRandomizer.Backend.DataStructures
 {
     public class RomData
     {
+        public const string gameCodeEm = "BPEE";
+        public const string gameCodeLg = "BPGE";
+        public const string gameCodeFr = "BPRE";
+        public const string gameCodeRu = "AXVE";
+        public const string gameCodeSp = "AXPE";
         public XmlManager Info { get; }
         private static readonly Dictionary<Generation, string> infoPaths = new Dictionary<Generation, string>
         {
@@ -17,8 +22,9 @@ namespace PokemonRandomizer.Backend.DataStructures
             {Generation.III, Resources.RomInfo.RomInfo.Gen3RomInfo }
 
         };
+        public bool IsFireRedOrLeafGreen => Gen == Generation.III && (Code == gameCodeFr || Code == gameCodeLg);
+        public bool IsRubySapphireOrEmerald => Gen == Generation.III && (Code == gameCodeEm || Code == gameCodeRu || Code == gameCodeSp);
         public enum Generation { I, II, III, IV, V, VI, VII }
-        public enum GameCode { AXVE, AXPE, BPEE, BPRE, BPGE }
         public Generation Gen { get; private set; }
         public string Code { get; private set; }
         public int Version { get; private set; }
