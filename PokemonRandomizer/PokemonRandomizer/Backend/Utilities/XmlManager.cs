@@ -25,7 +25,7 @@ namespace PokemonRandomizer.Backend.Utilities
             }
         }
 
-        private Dictionary<string, XElement> cache = new Dictionary<string, XElement>();
+        private readonly Dictionary<string, XElement> cache = new Dictionary<string, XElement>();
 
         #region Constructors
         public XmlManager(string doc) : this(XDocument.Parse(doc).Root) { }

@@ -42,17 +42,26 @@ namespace PokemonRandomizer.Backend.Writing
             // Hacks and tweaks
 
             // Write the pc potion item
-            rom.WriteUInt16(info.Offset("pcPotion"), (int)data.PcStartItem);
+            int? pcPotionOffset = info.FindOffset("pcPotion", rom);
+            if(pcPotionOffset != null)
+            {
+                rom.WriteUInt16((int)pcPotionOffset, (int)data.PcStartItem);
+            }
+            // Write the run indoors hack if applicable
+            if (data.RunIndoors)
+            {
+                int? offset = info.FindOffset("runIndoors", rom);
+                // If hack is supported
+                if(offset != null)
+                {
+                    rom.WriteByte((int)offset, 0x00);
+                }
+            }
             // Make ??? a valid type for moves if applicable. Currently only supported for emerald
             if (data.UseUnknownTypeForMoves && data.Code == "BPEE")
             {
                 // Hack the ??? type to be a valid type (Uses SP.ATK and SP.DEF)
                 rom.WriteByte(0x069BCF, 0xD2);
-            }
-            // Write the run indoors hack if applicable
-            if (data.RunIndoors)
-            {
-                rom.WriteByte(info.Offset("runIndoors"), 0);
             }
             // Apply hail weather hack if applicable. Currently only supported for emerald
             if (data.SnowyWeatherApplysHail && data.Code == "BPEE")

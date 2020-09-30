@@ -16,11 +16,11 @@ namespace PokemonRandomizer.Backend.Reading
 
             #region Move Mappings (TMs/HMs/Tutors)
             //Read the TM move mappings from the ROM
-            data.TMMoves = ReadMoveMappings(data.Rom, info.Offset("tmMoves"), info.Num("tmMoves"));
+            data.TMMoves = ReadMoveMappings("tmMoves", data.Rom, info);
             //Read the HM move mappings from the ROM
-            data.HMMoves = ReadMoveMappings(data.Rom, info.Offset("hmMoves"), info.Num("hmMoves"));
+            data.HMMoves = ReadMoveMappings("hmMoves", data.Rom, info);
             //Read the move tutor move mappings from the ROM
-            data.tutorMoves = ReadMoveMappings(data.Rom, info.Offset("moveTutorMoves"), info.Num("moveTutorMoves"));
+            data.tutorMoves = ReadMoveMappings("moveTutorMoves", data.Rom, info); ;
             #endregion
 
             data.MoveData = ReadMoves(data.Rom, info);
@@ -75,9 +75,11 @@ namespace PokemonRandomizer.Backend.Reading
             return moveData;
         }
         // Read TM, HM, or Move tutor definitions from the rom (depending on args)
-        private static Move[] ReadMoveMappings(Rom rom, int offset, int numToRead)
+        private static Move[] ReadMoveMappings(string element, Rom rom, XmlManager info)
         {
-            rom.Seek(offset);
+            if (!info.FindAndSeekOffset(element, rom))
+                return new Move[0];
+            int numToRead = info.Num(element);
             Move[] moves = new Move[numToRead];
             for (int i = 0; i < numToRead; i++)
                 moves[i] = (Move)rom.ReadUInt16();
@@ -225,8 +227,9 @@ namespace PokemonRandomizer.Backend.Reading
         // Read evolutions
         private static void ReadEvolutions(Rom rom, XmlManager info, int offset, out Evolution[] evolutions)
         {
-            int bytesPerEvolution = (int)info.Attr("evolutions", "sizePerEvolution");
-            evolutions = new Evolution[(int)info.Attr("evolutions", "evolutionsPerPokemon")];
+            const string evolutionElt = "evolutions";
+            int bytesPerEvolution = info.IntAttr(evolutionElt, "sizePerEvolution");
+            evolutions = new Evolution[info.IntAttr(evolutionElt, "evolutionsPerPokemon")];
             for(int i = 0; i < evolutions.Length; ++i, offset += bytesPerEvolution)
             {
                 byte[] evolutionBlock = rom.ReadBlock(offset, bytesPerEvolution);
@@ -239,12 +242,14 @@ namespace PokemonRandomizer.Backend.Reading
         // Read the starter pokemon
         private static List<PokemonSpecies> ReadStarters(Rom rom, XmlManager info)
         {
+            const string starterPokemonElt = "starterPokemon";
             var starters = new List<PokemonSpecies>();
-            rom.Seek(info.Offset("starterPokemon"));
+            if (!info.FindAndSeekOffset(starterPokemonElt, rom))
+                return starters;
             starters.Add((PokemonSpecies)rom.ReadUInt16());
-            rom.Skip(info.IntAttr("starterPokemon", "skip1"));
+            rom.Skip(info.IntAttr(starterPokemonElt, "skip1"));
             starters.Add((PokemonSpecies)rom.ReadUInt16());
-            rom.Skip(info.IntAttr("starterPokemon", "skip2"));
+            rom.Skip(info.IntAttr(starterPokemonElt, "skip2"));
             starters.Add((PokemonSpecies)rom.ReadUInt16());
             return starters;
         }
@@ -263,23 +268,34 @@ namespace PokemonRandomizer.Backend.Reading
         // Read the Trainer Class names
         private static List<string> ReadTrainerClassNames(Rom rom, XmlManager info)
         {
-            int addy = info.Offset("trainerClassNames");
-            int numClasses = info.Num("trainerClassNames");
-            int nameLength = (int)info.Attr("trainerClassNames", "length");
-
+            const string trainerClassNameElt = "trainerClassNames";
+            int? offset = info.Offset(trainerClassNameElt);
+            // Trainer class names are not supported
+            if (offset == null)
+                return new List<string>();
+            int numClasses = info.Num(trainerClassNameElt);
+            int nameLength = (int)info.Attr(trainerClassNameElt, "length");
+            int realOffset = (int)offset;
             List<string> classNames = new List<string>(numClasses);
             for(int i = 0; i < numClasses; ++i)
-                classNames.Add(rom.ReadString(addy + (i * nameLength), nameLength));
+            {
+                classNames.Add(rom.ReadString(realOffset + (i * nameLength), nameLength));
+            }
             return classNames;
         }
         // Read the Trainers
         private static List<Trainer> ReadTrainers(Rom rom, XmlManager info, List<string> classNames)
         {
-            List<Trainer> ret = new List<Trainer>();
-            int numTrainers = info.Num("trainerBattles");
-            rom.Seek(info.Offset("trainerBattles"));
+            const string trainerBattleElt = "trainerBattles";
+            // If fail, reading trainer battles is not supported for this ROM
+            if (!info.FindAndSeekOffset(trainerBattleElt, rom))
+                return new List<Trainer>();
+            int numTrainers = info.Num(trainerBattleElt);
+            List<Trainer> ret = new List<Trainer>(numTrainers);
             for (int i = 0; i < numTrainers; ++i)
+            {
                 ret.Add(new Trainer(rom, classNames));
+            }
             return ret;
         }
         // Read encounters
@@ -352,7 +368,8 @@ namespace PokemonRandomizer.Backend.Reading
         private static TypeEffectivenessChart ReadTypeEffectivenessData(Rom rom, XmlManager info)
         {
             TypeEffectivenessChart ret = new TypeEffectivenessChart();
-            rom.Seek(info.Offset("typeEffectiveness"));
+            if (!info.FindAndSeekOffset("typeEffectiveness", rom))
+                return ret;
             bool ignoreAfterForesight = false;
             // Run until the end of structure sequence (0xff 0xff 0x00)
             while (rom.Peek() != 0xff)
