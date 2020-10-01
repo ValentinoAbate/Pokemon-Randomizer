@@ -48,7 +48,8 @@ IDEAS:
 	- Rare move setting - Weight move choices inversely proportional to number of occurences in learnsets
 - Raining routes should auto-water berries
 FEATURES:
-- FireRed v1, LeafGreen v0 + v1, Sapphire v0 + v1.1, and Ruby v0 + v1.1 compatibility
+- Establish Version Numbering
+- FireRed v1.1, LeafGreen v1.0 + v1.1, Sapphire v1.0 + v1.11, and Ruby v1.0 + v1.11 compatibility
 - Enable for FireRed
 	- Starter Reading / Writing
 	- Add special trainer data to XML
@@ -60,6 +61,7 @@ FEATURES:
 - Gen IV compatibility
 - Settings preset saving (possibly in JSON or XML)
 - ROM Data XML export (randomized rom exports its offsets so it can be re-randomized)
+	- Include data in a human-readable format
 - Item randomization (field items)
 	- Use cost as optional weighting
 - Item randomization (stores)
@@ -72,7 +74,7 @@ FEATURES:
 - Egg move data model setting and writing
 - Safe pointer prefix data offset find
 CLEANUP:
-- Change all "ptr" attributes in rom info to "pointer"
+- Change all "ptr" attributes in rom info to "pointer" to work more cleanly with dynamic offset finding
 - Add options to use XMLManager helper methods with constants
 FIXES:
 - Pokemon that evolve with stones have bad default movesets due to not learning stuff by level up.
