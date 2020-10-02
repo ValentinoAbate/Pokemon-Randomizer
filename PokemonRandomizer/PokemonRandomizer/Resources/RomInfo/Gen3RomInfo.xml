@@ -100,7 +100,7 @@
     <!-- Static Pokemon -->
 
     <!-- offset from dabomstew's UP randomizer source https://github.com/Dabomstew/universal-pokemon-randomizer -->
-    <starterPokemon offset="0x5B1DF8" skip1="0" skip2="0" duplicate="false"/>
+    <starterPokemon offset="0x5B1DF8" skip1="0" skip2="0"/>
     <!-- offsets from dabomstew's UP randomizer source https://github.com/Dabomstew/universal-pokemon-randomizer -->
     <catchingTutOpponent offset="0xB0870"/>
     <catchingTutPlayer offset="0x139472"/>
@@ -179,8 +179,9 @@
 
     <!-- Static Pokemon -->
 
-    <!-- from dabomstew's UP randomizer source https://github.com/Dabomstew/universal-pokemon-randomizer (untested)-->
-    <starterPokemon offset="0x169BB5" skip1="3" skip2="3" duplicate="true" dupOffset="5"/>
+    <!-- from user Uncommon's forum post https://www.pokecommunity.com/showthread.php?t=406241 -->
+    <!-- 0x16BB5 (Bulbasaur), 0x16D82 (Squirtle), 0x16DB8 (Charmander) -->
+    <starterPokemon offset="0x169BB5" skip1="459" skip2="52" />
 
     <!-- Trainer Battle Definitions -->
 

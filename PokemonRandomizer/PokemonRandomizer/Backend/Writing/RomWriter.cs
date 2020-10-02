@@ -31,8 +31,8 @@ namespace PokemonRandomizer.Backend.Writing
             WriteMoveMappings(rom, info.Offset("moveTutorMoves"), data.tutorMoves);
             // Write the move definitions
             WriteMoveData(data, rom, info, ref repoints);
-            // Starter Writing currently only supported for RSE
-            if(data.IsRubySapphireOrEmerald)
+            // Starter Writing currently only supported for Gen III
+            if(data.Gen == RomData.Generation.III)
             {
                 WriteStarters(data, rom, info);
             }
@@ -175,23 +175,14 @@ namespace PokemonRandomizer.Backend.Writing
         }
         private static void WriteStarters(RomData romData, Rom rom, XmlManager info)
         {
-            // For some reason FRLG need duplicates of the starters stored
-            bool duplicate = bool.Parse(info.Attr("starterPokemon", "duplicate").Value);
-            int dupOffset = 0;
-            if (duplicate)
-                dupOffset = info.IntAttr("starterPokemon", "dupOffset");
-            rom.Seek(info.Offset("starterPokemon"));
+            const string starterPokemonElt = "starterPokemon";
+            if (!info.FindAndSeekOffset(starterPokemonElt, rom))
+                return;
             rom.WriteUInt16((int)romData.Starters[0]);
-            if (duplicate)
-                rom.WriteUInt16(rom.InternalOffset + dupOffset, (int)romData.Starters[0]);
             rom.Skip(info.IntAttr("starterPokemon", "skip1"));
             rom.WriteUInt16((int)romData.Starters[1]);
-            if (duplicate)
-                rom.WriteUInt16(rom.InternalOffset + dupOffset, (int)romData.Starters[1]);
             rom.Skip(info.IntAttr("starterPokemon", "skip2"));
             rom.WriteUInt16((int)romData.Starters[2]);
-            if (duplicate)
-                rom.WriteUInt16(rom.InternalOffset + dupOffset, (int)romData.Starters[2]);
         }
         private static void WriteCatchingTutOpponent(RomData data, Rom rom, XmlManager info)
         {
