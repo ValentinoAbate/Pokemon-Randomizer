@@ -479,8 +479,12 @@ namespace PokemonRandomizer.Backend.Randomization
             // Safely initialize the team grunt names if supported
             var teamGruntNames = data.Info.SafeArrayAttr("teamGrunts", "names", data.Info.ArrayAttr).Select((name) => name.ToLower()).ToArray();
             var gruntBattles = new List<Trainer>();
-            // Add Wally as their own special category
-            specialTrainers.Add("wally", new List<Trainer>());
+            const string wallyName = "wally";
+            // Add Wally as their own special category if in RSE
+            if(data.IsRubySapphireOrEmerald)
+            {
+                specialTrainers.Add(wallyName, new List<Trainer>());
+            }
             #endregion
 
             var normalTrainers = new Dictionary<string, Trainer>();
@@ -488,6 +492,8 @@ namespace PokemonRandomizer.Backend.Randomization
             foreach (var trainer in data.Trainers)
             {
                 string name = trainer.name.ToLower();
+                if (string.IsNullOrWhiteSpace(name) || name == "??????")
+                    continue;
                 // All grunts have the same names but are not reoccuring trainers
                 if(teamGruntNames.Contains(name))
                 {
@@ -585,7 +591,7 @@ namespace PokemonRandomizer.Backend.Randomization
             // Randomize Wally starter if applicable
             if (settings.RandomizeWallyAce)
                 data.CatchingTutPokemon = RandomSpecies(pokemonSet, data.CatchingTutPokemon, 5, rivalSpeciesSettings);
-            var wallyBattles = specialTrainers["wally"];
+            var wallyBattles = specialTrainers[wallyName];
             wallyBattles.Sort((a, b) => a.AvgLvl.CompareTo(b.AvgLvl));
             if (settings.WallySetting == Settings.TrainerOption.CompletelyRandom)
             {

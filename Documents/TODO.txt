@@ -52,7 +52,6 @@ FEATURES:
 - FireRed v1.1, LeafGreen v1.0 + v1.1, Sapphire v1.0 + v1.11, and Ruby v1.0 + v1.11 compatibility
 - Enable for FireRed
 	- Starter Text replacement
-	- Add special trainer data to XML
 	- Map writing
 	- PC potion writing
 	- Run indoors hack
@@ -66,7 +65,7 @@ FEATURES:
 	- Use cost as optional weighting
 - Item randomization (stores)
 - In-Game Trade Randomization
-- ROM string writing
+- ROM variable-length string writing
 - TM Text setting
 - Multi-Rom Data aggregation
 	- For instance, use emerald as a base but pull additional classes and moveset updates from FireRed
