@@ -356,6 +356,7 @@ namespace PokemonRandomizer
                 {
                     BanLegendaries = false,
                     ForceHighestLegalEvolution = true,
+                    WeightType = SpeciesSettings.WeightingType.Individual,
                     Noise = 0.001f,
                     PowerScaleSimilarityMod = 1f,
                     PowerScaleCull = true,

@@ -547,14 +547,11 @@ namespace PokemonRandomizer.Backend.Randomization
                 else if (settings.RivalSetting == Settings.TrainerOption.KeepAce)
                 {
                     var starters = new PokemonSpecies[] { battles[0].pokemon[0].species, battles[1].pokemon[0].species, battles[2].pokemon[0].species };
-                    var rival1Battles = battles.Where((b) => b.pokemon.Any((p) => RelatedToOrSelf(p.species, starters[0]))).ToArray();
-                    var rival2Battles = battles.Where((b) => b.pokemon.Any((p) => RelatedToOrSelf(p.species, starters[1]))).ToArray();
-                    var rival3Battles = battles.Where((b) => b.pokemon.Any((p) => RelatedToOrSelf(p.species, starters[2]))).ToArray();
-                    var rivalBattleArr = new Trainer[][] { rival1Battles, rival2Battles, rival3Battles };
-                    int[] rivalRemap = { 1, 2, 0 };
-                    for (int i = 0; i < rivalBattleArr.Length; ++i)
+                    var rivalBattles = starters.Select((s) => battles.Where((b) => b.pokemon.Any((p) => RelatedToOrSelf(p.species, s))).ToArray()).ToArray();
+                    int[] rivalRemap = data.IsFireRedOrLeafGreen ? new int[] { 1, 0, 2 } : new int[] { 1, 2, 0 };
+                    for (int i = 0; i < rivalBattles.Length; ++i)
                     {
-                        var battleSet = rivalBattleArr[i];
+                        var battleSet = rivalBattles[i];
                         foreach (var battle in battleSet)
                         {
                             RandomizeBattle(battle, pokemonSet, rivalSpeciesSettings);
@@ -571,13 +568,14 @@ namespace PokemonRandomizer.Backend.Randomization
                 else if(settings.RivalSetting == Settings.TrainerOption.Procedural)
                 {
                     var starters = new PokemonSpecies[] { battles[0].pokemon[0].species, battles[1].pokemon[0].species, battles[2].pokemon[0].species };
-                    var rival1Battles = battles.Where((b) => b.pokemon.Any((p) => RelatedToOrSelf(p.species, starters[0]))).ToArray();
-                    var rival2Battles = battles.Where((b) => b.pokemon.Any((p) => RelatedToOrSelf(p.species, starters[1]))).ToArray();
-                    var rival3Battles = battles.Where((b) => b.pokemon.Any((p) => RelatedToOrSelf(p.species, starters[2]))).ToArray();
-                    PcgBattles(rival1Battles, new PokemonSpecies[] { data.Starters[1] }, pokemonSet, rivalSpeciesSettings);
-                    PcgBattles(rival2Battles, new PokemonSpecies[] { data.Starters[2] }, pokemonSet, rivalSpeciesSettings);
-                    PcgBattles(rival3Battles, new PokemonSpecies[] { data.Starters[0] }, pokemonSet, rivalSpeciesSettings);
-                }              
+                    // Set up the rival battles array
+                    var rivalBattles = starters.Select((s) => battles.Where((b) => b.pokemon.Any((p) => RelatedToOrSelf(p.species, s))).ToArray()).ToArray();
+                    int[] rivalRemap = data.IsFireRedOrLeafGreen ? new int[] { 1, 0, 2 } : new int[] { 1, 2, 0 };
+                    for (int i = 0; i < rivalBattles.Length; ++i)
+                    {
+                        PcgBattles(rivalBattles[i], new PokemonSpecies[] { data.Starters[rivalRemap[i]] }, pokemonSet, rivalSpeciesSettings);
+                    }
+                }
             }
 
             #endregion
