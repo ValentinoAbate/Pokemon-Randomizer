@@ -588,33 +588,36 @@ namespace PokemonRandomizer.Backend.Randomization
 
             #region Wally
 
-            // Randomize Wally starter if applicable
-            if (settings.RandomizeWallyAce)
-                data.CatchingTutPokemon = RandomSpecies(pokemonSet, data.CatchingTutPokemon, 5, rivalSpeciesSettings);
-            var wallyBattles = specialTrainers[wallyName];
-            wallyBattles.Sort((a, b) => a.AvgLvl.CompareTo(b.AvgLvl));
-            if (settings.WallySetting == Settings.TrainerOption.CompletelyRandom)
+            if(data.IsRubySapphireOrEmerald)
             {
-                foreach (var battle in wallyBattles)
-                    RandomizeBattle(battle, pokemonSet, rivalSpeciesSettings);
-            }
-            else if (settings.WallySetting == Settings.TrainerOption.KeepAce)
-            {
-                foreach (var battle in wallyBattles)
+                // Randomize Wally starter if applicable
+                if (settings.RandomizeWallyAce)
+                    data.CatchingTutPokemon = RandomSpecies(pokemonSet, data.CatchingTutPokemon, 5, rivalSpeciesSettings);
+                var wallyBattles = specialTrainers[wallyName];
+                wallyBattles.Sort((a, b) => a.AvgLvl.CompareTo(b.AvgLvl));
+                if (settings.WallySetting == Settings.TrainerOption.CompletelyRandom)
                 {
-                    RandomizeBattle(battle, pokemonSet, rivalSpeciesSettings);
-                    var pokemon = battle.pokemon[battle.pokemon.Length - 1];
-                    pokemon.species = MaxEvolution(data.CatchingTutPokemon, pokemon.level, rivalSpeciesSettings);
-                    if (pokemon.HasSpecialMoves)
+                    foreach (var battle in wallyBattles)
+                        RandomizeBattle(battle, pokemonSet, rivalSpeciesSettings);
+                }
+                else if (settings.WallySetting == Settings.TrainerOption.KeepAce)
+                {
+                    foreach (var battle in wallyBattles)
                     {
-                        //pokemon.moves = MovesetGenerator.DefaultMoveset(data.PokemonLookup[pokemon.species], pokemon.level);
-                        pokemon.moves = MovesetGenerator.SmartMoveSet(rand, data, data.PokemonLookup[pokemon.species], pokemon.level);
+                        RandomizeBattle(battle, pokemonSet, rivalSpeciesSettings);
+                        var pokemon = battle.pokemon[battle.pokemon.Length - 1];
+                        pokemon.species = MaxEvolution(data.CatchingTutPokemon, pokemon.level, rivalSpeciesSettings);
+                        if (pokemon.HasSpecialMoves)
+                        {
+                            //pokemon.moves = MovesetGenerator.DefaultMoveset(data.PokemonLookup[pokemon.species], pokemon.level);
+                            pokemon.moves = MovesetGenerator.SmartMoveSet(rand, data, data.PokemonLookup[pokemon.species], pokemon.level);
+                        }
                     }
                 }
-            }
-            else if (settings.WallySetting == Settings.TrainerOption.Procedural)
-            {
-                PcgBattles(wallyBattles, new PokemonSpecies[] { data.CatchingTutPokemon }, pokemonSet, trainerSpeciesSettings);
+                else if (settings.WallySetting == Settings.TrainerOption.Procedural)
+                {
+                    PcgBattles(wallyBattles, new PokemonSpecies[] { data.CatchingTutPokemon }, pokemonSet, trainerSpeciesSettings);
+                }
             }
 
             #endregion

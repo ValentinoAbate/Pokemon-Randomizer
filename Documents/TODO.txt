@@ -53,8 +53,6 @@ FEATURES:
 - Enable for FireRed
 	- Starter Text replacement
 	- Map writing
-	- PC potion writing
-	- Run indoors hack
 	- Catching tut writing (very low priority, may never add) (maybe add a skip)
 	- Snow weather hack
 - Gen IV compatibility

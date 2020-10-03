@@ -153,12 +153,12 @@ namespace PokemonRandomizer.Backend.DataStructures
         /// <summary> 
         /// Preform many repoint operations in the same call, much more efficiently than calling repoint multiple times.
         /// Scans through the ROM and caches all pointer locations in a dictionary, then repoints.
-        /// Argument given is assumed to be a List of Tuples of 24-bit ROM addresses, which are converted to 32-bit RAM addressese
+        /// Argument given is assumed to be a List of Tuples of 24-bit ROM addresses, which are converted to 32-bit RAM addresses.
         /// The first int in the Tuple is the original pointer value, and the second int is new value
         /// </summary>
         public void RepointMany(List<System.Tuple<int, int>> repoints)
         {
-            // A cahcing dictionary of pointer values to known locations
+            // A caching dictionary of pointer values to known locations
             var locations = new Dictionary<int, List<int>>();
             // Build caching dictionary
             for(int i = 0; i < Length - pointerSize + 1; i++)

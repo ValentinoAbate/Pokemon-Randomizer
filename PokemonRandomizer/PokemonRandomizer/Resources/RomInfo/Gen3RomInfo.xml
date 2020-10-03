@@ -143,6 +143,11 @@
     <support typeSplit ="true"/>
     <freeSpace byte="0xFF" startAddy="0x800000"/>
 
+    <!-- Hacks and Tweaks -->
+
+    <runIndoors offset="0xBD494"/>
+    <textSpeed offset="0x41F428"/>
+
     <!-- Type Data -->
 
     <numTypes>18</numTypes>
@@ -154,9 +159,9 @@
     <!-- TMs, HMs, and Move Tutors -->
 
     <!-- TM Move mappings -->
-    <tmMoves num="50" size="2" offset="0x45A5A4"/>
+    <tmMoves num="50" size="2" offset="0x45A5A4" duplicateOffset ="0x45A80C"/>
     <!-- HM move mappings -->
-    <hmMoves num="8" size="2" offset="0x45A608"/>
+    <hmMoves num="8" size="2" offset="0x45A608" duplicateOffset ="0x45A870"/>
     <!-- MT move mappings -->
     <moveTutorMoves num="15" size="2" offset="0x459B60"/>
 

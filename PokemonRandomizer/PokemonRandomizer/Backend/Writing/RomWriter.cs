@@ -54,7 +54,7 @@ namespace PokemonRandomizer.Backend.Writing
 
             // Write the pc potion item
             int? pcPotionOffset = info.FindOffset("pcPotion", rom);
-            if (pcPotionOffset != null && data.Code == RomData.gameCodeEm)
+            if (pcPotionOffset != null)
             {
                 rom.WriteUInt16((int)pcPotionOffset, (int)data.PcStartItem);
             }
