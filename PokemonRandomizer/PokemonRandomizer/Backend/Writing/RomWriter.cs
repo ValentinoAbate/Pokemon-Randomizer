@@ -68,6 +68,25 @@ namespace PokemonRandomizer.Backend.Writing
                     rom.WriteByte((int)offset, 0x00);
                 }
             }
+            // Write the text speed hack if applicable.
+            if(data.FastText)
+            {
+                int? offset = info.FindOffset("textSpeed", rom);
+                // If hack is supported
+                if(offset != null)
+                {
+                    int realOffset = (int)offset;
+                    int val = rom.ReadByte(realOffset);
+                    val = rom.ReadByte(realOffset + 1);
+                    val = rom.ReadByte(realOffset + 2);
+                    // Slow Text Becomes Medium
+                    rom.WriteByte(realOffset, 0x04);
+                    // Medium Text Becomes Slow
+                    rom.WriteByte(realOffset + 1, 0x01);
+                    // Fast Text Becomes instant (Glitchy, more like a skip)
+                    rom.WriteByte(realOffset + 2, 0x00);
+                }
+            }
             // Make ??? a valid type for moves if applicable. Currently only supported for emerald
             if (data.UseUnknownTypeForMoves && data.Code == RomData.gameCodeEm)
             {

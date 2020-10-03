@@ -62,10 +62,14 @@ namespace PokemonRandomizer.Backend.DataStructures
         public Move[] tutorMoves;
         #endregion
 
-        public bool nationalDexUnlocked = false;
+        #region Hacks and Tweaks
+
         public bool RunIndoors { get; set; } = false;
+        public bool FastText { get; set; } = false;
         public bool UseUnknownTypeForMoves { get; set; } = false;
         public bool SnowyWeatherApplysHail { get; set; } = false;
+
+        #endregion
 
         public byte[] SkippedLearnSetData { get; set; }
 
