@@ -48,7 +48,6 @@ IDEAS:
 	- Rare move setting - Weight move choices inversely proportional to number of occurences in learnsets
 - Raining routes should auto-water berries
 FEATURES:
-- Establish Version Numbering
 - FireRed v1.1, LeafGreen v1.0 + v1.1, Sapphire v1.0 + v1.11, and Ruby v1.0 + v1.11 compatibility
 - Enable for FireRed
 	- Starter Text replacement
