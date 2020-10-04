@@ -101,6 +101,14 @@ namespace PokemonRandomizer
 
         #endregion
 
+        #region Learnsets
+
+        public bool BanSelfdestruct => false;
+
+        public bool AddMoves => false;
+
+        #endregion
+
         #endregion
 
         #region Power Scaling
