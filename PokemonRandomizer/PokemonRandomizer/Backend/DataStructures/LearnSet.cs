@@ -38,6 +38,14 @@ namespace PokemonRandomizer.Backend
             items.AddRange(toCopy);
         }
 
+        public bool Learns(Move move)
+        {
+            foreach (var entry in items)
+                if (entry.move == move)
+                    return true;
+            return false;
+        }
+
         public void Add(Move mv, int learnLvl)
         {
             items.Add(new Entry(mv, learnLvl));

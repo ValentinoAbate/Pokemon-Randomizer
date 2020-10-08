@@ -117,6 +117,7 @@
     <Compile Include="Collections\MultiSet.cs" />
     <Compile Include="Backend\Utilities\XmlManager.cs" />
     <Compile Include="Search\Kmp.cs" />
+    <Compile Include="Statistics\Distribution.cs" />
     <Compile Include="UserControls\MutationRateSlider.xaml.cs">
       <DependentUpon>MutationRateSlider.xaml</DependentUpon>
     </Compile>

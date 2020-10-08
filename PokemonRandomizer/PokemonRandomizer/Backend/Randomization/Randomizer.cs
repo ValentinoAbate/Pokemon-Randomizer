@@ -110,6 +110,19 @@ namespace PokemonRandomizer.Backend.Randomization
             #endregion
 
             #region Pokemon Base Attributes
+            var availableAddMoves = EnumUtils.GetValues<Move>().ToHashSet();
+            availableAddMoves.Remove(Move.None);
+            if(settings.BanSelfdestruct)
+            {
+                availableAddMoves.Remove(Move.SELFDESTRUCT);
+                availableAddMoves.Remove(Move.EXPLOSION);
+            }
+            if(settings.DisableAddingHmMoves)
+            {
+                foreach (var move in data.HMMoves)
+                    availableAddMoves.Remove(move);
+            }
+
             // Mutate Pokemon
             foreach (PokemonBaseStats pkmn in data.Pokemon)
             {
@@ -187,8 +200,104 @@ namespace PokemonRandomizer.Backend.Randomization
 
                 // Mutate battle stats and EVs
                 // Mutate Learn Sets
+                #region Learn Sets
+                if(settings.BanSelfdestruct)
+                {
+                    pkmn.learnSet.RemoveWhere((m) => m.move == Move.SELFDESTRUCT || m.move == Move.EXPLOSION);
+                }
+                if(settings.AddMoves && pkmn.IsBasic && rand.RandomDouble() < settings.AddMovesChance)
+                {
+                    int numMoves = rand.RandomGaussianPositiveNonZeroInt(settings.NumMovesMean, settings.NumMovesStdDeviation);
+                    var availableMoves = new List<Move>(availableAddMoves);
+                    availableMoves.RemoveAll((m) => pkmn.learnSet.Learns(m));
+                    var availableEggMoves = pkmn.eggMoves.Where((m) => availableMoves.Contains(m)).ToList();
+                    for (int i = 0; i < numMoves; ++i)
+                    {
+                        Move move = Move.None;
+                        switch (rand.Choice(settings.AddMoveSourceWieghts))
+                        {
+                            case Settings.AddMoveSource.Random:
+                                move = rand.Choice(availableMoves);
+                                break;
+                            case Settings.AddMoveSource.Damaging:
+                                break;
+                            case Settings.AddMoveSource.Status:
+                                break;
+                            case Settings.AddMoveSource.STAB:
+                                break;
+                            case Settings.AddMoveSource.STABDamaging:
+                                break;
+                            case Settings.AddMoveSource.STABStatus:
+                                break;
+                            case Settings.AddMoveSource.EggMoves:
+                                if (availableEggMoves.Count > 0)
+                                {
+                                    move = rand.Choice(availableEggMoves);
+                                    availableEggMoves.Remove(move);
+                                }
+                                break;
+                            case Settings.AddMoveSource.CompatibleTms:
+                                break;
+                        }
+                        if(move != Move.None)
+                        {
+                            void AddMoveToEvoTreeMoveSet(PokemonBaseStats p, Move m, int level, int creep = 0)
+                            {
+                                p.learnSet.Add(m, level);
+                                foreach(var evo in p.evolvesTo)
+                                {
+                                    if ((int)evo.Pokemon == 0)
+                                        return;
+                                    // Make this stable with the Dunsparse Plague
+                                    if (evo.Pokemon == PokemonSpecies.DUNSPARCE && settings.DunsparsePlaugeChance > 0)
+                                        continue;
+                                    AddMoveToEvoTreeMoveSet(data.PokemonLookup[evo.Pokemon], m, level + creep, creep);
+                                }
+                            }
+                            availableMoves.Remove(move);
+                            if(data.Metrics.LearnLevels.ContainsKey(move))
+                            {
+                                double mean = data.Metrics.LearnLevelMeans[move];
+                                double stdDev = data.Metrics.LearnLevelStandardDeviations[move];
+                                int learnLevel = rand.RandomGaussianPositiveNonZeroInt(mean, stdDev);
+                                AddMoveToEvoTreeMoveSet(pkmn, move, learnLevel);
+                                continue;
+                            }
+                            int effectivePower = data.MoveData[(int)move].EffectivePower;
+                            if(data.Metrics.LearnLevelPowers.ContainsKey(effectivePower))
+                            {
+                                double mean = data.Metrics.LearnLevelPowerMeans[effectivePower];
+                                double stdDev = data.Metrics.LearnLevelPowerStandardDeviations[effectivePower];
+                                int learnLevel = rand.RandomGaussianPositiveNonZeroInt(mean, stdDev);
+                                AddMoveToEvoTreeMoveSet(pkmn, move, learnLevel);
+                            }
+                            else if(data.Metrics.LearnLevelPowers.Count > 0)
+                            {
+                                var powers = data.Metrics.LearnLevelPowers.Keys.ToList();
+                                powers.Sort();
+                                int closestPower = 0;
+                                int last = 0;
+                                foreach(var power in powers)
+                                {
+                                    if(power > effectivePower)
+                                    {
+                                        closestPower = effectivePower - last > power - effectivePower ? power : last;
+                                        break;
+                                    }
+                                    last = power;
+                                }
+                                double mean = data.Metrics.LearnLevelPowerMeans[closestPower];
+                                double stdDev = data.Metrics.LearnLevelPowerStandardDeviations[closestPower];
+                                int learnLevel = rand.RandomGaussianPositiveNonZeroInt(mean, stdDev);
+                                AddMoveToEvoTreeMoveSet(pkmn, move, learnLevel);
+                            }
+                        }
+                    }
+                }
+                #endregion
+
                 #region TM, HM, and Move tutor Compatibility
-                if(settings.TmMtCompatSetting != Settings.TmMtCompatOption.Unchanged)
+                if (settings.TmMtCompatSetting != Settings.TmMtCompatOption.Unchanged)
                 {
                     if (settings.TmMtCompatSetting == Settings.TmMtCompatOption.AllOn)
                     {
@@ -249,6 +358,8 @@ namespace PokemonRandomizer.Backend.Randomization
                                 arr[ind] = true;
                             else if (pkmn.learnSet.Any((l) => l.move == moveData.move))
                                 arr[ind] = true;
+                            else if (pkmn.eggMoves.Contains(moveData.move))
+                                arr[ind] = true;
                             else if (moveData.type == PokemonType.NRM)
                                 arr[ind] = rand.RandomDouble() < settings.TmMtTrueChance;
                             else
@@ -263,7 +374,6 @@ namespace PokemonRandomizer.Backend.Randomization
                             SetCompatIntelligent(pkmn.moveTutorCompat, i, data.tutorMoves);
                         }
                     }
-
                 }
                 #endregion
 
@@ -298,7 +408,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 #endregion
             }
             // Set unknown typing if selected
-            if(settings.OverrideUnknownType)
+            if (settings.OverrideUnknownType)
             {
                 var unknownPokeData = data.PokemonLookup[PokemonSpecies.UNOWN];
                 unknownPokeData.types[0] = PokemonType.Unknown;

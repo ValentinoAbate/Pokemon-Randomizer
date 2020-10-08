@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using PokemonRandomizer.Backend.EnumTypes;
 using PokemonRandomizer.Backend.Randomization;
 using PokemonRandomizer.Backend.Utilities;
+using PokemonRandomizer.Statistics;
 
 namespace PokemonRandomizer.Backend.DataStructures
 {
@@ -24,6 +25,13 @@ namespace PokemonRandomizer.Backend.DataStructures
         public Dictionary<byte, HashSet<PokemonSpecies>> CatchRateCategories { get; } = new Dictionary<byte, HashSet<PokemonSpecies>>();
 
         #endregion
+
+        public Dictionary<Move, List<int>> LearnLevels { get; } = new Dictionary<Move, List<int>>();
+        public Dictionary<Move, double> LearnLevelMeans { get; } = new Dictionary<Move, double>();
+        public Dictionary<Move, double> LearnLevelStandardDeviations { get; } = new Dictionary<Move, double>();
+        public Dictionary<int, List<int>> LearnLevelPowers { get; } = new Dictionary<int, List<int>>();
+        public Dictionary<int, double> LearnLevelPowerMeans { get; } = new Dictionary<int, double>();
+        public Dictionary<int, double> LearnLevelPowerStandardDeviations { get; } = new Dictionary<int, double>();
 
         // Calculates the balancing metrics based on the given data
         public RomMetrics(RomData data)
@@ -73,8 +81,33 @@ namespace PokemonRandomizer.Backend.DataStructures
 
             #endregion
 
-
-
+            #region LearnSet Metrics
+            foreach (PokemonBaseStats pkmn in data.Pokemon)
+            {
+                foreach (var entry in pkmn.learnSet)
+                {
+                    if (entry.learnLvl == 1 && !pkmn.IsBasic)
+                        continue;
+                    if (!LearnLevels.ContainsKey(entry.move))
+                        LearnLevels.Add(entry.move, new List<int>());
+                    LearnLevels[entry.move].Add(entry.learnLvl);
+                    int effectivePower = data.MoveData[(int)entry.move].EffectivePower;
+                    if (!LearnLevelPowers.ContainsKey(effectivePower))
+                        LearnLevelPowers.Add(effectivePower, new List<int>());
+                    LearnLevelPowers[effectivePower].Add(entry.learnLvl);
+                }
+            }
+            foreach(var kvp in LearnLevels)
+            {
+                LearnLevelMeans.Add(kvp.Key, kvp.Value.Average());
+                LearnLevelStandardDeviations.Add(kvp.Key, Distribution.StandardDeviation(kvp.Value));
+            }
+            foreach (var kvp in LearnLevelPowers)
+            {
+                LearnLevelPowerMeans.Add(kvp.Key, kvp.Value.Average());
+                LearnLevelPowerStandardDeviations.Add(kvp.Key, Distribution.StandardDeviation(kvp.Value));
+            }
+            #endregion
         }
     }
 }

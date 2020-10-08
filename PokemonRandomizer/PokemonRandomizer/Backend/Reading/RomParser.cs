@@ -25,8 +25,6 @@ namespace PokemonRandomizer.Backend.Reading
 
             data.MoveData = ReadMoves(data.Rom, info);
 
-            var eggMoves = ReadEggMoves(data.Rom, info);
-
             #region Base Stats
             // Read the pokemon base stats from the Rom
             data.Pokemon = ReadPokemonBaseStats(data.Rom, info, out byte[] skippedData);
@@ -36,6 +34,8 @@ namespace PokemonRandomizer.Backend.Reading
                 data.PokemonLookup.Add(pokemon.species, pokemon);
             // Link Pokemon to what they evolved from
             data.LinkEvolutions();
+            data.LinkEggMoves();
+
             #endregion
 
             // Read Starters
@@ -156,6 +156,8 @@ namespace PokemonRandomizer.Backend.Reading
             int evolutionSize = info.Size(evolutionsElt);
             // Add evolution size to skip the null pokemon
             int evolutionOffset = (int)offsetCheck + evolutionSize;
+            // Read Egg Moves
+            var eggMoves = ReadEggMoves(rom, info);
             for (int i = 0; i < info.Num("pokemonBaseStats"); i++)
             {
                 if (i == (int)info.Attr("pokemonBaseStats", "skipAt")) // potentially skip empty slots
@@ -167,7 +169,11 @@ namespace PokemonRandomizer.Backend.Reading
                 }
                 // Create Pokemon
                 PokemonBaseStats pkmn = new PokemonBaseStats(rom, pkmnPtr + (i * pkmnSize), (PokemonSpecies)(i + 1));
+                // Set Egg Moves
+                pkmn.eggMoves = eggMoves.ContainsKey(pkmn.species) ? eggMoves[pkmn.species] : new List<Move>();
+                // Read Learn Set
                 movePtr = ReadAttacks(rom, movePtr, out pkmn.learnSet);
+                // Read Tm/Hm/Mt compat
                 ReadTMHMCompat(rom, info, tmPtr + (i * tmHmSize), out pkmn.TMCompat, out pkmn.HMCompat);
                 ReadTutorCompat(rom, info, tutorPtr + (i * tutorSize), out pkmn.moveTutorCompat);
                 ReadEvolutions(rom, info, evolutionOffset + (i * evolutionSize), out pkmn.evolvesTo);

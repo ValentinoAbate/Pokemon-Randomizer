@@ -30,50 +30,6 @@ namespace PokemonRandomizer.Backend.Randomization
         }
         /// <summary> Generate a byte in between 0 (inclusive) and 255 (inclusive) </summary>
         public byte RandomByte() => (byte)RandomInt(0, 255);
-        /// <summary>
-        /// Random number with a gaussian distribution. Implemented using the Box-Muller transform.
-        /// From this stockoverflow post: https://stackoverflow.com/questions/218060/random-gaussian-variables
-        /// May Update to use Ziggurat Method
-        /// </summary>
-        public double RandomGaussian(double mean, double stdDev)
-        {
-            double u1 = 1.0 - rand.NextDouble(); //uniform(0,1] random doubles
-            double u2 = 1.0 - rand.NextDouble();
-            double randStdNormal = Math.Sqrt(-2.0 * Math.Log(u1)) * Math.Sin(2.0 * Math.PI * u2); //random normal(0,1)
-            return mean + stdDev * randStdNormal; //random normal(mean,stdDev^2)
-        }
-        /// <summary>
-        /// Random number with a gaussian distribution (only returns mean or higher).
-        /// </summary>
-        public double RandomGaussianUp(double mean, double stdDev)
-        {
-            double num = RandomGaussian(mean, stdDev);
-            return num >= mean ? num : RandomGaussianUp(mean, stdDev);
-        }
-        /// <summary>
-        /// Random integer number with a gaussian distribution (only returns mean or higher).
-        /// </summary>
-        public int RandomGaussianUpInt(double mean, double stdDev)
-        {
-            int num = (int)Math.Round(RandomGaussian(mean, stdDev));
-            return num >= mean ? num : RandomGaussianUpInt(mean, stdDev);
-        }
-        /// <summary>
-        /// Random number with a gaussian distribution (only returns mean or lower).
-        /// </summary>
-        public double RandomGaussianDown(double mean, double stdDev)
-        {
-            double num = RandomGaussian(mean, stdDev);
-            return num <= mean ? num : RandomGaussianDown(mean, stdDev);
-        }
-        /// <summary>
-        /// Random integer number with a gaussian distribution (only returns mean or higher).
-        /// </summary>
-        public int RandomGaussianDownInt(double mean, double stdDev)
-        {
-            int num = (int)Math.Round(RandomGaussian(mean, stdDev));
-            return num <= mean ? num : RandomGaussianDownInt(mean, stdDev);
-        }
         #endregion
 
         #region Random Choice from a collection (With options for weighting)
@@ -139,6 +95,77 @@ namespace PokemonRandomizer.Backend.Randomization
         public T Choice<T>(WeightedSet<T> items)
         {
             return Choice(items.Items, items.Weights);
+        }
+        #endregion
+
+        #region Gaussian Random Functions
+
+        /// <summary>
+        /// Random number with a gaussian distribution. Implemented using the Box-Muller transform.
+        /// From this stockoverflow post: https://stackoverflow.com/questions/218060/random-gaussian-variables
+        /// May Update to use Ziggurat Method
+        /// </summary>
+        public double RandomGaussian(double mean, double stdDev)
+        {
+            double u1 = 1.0 - rand.NextDouble(); //uniform(0,1] random doubles
+            double u2 = 1.0 - rand.NextDouble();
+            double randStdNormal = Math.Sqrt(-2.0 * Math.Log(u1)) * Math.Sin(2.0 * Math.PI * u2); //random normal(0,1)
+            return mean + stdDev * randStdNormal; //random normal(mean,stdDev^2)
+        }
+        /// <summary>
+        /// Random number with a gaussian distribution. Just a rounded random gaussian double.
+        /// </summary>
+        public int RandomGaussianInt(double mean, double stdDev)
+        {
+            return (int)Math.Round(RandomGaussian(mean, stdDev));
+        }
+        /// <summary>
+        /// Random number with a gaussian distribution (only returns mean or higher).
+        /// </summary>
+        public double RandomGaussianUp(double mean, double stdDev)
+        {
+            double num = RandomGaussian(mean, stdDev);
+            return num >= mean ? num : RandomGaussianUp(mean, stdDev);
+        }
+        /// <summary>
+        /// Random integer number with a gaussian distribution (only returns mean or higher).
+        /// </summary>
+        public int RandomGaussianUpInt(double mean, double stdDev)
+        {
+            int num = RandomGaussianInt(mean, stdDev);
+            return num >= mean ? num : RandomGaussianUpInt(mean, stdDev);
+        }
+        /// <summary>
+        /// Random number with a gaussian distribution (only returns mean or lower).
+        /// </summary>
+        public double RandomGaussianDown(double mean, double stdDev)
+        {
+            double num = RandomGaussian(mean, stdDev);
+            return num <= mean ? num : RandomGaussianDown(mean, stdDev);
+        }
+        /// <summary>
+        /// Random integer number with a gaussian distribution (only returns mean or higher).
+        /// </summary>
+        public int RandomGaussianDownInt(double mean, double stdDev)
+        {
+            int num = RandomGaussianInt(mean, stdDev);
+            return num <= mean ? num : RandomGaussianDownInt(mean, stdDev);
+        }
+        /// <summary>
+        /// Random number with a gaussian distribution (only returns mean or higher).
+        /// </summary>
+        public double RandomGaussianPositiveNonZero(double mean, double stdDev)
+        {
+            double num = RandomGaussian(mean, stdDev);
+            return num > 0 ? num : RandomGaussianPositiveNonZero(mean, stdDev);
+        }
+        /// <summary>
+        /// Random number with a gaussian distribution (only returns mean or higher).
+        /// </summary>
+        public int RandomGaussianPositiveNonZeroInt(double mean, double stdDev)
+        {
+            int num = RandomGaussianInt(mean, stdDev);
+            return num > 0 ? num : RandomGaussianPositiveNonZeroInt(mean, stdDev);
         }
         #endregion
     }

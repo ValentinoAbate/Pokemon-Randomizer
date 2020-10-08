@@ -104,8 +104,29 @@ namespace PokemonRandomizer
         #region Learnsets
 
         public bool BanSelfdestruct => false;
+        public bool AddMoves => true;
+        public bool DisableAddingHmMoves => false;
 
-        public bool AddMoves => false;
+        public double AddMovesChance => 1;
+        public double NumMovesStdDeviation => 2;
+        public double NumMovesMean => 1;
+
+        public enum AddMoveSource
+        { 
+            Random,
+            Damaging,
+            Status,
+            STAB,
+            STABDamaging,
+            STABStatus,
+            EggMoves,
+            CompatibleTms,
+        }
+        public WeightedSet<AddMoveSource> AddMoveSourceWieghts { get; } = new WeightedSet<AddMoveSource>()
+        {
+            { AddMoveSource.Random, 0.01f },
+            { AddMoveSource.EggMoves, 0.99f },
+        };
 
         #endregion
 

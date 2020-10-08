@@ -159,6 +159,28 @@ namespace PokemonRandomizer.Backend.DataStructures
                     if (evo.Type != EvolutionType.None)
                         PokemonLookup[evo.Pokemon].evolvesFrom.Add(new Evolution(evo.Type, pokemon.species, evo.parameter));
         }
+        /// <summary>
+        /// updates the "eggMoves" fields of all pokemon from their "evolvesFrom" field 
+        /// Link evolutions must be called before this function or it will not work properly
+        /// </summary> 
+        public void LinkEggMoves()
+        {
+            List<Move> GetEggMoves(PokemonBaseStats pokemon)
+            {
+                if (pokemon.eggMoves.Count > 0)
+                    return pokemon.eggMoves;
+                if (pokemon.evolvesFrom.Count > 0)
+                    return GetEggMoves(PokemonLookup[pokemon.evolvesFrom[0].Pokemon]);
+                return pokemon.eggMoves;
+            }
+            foreach (var pokemon in Pokemon)
+            {
+                if(pokemon.eggMoves.Count <= 0 && pokemon.evolvesFrom.Count > 0)
+                {
+                    pokemon.eggMoves = GetEggMoves(PokemonLookup[pokemon.evolvesFrom[0].Pokemon]);
+                }
+            }
+        }
 
         // Create string array to write to info file
         public string[] ToStringArray()
