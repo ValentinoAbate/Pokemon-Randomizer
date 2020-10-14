@@ -10,8 +10,10 @@ Optional Difficulty Rules:
 - Unless randomized, you must release your starter if it goes above level 10.
 - You can only use each full heal once (pokecenters, etc)
 - You cannot use the EXP Share or the Lucky Egg (if given to you by an event)
+- You cannot use any static pokemon given to you
 - You must make any static pokemon you encounter faint (including legendaries)
 Optional QOL rules:
+- No Wild Starters: Starters encountered in the wild may not be caught, but also do not count as your pokemon for the route
 - Dupes Clause: If you run into a pokemon you currently have, you may skip it. You may skip an amount of that pokemon equal to the number you have alive.
 Optional Flavor Rules:
 - You must name your player character your preferred name
