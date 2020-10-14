@@ -53,6 +53,7 @@ FEATURES:
 	- Map writing
 	- Catching tut writing (very low priority, may never add) (maybe add a skip)
 	- Snow weather hack
+- National Pokedex from game start hack
 - Gen IV compatibility
 - Settings preset saving (possibly in JSON or XML)
 - ROM Data XML export (randomized rom exports its offsets so it can be re-randomized)
