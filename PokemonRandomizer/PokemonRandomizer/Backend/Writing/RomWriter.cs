@@ -124,6 +124,18 @@ namespace PokemonRandomizer.Backend.Writing
                     rom.WriteBlock(0xAD39E, new byte[] { 0x4B, 0xE0 });
                 }
             }
+            // Apply evolve without national dex hack if supported
+            if(data.EvolveWithoutNationalDex)
+            {
+                const string noNatDexElt = "evolveWihtoutNationalDex";
+                int? evolveWithoutNationalDexOffset = info.FindOffset(noNatDexElt, rom);
+                if(evolveWithoutNationalDexOffset != null)
+                {
+                    // Get the data from the attribute
+                    var byteData = info.HexArrayAttr(noNatDexElt, "data").Select((b) => (byte)b).ToArray();
+                    rom.WriteBlock((int)evolveWithoutNationalDexOffset, byteData);
+                }
+            }
 
             // Perform all of the repoint operations
             rom.RepointMany(repoints);

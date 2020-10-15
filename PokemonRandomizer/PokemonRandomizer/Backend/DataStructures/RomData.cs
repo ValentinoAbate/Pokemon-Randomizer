@@ -68,6 +68,7 @@ namespace PokemonRandomizer.Backend.DataStructures
         public bool FastText { get; set; } = false;
         public bool UseUnknownTypeForMoves { get; set; } = false;
         public bool SnowyWeatherApplysHail { get; set; } = false;
+        public bool EvolveWithoutNationalDex { get; set; } = true;
 
         #endregion
 

@@ -147,6 +147,7 @@
 
     <runIndoors offset="0xBD494"/>
     <textSpeed offset="0x41F428"/>
+    <evolveWihtoutNationalDex offset="0xCE91A" data="[0x00,0x00,0x14,0xE0]"/>
 
     <!-- Type Data -->
 
