@@ -1,13 +1,10 @@
-﻿using System;
+﻿using PokemonRandomizer.Backend.DataStructures;
+using PokemonRandomizer.Backend.EnumTypes;
+using PokemonRandomizer.Backend.Scripting;
+using PokemonRandomizer.Backend.Utilities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.IO;
-using PokemonRandomizer.Backend.DataStructures;
-using PokemonRandomizer.Backend.EnumTypes;
-using PokemonRandomizer.Backend.Utilities;
-using PokemonRandomizer.Backend.Scripting;
 
 namespace PokemonRandomizer.Backend.Writing
 {

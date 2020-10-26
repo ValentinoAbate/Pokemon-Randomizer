@@ -70,6 +70,7 @@ FEATURES:
 - Egg move writing
 - Safe pointer prefix data offset find
 - Ban selfdestruct works by move effect rather than explicit move number
+- Wally Text Fix ("RALTS" to current pokemon)
 CLEANUP:
 - Change all "ptr" attributes in rom info to "pointer" to work more cleanly with dynamic offset finding
 - Add options to use XMLManager helper methods with constants
