@@ -235,8 +235,9 @@ namespace PokemonRandomizer.Backend.Writing
             int? offsetCheck = null;
             int pkmnPtr = info.Offset("pokemonBaseStats");
             int pkmnSize = info.Size("pokemonBaseStats");
-            int tmPtr = info.Offset("tmHmCompat");
             int tmHmSize = info.Size("tmHmCompat");
+            // Skip over the null pokemon
+            int tmPtr = info.Offset("tmHmCompat") + tmHmSize;
             int tutorSize = info.Size("moveTutorCompat");
             // Need an extra +4 to skip the null pokemon. Determined from the move tutor move table's offset
             int tutorPtr = info.Offset("moveTutorMoves") + info.Num("moveTutorMoves") * info.Size("moveTutorMoves") + tutorSize;

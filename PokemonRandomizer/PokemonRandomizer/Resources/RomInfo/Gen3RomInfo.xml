@@ -83,7 +83,7 @@
     <!-- Pokemon Definitions -->
 
     <pokemonBaseStats num="411" size="28" offset="0x3203e8" skip="25" skipAt="251"/>
-    <tmHmCompat size="8" offset="0x31e8a0"/>
+    <tmHmCompat size="8" offset="0x31E898" pointer="0x06E048"/>
     <!-- Move Tutor compat offset is determined from the move mappings offset. Default offset is given here (bulbasaur is actually +4 from here) -->
     <moveTutorCompat size="4" offset="0x615048"/>
     <movesets offset="0x3230dc"/>
@@ -169,7 +169,7 @@
     <!-- Pokemon Definitions -->
 
     <pokemonBaseStats num="411" size="28" offset="0x2547A0" skip="25" skipAt="251"/>
-    <tmHmCompat size="8" offset="0x252BC8"/>
+    <tmHmCompat size="8" offset="0x252BC8" pointer="0x043C68"/>
     <moveTutorCompat size="2" offset="0x459B7E"/>
     <movesets offset="0x257494"/>
     <!-- offset from thethethethe's forum post (archived on the wayback machine): https://web.archive.org/web/20180316234519/http://pokemonhackersonline.com/showthread.php?t=2586 -->
