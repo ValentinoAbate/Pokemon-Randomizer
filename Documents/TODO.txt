@@ -22,6 +22,8 @@ IDEAS:
 	- Secret Agents (any non-trainer NPC may become a trainer)
 		- Allow limiters that when removed can extend this to pokemon centers, etx
 	- Difficulty: All trainers use good AI
+	- Difficulty: Trainers use held items
+	- Trainers can use battle items?
 - Learnset Randomization
 	- Add other options for level choosing alg (specifically just power, intelligent, or totally random)
 	- Add other move choosing options (from TM compats, from STAB, from Status, from Damaging, from a moveset of a pokemon of the same type)
@@ -37,15 +39,22 @@ IDEAS:
 - Wild Pokemon Randomization
 	- Area Type theming (Forest likely to have grass / bug etc)
 	- Encounter Bank Type theming (prefer water in fishing spots, etc)
+	- Encounter Bank habitat theming (FRLG have a habitat attribute in the pokedex. an encounter bank's base habitat can be taken from the majorite habitat of pokemon that are encountered there) (FRLG or Aggregate mode only)
 	- Encounter Bank ratio weighting (number of times that pokemon appears in that encounter slot in the input ROM)
 - TM Compat Randomization
 	- Intelligent - record original TM / MT learns and turn those moves on if present
 	- Intelligent - use original TM / MT learn type ratios to guide new move choices
+	- Use a move similarity factor to guide new move choices (I.E if could learn bite, consider crunch, fire fang, etc to be learnable)
 	- Intelligent - potentially keep number to a certain degree (pmkn with no compat stay that way - Magikarp, Wobbufett etc.). Maybe a new setting - IntelligentKeepNumber / NumberAware
-	- Preserve noise and normal TMs through evolutionary lines
+	- Preserve noise and normal TMs through evolutionary lines (Possible use data from al pokemon in the line together)
 - TM / MT Randomization
 	- Rare move setting - Weight move choices inversely proportional to number of occurences in learnsets
-- Raining routes should auto-water berries
+- Misc / Minor
+	- Raining routes should auto-water berries
+- Pokemon Weighting
+	- Choose priority for different heuristics for a category
+		- Heuristics can be on the same level
+	- Map categories can be for "Routes" (Maps with "Route" in the name) and named maps
 FEATURES:
 - FireRed v1.1, LeafGreen v1.0 + v1.1, Sapphire v1.0 + v1.11, and Ruby v1.0 + v1.11 compatibility
 - Enable for FireRed
@@ -60,6 +69,7 @@ FEATURES:
 	- Include data in a human-readable format
 - Item randomization (field items)
 	- Use cost as optional weighting
+- Item randomization (pickup items)
 - Item randomization (stores)
 - In-Game Trade Randomization
 - ROM variable-length string writing
