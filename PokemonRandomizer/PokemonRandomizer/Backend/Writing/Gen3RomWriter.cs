@@ -37,7 +37,7 @@ namespace PokemonRandomizer.Backend.Writing
                 WriteCatchingTutOpponent(data, rom, info);
             }
             WritePokemonBaseStats(data, rom, info, ref repoints);
-            WriteTypeDefinitions(data, rom, ref repoints);
+            WriteTypeDefinitions(data, rom, info, ref repoints);
             WriteEncounters(data, rom, info);
             WriteTrainerBattles(data, rom, info);
             if(metadata.IsRubySapphireOrEmerald)
@@ -359,7 +359,7 @@ namespace PokemonRandomizer.Backend.Writing
                 rom.Skip(2);
             }
         }
-        private static void WriteTypeDefinitions(RomData data, Rom rom, ref RepointList repoints)
+        private static void WriteTypeDefinitions(RomData data, Rom rom, XmlManager info, ref RepointList repoints)
         {
             #region Convert TypeChart to byte[]
             List<byte> typeData = new List<byte>();
@@ -383,14 +383,14 @@ namespace PokemonRandomizer.Backend.Writing
             //Move and Repoint if necessary
             if (data.TypeDefinitions.Count > data.TypeDefinitions.InitCount)
             {
-                int oldOffset = data.Info.Offset("typeEffectiveness");
+                int oldOffset = info.Offset("typeEffectiveness");
                 int? newOffset = rom.WriteInFreeSpace(typeData.ToArray());
                 if(newOffset != null)
                     repoints.Add(oldOffset, (int)newOffset);                   
             }
             else
             {
-                rom.WriteBlock(data.Info.Offset("typeEffectiveness"), typeData.ToArray());
+                rom.WriteBlock(info.Offset("typeEffectiveness"), typeData.ToArray());
             }
             #endregion
         }
