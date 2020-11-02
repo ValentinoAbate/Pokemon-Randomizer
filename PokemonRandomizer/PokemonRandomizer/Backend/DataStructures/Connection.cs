@@ -16,14 +16,5 @@
         public byte bankId;
         public byte mapId;
         public int unknown;
-        /// <summary> Creates a new map connection at the Rom's current internal offset</summary>
-        public Connection(Rom rom)
-        {
-            type = (Type)rom.ReadUInt32();
-            offset = rom.ReadUInt32();
-            bankId = rom.ReadByte();
-            mapId = rom.ReadByte();
-            unknown = rom.ReadUInt16();
-        }
     }
 }

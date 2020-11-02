@@ -50,8 +50,8 @@ namespace PokemonRandomizer.Backend.Reading
             // Read type definitions
             data.TypeDefinitions = ReadTypeEffectivenessData(rom, info);
             // Read in the map data
-            data.Maps = new MapManager(data, info);
-            data.Encounters = ReadEncounters(rom, info, data.Maps);
+            data.MapBanks = ReadMapBanks(rom, info, metadata);
+            data.Encounters = ReadEncounters(rom, info);
             // Calculate the balance metrics from the loaded data
             data.CalculateMetrics();
             return data;
@@ -353,8 +353,117 @@ namespace PokemonRandomizer.Backend.Reading
             }
             return ret;
         }
+
+        // Read Map Banks
+        private static Map[][] ReadMapBanks(Rom rom, XmlManager info, RomMetadata metadata)
+        {
+            // Read data from XML file
+            int bankPtrOffset = info.Offset("mapBankPointers");
+            int ptrSize = info.Size("mapBankPointers");
+            Map[][] mapBanks = new Map[info.Num("mapBankPointers")][];
+            int[] bankLengths = info.IntArrayAttr("maps", "bankLengths");
+            int labelOffset = rom.ReadPointer(rom.FindFromPrefix(info.Attr("mapLabels", "ptrPrefix").Value));
+            // Construct map data structures
+            for (int i = 0; i < mapBanks.Length; ++i)
+            {
+                int bankPtr = rom.ReadPointer(bankPtrOffset + (i * ptrSize));
+                mapBanks[i] = ReadMapBank(rom, metadata, bankPtr, bankLengths[i], labelOffset);
+            }
+            return mapBanks;
+        }
+
+        private static Map[] ReadMapBank(Rom rom, RomMetadata metadata, int offset, int numMaps, int labelOffset)
+        {
+            Map[] maps = new Map[numMaps];
+            for (int i = 0; i < maps.Length; ++i)
+            {
+                int mapAddy = rom.ReadPointer(offset + (i * 4));
+                maps[i] = ReadMap(rom, metadata, mapAddy, labelOffset);
+            }
+            return maps;
+        }
+        private static Map ReadMap(Rom rom, RomMetadata metadata, int offset, int labelOffset)
+        {
+            rom.SaveOffset();
+            rom.Seek(offset);
+
+            #region Construct Map With Header Data
+
+            var map = new Map()
+            {
+                mapDataOffset = rom.ReadPointer(),
+                eventDataOffset = rom.ReadPointer(),
+                mapScriptsOffset = rom.ReadPointer(),
+                connectionOffset = rom.ReadPointer(),
+                music = rom.ReadUInt16(),
+                mapIndex = rom.ReadUInt16(),
+                labelIndex = rom.ReadByte(),
+                visibility = rom.ReadByte(),
+                weather = (Map.Weather)rom.ReadByte(),
+                mapType = (Map.Type)rom.ReadByte(),
+                unknown = rom.ReadByte(),
+                unknown2 = rom.ReadByte(),
+                showLabelOnEntry = rom.ReadByte(),
+                battleField = rom.ReadByte(),
+            };
+
+            #endregion
+
+            #region Read Non-Header Data
+
+            if (metadata.IsRubySapphireOrEmerald)
+            {
+                // Read Map Label (RSE)
+                rom.Seek(rom.ReadPointer(labelOffset + map.labelIndex * 8 + 4));
+                map.Name = rom.ReadVariableLengthString();
+            }
+            else if (metadata.IsFireRedOrLeafGreen)
+            {
+                // Don't know why this magic number is here
+                const int frlgMapLabelsStart = 0x58;
+                // Read Map Label (FRLG)
+                rom.Seek(rom.ReadPointer(labelOffset + (map.labelIndex - frlgMapLabelsStart) * 4));
+                map.Name = rom.ReadVariableLengthString();
+            }
+
+            // Connections
+            if (map.connectionOffset != Rom.nullPointer)
+                map.connections = ReadMapConnectionData(rom, map.connectionOffset);
+            #endregion
+
+            rom.LoadOffset();
+            return map;
+        }
+
+        private static ConnectionData ReadMapConnectionData(Rom rom, int offset)
+        {
+            rom.SaveOffset();
+            rom.Seek(offset);
+            ConnectionData data = new ConnectionData
+            {
+                initialNumConnections = rom.ReadUInt32(),
+                dataOffset = rom.ReadPointer()
+            };
+            rom.Seek(data.dataOffset);
+            for (int i = 0; i < data.initialNumConnections; ++i)
+            {
+                // Read the connection
+                var connection = new Connection
+                {
+                    type = (Connection.Type)rom.ReadUInt32(),
+                    offset = rom.ReadUInt32(),
+                    bankId = rom.ReadByte(),
+                    mapId = rom.ReadByte(),
+                    unknown = rom.ReadUInt16()
+                };
+                data.connections.Add(connection);
+            }
+            rom.LoadOffset();
+            return data;
+        }
+
         // Read encounters
-        private static List<EncounterSet> ReadEncounters(Rom rom, XmlManager info, MapManager maps)
+        private static List<EncounterSet> ReadEncounters(Rom rom, XmlManager info)
         {
             #region Find and Seek encounter table
             var encounterPtrPrefix = info.Attr("wildPokemon", "ptrPrefix", info.Constants).Value;

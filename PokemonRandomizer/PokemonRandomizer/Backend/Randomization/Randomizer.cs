@@ -462,7 +462,7 @@ namespace PokemonRandomizer.Backend.Randomization
 
             data.SnowyWeatherApplysHail = settings.UseHailHack;
             // Mutate Maps (currently just iterate though the maps, but may want to construct and traverse a graph later)
-            foreach(var map in data.Maps.All)
+            foreach(var map in data.Maps)
             {
                 // If the map names is empty, just continue
                 if (string.IsNullOrEmpty(map.Name))

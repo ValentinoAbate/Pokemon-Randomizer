@@ -32,7 +32,7 @@ namespace PokemonRandomizer.Backend.Writing
                 WriteStarters(data, rom, info);
             }
             // Catching tut currently only supported on BPEE
-            if(metadata.Code == RomMetadata.gameCodeEm)
+            if(metadata.IsEmerald)
             {
                 WriteCatchingTutOpponent(data, rom, info);
             }
@@ -531,10 +531,69 @@ namespace PokemonRandomizer.Backend.Writing
                 rom.LoadOffset();
             }
         }
-        private static void WriteMapData(RomData romData, Rom rom, XmlManager info)
+
+        /// <summary>
+        /// Write the maps back to the file. Currently edits in place, and does not support exapansion of Map Bank Table.
+        /// Currently only writes Map Header data.
+        /// </summary>
+        private static void WriteMapData(RomData data, Rom rom, XmlManager info)
         {
-            romData.Maps.Write(rom, info);
+            int bankPtrOffset = info.Offset("mapBankPointers");
+            int ptrSize = info.Size("mapBankPointers");
+            int labelOffset = rom.ReadPointer(rom.FindFromPrefix(info.Attr("mapLabels", "ptrPrefix").Value));
+            // Construct map data structures
+            for (int i = 0; i < data.MapBanks.Length; ++i)
+            {
+                int bankPtr = rom.ReadPointer(bankPtrOffset + (i * ptrSize));
+                WriteBank(data.MapBanks[i], rom, bankPtr, labelOffset);
+            }
         }
+
+        /// <summary>
+        /// Write the maps in this bank back to the file. Currently edits in place, and does not support exapansion of the given map table
+        /// </summary>
+        private static void WriteBank(Map[] maps, Rom rom, int bankOffset, int labelOffset)
+        {
+            for (int i = 0; i < maps.Length; ++i)
+            {
+                int mapOffset = rom.ReadPointer(bankOffset + (i * 4));
+                WriteMap(maps[i], rom, mapOffset, labelOffset);
+            }
+        }
+        /// <summary>
+        /// Write a map to the rom. Currently only writes header data
+        /// </summary>
+        private static void WriteMap(Map map, Rom rom, int mapOffset, int labelOffset)
+        {
+            #region Write Header Data
+            rom.Seek(mapOffset);
+            rom.WritePointer(map.mapDataOffset);
+            rom.WritePointer(map.eventDataOffset);
+            rom.WritePointer(map.mapScriptsOffset);
+            rom.WritePointer(map.connectionOffset);
+            rom.WriteUInt16(map.music);
+            rom.WriteUInt16(map.mapIndex);
+            rom.WriteByte(map.labelIndex);
+            rom.WriteByte(map.visibility);
+            rom.WriteByte((byte)map.weather);
+            rom.WriteByte((byte)map.mapType);
+            rom.WriteByte(map.unknown);
+            rom.WriteByte(map.unknown2);
+            rom.WriteByte(map.showLabelOnEntry);
+            rom.WriteByte(map.battleField);
+            #endregion
+
+            #region Write Non-Header Data (Unimplemented)
+            // Write Map Name
+            //rom.Seek(rom.ReadPointer(labelOffset + map.labelIndex * 8 + 4));
+            //    rom.ReadVariableLengthString();
+
+            //// Connections
+            //if (connectionOffset != Rom.nullPointer)
+            //    connections = new ConnectionData(rom, connectionOffset);
+            #endregion
+        }
+
         private class RepointList : List<Tuple<int, int>>
         {
             public void Add(int oldOffset, int newOffset)

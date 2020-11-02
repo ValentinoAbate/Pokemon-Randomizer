@@ -111,7 +111,6 @@
     <Compile Include="Backend\DataStructures\EncounterSet.cs" />
     <Compile Include="Backend\Utilities\HexUtils.cs" />
     <Compile Include="Backend\DataStructures\Map.cs" />
-    <Compile Include="Backend\DataStructures\MapManager.cs" />
     <Compile Include="Backend\Utilities\MathUtils.cs" />
     <Compile Include="Backend\Randomization\PokemonMetrics.cs" />
     <Compile Include="Backend\Randomization\PokemonPowerScaling.cs" />

@@ -1,10 +1,7 @@
-﻿using System;
+﻿using PokemonRandomizer.Backend.EnumTypes;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using PokemonRandomizer.Backend.EnumTypes;
-using PokemonRandomizer.Backend.Utilities;
 
 namespace PokemonRandomizer.Backend.DataStructures
 {
@@ -32,7 +29,8 @@ namespace PokemonRandomizer.Backend.DataStructures
         public List<string> ClassNames { get; set; }
         public List<Trainer> Trainers { get; set; }
         public TypeEffectivenessChart TypeDefinitions { get; set; }
-        public MapManager Maps { get; set; }
+        public IEnumerable<Map> Maps => MapBanks.SelectMany((bank) => bank);
+        public Map[][] MapBanks { get; set; }
         public List<EncounterSet> Encounters { get; set; }
         public List<MoveData> MoveData { get; set; }
 
