@@ -47,7 +47,7 @@ namespace PokemonRandomizer.Backend.DataStructures
             PokemonSpecies.LATIAS,
             PokemonSpecies.LATIOS,
         };
-        public readonly PokemonSpecies species;
+        public PokemonSpecies species;
 
         #region Helper Properties
 
@@ -128,39 +128,6 @@ namespace PokemonRandomizer.Backend.DataStructures
         // Just for lookup purposes, not to be written to file
         public List<Evolution> evolvesFrom = new List<Evolution>();
 
-        public PokemonBaseStats(Rom data, int offset, PokemonSpecies species)
-        {
-            // Set species
-            this.species = species;
-            data.Seek(offset);
-            // fill in stats (hp/at/df/sp/sa/sd)
-            stats = data.ReadBlock(6);
-            // fill in types
-            types[0] = (PokemonType)data.ReadByte();
-            types[1] = (PokemonType)data.ReadByte();
-            catchRate = data.ReadByte();
-            baseExpYield = data.ReadByte();
-            // fill in ev yields (stored in the first 12 bits of data[10-11])
-            evYields = data.ReadBits(12, 2);
-            heldItems[0] = (Item)data.ReadUInt16(); // (data[13] * 256 + data[12]);
-            heldItems[1] = (Item)data.ReadUInt16(); // (data[15] * 256 + data[14]);
-            genderRatio = data.ReadByte();
-            eggCycles = data.ReadByte();
-            baseFriendship = data.ReadByte();
-            growthType = (ExpGrowthType)data.ReadByte();
-            // fill in egg groups
-            eggGroups[0] = (EggGroup)data.ReadByte();
-            eggGroups[1] = (EggGroup)data.ReadByte();
-            // fill in abilities
-            abilities[0] = (Ability)data.ReadByte();
-            abilities[1] = (Ability)data.ReadByte();
-            safariZoneRunRate = data.ReadByte();
-            byte searchFlip = data.ReadByte();
-            // read color
-            searchColor = (SearchColor)((searchFlip & 0b1111_1110) >> 1);
-            // read flip
-            flip = (searchFlip & 0b0000_0001) == 1;
-        }
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();

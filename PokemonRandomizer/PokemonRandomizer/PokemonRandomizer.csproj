@@ -77,6 +77,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Backend\Reading\RomParser.cs" />
     <Compile Include="Backend\Scripting\Gen3Opcodes.cs" />
     <Compile Include="Backend\EnumTypes\Ability.cs" />
     <Compile Include="Backend\EnumTypes\EggGroup.cs" />
@@ -90,6 +91,7 @@
     <Compile Include="Backend\Utilities\IpsPatcher.cs" />
     <Compile Include="Backend\DataStructures\MoveData.cs" />
     <Compile Include="Backend\Randomization\MovesetGenerator.cs" />
+    <Compile Include="Backend\Writing\RomWriter.cs" />
     <Compile Include="Resources\Patches\Patches.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -138,9 +140,9 @@
     <Compile Include="Backend\DataStructures\PokemonBaseStats.cs" />
     <Compile Include="Backend\Randomization\Random.cs" />
     <Compile Include="Backend\DataStructures\RomData.cs" />
-    <Compile Include="Backend\Writing\RomWriter.cs" />
+    <Compile Include="Backend\Writing\Gen3RomWriter.cs" />
     <Compile Include="Backend\Randomization\Randomizer.cs" />
-    <Compile Include="Backend\Reading\RomParser.cs" />
+    <Compile Include="Backend\Reading\Gen3RomParser.cs" />
     <Compile Include="Backend\Utilities\TableReader.cs" />
     <Compile Include="Backend\DataStructures\Trainer.cs" />
     <Compile Include="Backend\DataStructures\TrainerPokemon.cs" />

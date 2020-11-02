@@ -143,7 +143,7 @@ namespace PokemonRandomizer.Backend.DataStructures
         // returns a clone of this rom data
         public RomData Clone()
         {
-            return Reading.RomParser.Parse(Rom.File);
+            return Reading.Gen3RomParser.Parse(Rom.File);
         }
         // updates the metrics from the current data
         public void CalculateMetrics()

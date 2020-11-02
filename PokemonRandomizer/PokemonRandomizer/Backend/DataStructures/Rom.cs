@@ -40,7 +40,8 @@ namespace PokemonRandomizer.Backend.DataStructures
         {
             FreeSpaceByte = toCopy.FreeSpaceByte;
             SearchStartOffset = toCopy.SearchStartOffset;
-            File = toCopy.File;
+            File = new byte[toCopy.File.Length];
+            Array.Copy(toCopy.File, File, toCopy.File.Length);
             InternalOffset = 0;  
         }
         /// <summary> Initilize an Empty Rom with a given length </summary>

@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Drawing.Text;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using System.Windows.Forms.VisualStyles;
-using PokemonRandomizer.Backend.DataStructures;
+﻿using PokemonRandomizer.Backend.DataStructures;
 using PokemonRandomizer.Backend.EnumTypes;
 using PokemonRandomizer.Backend.Utilities;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 
 
 namespace PokemonRandomizer.Backend.Randomization

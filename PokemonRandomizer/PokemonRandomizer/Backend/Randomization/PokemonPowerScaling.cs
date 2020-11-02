@@ -1,15 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using PokemonRandomizer.Backend.DataStructures;
+﻿using PokemonRandomizer.Backend.DataStructures;
 using PokemonRandomizer.Backend.EnumTypes;
+using System;
+using System.Collections.Generic;
 
 namespace PokemonRandomizer.Backend.Randomization
 {
     public static class PowerScaling
     {
+        [Flags]
         public enum Options
         {
             None = 0,
@@ -29,18 +27,18 @@ namespace PokemonRandomizer.Backend.Randomization
                 float score = 0;
                 foreach(var func in tieringFuncs)
                     score += func(p);
-                if (tieringFuncs.Length > 0)
-                    score = score / tieringFuncs.Length;
+                if (tieringFuncs.Length > 1) // Don't need to divide by 1
+                    score /= tieringFuncs.Length;
                 scores.Add(p.species, score);
             }
             return scores;
         }
         private static ScoreFunc[] GetScoringFuncs(Options options)
         {
-            if (options == 0)
+            if (options == Options.None)
                 return new ScoreFunc[0];
             var funcs = new List<ScoreFunc>();
-            if ((options & Options.BaseStatsAggregate) > 0)
+            if (options.HasFlag(Options.BaseStatsAggregate))
                 funcs.Add(BaseStatsAggregate);
             return funcs.ToArray();
         }

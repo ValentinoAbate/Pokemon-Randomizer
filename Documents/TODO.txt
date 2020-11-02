@@ -36,6 +36,7 @@ IDEAS:
 	- If pokemon learned something on a lower evolution, have the option to keep that (esp. for dunsparse plague)
 - Trainer Randomization
 	- Trainer Type Theming (class / gym - based)?
+	- Trainer one-to-one species randomization (a trainer with three magikarps will have 3 of the same pokemon
 - Wild Pokemon Randomization
 	- Area Type theming (Forest likely to have grass / bug etc)
 	- Encounter Bank Type theming (prefer water in fishing spots, etc)

@@ -87,7 +87,7 @@ namespace PokemonRandomizer
         private void OpenRomNoWindow(string path)
         {
             byte[] rawROM = File.ReadAllBytes(path);
-            Data = Backend.Reading.RomParser.Parse(rawROM);
+            Data = Backend.Reading.Gen3RomParser.Parse(rawROM);
             IsROMLoaded = true;
             lblMessageBoxContent.Content = "ROM opened: " + Data.Name + " (" + Data.Code + ")";
         }
@@ -145,7 +145,7 @@ namespace PokemonRandomizer
             if (openFileDialog.ShowDialog() == true)
             {
                 byte[] rawROM = File.ReadAllBytes(openFileDialog.FileName);
-                Data = Backend.Reading.RomParser.Parse(rawROM);
+                Data = Backend.Reading.Gen3RomParser.Parse(rawROM);
                 IsROMLoaded = true;
                 lblMessageBoxContent.Content = "ROM opened: " + Data.Name + " (" + Data.Code + ")";
                 LastRandomizationInfo = Data.ToStringArray();
@@ -163,7 +163,7 @@ namespace PokemonRandomizer
             {
                 var randomzier = new Backend.Randomization.Randomizer(Data, new Settings(this));
                 var randomizedData = randomzier.Randomize();
-                File.WriteAllBytes(saveFileDialog.FileName, Backend.Writing.RomWriter.Write(randomizedData));
+                File.WriteAllBytes(saveFileDialog.FileName, Backend.Writing.Gen3RomWriter.Write(randomizedData));
                 LastRandomizationInfo = randomizedData.ToStringArray();
             }
         }
@@ -216,7 +216,7 @@ namespace PokemonRandomizer
             if (openFileDialog.ShowDialog() == true)
             {
                 byte[] rawROM = File.ReadAllBytes(openFileDialog.FileName);
-                Data = Backend.Reading.RomParser.Parse(rawROM);
+                Data = Backend.Reading.Gen3RomParser.Parse(rawROM);
                 LastRandomizationInfo = Data.ToStringArray();
                 var saveFileDialog = new SaveFileDialog
                 {
@@ -226,7 +226,7 @@ namespace PokemonRandomizer
                 };
                 if (saveFileDialog.ShowDialog() == true)
                 {
-                    File.WriteAllBytes(saveFileDialog.FileName, Backend.Writing.RomWriter.Write(Data));
+                    File.WriteAllBytes(saveFileDialog.FileName, Backend.Writing.Gen3RomWriter.Write(Data));
                 }
             }
         }
