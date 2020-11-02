@@ -9,25 +9,24 @@ namespace PokemonRandomizer.Backend.Reading
     public static class Gen3RomParser
     {
         // Parse the ROM bytes into a RomData object
-        public static RomData Parse(byte[] rawRom)
+        public static RomData Parse(Rom rom, RomMetadata metadata, XmlManager info)
         {
-            RomData data = new RomData(rawRom);
-            var info = data.Info;
+            RomData data = new RomData();
 
             #region Move Mappings (TMs/HMs/Tutors)
             //Read the TM move mappings from the ROM
-            data.TMMoves = ReadMoveMappings("tmMoves", data.Rom, info);
+            data.TMMoves = ReadMoveMappings("tmMoves", rom, info);
             //Read the HM move mappings from the ROM
-            data.HMMoves = ReadMoveMappings("hmMoves", data.Rom, info);
+            data.HMMoves = ReadMoveMappings("hmMoves", rom, info);
             //Read the move tutor move mappings from the ROM
-            data.tutorMoves = ReadMoveMappings("moveTutorMoves", data.Rom, info); ;
+            data.tutorMoves = ReadMoveMappings("moveTutorMoves", rom, info); ;
             #endregion
 
-            data.MoveData = ReadMoves(data.Rom, info);
+            data.MoveData = ReadMoves(rom, info);
 
             #region Base Stats
             // Read the pokemon base stats from the Rom
-            data.Pokemon = ReadPokemonBaseStats(data.Rom, info, out byte[] skippedData);
+            data.Pokemon = ReadPokemonBaseStats(rom, info, out byte[] skippedData);
             data.SkippedLearnSetData = skippedData;
             data.PokemonLookup = new Dictionary<PokemonSpecies, PokemonBaseStats>();
             foreach (var pokemon in data.Pokemon)
@@ -39,20 +38,20 @@ namespace PokemonRandomizer.Backend.Reading
             #endregion
 
             // Read Starters
-            data.Starters = ReadStarters(data.Rom, info);
-            //data.StarterItems = ReadStarterItems(data.Rom, info);
+            data.Starters = ReadStarters(rom, info);
+            //data.StarterItems = ReadStarterItems(rom, info);
             // Read Catching tutorial pokemon
-            data.CatchingTutPokemon = ReadCatchingTutOpponent(data.Rom, info);
+            data.CatchingTutPokemon = ReadCatchingTutOpponent(rom, info);
             // Read the PC item
-            data.PcStartItem = (Item)data.Rom.ReadUInt16(info.Offset("pcPotion"));
+            data.PcStartItem = (Item)rom.ReadUInt16(info.Offset("pcPotion"));
             // Trainers and associated data
-            data.ClassNames = ReadTrainerClassNames(data.Rom, info);
-            data.Trainers = ReadTrainers(data.Rom, info, data.ClassNames);
+            data.ClassNames = ReadTrainerClassNames(rom, info);
+            data.Trainers = ReadTrainers(rom, info, data.ClassNames);
             // Read type definitions
-            data.TypeDefinitions = ReadTypeEffectivenessData(data.Rom, info);
+            data.TypeDefinitions = ReadTypeEffectivenessData(rom, info);
             // Read in the map data
             data.Maps = new MapManager(data, info);
-            data.Encounters = ReadEncounters(data.Rom, info, data.Maps);
+            data.Encounters = ReadEncounters(rom, info, data.Maps);
             // Calculate the balance metrics from the loaded data
             data.CalculateMetrics();
             return data;

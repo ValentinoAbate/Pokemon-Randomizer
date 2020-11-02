@@ -5,6 +5,6 @@ namespace PokemonRandomizer.Backend.Reading
 {
     public abstract class RomParser
     {
-        public abstract RomData Parse(Rom rom, XmlManager info);
+        public abstract RomData Parse(Rom rom, RomMetadata metadata, XmlManager info);
     }
 }

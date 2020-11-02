@@ -61,16 +61,7 @@ namespace PokemonRandomizer.Resources.RomInfo {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot; ?&gt;
-        ///
-        ///&lt;!-- README --&gt;
-        ///&lt;!-- Standard attribute definitionss --&gt;
-        ///&lt;!-- size: the number of bytes in the data if singular or in a single item if a collection of data (int) --&gt;
-        ///&lt;!-- num:  the number of items in the collection (only applies to collections) (int) --&gt;
-        ///&lt;!-- offset: the ROM offset of the data/collection of data (hex string) --&gt;
-        ///&lt;!-- pointer: an offset where a pointer to the offset is usually stored. useful for dealing with hacked roms (hex string) --&gt;
-        ///
-        ///&lt;gen [rest of string was truncated]&quot;;.
+        ///   Looks up a localized string similar to "Gen3RomInfo"
         /// </summary>
         internal static string Gen3RomInfo {
             get {

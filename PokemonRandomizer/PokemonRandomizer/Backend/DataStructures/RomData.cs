@@ -10,28 +10,8 @@ namespace PokemonRandomizer.Backend.DataStructures
 {
     public class RomData
     {
-        public const string gameCodeEm = "BPEE";
-        public const string gameCodeLg = "BPGE";
-        public const string gameCodeFr = "BPRE";
-        public const string gameCodeRu = "AXVE";
-        public const string gameCodeSp = "AXPE";
-        public XmlManager Info { get; }
-        private static readonly Dictionary<Generation, string> infoPaths = new Dictionary<Generation, string>
-        {
-            //{RomData.Generation.III, Path.Combine(Directory.GetCurrentDirectory(), "ROMInfo", "Gen3ROMInfo.xml") }
-            {Generation.III, Resources.RomInfo.RomInfo.Gen3RomInfo }
 
-        };
-        public bool IsFireRedOrLeafGreen => Gen == Generation.III && (Code == gameCodeFr || Code == gameCodeLg);
-        public bool IsRubySapphireOrEmerald => Gen == Generation.III && (Code == gameCodeEm || Code == gameCodeRu || Code == gameCodeSp);
-        public enum Generation { I, II, III, IV, V, VI, VII }
-        public Generation Gen { get; private set; }
-        public string Code { get; private set; }
-        public int Version { get; private set; }
-        public string Name { get; private set; }
 
-        // The original ROM the data was loaded from. Used by ROMWriter to write the data to a file.
-        public Rom Rom { get; }
         // A metrics database calculated from the input ROM data (the base game if the rom being loaded is normal)
         public RomMetrics Metrics { get; private set; }
         public Item PcStartItem { get; set; }
@@ -74,76 +54,10 @@ namespace PokemonRandomizer.Backend.DataStructures
 
         public byte[] SkippedLearnSetData { get; set; }
 
-        public RomData(byte[] rawRom)
-        {
-            InitGeneration(rawRom);
-            Info = new XmlManager(infoPaths[Gen]);
-            Info.SetSearchRoot("versionInfo");
-            InitMetaData(rawRom);
-            Info.SetSearchRoot(Code + Version.ToString());
-            //Initalize Rom file wrapper
-            var freeSpaceByte = (byte)Info.HexAttr("freeSpace", "byte");
-            var searchStartOffset = Info.HexAttr("freeSpace", "startAddy");
-            Rom = new Rom(rawRom, freeSpaceByte, searchStartOffset);
-        }
-        // set the Rom generation (from the file size)
-        private void InitGeneration(byte[] rawRom)
-        {
-            switch (rawRom.Length)
-            {
-                case 1048576:    // 1mb
-                    Gen = Generation.I;
-                    break;
-                case 2097152:    // 2mb
-                    Gen = Generation.II;
-                    break;
-                case 16777216:   // 16mb
-                    Gen = Generation.III;
-                    break;
-                case 67108864:   // 64mb  (diamond and pearl)
-                case 134217728:  // 128mb (heart gold, soul silver, and platinum)
-                    Gen = Generation.IV;
-                    break;
-                case 268435456:  // 256mb (black and white)
-                case 536870912:  // 512mb (black 2 and white 2)
-                    Gen = Generation.V;
-                    break;
-                default:
-                    //Add fallback based on file extension?
-                    //Add manual override?
-                    throw new Exception("rom file is not a valid length, unable to detect generation");
-            }
-        }
-        // read code, name and version info from rom
-        private void InitMetaData(byte[] rawRom)
-        {
-            switch (Gen)
-            {
-                case Generation.I:
-                    break;
-                case Generation.II:
-                    break;
-                case Generation.III:
-                    Name = Encoding.ASCII.GetString(rawRom.ReadBlock(Info.Offset("romName"), Info.Size("romName")));
-                    Code = Encoding.ASCII.GetString(rawRom.ReadBlock(Info.Offset("code"), Info.Size("code")));
-                    Version = rawRom[Info.Offset("version")];
-                    break;
-                case Generation.IV:
-                    break;
-                case Generation.V:
-                    break;
-                case Generation.VI:
-                    break;
-                case Generation.VII:
-                    break;
-                default:
-                    throw new Exception("Gen " + Gen.ToDisplayString() + " is not supported. unable to find metadata");
-            }
-        }
         // returns a clone of this rom data
         public RomData Clone()
         {
-            return Reading.Gen3RomParser.Parse(Rom.File);
+            throw new NotImplementedException();
         }
         // updates the metrics from the current data
         public void CalculateMetrics()

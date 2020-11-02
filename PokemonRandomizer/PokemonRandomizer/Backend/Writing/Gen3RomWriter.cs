@@ -12,10 +12,8 @@ namespace PokemonRandomizer.Backend.Writing
     //to write to a file
     public static class Gen3RomWriter
     {
-        public static byte[] Write(RomData data)
+        public static byte[] Write(RomData data, Rom rom, RomMetadata metadata, XmlManager info)
         {
-            Rom rom = new Rom(data.Rom);
-            var info = data.Info;
             var repoints = new RepointList();
 
             // Main Data
@@ -29,12 +27,12 @@ namespace PokemonRandomizer.Backend.Writing
             // Write the move definitions
             WriteMoveData(data, rom, info, ref repoints);
             // Starter Writing currently only supported for Gen III
-            if(data.Gen == RomData.Generation.III)
+            if(metadata.Gen == Generation.III)
             {
                 WriteStarters(data, rom, info);
             }
             // Catching tut currently only supported on BPEE
-            if(data.Code == RomData.gameCodeEm)
+            if(metadata.Code == RomMetadata.gameCodeEm)
             {
                 WriteCatchingTutOpponent(data, rom, info);
             }
@@ -42,7 +40,7 @@ namespace PokemonRandomizer.Backend.Writing
             WriteTypeDefinitions(data, rom, ref repoints);
             WriteEncounters(data, rom, info);
             WriteTrainerBattles(data, rom, info);
-            if(data.IsRubySapphireOrEmerald)
+            if(metadata.IsRubySapphireOrEmerald)
             {
                 WriteMapData(data, rom, info);
             }
@@ -85,13 +83,13 @@ namespace PokemonRandomizer.Backend.Writing
                 }
             }
             // Make ??? a valid type for moves if applicable. Currently only supported for emerald
-            if (data.UseUnknownTypeForMoves && data.Code == RomData.gameCodeEm)
+            if (data.UseUnknownTypeForMoves && metadata.IsEmerald)
             {
                 // Hack the ??? type to be a valid type (Uses SP.ATK and SP.DEF)
                 rom.WriteByte(0x069BCF, 0xD2);
             }
             // Apply hail weather hack if applicable. Currently only supported for emerald
-            if (data.SnowyWeatherApplysHail && data.Code == RomData.gameCodeEm)
+            if (data.SnowyWeatherApplysHail && metadata.IsEmerald)
             {
                 // Hail Weather Hack. Makes the weather types "steady snow" and "three snowflakes" cause hail in battle
                 // Hack routine compiled from bluRose's ASM routine. Thanks blueRose (https://www.pokecommunity.com/member.php?u=471720)!

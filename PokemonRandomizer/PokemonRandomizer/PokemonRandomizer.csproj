@@ -77,6 +77,8 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Backend\DataStructures\RomMetadata.cs" />
+    <Compile Include="Backend\EnumTypes\Generation.cs" />
     <Compile Include="Backend\Reading\RomParser.cs" />
     <Compile Include="Backend\Scripting\Gen3Opcodes.cs" />
     <Compile Include="Backend\EnumTypes\Ability.cs" />

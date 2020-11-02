@@ -16,6 +16,9 @@ using System.Windows.Shapes;
 using System.ComponentModel;
 using System.IO;
 using PokemonRandomizer.CultureUtils;
+using PokemonRandomizer.Backend.DataStructures;
+using PokemonRandomizer.Backend.EnumTypes;
+using PokemonRandomizer.Backend.Utilities;
 
 namespace PokemonRandomizer
 {
@@ -70,7 +73,9 @@ namespace PokemonRandomizer
         }
         #endregion
 
-        private Backend.DataStructures.RomData Data { get; set; }
+        private RomData Data { get; set; }
+        private RomMetadata Metadata { get; set; }
+
         private string[] LastRandomizationInfo { get; set; }
 
         private const string romFileFilter = "GBA ROM|*.gba";
@@ -84,12 +89,38 @@ namespace PokemonRandomizer
             this.DataContext = this;
         }
 
+
+        private bool GetRomData(byte[] rawRom)
+        {
+            // Initialize ROM metadata
+            RomMetadata metadata = new RomMetadata(rawRom);
+            // Read ROM data
+            if (metadata.Gen == Generation.III)
+            {
+                XmlManager info = new XmlManager(PokemonRandomizer.Resources.RomInfo.RomInfo.Gen3RomInfo);
+                info.SetSearchRoot(metadata.Code + metadata.Version.ToString());
+                //Initalize Rom file wrapper
+                var freeSpaceByte = (byte)info.HexAttr("freeSpace", "byte");
+                var searchStartOffset = info.HexAttr("freeSpace", "startAddy");
+                var rom = new Rom(rawRom, freeSpaceByte, searchStartOffset);
+                // Parse the file
+                Data = Backend.Reading.Gen3RomParser.Parse(rom, metadata, info);
+            }
+            else
+            {
+                lblMessageBoxContent.Content = "Failed to open ROM - unsupported generation: " + metadata.Gen.ToString();
+                return false;
+            }
+            IsROMLoaded = true;
+            lblMessageBoxContent.Content = "ROM opened: " + metadata.Name + " (" + metadata.Code + ")";
+            LastRandomizationInfo = Data.ToStringArray();
+            Metadata = metadata;
+            return true;
+        }
+
         private void OpenRomNoWindow(string path)
         {
-            byte[] rawROM = File.ReadAllBytes(path);
-            Data = Backend.Reading.Gen3RomParser.Parse(rawROM);
-            IsROMLoaded = true;
-            lblMessageBoxContent.Content = "ROM opened: " + Data.Name + " (" + Data.Code + ")";
+            GetRomData(File.ReadAllBytes(path));
         }
 
         #region INotifyPropertyChanged Implementation
@@ -144,11 +175,7 @@ namespace PokemonRandomizer
             };
             if (openFileDialog.ShowDialog() == true)
             {
-                byte[] rawROM = File.ReadAllBytes(openFileDialog.FileName);
-                Data = Backend.Reading.Gen3RomParser.Parse(rawROM);
-                IsROMLoaded = true;
-                lblMessageBoxContent.Content = "ROM opened: " + Data.Name + " (" + Data.Code + ")";
-                LastRandomizationInfo = Data.ToStringArray();
+                GetRomData(File.ReadAllBytes(openFileDialog.FileName));
             }
         }
 
@@ -215,9 +242,7 @@ namespace PokemonRandomizer
             };
             if (openFileDialog.ShowDialog() == true)
             {
-                byte[] rawROM = File.ReadAllBytes(openFileDialog.FileName);
-                Data = Backend.Reading.Gen3RomParser.Parse(rawROM);
-                LastRandomizationInfo = Data.ToStringArray();
+                GetRomData(File.ReadAllBytes(openFileDialog.FileName));
                 var saveFileDialog = new SaveFileDialog
                 {
                     Filter = romFileFilter,
