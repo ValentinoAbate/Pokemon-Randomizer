@@ -592,7 +592,6 @@ namespace PokemonRandomizer.Backend.Randomization
                 {
                     var starters = new PokemonSpecies[] { battles[0].pokemon[0].species, battles[1].pokemon[0].species, battles[2].pokemon[0].species };
                     var rivalBattles = starters.Select((s) => battles.Where((b) => b.pokemon.Any((p) => RelatedToOrSelf(p.species, s))).ToArray()).ToArray();
-                    int[] rivalRemap = data.IsFireRedOrLeafGreen ? new int[] { 1, 0, 2 } : new int[] { 1, 2, 0 };
                     for (int i = 0; i < rivalBattles.Length; ++i)
                     {
                         var battleSet = rivalBattles[i];
@@ -600,7 +599,7 @@ namespace PokemonRandomizer.Backend.Randomization
                         {
                             RandomizeBattle(battle, pokemonSet, rivalSpeciesSettings);
                             var pokemon = battle.pokemon[battle.pokemon.Length - 1];
-                            pokemon.species = MaxEvolution(data.Starters[rivalRemap[i]], pokemon.level, rivalSpeciesSettings);
+                            pokemon.species = MaxEvolution(data.Starters[data.RivalRemap[i]], pokemon.level, rivalSpeciesSettings);
                             if (pokemon.HasSpecialMoves)
                             {
                                 //pokemon.moves = MovesetGenerator.DefaultMoveset(data.PokemonLookup[pokemon.species], pokemon.level);
@@ -614,10 +613,9 @@ namespace PokemonRandomizer.Backend.Randomization
                     var starters = new PokemonSpecies[] { battles[0].pokemon[0].species, battles[1].pokemon[0].species, battles[2].pokemon[0].species };
                     // Set up the rival battles array
                     var rivalBattles = starters.Select((s) => battles.Where((b) => b.pokemon.Any((p) => RelatedToOrSelf(p.species, s))).ToArray()).ToArray();
-                    int[] rivalRemap = data.IsFireRedOrLeafGreen ? new int[] { 1, 0, 2 } : new int[] { 1, 2, 0 };
                     for (int i = 0; i < rivalBattles.Length; ++i)
                     {
-                        PcgBattles(rivalBattles[i], new PokemonSpecies[] { data.Starters[rivalRemap[i]] }, pokemonSet, rivalSpeciesSettings);
+                        PcgBattles(rivalBattles[i], new PokemonSpecies[] { data.Starters[data.RivalRemap[i]] }, pokemonSet, rivalSpeciesSettings);
                     }
                 }
             }
@@ -655,7 +653,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 }
                 else if (settings.WallySetting == Settings.TrainerOption.Procedural)
                 {
-                    PcgBattles(wallyBattles, new PokemonSpecies[] { data.CatchingTutPokemon }, pokemonSet, trainerSpeciesSettings);
+                    PcgBattles(wallyBattles, new PokemonSpecies[] { data.CatchingTutPokemon }, pokemonSet, rivalSpeciesSettings);
                 }
             }
 
@@ -760,9 +758,7 @@ namespace PokemonRandomizer.Backend.Randomization
         private HashSet<PokemonType> DefinePokemonTypes()
         {
             HashSet<PokemonType> types = EnumUtils.GetValues<PokemonType>().ToHashSet();
-            // Remove the FAIRY type if we are Gen V or below and have not enabled the add fairy type hack
-            if (data.Gen < Generation.VI && !settings.AddFairyType)
-                types.Remove(PokemonType.FAI);
+            types.Remove(PokemonType.FAI);
             return types;
         }
 

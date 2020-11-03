@@ -16,8 +16,6 @@ namespace PokemonRandomizer
 
         #region Type Hacks (WIP, NOTHING YET)
 
-        public bool AddFairyType { get => false; }
-
         #endregion
 
         #region Type Relation Definitions

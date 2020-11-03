@@ -112,7 +112,7 @@
     
     <!-- Special Trainer Battles -->
 
-    <rivals names="[Brendan,May]"/>
+    <rivals names="[Brendan,May]" remap="[1,2,0]"/>
     <gymLeaders names="[Roxanne,Brawly,Wattson,Flannery,Norman,Winona,Tate&amp;Liza,Juan]"/>
     <eliteFour names="[Sidney,Phoebe,Glacia,Drake]"/>
     <champion names="[Wallace]"/>
@@ -197,7 +197,7 @@
 
     <!-- Special Trainer Battles -->
 
-    <rivals names="[Terry]"/>
+    <rivals names="[Terry]" remap="[1,0,2]"/>
     <gymLeaders names="[Brock,Misty,Lt. Surge,Erika,Koga,Sabrina,Blaine]"/>
     <eliteFour names="[Lorelei,Bruno,Agatha,Lance]"/>
     <teamGrunts names="[Grunt]"/>

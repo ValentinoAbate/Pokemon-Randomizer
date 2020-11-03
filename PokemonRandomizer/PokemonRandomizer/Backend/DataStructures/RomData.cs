@@ -60,6 +60,8 @@ namespace PokemonRandomizer.Backend.DataStructures
         public Move[] tutorMoves;
         #endregion
 
+        public int[] RivalRemap { get; set; }
+
         #region Hacks and Tweaks
 
         public bool RunIndoors { get; set; } = false;

@@ -370,6 +370,7 @@ namespace PokemonRandomizer.Backend.Reading
             };
             // Add trainers from preset names in info file
             data.RivalNames = AddTrainersFromArrayAttr("rivals");
+            data.RivalRemap = info.SafeArrayAttr("rivals", "remap", info.IntArrayAttr);
             data.GymLeaderNames = AddTrainersFromArrayAttr("gymLeaders");
             data.EliteFourNames = AddTrainersFromArrayAttr("eliteFour");
             data.ChampionNames = AddTrainersFromArrayAttr("champion");

@@ -12,8 +12,9 @@ namespace PokemonRandomizer.Backend.Writing
     //to write to a file
     public static class Gen3RomWriter
     {
-        public static byte[] Write(RomData data, Rom rom, RomMetadata metadata, XmlManager info)
+        public static Rom Write(RomData data, Rom originalRom, RomMetadata metadata, XmlManager info)
         {
+            var rom = new Rom(originalRom);
             var repoints = new RepointList();
 
             // Main Data
@@ -134,7 +135,7 @@ namespace PokemonRandomizer.Backend.Writing
 
             // Perform all of the repoint operations
             rom.RepointMany(repoints);
-            return rom.File;
+            return rom;
         }
 
         private static void WriteMoveData(RomData data, Rom rom, XmlManager info, ref RepointList repoints)
