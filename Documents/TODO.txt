@@ -36,6 +36,7 @@ IDEAS:
 	- If pokemon learned something on a lower evolution, have the option to keep that (esp. for dunsparse plague)
 - Trainer Randomization
 	- Trainer Type Theming (class / gym - based)?
+	- Add option for trainers not to be randomized
 	- Trainer one-to-one species randomization (a trainer with three magikarps will have 3 of the same pokemon
 - Wild Pokemon Randomization
 	- Area Type theming (Forest likely to have grass / bug etc)
@@ -82,6 +83,8 @@ FEATURES:
 - Safe pointer prefix data offset find
 - Ban selfdestruct works by move effect rather than explicit move number
 - Wally Text Fix ("RALTS" to current pokemon)
+UNIT TESTS:
+- Clean rom hash compare (reading and writing an input rom skipping randomization should produce the same hash)
 CLEANUP:
 - Change all "ptr" attributes in rom info to "pointer" to work more cleanly with dynamic offset finding
 - Add options to use XMLManager helper methods with constants

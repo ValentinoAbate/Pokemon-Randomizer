@@ -74,11 +74,6 @@ namespace PokemonRandomizer.Backend.DataStructures
 
         public byte[] SkippedLearnSetData { get; set; }
 
-        // returns a clone of this rom data
-        public RomData Clone()
-        {
-            throw new NotImplementedException();
-        }
         // updates the metrics from the current data
         public void CalculateMetrics()
         {

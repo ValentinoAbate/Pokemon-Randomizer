@@ -13,15 +13,17 @@ namespace PokemonRandomizer.Backend.Randomization
     // of the original ROM data
     public class Randomizer
     {
-        public RomData data;
-        public Settings settings;
-        public Random rand;
-        public Dictionary<PokemonSpecies, float> powerScores;
-
-        public Randomizer(RomData orig, Settings settings)
+        private readonly RomData data;
+        private readonly Settings settings;
+        private readonly Random rand;
+        private Dictionary<PokemonSpecies, float> powerScores;
+        /// <summary>
+        /// Create a new randomizer with given data and settings
+        /// Input data will be mutated by randomizer calls
+        /// </summary>
+        public Randomizer(RomData data, Settings settings)
         {
-            // Initialize copy data to mutate and mutator with seed if applicable
-            data = orig.Clone();
+            this.data = data;
             rand = settings.SetSeed ? new Random(settings.Seed) : new Random();
             this.settings = settings;
             //Calculate original power scores

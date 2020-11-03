@@ -10,9 +10,9 @@ namespace PokemonRandomizer.Backend.Writing
 {
     //This class takes a modified RomData object and converts it to a byte[]
     //to write to a file
-    public static class Gen3RomWriter
+    public class Gen3RomWriter : RomWriter
     {
-        public static Rom Write(RomData data, Rom originalRom, RomMetadata metadata, XmlManager info)
+        public override Rom Write(RomData data, Rom originalRom, RomMetadata metadata, XmlManager info)
         {
             var rom = new Rom(originalRom);
             var repoints = new RepointList();
@@ -138,7 +138,7 @@ namespace PokemonRandomizer.Backend.Writing
             return rom;
         }
 
-        private static void WriteMoveData(RomData data, Rom rom, XmlManager info, ref RepointList repoints)
+        private void WriteMoveData(RomData data, Rom rom, XmlManager info, ref RepointList repoints)
         {;
             int moveCount = int.Parse(info.Attr("moveData", "num", info.Constants).Value);
             int dataPtrOffset = HexUtils.HexToInt(info.Attr("moveData", "ptr", info.Constants).Value);
@@ -170,7 +170,7 @@ namespace PokemonRandomizer.Backend.Writing
                 }
             }
         }
-        private static void WriteMoveDataSingular(Rom rom, MoveData data)
+        private void WriteMoveDataSingular(Rom rom, MoveData data)
         {
             rom.WriteByte((byte)data.effect);
             rom.WriteByte(data.power);
@@ -187,7 +187,7 @@ namespace PokemonRandomizer.Backend.Writing
         }
 
         // Write TM, HM, or Move tutor definitions to the rom (depending on args)
-        private static void WriteMoveMappings(Rom rom, int offset, Move[] moves, int? altOffset = null)
+        private void WriteMoveMappings(Rom rom, int offset, Move[] moves, int? altOffset = null)
         {
             rom.Seek(offset);
             foreach (var move in moves)
@@ -200,7 +200,7 @@ namespace PokemonRandomizer.Backend.Writing
                     rom.WriteUInt16((int)move);
             }
         }
-        private static void WriteStarters(RomData romData, Rom rom, XmlManager info)
+        private void WriteStarters(RomData romData, Rom rom, XmlManager info)
         {
             const string starterPokemonElt = "starterPokemon";
             if (!info.FindAndSeekOffset(starterPokemonElt, rom))
@@ -211,7 +211,7 @@ namespace PokemonRandomizer.Backend.Writing
             rom.Skip(info.IntAttr("starterPokemon", "skip2"));
             rom.WriteUInt16((int)romData.Starters[2]);
         }
-        private static void WriteCatchingTutOpponent(RomData data, Rom rom, XmlManager info)
+        private void WriteCatchingTutOpponent(RomData data, Rom rom, XmlManager info)
         {
             rom.Seek(info.Offset("catchingTutOpponent"));
             int pkmn = (int)data.CatchingTutPokemon;
@@ -229,7 +229,7 @@ namespace PokemonRandomizer.Backend.Writing
                 rom.WriteByte(Gen3Opcodes.addRegister | Gen3Opcodes.reg1);
             }
         }
-        private static void WritePokemonBaseStats(RomData romData, Rom rom, XmlManager info, ref RepointList repoints)
+        private void WritePokemonBaseStats(RomData romData, Rom rom, XmlManager info, ref RepointList repoints)
         {
             int? offsetCheck = null;
             int pkmnPtr = info.Offset("pokemonBaseStats");
@@ -287,7 +287,7 @@ namespace PokemonRandomizer.Backend.Writing
                 repoints.Add(originalMovePtr, (int)newMoveDataOffset);
             }
         }
-        private static void WriteBaseStatsSingle(PokemonBaseStats pokemon, int offset, Rom rom)
+        private void WriteBaseStatsSingle(PokemonBaseStats pokemon, int offset, Rom rom)
         {
             rom.SaveOffset();
             rom.Seek(offset);
@@ -317,7 +317,7 @@ namespace PokemonRandomizer.Backend.Writing
         }
 
         // Write the attacks starting at offset (returns the index after completion)
-        private static int WriteAttacks(Rom rom, LearnSet moves, int offset)
+        private int WriteAttacks(Rom rom, LearnSet moves, int offset)
         {
             foreach (var move in moves)
             {
@@ -335,7 +335,7 @@ namespace PokemonRandomizer.Backend.Writing
             offset += 2;    //pass final FFFF
             return offset;
         }
-        private static void WriteTMHMCompat(PokemonBaseStats pokemon, int offset, Rom rom)
+        private void WriteTMHMCompat(PokemonBaseStats pokemon, int offset, Rom rom)
         {
             bool[] tmValues = new bool[pokemon.TMCompat.Count];
             bool[] hmValues = new bool[pokemon.HMCompat.Count];
@@ -343,13 +343,13 @@ namespace PokemonRandomizer.Backend.Writing
             pokemon.HMCompat.CopyTo(hmValues, 0);
             rom.WriteBits(offset, 1, tmValues.Concat(hmValues).Select((b) => b ? 1 : 0).ToArray());
         }
-        private static void WriteTutorCompat(PokemonBaseStats pokemon, int offset, Rom rom)
+        private void WriteTutorCompat(PokemonBaseStats pokemon, int offset, Rom rom)
         {
             bool[] mtValues = new bool[pokemon.moveTutorCompat.Count];
             pokemon.moveTutorCompat.CopyTo(mtValues, 0);
             rom.WriteBits(offset, 1, mtValues.Select((b) => b ? 1 : 0).ToArray());
         }
-        private static void WriteEvolutions(PokemonBaseStats pokemon, int offset, Rom rom)
+        private void WriteEvolutions(PokemonBaseStats pokemon, int offset, Rom rom)
         {
             rom.Seek(offset);
             foreach (var evo in pokemon.evolvesTo)
@@ -360,7 +360,7 @@ namespace PokemonRandomizer.Backend.Writing
                 rom.Skip(2);
             }
         }
-        private static void WriteTypeDefinitions(RomData data, Rom rom, XmlManager info, ref RepointList repoints)
+        private void WriteTypeDefinitions(RomData data, Rom rom, XmlManager info, ref RepointList repoints)
         {
             #region Convert TypeChart to byte[]
             List<byte> typeData = new List<byte>();
@@ -395,7 +395,7 @@ namespace PokemonRandomizer.Backend.Writing
             }
             #endregion
         }
-        private static void WriteEncounters(RomData romData, Rom rom, XmlManager info)
+        private void WriteEncounters(RomData romData, Rom rom, XmlManager info)
         {
             #region Find and Seek encounter table
             var encounterPtrPrefix = info.Attr("wildPokemon", "ptrPrefix", info.Constants).Value;
@@ -451,7 +451,7 @@ namespace PokemonRandomizer.Backend.Writing
                 rom.LoadOffset();
             }
         }
-        private static void WriteEncounterSet(EncounterSet set, Rom rom, int offset)
+        private void WriteEncounterSet(EncounterSet set, Rom rom, int offset)
         {
             rom.Seek(offset);
             rom.WriteByte((byte)set.encounterRate);
@@ -467,7 +467,7 @@ namespace PokemonRandomizer.Backend.Writing
         /// <summary>
         /// Write the trainer battles to the output file. Doesn't write all data (currently unfinished)
         /// </summary>
-        private static void WriteTrainerBattles(RomData romData, Rom rom, XmlManager info)
+        private void WriteTrainerBattles(RomData romData, Rom rom, XmlManager info)
         {
             //int numTrainers = info.Num("trainerBattles"); // Needed later for determining if expansion is necessary
             rom.Seek(info.Offset("trainerBattles"));
@@ -537,7 +537,7 @@ namespace PokemonRandomizer.Backend.Writing
         /// Write the maps back to the file. Currently edits in place, and does not support exapansion of Map Bank Table.
         /// Currently only writes Map Header data.
         /// </summary>
-        private static void WriteMapData(RomData data, Rom rom, XmlManager info)
+        private void WriteMapData(RomData data, Rom rom, XmlManager info)
         {
             int bankPtrOffset = info.Offset("mapBankPointers");
             int ptrSize = info.Size("mapBankPointers");
@@ -553,7 +553,7 @@ namespace PokemonRandomizer.Backend.Writing
         /// <summary>
         /// Write the maps in this bank back to the file. Currently edits in place, and does not support exapansion of the given map table
         /// </summary>
-        private static void WriteBank(Map[] maps, Rom rom, int bankOffset, int labelOffset)
+        private void WriteBank(Map[] maps, Rom rom, int bankOffset, int labelOffset)
         {
             for (int i = 0; i < maps.Length; ++i)
             {
@@ -564,7 +564,7 @@ namespace PokemonRandomizer.Backend.Writing
         /// <summary>
         /// Write a map to the rom. Currently only writes header data
         /// </summary>
-        private static void WriteMap(Map map, Rom rom, int mapOffset, int labelOffset)
+        private void WriteMap(Map map, Rom rom, int mapOffset, int labelOffset)
         {
             #region Write Header Data
             rom.Seek(mapOffset);

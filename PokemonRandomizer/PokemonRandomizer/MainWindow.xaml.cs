@@ -19,6 +19,8 @@ using PokemonRandomizer.CultureUtils;
 using PokemonRandomizer.Backend.DataStructures;
 using PokemonRandomizer.Backend.EnumTypes;
 using PokemonRandomizer.Backend.Utilities;
+using PokemonRandomizer.Backend.Reading;
+using PokemonRandomizer.Backend.Writing;
 
 namespace PokemonRandomizer
 {
@@ -73,10 +75,11 @@ namespace PokemonRandomizer
         }
         #endregion
 
-        private RomData Data { get; set; }
-        private RomMetadata Metadata { get; set; }
+        private RomData OriginalData { get; set; }
         private Rom OriginalRom { get; set; }
+        private RomMetadata Metadata { get; set; }
         private XmlManager RomInfo { get; set; }
+        private RomParser Parser { get; set; }
 
         private string[] LastRandomizationInfo { get; set; }
 
@@ -106,7 +109,8 @@ namespace PokemonRandomizer
                 var searchStartOffset = RomInfo.HexAttr("freeSpace", "startAddy");
                 OriginalRom = new Rom(rawRom, freeSpaceByte, searchStartOffset);
                 // Parse the file
-                Data = Backend.Reading.Gen3RomParser.Parse(OriginalRom, metadata, RomInfo);
+                Parser = new Gen3RomParser();
+                OriginalData = Parser.Parse(OriginalRom, metadata, RomInfo);
             }
             else
             {
@@ -115,17 +119,23 @@ namespace PokemonRandomizer
             }
             IsROMLoaded = true;
             lblMessageBoxContent.Content = "ROM opened: " + metadata.Name + " (" + metadata.Code + ")";
-            LastRandomizationInfo = Data.ToStringArray();
+            LastRandomizationInfo = OriginalData.ToStringArray();
             Metadata = metadata;
             return true;
         }
 
         private Rom GetRandomizedRom()
         {
-            var randomzier = new Backend.Randomization.Randomizer(Data, new Settings(this));
+            var copyData = Parser.Parse(OriginalRom, Metadata, RomInfo);
+            var randomzier = new Backend.Randomization.Randomizer(copyData, new Settings(this));
             var randomizedData = randomzier.Randomize();
             LastRandomizationInfo = randomizedData.ToStringArray();
-            return Backend.Writing.Gen3RomWriter.Write(randomizedData, OriginalRom, Metadata, RomInfo);
+            if(Metadata.Gen == Generation.III)
+            {
+                var writer = new Gen3RomWriter();
+                return writer.Write(randomizedData, OriginalRom, Metadata, RomInfo);
+            }
+            throw new Exception("Attempting to write to unsupported generation.");
         }
 
         private void OpenRomNoWindow(string path)
@@ -238,32 +248,6 @@ namespace PokemonRandomizer
         {
             var item = sender as TreeViewItem;
             item.IsSelected = true;
-        }
-
-        // MOVE TO UNIT TESTING LATER
-        private void Open_ROM_And_Save_Bypass(object sender, RoutedEventArgs e)
-        {
-            var openFileDialog = new OpenFileDialog
-            {
-                Filter = romFileFilter,
-                Title = "Open ROM and Save (Bypass Randomization)"
-            };
-            if (openFileDialog.ShowDialog() == true)
-            {
-                GetRomData(File.ReadAllBytes(openFileDialog.FileName));
-                var saveFileDialog = new SaveFileDialog
-                {
-                    Filter = romFileFilter,
-                    Title = saveRomPrompt,
-                    FileName = "testROM.gba"
-                };
-                if (saveFileDialog.ShowDialog() == true)
-                {
-                    // Should produce a clean ROM
-                    var cleanRom = Backend.Writing.Gen3RomWriter.Write(Data, OriginalRom, Metadata, RomInfo);
-                    File.WriteAllBytes(saveFileDialog.FileName, cleanRom.File);
-                }
-            }
         }
     }
     public static class Commands

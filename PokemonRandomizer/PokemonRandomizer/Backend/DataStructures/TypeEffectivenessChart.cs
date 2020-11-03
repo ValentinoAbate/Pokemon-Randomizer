@@ -34,9 +34,9 @@ namespace PokemonRandomizer.Backend.DataStructures
         // A list of the type pairings ignored after foresight
         public List<TypePair> KeysIgnoreAfterForesight { get => ignoreAfterForesight.Keys.ToList(); }
         // All of the type relations except for those ignored after foresight is used
-        private Dictionary<TypePair, TypeEffectiveness> typeRelations = new Dictionary<TypePair, TypeEffectiveness>();
+        private readonly Dictionary<TypePair, TypeEffectiveness> typeRelations = new Dictionary<TypePair, TypeEffectiveness>();
         // The type relations that are ignored after foresight is used
-        private Dictionary<TypePair, TypeEffectiveness> ignoreAfterForesight = new Dictionary<TypePair, TypeEffectiveness>();
+        private readonly Dictionary<TypePair, TypeEffectiveness> ignoreAfterForesight = new Dictionary<TypePair, TypeEffectiveness>();
         // Helper method to make it easier to add to the list
         public void Add(PokemonType atType, PokemonType dfType, TypeEffectiveness e, bool ignoreAfterForesight = false)
         {

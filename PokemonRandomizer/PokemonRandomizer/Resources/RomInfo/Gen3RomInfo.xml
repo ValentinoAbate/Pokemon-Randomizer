@@ -8,17 +8,6 @@
 <!-- pointer: an offset where a pointer to the offset is usually stored. useful for dealing with hacked roms (hex string) -->
 
 <gen3RomInfo>
-  <versionInfo>
-    <!--16mb-->
-    <file size="16777216"/>
-    <romName size="12" offset="0xA0" format="ASCII"/>
-    <code size ="4" offset="0xAC" format="ASCII"/>
-    <maker size="2" offset="0xB0"/>
-    <version size="1" offset="0xBC"/>
-    <!-- From dabomstew's source. idk what this is -->
-    <headerChecksum offset="0xBD"/>
-  </versionInfo>
-
   <!-- Gen III Constants -->
   
   <constants>

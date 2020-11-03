@@ -209,7 +209,9 @@
       <SubType>Designer</SubType>
     </Resource>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Resource Include="Resources\RomInfo\Gen4RomInfo.xml" />
+  </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Patches\Credits.txt" />
   </ItemGroup>

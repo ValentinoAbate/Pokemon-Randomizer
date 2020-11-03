@@ -32,13 +32,12 @@
                 <MenuItem Header="_Open ROM" Click="Open_ROM"/>
                 <MenuItem Name="menuSaveROM" IsEnabled="{Binding IsROMLoaded}" Header="_Save ROM" Click="Save_ROM"/>
                 <MenuItem Name="menuGenerateInfoDoc" IsEnabled="{Binding IsROMLoaded}" Header="_Generate Info" Click="Generate_Info_Doc" />
-                <MenuItem Header="Debug">
-                    <MenuItem Header="_Open and Save (Bypass Randomization)" Click="Open_ROM_And_Save_Bypass"/>
+                <MenuItem Visibility="Collapsed" Header="Debug">
                 </MenuItem>
                 <MenuItem Visibility="Collapsed" Header="_Convert Table" Click="Convert_Table" />
-                <Separator />
-                <MenuItem Header="_Exit" />
-            </MenuItem>
+                    <Separator />
+                    <MenuItem Header="_Exit" />
+                </MenuItem>
             <MenuItem Header="Presets">
 
             </MenuItem>
