@@ -83,9 +83,11 @@ namespace PokemonRandomizer
 
         private string[] LastRandomizationInfo { get; set; }
 
-        private const string romFileFilter = "GBA ROM|*.gba";
-        private const string saveRomPrompt = "Save ROM";
-        private const string openRomPrompt = "Open ROM";
+        private const string openRomFileFilter = "Rom Files (*.gba,*.nds)|*gba;*nds|" + gbaRomFileFilter + "|" + ndsRomFileFilter;
+        private const string gbaRomFileFilter = "GBA Roms (*.gba)|*.gba";
+        private const string ndsRomFileFilter = "NDS Roms (*.nds)|*.nds";
+        private const string saveRomPrompt = "Save Rom";
+        private const string openRomPrompt = "Open Rom";
 
         public MainWindow()
         {
@@ -114,11 +116,11 @@ namespace PokemonRandomizer
             }
             else
             {
-                lblMessageBoxContent.Content = "Failed to open ROM - unsupported generation: " + metadata.Gen.ToString();
+                lblMessageBoxContent.Content = "Failed to open rom - unsupported generation (" + metadata.Gen.ToString() + ")";
                 return false;
             }
             IsROMLoaded = true;
-            lblMessageBoxContent.Content = "ROM opened: " + metadata.Name + " (" + metadata.Code + ")";
+            lblMessageBoxContent.Content = "Rom opened: " + metadata.Name + " (" + metadata.Code + ")";
             LastRandomizationInfo = OriginalData.ToStringArray();
             Metadata = metadata;
             return true;
@@ -190,7 +192,7 @@ namespace PokemonRandomizer
         {
             var openFileDialog = new OpenFileDialog
             {
-                Filter = romFileFilter,
+                Filter = openRomFileFilter,
                 Title = openRomPrompt
             };
             if (openFileDialog.ShowDialog() == true)
@@ -201,9 +203,12 @@ namespace PokemonRandomizer
 
         private void Save_ROM(object sender, RoutedEventArgs e)
         {
+            string filter = gbaRomFileFilter;
+            if (Metadata.Gen == Generation.IV)
+                filter = ndsRomFileFilter;
             var saveFileDialog = new SaveFileDialog
             {
-                Filter = romFileFilter,
+                Filter = filter,
                 Title = saveRomPrompt
             };
             if (saveFileDialog.ShowDialog() == true)
@@ -216,7 +221,7 @@ namespace PokemonRandomizer
         {
             var saveFileDialog = new SaveFileDialog
             {
-                Filter = "txt file|*.txt",
+                Filter = "txt files (*.txt)|*.txt",
                 Title = "Generate Info Docs"
             };
             if (saveFileDialog.ShowDialog() == true)

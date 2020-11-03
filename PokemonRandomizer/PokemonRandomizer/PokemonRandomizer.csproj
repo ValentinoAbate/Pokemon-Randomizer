@@ -79,6 +79,7 @@
     </ApplicationDefinition>
     <Compile Include="Backend\DataStructures\RomMetadata.cs" />
     <Compile Include="Backend\EnumTypes\Generation.cs" />
+    <Compile Include="Backend\Reading\Gen4RomParser.cs" />
     <Compile Include="Backend\Reading\RomParser.cs" />
     <Compile Include="Backend\Scripting\Gen3Opcodes.cs" />
     <Compile Include="Backend\EnumTypes\Ability.cs" />

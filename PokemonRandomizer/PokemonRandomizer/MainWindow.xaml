@@ -324,7 +324,7 @@
         
         <StatusBar Name="MessageBox" Grid.Row="2" Height="45">
             <StatusBarItem>
-                <Label Name="lblMessageBoxContent" Content="Please open a ROM! use file->Open ROM."/>
+                <Label Name="lblMessageBoxContent" Content="Please open a Rom! use file-&gt;Open Rom."/>
             </StatusBarItem>
         </StatusBar>
     </Grid>

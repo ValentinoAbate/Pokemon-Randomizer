@@ -7,12 +7,18 @@ namespace PokemonRandomizer.Backend.DataStructures
 {
     public class RomMetadata
     {
-
-        private const string gameCodeEm = "BPEE";
-        private const string gameCodeLg = "BPGE";
-        private const string gameCodeFr = "BPRE";
-        private const string gameCodeRu = "AXVE";
-        private const string gameCodeSp = "AXPE";
+        // Gen III Codes
+        private const string gameCodeEm = "BPE";
+        private const string gameCodeLg = "BPG";
+        private const string gameCodeFr = "BPR";
+        private const string gameCodeRu = "AXV";
+        private const string gameCodeSp = "AXP";
+        // Gen IV Codes
+        private const string gameCodePt = "CPU";
+        private const string gameCodeDi = "ADA";
+        private const string gameCodePl = "APA";
+        private const string gameCodeHg = "IPK";
+        private const string gameCodeSs = "IPG";
 
         private const int gbaRomNameOffset = 0xA0;
         private const int gbaRomNameSize = 12;
@@ -23,14 +29,26 @@ namespace PokemonRandomizer.Backend.DataStructures
         private const int gbaRomVersionOffset = 0xBC;
         private const int gbaRomVersionSize = 1;
 
+        // DS Header Information From http://dsibrew.org/wiki/DSi_Cartridge_Header
+        private const int ndsRomNameOffset = 0x0;
+        private const int ndsRomNameSize = 12;
+        private const int ndsRomCodeOffset = 0xC;
+        private const int ndsRomCodeSize = 4;
+        private const int ndsRomVersionOffset = 0x1E;
+        private const int ndsRomVersionSize = 1;
 
-        public bool IsFireRedOrLeafGreen => Gen == Generation.III && (Code == gameCodeFr || Code == gameCodeLg);
-        public bool IsRubySapphireOrEmerald => Gen == Generation.III && (Code == gameCodeEm || Code == gameCodeRu || Code == gameCodeSp);
-        public bool IsEmerald => Gen == Generation.III && Code == gameCodeEm;
+        public bool IsFireRedOrLeafGreen => Gen == Generation.III && (MatchCode(gameCodeFr) || MatchCode(gameCodeLg));
+        public bool IsRubySapphireOrEmerald => Gen == Generation.III && (MatchCode(gameCodeEm) || MatchCode(gameCodeRu) || MatchCode(gameCodeSp));
+        public bool IsEmerald => Gen == Generation.III && MatchCode(gameCodeEm);
         public Generation Gen { get; private set; }
         public string Code { get; private set; }
         public int Version { get; private set; }
         public string Name { get; private set; }
+
+        private bool MatchCode(string code)
+        {
+            return Code.Substring(0, 3) == code.Substring(0, 3);
+        }
 
         public RomMetadata(byte[] rawRom)
         {
@@ -82,6 +100,9 @@ namespace PokemonRandomizer.Backend.DataStructures
                     Version = rawRom[gbaRomVersionOffset]; // Version is one byte
                     break;
                 case Generation.IV:
+                    Name = Encoding.ASCII.GetString(rawRom.ReadBlock(ndsRomNameOffset, ndsRomNameSize));
+                    Code = Encoding.ASCII.GetString(rawRom.ReadBlock(ndsRomCodeOffset, ndsRomCodeSize));
+                    Version = rawRom[ndsRomVersionOffset]; // Version is one byte
                     break;
                 case Generation.V:
                     break;
@@ -92,6 +113,8 @@ namespace PokemonRandomizer.Backend.DataStructures
                 default:
                     throw new Exception("Gen " + Gen.ToDisplayString() + " is not supported. unable to find metadata");
             }
+            // Remove null terminators from name
+            Name = Name.Replace("\0", string.Empty);
         }
     }
 }
