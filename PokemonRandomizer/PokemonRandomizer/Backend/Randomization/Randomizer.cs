@@ -1218,6 +1218,8 @@ namespace PokemonRandomizer.Backend.Randomization
                     if (battle.isDoubleBattle && battle.pokemon.Length <= 1)
                         battle.isDoubleBattle = false;
                 }
+                if (firstBattle.isDoubleBattle && firstBattle.pokemon.Length <= 1)
+                    firstBattle.isDoubleBattle = false;
             }
         }
 
