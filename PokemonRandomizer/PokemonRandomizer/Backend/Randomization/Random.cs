@@ -16,6 +16,25 @@ namespace PokemonRandomizer.Backend.Randomization
             rand = new System.Random(seed.GetHashCode());
         }
 
+        #region Utility Functions
+
+        /// <summary>
+        /// Returns true if a generated double is less than the success chance
+        /// Shortcuts if successchance is <= 0 or >= 1, and does not generate a number
+        /// </summary>
+        /// <param name="successChance">Range: 0.0 - 1.0 </param>
+        /// <returns></returns>
+        public bool RollSuccess(double successChance)
+        {
+            if (successChance <= 0)
+                return false;
+            if (successChance >= 1)
+                return true;
+            return RandomDouble() < successChance;
+        }
+
+        #endregion
+
         #region General Random Functions
         /// <summary> Generate an int in between min (inclusive) and max (inclusive) </summary>
         public int RandomInt(int min, int max) => rand.Next(min, max);

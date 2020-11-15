@@ -34,6 +34,7 @@ IDEAS:
 - Make procedurally generated battle sequences retain moves from previous levels
 	- Keep TM moves fairly consistant
 	- If pokemon learned something on a lower evolution, have the option to keep that (esp. for dunsparse plague)
+- Remap pokemon in procedurally generated battle sequences (maps pokemon to certain pokemon in the base sequence)
 - Trainer Randomization
 	- Trainer Type Theming (class / gym - based)?
 	- Add option for trainers not to be randomized
@@ -83,6 +84,8 @@ FEATURES:
 - Safe pointer prefix data offset find
 - Ban selfdestruct works by move effect rather than explicit move number
 - Wally Text Fix ("RALTS" to current pokemon)
+- UI
+	- Show version number in UI
 UNIT TESTS:
 - Clean rom hash compare (reading and writing an input rom skipping randomization should produce the same hash)
 CLEANUP:

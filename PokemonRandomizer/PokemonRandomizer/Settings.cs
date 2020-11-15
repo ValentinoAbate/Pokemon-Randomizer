@@ -142,17 +142,134 @@ namespace PokemonRandomizer
             KeepAce,
             Procedural,
         }
-        public TrainerOption RivalSetting { get => TrainerOption.Procedural; }
+
+        public enum TrainerCategory
+        {
+            Trainer,
+            AceTrainer,
+            Rival,
+            GymLeader,
+            EliteFour,
+            Champion,
+        }
+
+        public TrainerSettings GetTrainerSettings(TrainerCategory trainerClass)
+        {
+            return trainerSettings.ContainsKey(trainerClass) ? trainerSettings[trainerClass] : trainerSettings[TrainerCategory.Trainer];
+        }
+
+        private readonly Dictionary<TrainerCategory, TrainerSettings> trainerSettings = new Dictionary<TrainerCategory, TrainerSettings>()
+        {
+            { TrainerCategory.Trainer, new TrainerSettings()
+                {
+                    SpeciesSettings = new SpeciesSettings()
+                    {
+                        BanLegendaries = false,
+                        ForceHighestLegalEvolution = true,
+                        WeightType = SpeciesSettings.WeightingType.Group,
+                        Noise = 0.002f,
+                        PowerScaleSimilarityMod = 0.01f,
+                        PowerScaleCull = true,
+                        TypeSimilarityMod = 1f,
+                        TypeSimilarityCull = false,
+                    }
+                }
+            },
+            { TrainerCategory.AceTrainer, new TrainerSettings()
+                {
+                    SpeciesSettings = new SpeciesSettings()
+                    {
+                        BanLegendaries = false,
+                        ForceHighestLegalEvolution = true,
+                        Noise = 0.001f,
+                        PowerScaleSimilarityMod = 1f,
+                        PowerScaleCull = true,
+                        PowerThresholdStronger = 175,
+                        TypeSimilarityMod = 0,
+                        TypeSimilarityCull = false,
+                    }
+                }
+            },
+            { TrainerCategory.Rival, new TrainerSettings()
+                {
+                    SpeciesSettings = new SpeciesSettings()
+                    {
+                        BanLegendaries = false,
+                        ForceHighestLegalEvolution = true,
+                        WeightType = SpeciesSettings.WeightingType.Individual,
+                        Noise = 0.001f,
+                        PowerScaleSimilarityMod = 1f,
+                        PowerScaleCull = true,
+                        PowerThresholdStronger = 175,
+                        PowerThresholdWeaker = 100,
+                        TypeSimilarityMod = 0,
+                        TypeSimilarityCull = false,
+                    }
+                }
+            },
+            { TrainerCategory.GymLeader, new TrainerSettings()
+                {
+                    SpeciesSettings = new SpeciesSettings()
+                    {
+                        BanLegendaries = false,
+                        IllegalEvolutionLeeway = 2,
+                        ItemEvolutionLevel = 20,
+                        FriendshipEvolutionLevel = 20,
+                        TradeEvolutionLevel = 30,
+                        ForceHighestLegalEvolution = true,
+                        WeightType = SpeciesSettings.WeightingType.Group,
+                        Sharpness = 2,
+                        Noise = 0.0001f,
+                        PowerScaleSimilarityMod = 0.01f,
+                        PowerScaleCull = true,
+                        PowerThresholdStronger = 200,
+                        PowerThresholdWeaker = 300,
+                        TypeSimilarityMod = 1f,
+                        TypeSimilarityCull = false,
+                    }
+                }
+            },
+            { TrainerCategory.EliteFour, new TrainerSettings()
+                {
+                    SpeciesSettings = new SpeciesSettings()
+                    {
+                        BanLegendaries = false,
+                        RestrictIllegalEvolutions = false,
+                        ForceHighestLegalEvolution = true,
+                        WeightType = SpeciesSettings.WeightingType.Group,
+                        Sharpness = 2,
+                        Noise = 0.0001f,
+                        PowerScaleSimilarityMod = 0.1f,
+                        PowerScaleCull = true,
+                        PowerThresholdStronger = 250,
+                        PowerThresholdWeaker = 300,
+                        TypeSimilarityMod = 1f,
+                        TypeSimilarityCull = false,
+                    }
+                }
+            },
+            { TrainerCategory.Champion, new TrainerSettings()
+                {
+                    SpeciesSettings = new SpeciesSettings()
+                    {
+                        BanLegendaries = false,
+                        RestrictIllegalEvolutions = false,
+                        ForceHighestLegalEvolution = true,
+                        WeightType = SpeciesSettings.WeightingType.Group,
+                        Sharpness = 2,
+                        Noise = 0.0001f,
+                        PowerScaleSimilarityMod = 0.1f,
+                        PowerScaleCull = true,
+                        PowerThresholdStronger = 300,
+                        PowerThresholdWeaker = 300,
+                        TypeSimilarityMod = 1f,
+                        TypeSimilarityCull = false,
+                    }
+                }
+            },
+        };
         public bool RandomizeWallyAce { get => true; }
         public TrainerOption WallySetting { get => TrainerOption.Procedural; }
-        public TrainerOption GymLeaderSetting { get => TrainerOption.Procedural; }
-        public TrainerOption ReoccuringTrainerSetting { get => TrainerOption.Procedural; }
-        public double BattleTypeRandChance { get => 1; }
-        public double DoubleBattleChance { get => 1; }
-        /// <summary>
-        /// WARNING: Setting this to false will cause these battles to be anomalous
-        /// </summary>
-        public bool MakeSoloPokemonBattlesSingle { get => true; }
         #endregion
 
         #region Wild Pokemon
@@ -164,6 +281,19 @@ namespace PokemonRandomizer
             GlobalOneToOne,
         }
         public WildPokemonOption WildPokemonSetting => WildPokemonOption.AreaOneToOne;
+        public SpeciesSettings WildSpeciesSettings { get; } = new SpeciesSettings()
+        {
+            BanLegendaries = true,
+            WeightType = SpeciesSettings.WeightingType.Group,
+            //Sharpness = 1.1f,
+            Noise = 0.001f,
+            PowerScaleSimilarityMod = 0.01f,
+            PowerScaleCull = true,
+            PowerThresholdStronger = 300,
+            PowerThresholdWeaker = 200,
+            TypeSimilarityMod = 1f,
+            TypeSimilarityCull = false,
+        };
         #endregion
 
         #region Starter Pokemon
@@ -175,6 +305,17 @@ namespace PokemonRandomizer
         public bool RandomizeStarters { get => true; }
         public StarterPokemonOption StarterSetting { get => StarterPokemonOption.TypeTriangle; }
         public bool StrongStarterTypeTriangle { get => false; }
+        public SpeciesSettings StarterSpeciesSettings { get; } = new SpeciesSettings()
+        {
+            BanLegendaries = true,
+            Noise = 1f,
+            PowerScaleSimilarityMod = 0.1f,
+            PowerScaleCull = true,
+            PowerThresholdStronger = 300,
+            PowerThresholdWeaker = 200,
+            TypeSimilarityMod = 0,
+            TypeSimilarityCull = false,
+        };
         /// <summary>
         /// Ensures that all starters have an attacking move at lvl1
         /// Currently just makes all starters additionally have tackle
@@ -321,149 +462,14 @@ namespace PokemonRandomizer
         }
 
         #region Species Randomization
-
-        /// <summary> get the species randomization settings associated with a speific target group </summary>
-        public SpeciesSettings GetSpeciesSettings(SpeciesSettings.Class target)
-        {
-            return speciesSettings[target];
-        }
-        public Dictionary<SpeciesSettings.Class, SpeciesSettings> speciesSettings = new Dictionary<SpeciesSettings.Class, SpeciesSettings>()
-        {
-            {SpeciesSettings.Class.Starter, new SpeciesSettings()
-                {
-                    BanLegendaries = true,
-                    Noise = 1f,
-                    PowerScaleSimilarityMod = 0.1f,
-                    PowerScaleCull = true,
-                    PowerThresholdStronger = 300,
-                    PowerThresholdWeaker = 200,
-                    TypeSimilarityMod = 0,
-                    TypeSimilarityCull = false,
-                }
-            },
-            {SpeciesSettings.Class.Wild, new SpeciesSettings()
-                {
-                    BanLegendaries = true,
-                    WeightType = SpeciesSettings.WeightingType.Group,
-                    //Sharpness = 1.1f,
-                    Noise = 0.001f,
-                    PowerScaleSimilarityMod = 0.01f,
-                    PowerScaleCull = true,
-                    PowerThresholdStronger = 300,
-                    PowerThresholdWeaker = 200,
-                    TypeSimilarityMod = 1f,
-                    TypeSimilarityCull = false,
-                }
-            },
-            {SpeciesSettings.Class.Trainer, new SpeciesSettings()
-                {
-                    BanLegendaries = false,
-                    ForceHighestLegalEvolution = true,
-                    Noise = 0.002f,
-                    PowerScaleSimilarityMod = 0.01f,
-                    PowerScaleCull = true,
-                    TypeSimilarityMod = 1f,
-                    TypeSimilarityCull = false,
-                }
-            },
-            {SpeciesSettings.Class.AceTrainer, new SpeciesSettings()
-                {
-                    BanLegendaries = false,
-                    ForceHighestLegalEvolution = true,
-                    Noise = 0.001f,
-                    PowerScaleSimilarityMod = 1f,
-                    PowerScaleCull = true,
-                    PowerThresholdStronger = 175,
-                    TypeSimilarityMod = 0,
-                    TypeSimilarityCull = false,
-                }
-            },
-            {SpeciesSettings.Class.Rival, new SpeciesSettings()
-                {
-                    BanLegendaries = false,
-                    ForceHighestLegalEvolution = true,
-                    WeightType = SpeciesSettings.WeightingType.Individual,
-                    Noise = 0.001f,
-                    PowerScaleSimilarityMod = 1f,
-                    PowerScaleCull = true,
-                    PowerThresholdStronger = 175,
-                    PowerThresholdWeaker = 100,
-                    TypeSimilarityMod = 0,
-                    TypeSimilarityCull = false,
-                }
-            },
-            {SpeciesSettings.Class.GymLeader, new SpeciesSettings()
-                {
-                    BanLegendaries = false,
-                    IllegalEvolutionLeeway = 2,
-                    ItemEvolutionLevel = 20,
-                    FriendshipEvolutionLevel = 20,
-                    TradeEvolutionLevel = 30,
-                    ForceHighestLegalEvolution = true,
-                    WeightType = SpeciesSettings.WeightingType.Group,
-                    Sharpness = 2,
-                    Noise = 0.0001f,
-                    PowerScaleSimilarityMod = 0.01f,
-                    PowerScaleCull = true,
-                    PowerThresholdStronger = 200,
-                    PowerThresholdWeaker = 300,
-                    TypeSimilarityMod = 1f,
-                    TypeSimilarityCull = false,
-                }
-            },
-            {SpeciesSettings.Class.EliteFour, new SpeciesSettings()
-                {
-                    BanLegendaries = false,
-                    RestrictIllegalEvolutions = false,
-                    ForceHighestLegalEvolution = true,
-                    WeightType = SpeciesSettings.WeightingType.Group,
-                    Sharpness = 2,
-                    Noise = 0.0001f,
-                    PowerScaleSimilarityMod = 0.1f,
-                    PowerScaleCull = true,
-                    PowerThresholdStronger = 250,
-                    PowerThresholdWeaker = 300,
-                    TypeSimilarityMod = 1f,
-                    TypeSimilarityCull = false,
-                }
-            },
-            {SpeciesSettings.Class.Champion, new SpeciesSettings()
-                {
-                    BanLegendaries = false,
-                    RestrictIllegalEvolutions = false,
-                    ForceHighestLegalEvolution = true,
-                    WeightType = SpeciesSettings.WeightingType.Group,
-                    Sharpness = 2,
-                    Noise = 0.0001f,
-                    PowerScaleSimilarityMod = 0.1f,
-                    PowerScaleCull = true,
-                    PowerThresholdStronger = 300,
-                    PowerThresholdWeaker = 300,
-                    TypeSimilarityMod = 1f,
-                    TypeSimilarityCull = false,
-                }
-            },
-        };
+       
         public class SpeciesSettings
         {
-            public enum Class
-            {
-                Starter,
-                Wild,
-                Trainer,
-                AceTrainer,
-                Rival,
-                GymLeader,
-                EliteFour,
-                Champion,
-            }
-
             public enum WeightingType
             {
                 Individual,
                 Group,
             }
-
 
             #region Evolution Settings
             public bool RestrictIllegalEvolutions { get; set; } = true;
@@ -488,6 +494,34 @@ namespace PokemonRandomizer
             public float TypeSimilarityMod { get; set; } = 0;
             public bool TypeSimilarityCull { get; set; } = false;
         }
+
+        public class TrainerSettings
+        {
+            public enum PokemonPcgStrategy
+            {
+                None,
+                KeepAce,
+                KeepParty,
+            }
+
+            public enum BattleTypePcgStrategy
+            { 
+                None,
+                KeepSameType,
+            }
+
+            public double PokemonRandChance { get; set; } = 1;
+            public PokemonPcgStrategy PokemonStrategy { get; set; } = PokemonPcgStrategy.KeepParty;
+            public SpeciesSettings SpeciesSettings { get; set; } = new SpeciesSettings();
+            public double BattleTypeRandChance { get; set; } = 1;
+            public BattleTypePcgStrategy BattleTypeStrategy { get; set; } = BattleTypePcgStrategy.KeepSameType;
+            public double DoubleBattleChance { get; set; } = 1;
+            /// <summary>
+            /// WARNING: Setting this to false will cause these battles to be anomalous
+            /// </summary>
+            public bool MakeSoloPokemonBattlesSingle => true;
+        }
+
 
         #endregion
     }

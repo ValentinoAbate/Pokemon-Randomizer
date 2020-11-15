@@ -11,7 +11,7 @@ Check out their website! http://artemis251.fobby.net/downloads/emerald/
 Another project that's been a great reference for writing this is dabomstew's Universal pokemon randomizer.
 Check out their project! https://github.com/Dabomstew/universal-pokemon-randomizer
 
-# Version (v0.0.1.2)
+# Version (v0.0.2)
 
 ### Version Number Convention
 
@@ -21,7 +21,7 @@ Check out their project! https://github.com/Dabomstew/universal-pokemon-randomiz
 
 3rd number: minor update (this number will increment when a minor update happens)
 
-4th number: patch        (this number will increment when a fix has been made to the code that WILL NOT change the randomizer's output except to fix a feature that wasn't working properly)
+4th number: patch (optional)(this number will increment when a fix has been made to the code that WILL NOT change the randomizer's output except to fix a feature that wasn't working properly)
 
 ### Notes
 
