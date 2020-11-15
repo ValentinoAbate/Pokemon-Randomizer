@@ -39,6 +39,7 @@ IDEAS:
 	- Trainer Type Theming (class / gym - based)?
 	- Add option for trainers not to be randomized
 	- Trainer one-to-one species randomization (a trainer with three magikarps will have 3 of the same pokemon
+	- Allow moveset generation selection
 - Wild Pokemon Randomization
 	- Area Type theming (Forest likely to have grass / bug etc)
 	- Encounter Bank Type theming (prefer water in fishing spots, etc)

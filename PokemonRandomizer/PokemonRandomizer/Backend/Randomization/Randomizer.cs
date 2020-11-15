@@ -585,6 +585,7 @@ namespace PokemonRandomizer.Backend.Randomization
             {
                 var allBattles = data.SpecialTrainers[trainer.ToLower()];
                 allBattles.Sort((a, b) => a.AvgLvl.CompareTo(b.AvgLvl));
+                // Split the rival battles into their three different options
                 var starters = new PokemonSpecies[] { allBattles[0].pokemon[0].species, allBattles[1].pokemon[0].species, allBattles[2].pokemon[0].species };
                 var rivalBattles = starters.Select((s) => allBattles.Where((b) => b.pokemon.Any((p) => RelatedToOrSelf(p.species, s)))).ToArray();
                 for (int i = 0; i < rivalBattles.Length; ++i)
@@ -592,8 +593,11 @@ namespace PokemonRandomizer.Backend.Randomization
                     var battles = new List<Trainer>(rivalBattles[i]);
                     var firstBattle = battles[0];
                     battles.RemoveAt(0);
+                    // Randomize the first battle
                     RandomizeTrainer(firstBattle, pokemonSet, rivalSettings, false);
+                    // Set the appropriate starter as the ace
                     firstBattle.pokemon[firstBattle.pokemon.Length - 1].species = data.Starters[data.RivalRemap[i]];
+                    // Procedurally generate the rest of the battles
                     RandomizeTrainerReoccurring(firstBattle, battles, pokemonSet, rivalSettings);
                 }
             }
@@ -614,7 +618,8 @@ namespace PokemonRandomizer.Backend.Randomization
                 wallyBattles.RemoveAt(0);
                 // Set Wally's first pokemon to the catching tut pokemon
                 RandomizeTrainer(firstBattle, pokemonSet, rivalSettings, false);
-                firstBattle.pokemon[firstBattle.pokemon.Length - 1].species = data.CatchingTutPokemon;
+                var firstBattleAce = firstBattle.pokemon[firstBattle.pokemon.Length - 1];
+                firstBattleAce.species = MaxEvolution(data.CatchingTutPokemon, firstBattleAce.level, rivalSettings.SpeciesSettings);
                 // Procedurally generate the rest of Wally's battles
                 RandomizeTrainerReoccurring(firstBattle, wallyBattles, pokemonSet, rivalSettings);
             }
@@ -625,7 +630,8 @@ namespace PokemonRandomizer.Backend.Randomization
             {
                 foreach(var name in names)
                 {
-                    var reoccuringBattles = new List<Trainer>(data.SpecialTrainers[name]);
+                    var reoccuringBattles = new List<Trainer>(data.SpecialTrainers[name.ToLower()]);
+                    reoccuringBattles.Sort((a, b) => a.AvgLvl.CompareTo(b.AvgLvl));
                     var firstBattle = reoccuringBattles[0];
                     reoccuringBattles.RemoveAt(0);
                     RandomizeTrainer(firstBattle, pokemonSet, settings, false);
@@ -640,7 +646,7 @@ namespace PokemonRandomizer.Backend.Randomization
             SpecialTrainerRandomization(data.GymLeaderNames, settings.GetTrainerSettings(Settings.TrainerCategory.GymLeader));
             // Team Leaders use the same settings as gym leaders for now
             SpecialTrainerRandomization(data.TeamLeaderNames, settings.GetTrainerSettings(Settings.TrainerCategory.GymLeader));
-            // Team Leaders use the same settings as team leaders for now
+            // Team Admins use the same settings as team leaders for now
             SpecialTrainerRandomization(data.TeamAdminNames, settings.GetTrainerSettings(Settings.TrainerCategory.GymLeader));
             SpecialTrainerRandomization(data.AceTrainerNames, settings.GetTrainerSettings(Settings.TrainerCategory.AceTrainer));
             // Reoccurring Trainers use normal trainer settings
@@ -1188,8 +1194,8 @@ namespace PokemonRandomizer.Backend.Randomization
                     // Migrate pokemon from the last battle
                     for (int i = 0; i < lastBattleSize && i < battleSize; ++i)
                     {
-                        var currPokemon = battle.pokemon[battleSize - i];
-                        var lastPokemon = lastBattle.pokemon[lastBattleSize - i];
+                        var currPokemon = battle.pokemon[battleSize - (i + 1)];
+                        var lastPokemon = lastBattle.pokemon[lastBattleSize - (i + 1)];
                         currPokemon.species = MaxEvolution(lastPokemon.species, currPokemon.level, speciesSettings);
                         if(currPokemon.HasSpecialMoves)
                         {
