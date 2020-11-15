@@ -1,4 +1,5 @@
 ﻿using PokemonRandomizer.Backend.DataStructures;
+using PokemonRandomizer.Backend.EnumTypes;
 using PokemonRandomizer.Backend.Randomization;
 using PokemonRandomizer.Backend.Utilities;
 using System.Collections.Generic;
@@ -299,12 +300,19 @@ namespace PokemonRandomizer
         #region Starter Pokemon
         public enum StarterPokemonOption
         {
-            CompletelyRandom,
-            TypeTriangle,
+            Unchanged,
+            Random,
+            RandomTypeTriangle,
+            Custom,
         }
-        public bool RandomizeStarters { get => true; }
-        public StarterPokemonOption StarterSetting { get => StarterPokemonOption.TypeTriangle; }
+        public StarterPokemonOption StarterSetting { get => StarterPokemonOption.RandomTypeTriangle; }
         public bool StrongStarterTypeTriangle { get => false; }
+        public PokemonSpecies[] CustomStarters { get; } = new PokemonSpecies[3]
+        {
+            PokemonSpecies.KECLEON,
+            PokemonSpecies.KECLEON,
+            PokemonSpecies.KECLEON,
+        };
         public SpeciesSettings StarterSpeciesSettings { get; } = new SpeciesSettings()
         {
             BanLegendaries = true,

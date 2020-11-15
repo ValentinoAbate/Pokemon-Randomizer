@@ -420,15 +420,15 @@ namespace PokemonRandomizer.Backend.Randomization
             #endregion
 
             #region Starters
-            if (settings.RandomizeStarters)
+            if (settings.StarterSetting != Settings.StarterPokemonOption.Unchanged)
             {
                 var speciesSettings = settings.StarterSpeciesSettings;
-                if(settings.StarterSetting == Settings.StarterPokemonOption.CompletelyRandom)
+                if(settings.StarterSetting == Settings.StarterPokemonOption.Random)
                 {
                     for(int i = 0; i < data.Starters.Count; ++i)
                         data.Starters[i] = RandomSpecies(pokemonSet, data.Starters[i], 5, speciesSettings);
                 }
-                else if (settings.StarterSetting == Settings.StarterPokemonOption.TypeTriangle)
+                else if (settings.StarterSetting == Settings.StarterPokemonOption.RandomTypeTriangle)
                 {
                     var triangle = RandomTypeTriangle(pokemonSet, speciesSettings, settings.StrongStarterTypeTriangle);
                     if (triangle != null)
@@ -438,6 +438,10 @@ namespace PokemonRandomizer.Backend.Randomization
                         for (int i = 0; i < data.Starters.Count; ++i)
                             data.Starters[i] = RandomSpecies(pokemonSet, data.Starters[i], 5, speciesSettings);
                     }
+                }
+                else if(settings.StarterSetting == Settings.StarterPokemonOption.Custom)
+                {
+                    data.Starters = new List<PokemonSpecies>(settings.CustomStarters);
                 }
                 // Make sure all starters have attack moves
                 if(settings.SafeStarterMovesets)
