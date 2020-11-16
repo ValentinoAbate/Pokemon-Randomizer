@@ -155,7 +155,10 @@
         /// </summary>
         public byte battleField;
 
-        // Connection data
+        // Non-Header Data
+        public MapData mapData;
+        public MapEventData eventData;
+        public MapScriptData scriptData;
         public ConnectionData connections;
 
         public string Name { get; set; }

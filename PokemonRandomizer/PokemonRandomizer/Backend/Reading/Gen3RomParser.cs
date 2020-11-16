@@ -430,6 +430,8 @@ namespace PokemonRandomizer.Backend.Reading
             }
         }
 
+        #region Map Reading
+
         // Read Map Banks
         private Map[][] ReadMapBanks(Rom rom, XmlManager info, RomMetadata metadata)
         {
@@ -447,7 +449,6 @@ namespace PokemonRandomizer.Backend.Reading
             }
             return mapBanks;
         }
-
         private Map[] ReadMapBank(Rom rom, RomMetadata metadata, int offset, int numMaps, int labelOffset)
         {
             Map[] maps = new Map[numMaps];
@@ -487,6 +488,7 @@ namespace PokemonRandomizer.Backend.Reading
 
             #region Read Non-Header Data
 
+            // Map Label (name)
             if (metadata.IsRubySapphireOrEmerald)
             {
                 // Read Map Label (RSE)
@@ -501,16 +503,60 @@ namespace PokemonRandomizer.Backend.Reading
                 rom.Seek(rom.ReadPointer(labelOffset + (map.labelIndex - frlgMapLabelsStart) * 4));
                 map.Name = rom.ReadVariableLengthString();
             }
-
+            // Map Data
+            if (map.mapDataOffset != Rom.nullPointer)
+                map.mapData = ReadMapData(rom, metadata, map.mapDataOffset);
+            // Event Data
+            if (map.eventDataOffset != Rom.nullPointer)
+                map.eventData = ReadMapEventData(rom, map.eventDataOffset);
             // Connections
             if (map.connectionOffset != Rom.nullPointer)
                 map.connections = ReadMapConnectionData(rom, map.connectionOffset);
+
             #endregion
 
             rom.LoadOffset();
             return map;
         }
+        private MapData ReadMapData(Rom rom, RomMetadata metadata, int offset)
+        {
+            var mapData = new MapData();
+            rom.Seek(offset);
+            mapData.width = rom.ReadUInt32();
+            mapData.height = rom.ReadUInt32();
+            mapData.borderTileOffset = rom.ReadPointer();
+            mapData.mapTilesOffset = rom.ReadPointer();
+            mapData.globalTileSetOffset = rom.ReadPointer();
+            mapData.localTileSetOffset = rom.ReadPointer();
+            var border = rom.ReadBits(4, 2);
+            mapData.borderWidth = border[0];
+            mapData.borderHeight = border[1];
+            mapData.secondarySize = mapData.borderWidth + 0xA0;
+            if(metadata.IsRubySapphireOrEmerald)
+            {
+                const int rseBorderWidthAndHeight = 2;
+                mapData.borderWidth = rseBorderWidthAndHeight;
+                mapData.borderHeight = rseBorderWidthAndHeight;
+            }
+            return mapData;
+        }
+        private MapEventData ReadMapEventData(Rom rom, int offset)
+        {
+            var eventData = new MapEventData();
+            rom.Seek(offset);
+            eventData.numNpcEvents = rom.ReadByte();
+            eventData.numWarpEvents = rom.ReadByte();
+            eventData.numTriggerEvents = rom.ReadByte();
+            eventData.numSignEvents = rom.ReadByte();
+            eventData.npcEventOffset = rom.ReadPointer();
+            eventData.warpEventOffset = rom.ReadPointer();
+            eventData.triggerEventOffset = rom.ReadPointer();
+            eventData.signEventOffset = rom.ReadPointer();
 
+            // Read Non-Header Data
+
+            return eventData;
+        }
         private ConnectionData ReadMapConnectionData(Rom rom, int offset)
         {
             rom.SaveOffset();
@@ -537,6 +583,8 @@ namespace PokemonRandomizer.Backend.Reading
             rom.LoadOffset();
             return data;
         }
+
+        #endregion
 
         // Read encounters
         private List<EncounterSet> ReadEncounters(Rom rom, XmlManager info)

@@ -4,7 +4,7 @@
     {
         public enum Type
         {
-            Down,
+            Down = 1,
             Up,
             Left,
             Right,

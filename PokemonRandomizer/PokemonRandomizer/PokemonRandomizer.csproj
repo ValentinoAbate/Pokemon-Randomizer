@@ -77,6 +77,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Backend\DataStructures\MapData.cs" />
+    <Compile Include="Backend\DataStructures\MapEventData.cs" />
+    <Compile Include="Backend\DataStructures\MapScriptData.cs" />
     <Compile Include="Backend\DataStructures\RomMetadata.cs" />
     <Compile Include="Backend\EnumTypes\Generation.cs" />
     <Compile Include="Backend\Reading\Gen4RomParser.cs" />

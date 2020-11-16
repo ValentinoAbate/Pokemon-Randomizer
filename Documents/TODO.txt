@@ -87,6 +87,8 @@ FEATURES:
 - Wally Text Fix ("RALTS" to current pokemon)
 - UI
 	- Show version number in UI
+- HM Compat randomization
+	- Should probably have a separate settings block from the TM / MT setting
 UNIT TESTS:
 - Clean rom hash compare (reading and writing an input rom skipping randomization should produce the same hash)
 CLEANUP:
