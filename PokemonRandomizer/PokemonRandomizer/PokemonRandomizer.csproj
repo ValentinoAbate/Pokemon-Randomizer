@@ -139,7 +139,7 @@
     <Compile Include="Backend\DataStructures\RomMetrics.cs" />
     <Compile Include="Backend\Utilities\EnumUtils.cs" />
     <Compile Include="Backend\DataStructures\Evolution.cs" />
-    <Compile Include="Backend\DataStructures\Item.cs" />
+    <Compile Include="Backend\EnumTypes\Item.cs" />
     <Compile Include="Backend\DataStructures\LearnSet.cs" />
     <Compile Include="Backend\Utilities\PokedexUtils.cs" />
     <Compile Include="Backend\DataStructures\PokemonBaseStats.cs" />

@@ -1,4 +1,4 @@
-﻿namespace PokemonRandomizer.Backend
+﻿namespace PokemonRandomizer.Backend.EnumTypes
 {
     public enum Item : ushort
     {

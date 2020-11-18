@@ -554,6 +554,52 @@ namespace PokemonRandomizer.Backend.Reading
             eventData.signEventOffset = rom.ReadPointer();
 
             // Read Non-Header Data
+            // Read NPC Events
+            if (eventData.npcEventOffset != Rom.nullPointer)
+            {
+                rom.Seek(eventData.npcEventOffset);
+                for (int i = 0; i < eventData.numNpcEvents; i++)
+                {
+                    eventData.npcEvents.Add(new MapEventData.NpcEvent
+                    {
+                        npcEventIndex = rom.ReadByte(),
+                        spriteSetIndex = rom.ReadUInt16(),
+                        unknown1 = rom.ReadByte(),
+                        xPos = rom.ReadUInt16(),
+                        yPos = rom.ReadUInt16(),
+                        unknown2 = rom.ReadByte(),
+                        movementType = rom.ReadByte(),
+                        movement = rom.ReadByte(),
+                        unknown3 = rom.ReadByte(),
+                        isTrainer = rom.ReadByte() == 0x01,
+                        unknown4 = rom.ReadByte(),
+                        trainerViewRadius = rom.ReadUInt16(),
+                        scriptOffset = rom.ReadPointer(),
+                        personID = rom.ReadUInt16(),
+                        unknown5 = rom.ReadByte(),
+                        unknown6 = rom.ReadByte()
+                    });
+                }
+            }
+            // Read Warp Events
+            if(eventData.warpEventOffset != Rom.nullPointer)
+            {
+                rom.Seek(eventData.warpEventOffset);
+                for (int i = 0; i < eventData.numWarpEvents; i++)
+                {
+                    eventData.warpEvents.Add(new MapEventData.WarpEvent
+                    {
+                        xPos = rom.ReadUInt16(),
+                        yPos = rom.ReadUInt16(),
+                        unknown = rom.ReadByte(),
+                        warpIndex = rom.ReadByte(),
+                        mapIndex = rom.ReadByte(),
+                        bankIndex = rom.ReadByte(),
+                    });
+                }
+            }
+            // Read Trigger Events
+            // Read Sign Events
 
             return eventData;
         }
