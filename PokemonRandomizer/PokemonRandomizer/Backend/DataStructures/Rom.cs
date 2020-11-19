@@ -14,7 +14,7 @@ namespace PokemonRandomizer.Backend.DataStructures
         /// Address rom is loaded into in GBA RAM
         /// </summary>
         private const int ramOffset = 0x08000000;
-        public const int nullPointer = -ramOffset;
+        public const int nullPointer = -ramOffset; // Due to how ReadPointer() Reads the 0x00000000 pointer
         public const int pointerSize = 4; //size of a pointer in bytes
         public const byte pointerPrefix = 0x08; //conmes at the beginning of a pointer
         /// <summary>The byte that WriteInFreeSpace(byte[] data) considers free space </summary>

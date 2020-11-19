@@ -44,7 +44,11 @@ namespace PokemonRandomizer.Backend.Reading
             // Read Catching tutorial pokemon
             data.CatchingTutPokemon = ReadCatchingTutOpponent(rom, info);
             // Read the PC item
-            data.PcStartItem = (Item)rom.ReadUInt16(info.Offset("pcPotion"));
+            var pcPotionOffset = info.FindOffset("pcPotion", rom);
+            if (pcPotionOffset != null)
+            {
+                data.PcStartItem = (Item)rom.ReadUInt16((int)pcPotionOffset);
+            }
             // Trainers and associated data
             data.ClassNames = ReadTrainerClassNames(rom, info);
             data.Trainers = ReadTrainers(rom, info, data.ClassNames);
@@ -599,7 +603,56 @@ namespace PokemonRandomizer.Backend.Reading
                 }
             }
             // Read Trigger Events
+            if(eventData.triggerEventOffset != Rom.nullPointer)
+            {
+                rom.Seek(eventData.triggerEventOffset);
+                for (int i = 0; i < eventData.numTriggerEvents; i++)
+                {
+                    eventData.triggerEvents.Add(new MapEventData.TriggerEvent
+                    {
+                        xPos = rom.ReadUInt16(),
+                        yPos = rom.ReadUInt16(),
+                        unknownUInt16 = rom.ReadUInt16(),
+                        variableIndex = rom.ReadUInt16(),
+                        variableValue = rom.ReadUInt16(),
+                        unknownUInt162 = rom.ReadUInt16(),
+                        scriptOffset = rom.ReadPointer(),
+                    });
+                }
+            }
             // Read Sign Events
+            if(eventData.signEventOffset != Rom.nullPointer)
+            {
+                rom.Seek(eventData.signEventOffset);
+                for (int i = 0; i < eventData.numSignEvents; i++)
+                {
+                    var signEvent = new MapEventData.SignEvent
+                    {
+                        xPos = rom.ReadUInt16(),
+                        yPos = rom.ReadUInt16(),
+                        height = rom.ReadByte(),
+                        signType = (MapEventData.SignEvent.Type)rom.ReadByte(),
+                        unknown1 = rom.ReadByte(),
+                        unknown2 = rom.ReadByte(),
+                    };
+                    if(signEvent.IsHiddenItem)
+                    {
+                        signEvent.hiddenItem = (Item)rom.ReadUInt16();
+                        signEvent.hiddenID = rom.ReadByte();
+                        signEvent.hiddenItemAmount = rom.ReadByte();
+                    }
+                    else if(signEvent.signType == MapEventData.SignEvent.Type.SecretBase)
+                    {
+                        signEvent.secretBaseID = rom.ReadByte();
+                        signEvent.unknownSecretBaseBlock = rom.ReadBlock(3);
+                    }
+                    else // Script type
+                    {
+                        signEvent.scriptOffset = rom.ReadPointer();
+                    }
+                    eventData.signEvents.Add(signEvent);
+                }
+            }
 
             return eventData;
         }

@@ -197,7 +197,14 @@ namespace PokemonRandomizer
             };
             if (openFileDialog.ShowDialog() == true)
             {
-                GetRomData(File.ReadAllBytes(openFileDialog.FileName));
+                try
+                {
+                    GetRomData(File.ReadAllBytes(openFileDialog.FileName));
+                }
+                catch(IOException exception)
+                {
+                    lblMessageBoxContent.Content = "Failed to open rom: " + exception.Message;
+                }
             }
         }
 
@@ -213,7 +220,14 @@ namespace PokemonRandomizer
             };
             if (saveFileDialog.ShowDialog() == true)
             {
-                File.WriteAllBytes(saveFileDialog.FileName, GetRandomizedRom().File);
+                try
+                {
+                    File.WriteAllBytes(saveFileDialog.FileName, GetRandomizedRom().File);
+                }
+                catch (IOException exception)
+                {
+                    lblMessageBoxContent.Content = "Failed to save rom: " + exception.Message;
+                }
             }
         }
 

@@ -35,7 +35,7 @@ namespace PokemonRandomizer.Backend.DataStructures
 			public byte unknown3;
 			public bool isTrainer;
 			public byte unknown4;
-			public int trainerViewRadius;
+			public int trainerViewRadius; // Is "PlantID" for berry trees (Not sure what this is)
 			public int scriptOffset;
 			public int personID; // Not sure what this is used for, possibly is a script argument?
 			public byte unknown5;
@@ -43,8 +43,43 @@ namespace PokemonRandomizer.Backend.DataStructures
 		}
 
         public class SignEvent
-        { 
-		
+        {
+            public enum Type
+            { 
+				Script,
+				ScriptPlayerFacingUp,
+				ScriptPlayerFacingDown,
+				ScriptPlayerFacingRight,
+				ScriptPlayerFacingLeft,
+				HiddenItem1,
+				HiddenItem2,
+				HiddenItem3,
+				SecretBase,
+			}
+
+			public bool IsHiddenItem => signType == Type.HiddenItem1 || signType == Type.HiddenItem2 || signType == Type.HiddenItem3;
+
+			public int xPos;
+			public int yPos;
+			public byte height;
+			public Type signType;
+			public byte unknown1;
+			public byte unknown2;
+
+			// Script variables
+			public int scriptOffset;
+
+			// Hidden item variables
+			public EnumTypes.Item hiddenItem;
+			public byte hiddenID;
+			/// <summary>
+			/// The amount of item to be picked up (-1). Add 1 for the actual amount.
+			/// </summary>
+			public byte hiddenItemAmount;
+
+			// Secret Base Variables
+			public byte secretBaseID;
+			public byte[] unknownSecretBaseBlock; // Seems to always be 0x00 may not contain data
 		}
 
         public class WarpEvent
@@ -61,7 +96,13 @@ namespace PokemonRandomizer.Backend.DataStructures
 
 		public class TriggerEvent
         {
-
-        }
+			public int xPos;
+			public int yPos;
+			public int unknownUInt16;
+			public int variableIndex; // May be some sort of flag
+			public int variableValue;
+			public int unknownUInt162;
+			public int scriptOffset;
+		}
 	}
 }
