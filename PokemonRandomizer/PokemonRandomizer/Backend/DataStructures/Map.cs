@@ -66,7 +66,7 @@
         //Byte                  Show label on entry          0
         //Byte                  In-battle field model id     0
 
-        // Data structures have been figured out be ShinyQuagsire and are available at
+        // Data structures have been figured out by ShinyQuagsire and are available at
         // https://github.com/shinyquagsire23/MEH/tree/master/src/us/plxhack/MEH (MEH source)
         public int mapDataOffset;
         public int eventDataOffset;

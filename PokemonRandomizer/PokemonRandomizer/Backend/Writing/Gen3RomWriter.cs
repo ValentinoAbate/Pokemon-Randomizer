@@ -26,7 +26,7 @@ namespace PokemonRandomizer.Backend.Writing
             // Write Move Tutor definitions
             WriteMoveMappings(rom, info.Offset("moveTutorMoves"), data.tutorMoves);
             // Write the move definitions
-            WriteMoveData(data, rom, info, ref repoints);
+            WriteMoveData(data.MoveData, rom, info, ref repoints);
             // Starter Writing currently only supported for Gen III
             if(metadata.Gen == Generation.III)
             {
@@ -138,35 +138,39 @@ namespace PokemonRandomizer.Backend.Writing
             return rom;
         }
 
-        private void WriteMoveData(RomData data, Rom rom, XmlManager info, ref RepointList repoints)
-        {;
-            int moveCount = int.Parse(info.Attr("moveData", "num", info.Constants).Value);
-            int dataPtrOffset = HexUtils.HexToInt(info.Attr("moveData", "ptr", info.Constants).Value);
-            int dataOffset = rom.ReadPointer(dataPtrOffset);
-            if (data.MoveData.Count == moveCount + 1) // original number of moves (move 0 is empty)
+        private void WriteMoveData(List<MoveData> data, Rom rom, XmlManager info, ref RepointList repoints)
+        {
+            const string moveDataElt = "moveData";
+            int? dataOffset = info.FindOffset(moveDataElt, rom);
+            // No data offset, move data writing unsupported
+            if (dataOffset == null)
+                return;
+            int moveCount = info.IntAttr(moveDataElt, "num");
+            if (data.Count == moveCount + 1) // original number of moves (move 0 is empty)
             {
-                rom.Seek(dataOffset);
-                foreach (var moveData in data.MoveData)
+                rom.Seek((int)dataOffset);
+                foreach (var moveData in data)
                     WriteMoveDataSingular(rom, moveData);
             }
             else // repoint necessary
             {
                 int dataSize = info.Size("moveData");
                 // Creat an empty rom block to write to
-                Rom moveDataBlock = new Rom(dataSize * data.MoveData.Count, rom.FreeSpaceByte);
-                foreach (var moveData in data.MoveData)
+                Rom moveDataBlock = new Rom(dataSize * data.Count, rom.FreeSpaceByte);
+                foreach (var moveData in data)
                     WriteMoveDataSingular(moveDataBlock, moveData);
                 int? newOffset = rom.WriteInFreeSpace(moveDataBlock.File);
                 if (newOffset != null)
                 {
                     const int ppOffset = 4;
                     int newOffsetInt = (int)newOffset;
+                    int dataOffsetInt = (int)dataOffset;
                     // Log repoint for main movedata
-                    repoints.Add(dataOffset, newOffsetInt);
+                    repoints.Add(dataOffsetInt, newOffsetInt);
                     // Log repoint for PP data (original offset + 4)
-                    repoints.Add(dataOffset + ppOffset, newOffsetInt + ppOffset);
+                    repoints.Add(dataOffsetInt + ppOffset, newOffsetInt + ppOffset);
                     // Wipe the old moveData location
-                    rom.WipeBlock(dataOffset, dataSize * moveCount);
+                    rom.WipeBlock(dataOffsetInt, dataSize * moveCount);
                 }
             }
         }
@@ -397,20 +401,8 @@ namespace PokemonRandomizer.Backend.Writing
         }
         private void WriteEncounters(RomData romData, Rom rom, XmlManager info)
         {
-            #region Find and Seek encounter table
-            var encounterPtrPrefix = info.Attr("wildPokemon", "ptrPrefix", info.Constants).Value;
-            var prefixes = rom.FindAll(encounterPtrPrefix);
-            // If no prefix was found, fall back on another method (no other method yet)
-            if (prefixes.Count <= 0)
-                throw new Exception("No wild pokemon ptr prefix found");
-            // If more than 1 prefix was found, fall back on another method (potentially just choose the first)
-            if (prefixes.Count > 1)
-                throw new Exception("Wild pokemon ptr prefix is not unique");
-            // Go to the location in the pointer after the prefix 
-            // ptr is at the location + half the length of the hex string (-1 for the "0x" formatting)
-            rom.Seek(rom.ReadPointer(prefixes[0] + (encounterPtrPrefix.Length / 2) - 1));
-            #endregion
-
+            if (!info.FindAndSeekOffset("wildPokemon", rom))
+                return;
             var encounterIter = romData.Encounters.GetEnumerator();
             // Iterate until the ending marker (0xff, 0xff)
             while (rom.Peek() != 0xff || rom.Peek(1) != 0xff)

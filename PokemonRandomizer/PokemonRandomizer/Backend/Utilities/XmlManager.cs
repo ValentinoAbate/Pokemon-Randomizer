@@ -10,20 +10,13 @@ namespace PokemonRandomizer.Backend.Utilities
     {
         public const string offsetAttr = "offset";
         public const string pointerAttr = "pointer";
+        public const string pointerPrefixAttr = "pointerPrefix";
         public const string numAttr = "num";
         public const string sizeAttr = "size";
+        public const string constantsElt = "constants";
 
         public XElement Root { get; }
         private XElement searchRoot;
-        public XElement Constants
-        {
-            get
-            {
-                if (cache.ContainsKey("constants"))
-                    return cache["constants"];
-                return Element("constants", Root);
-            }
-        }
 
         private readonly Dictionary<string, XElement> cache = new Dictionary<string, XElement>();
 
@@ -33,6 +26,17 @@ namespace PokemonRandomizer.Backend.Utilities
         {
             Root = root;
             searchRoot = root;
+            // Add the constants to the cache if applicable
+            if (HasElement(constantsElt, false))
+            {
+                var elts = Element(constantsElt, false).DescendantsAndSelf();
+                foreach (var elt in elts)
+                {
+                    if (cache.ContainsKey(elt.Name.LocalName))
+                        continue;
+                    cache.Add(elt.Name.LocalName, elt);
+                }
+            }
         }
         #endregion
 
@@ -64,11 +68,24 @@ namespace PokemonRandomizer.Backend.Utilities
         /// Finds the offset of the specified data using various methods.
         /// If no method successfully finds a valid offset, return null.
         /// If "isAtValidOffset" == null, any offset in the rom is considered valid.
-        /// TODO: Add pointer prefix method
         /// TODO: Check that the thing at the "pointer" location is actually a pointer
+        /// TODO: Check that the thing after the prefix in find pointer prefix is actually a pointer
         /// </summary>
         public int? FindOffset(string element, Rom rom, Func<Rom, int, bool> isValidOffset = null)
         {
+            if(HasPointerPrefix(element))
+            {
+                try
+                {
+                    int offset = rom.ReadPointer(rom.FindFromPrefix(Attr(element, pointerPrefixAttr).Value));
+                    if(rom.IsValidOffset(offset))
+                    {
+                        if (isValidOffset == null || isValidOffset(rom, offset))
+                            return offset;
+                    }
+                }
+                catch { }
+            }
             if (HasPointer(element))
             {
                 int offset = rom.ReadPointer(Pointer(element));
@@ -78,7 +95,7 @@ namespace PokemonRandomizer.Backend.Utilities
                         return offset;
                 }
             }
-            else if(HasOffset(element))
+            if(HasOffset(element))
             {
                 int offset = Offset(element);
                 if (rom.IsValidOffset(offset))
@@ -133,6 +150,12 @@ namespace PokemonRandomizer.Backend.Utilities
         {
             return HexAttr(element, pointerAttr);
         }
+        /// <summary> returns true if the element has a "pointerPrefix" (pointer prefix) attribute </summary>
+        public bool HasPointerPrefix(string element)
+        {
+            return HasElementWithAttr(element, pointerPrefixAttr);
+        }
+
         /// <summary> returns the given attribute of the element converted from hex string to int </summary> 
         public int HexAttr(string element, string attribute)
         {

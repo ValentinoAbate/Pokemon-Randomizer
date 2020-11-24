@@ -6,17 +6,18 @@
 <!-- num:  the number of items in the collection (only applies to collections) (int) -->
 <!-- offset: the ROM offset of the data/collection of data (hex string) -->
 <!-- pointer: an offset where a pointer to the offset is usually stored. useful for dealing with hacked roms (hex string) -->
+<!-- pointerPrefix: a hex string that is a prefix to where a pointer to the offset is usually stored. useful for dealing with hacked roms (hex string) -->
 
 <gen3RomInfo>
   <!-- Gen III Constants -->
   
   <constants>
     <!-- from dabomstew's UP randomizer source https://github.com/Dabomstew/universal-pokemon-randomizer -->
-    <wildPokemon ptrPrefix="0x0348048009E00000FFFF0000" grassSlots="12" surfSlots="5" rockSmashSlots="5" fishSlots="10"/>
-    <mapBanks ptrPrefix="0x80180068890B091808687047"/>
-    <pokedexOrder ptrPrefix="0x0448814208D0481C0004000C05E00000"/>
-    <moveData ptr="0x1CC" num="354" size="12"/>
-    <moveNames ptr="0x148"/>
+    <wildPokemon pointerPrefix="0x0348048009E00000FFFF0000" grassSlots="12" surfSlots="5" rockSmashSlots="5" fishSlots="10"/>
+    <mapBanks pointerPrefix="0x80180068890B091808687047"/>
+    <pokedexOrder pointerPrefix="0x0448814208D0481C0004000C05E00000"/>
+    <moveData pointer="0x1CC" num="354" size="12"/>
+    <moveNames pointer="0x148"/>
   </constants>
   
   <!-- Emerald Rom Info -->
@@ -119,7 +120,7 @@
     <maps bankLengths="[57,5,5,6,7,8,9,7,7,14,8,17,10,23,13,15,15,2,2,2,3,1,1,1,108,61,89,2,1,13,1,1,2,1]"/>
     <!-- pointer prefix from dabomstew's UP randomizer source https://github.com/Dabomstew/universal-pokemon-randomizer -->
     <!-- should be true for Ruby and sapphire as well -->
-    <mapLabels ptrPrefix="0xC078288030BC01BC00470000"/>
+    <mapLabels pointerPrefix="0xC078288030BC01BC00470000"/>
     
   </BPEE0>
 
@@ -197,7 +198,7 @@
     <maps bankLengths="[5,123,60,66,4,6,8,10,6,8,20,10,8,2,10,4,2,2,2,1,1,2,2,3,2,3,2,1,1,1,1,7,5,5,8,8,5,5,1,1,1,2,1]"/>
     <!-- pointer prefix from dabomstew's UP randomizer source https://github.com/Dabomstew/universal-pokemon-randomizer -->
     <!-- should work for leaf green as well -->
-    <mapLabels ptrPrefix="0xAC470000AE470000B0470000"/>
+    <mapLabels pointerPrefix="0xAC470000AE470000B0470000"/>
   </BPRE0>
 
 </gen3RomInfo>

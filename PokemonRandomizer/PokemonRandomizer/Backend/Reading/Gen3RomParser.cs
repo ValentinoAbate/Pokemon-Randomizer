@@ -65,10 +65,12 @@ namespace PokemonRandomizer.Backend.Reading
         // Read the move definitions
         private List<MoveData> ReadMoves(Rom rom, XmlManager info)
         {
+            const string moveDataElt = "moveData";
             List<MoveData> moveData = new List<MoveData>();
-            int moveCount = int.Parse(info.Attr("moveData", "num", info.Constants).Value);
-            int dataOffset = rom.ReadPointer(HexUtils.HexToInt(info.Attr("moveData", "ptr", info.Constants).Value));
-            rom.Seek(dataOffset);
+            // Exit early if the offset doesn't exist (feature unsupported)
+            if (!info.FindAndSeekOffset(moveDataElt, rom))
+                return moveData;
+            int moveCount = info.Num("moveData");
             for (int i = 0; i <= moveCount; i++)
             {
                 var move = new MoveData(rom)
@@ -444,7 +446,7 @@ namespace PokemonRandomizer.Backend.Reading
             int ptrSize = info.Size("mapBankPointers");
             Map[][] mapBanks = new Map[info.Num("mapBankPointers")][];
             int[] bankLengths = info.IntArrayAttr("maps", "bankLengths");
-            int labelOffset = rom.ReadPointer(rom.FindFromPrefix(info.Attr("mapLabels", "ptrPrefix").Value));
+            int labelOffset = rom.ReadPointer(rom.FindFromPrefix(info.Attr("mapLabels", XmlManager.pointerPrefixAttr).Value));
             // Construct map data structures
             for (int i = 0; i < mapBanks.Length; ++i)
             {
@@ -688,20 +690,17 @@ namespace PokemonRandomizer.Backend.Reading
         // Read encounters
         private List<EncounterSet> ReadEncounters(Rom rom, XmlManager info)
         {
-            #region Find and Seek encounter table
-            var encounterPtrPrefix = info.Attr("wildPokemon", "ptrPrefix", info.Constants).Value;
-            var ptr = rom.FindFromPrefix(encounterPtrPrefix);
-            rom.Seek(rom.ReadPointer(ptr));
-            #endregion
-
-            #region Encounter Slots
-            int grassSlots = int.Parse(info.Attr("wildPokemon", "grassSlots", info.Constants).Value);
-            int surfSlots = int.Parse(info.Attr("wildPokemon", "surfSlots", info.Constants).Value);
-            int rockSmashSlots = int.Parse(info.Attr("wildPokemon", "rockSmashSlots", info.Constants).Value);
-            int fishSlots = int.Parse(info.Attr("wildPokemon", "fishSlots", info.Constants).Value);
-            #endregion
-
+            const string wildPokemonElt = "wildPokemon";
             var encounters = new List<EncounterSet>();
+            // Seek data offset or return early if not found
+            if (!info.FindAndSeekOffset(wildPokemonElt, rom))
+                return encounters;
+
+            // Get encounter slot sizes
+            int grassSlots = info.IntAttr(wildPokemonElt, "grassSlots");
+            int surfSlots = info.IntAttr(wildPokemonElt, "surfSlots");
+            int rockSmashSlots = info.IntAttr(wildPokemonElt, "rockSmashSlots");
+            int fishSlots = info.IntAttr(wildPokemonElt, "fishSlots");
 
             // Iterate until the ending marker (0xff, 0xff)
             while (rom.Peek() != 0xff || rom.Peek(1) != 0xff)
