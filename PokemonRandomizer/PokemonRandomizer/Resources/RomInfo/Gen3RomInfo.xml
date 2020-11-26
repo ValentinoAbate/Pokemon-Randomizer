@@ -83,6 +83,8 @@
 
     <!-- Items -->
 
+    <itemEvents spriteSetIndex="59"/>
+    
     <!-- from dabomstew's UP randomizer source https://github.com/Dabomstew/universal-pokemon-randomizer -->
     <starterItems offset="0xB117A"/>
     <pcPotion offset="0x5DFEFC"/>
@@ -168,6 +170,8 @@
     <evolutions size="40" sizePerEvolution="8" evolutionsPerPokemon="5" offset="0x259754" pointer="0x042F6C"/>
 
     <!-- Items -->
+
+    <itemEvents spriteSetIndex="92"/>
 
     <!-- from dabomstew's UP randomizer source https://github.com/Dabomstew/universal-pokemon-randomizer (untested)-->
     <starterItems offset="0x000000"/>
