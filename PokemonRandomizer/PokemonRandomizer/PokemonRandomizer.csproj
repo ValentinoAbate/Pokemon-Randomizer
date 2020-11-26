@@ -93,6 +93,7 @@
     <Compile Include="Backend\EnumTypes\Move.cs" />
     <Compile Include="Backend\EnumTypes\PokemonType.cs" />
     <Compile Include="Backend\EnumTypes\SearchColor.cs" />
+    <Compile Include="Backend\Scripting\Gen3ScriptCommands.cs" />
     <Compile Include="Backend\Utilities\ByteArrayUtils.cs" />
     <Compile Include="Backend\Utilities\IpsPatcher.cs" />
     <Compile Include="Backend\DataStructures\MoveData.cs" />
