@@ -53,6 +53,7 @@ namespace PokemonRandomizer.Backend.DataStructures
         public Map[][] MapBanks { get; set; }
         public List<EncounterSet> Encounters { get; set; }
         public List<MoveData> MoveData { get; set; }
+        public List<ItemData> ItemData { get; set; }
 
         #region TM, HM, and tutor move definition arrays
         public Move[] TMMoves;

@@ -1,6 +1,7 @@
 ﻿using PokemonRandomizer.Backend.DataStructures;
 using PokemonRandomizer.Backend.EnumTypes;
 using PokemonRandomizer.Backend.Utilities;
+using PokemonRandomizer.Backend.GenIII.Constants.ElementNames;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -58,6 +59,8 @@ namespace PokemonRandomizer.Backend.Reading
             // Read in the map data
             data.MapBanks = ReadMapBanks(rom, info, metadata);
             data.Encounters = ReadEncounters(rom, info);
+            // Read in the item data
+            data.ItemData = ReadItemData(rom, info);
             // Calculate the balance metrics from the loaded data
             data.CalculateMetrics();
             return data;
@@ -773,6 +776,35 @@ namespace PokemonRandomizer.Backend.Reading
             }
             ret.InitCount = ret.Count;
             return ret;
+        }
+
+        private List<ItemData> ReadItemData(Rom rom, XmlManager info)
+        {
+            if (!info.FindAndSeekOffset(ElementNames.itemData, rom))
+                return new List<ItemData>();
+            int numItemDefinitions = info.Num(ElementNames.itemData);
+            var itemData = new List<ItemData>(numItemDefinitions);
+            for(int i = 0; i < numItemDefinitions; ++i)
+            {
+                itemData.Add(new ItemData
+                {
+                    Name = rom.ReadFixedLengthString(ItemData.nameLength),
+                    Item = (Item)rom.ReadUInt16(),
+                    Price = rom.ReadUInt16(),
+                    holdEffect = rom.ReadByte(),
+                    param = rom.ReadByte(),
+                    descriptionOffset = rom.ReadPointer(),
+                    keyItemValue = rom.ReadByte(),
+                    RegisterableKeyItem = rom.ReadByte() == 1,
+                    pocket = rom.ReadByte(),
+                    type = rom.ReadByte(),
+                    fieldEffectOffset = rom.ReadPointer(),
+                    battleUsage = rom.ReadUInt32(),
+                    battleEffectOffset = rom.ReadPointer(),
+                    extraData = rom.ReadUInt32(),
+                });
+            }
+            return itemData;
         }
     }
 }

@@ -26,12 +26,14 @@
         Mystic_Water, Sharp_Beak, Poison_Barb, NeverMeltIce, Spell_Tag, TwistedSpoon, Charcoal, Dragon_Fang,
         Silk_Scarf, Upーgrade, Shell_Bell, Sea_Incense, Lax_Incense, Lucky_Punch, Metal_Powder, Thick_Club, Stick, Red_Scarf = 254, Blue_Scarf,
         Pink_Scarf, Green_Scarf, Yellow_Scarf, Mach_Bike, Coin_Case, Itemfinder, Old_Rod, Good_Rod, Super_Rod,
-        SS_Ticket, Contest_Pass, Wailmer_Pail = 268, Devon_Goods, Soot_Sack, Basement_Key, Acro_Bike, Case,
+        SS_Ticket, Contest_Pass, Wailmer_Pail = Contest_Pass + 2, Devon_Goods, Soot_Sack, Basement_Key, Acro_Bike, Case,
         Letter, Eon_Ticket, Red_Orb, Blue_Orb, Scanner, GoーGoggles, Meteorite, Rm_1_Key, Rm_2_Key, Rm_4_Key,
         Rm_6_Key, Storage_Key, Root_Fossil, Claw_Fossil, Devon_Scope, TM01, TM02, TM03, TM04, TM05, TM06,
         TM07, TM08, TM09, TM10, TM11, TM12, TM13, TM14, TM15, TM16, TM17, TM18, TM19, TM20, TM21, TM22,
         TM23, TM24, TM25, TM26, TM27, TM28, TM29, TM30, TM31, TM32, TM33, TM34, TM35, TM36, TM37, TM38,
         TM39, TM40, TM41, TM42, TM43, TM44, TM45, TM46, TM47, TM48, TM49, TM50, HM01, HM02, HM03, HM04,
-        HM05, HM06, HM07, HM08
+        HM05, HM06, HM07, HM08, Oaks_Parcel = HM08 + 3, Poke_Flute, Secret_Key, Bike_Voucher, Gold_Teeth, Old_Amber, Card_Key, Lift_Key, Helix_Fossil,
+        Dome_Fossil, Silph_Scope, Bicycle, Town_Map, VS_Seeker, Fame_Checker, TM_Case, Berry_Pouch, Teachy_TV, TriーPass, Rainbow_Pass, Tea, MysticTicket,
+        AuroraTicket, Powder_Jar, Ruby, Sapphire, Magma_Emblem, Old_Sea_Map
     }
 }

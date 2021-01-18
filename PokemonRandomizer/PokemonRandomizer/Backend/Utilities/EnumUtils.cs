@@ -9,9 +9,10 @@ namespace PokemonRandomizer.Backend.Utilities
     public static class EnumUtils
     {
         public const char enumDashChar = 'ー';
+        public const char enumSpaceChar = '_';
         public static string ToDisplayString<T>(this T e) where T : Enum
         {
-            return e.ToString().Replace('_', ' ').Replace(enumDashChar, '-');
+            return e.ToString().Replace(enumSpaceChar, ' ').Replace(enumDashChar, '-');
         }
         public static IEnumerable<T> GetValues<T>() where T : Enum
         {

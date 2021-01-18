@@ -660,7 +660,7 @@ namespace PokemonRandomizer.Backend.Randomization
 
             #endregion
 
-            #region Field Items (NOTHING YET)
+            #region Items (NOTHING YET)
             // Mutate Field Items
             #endregion
 

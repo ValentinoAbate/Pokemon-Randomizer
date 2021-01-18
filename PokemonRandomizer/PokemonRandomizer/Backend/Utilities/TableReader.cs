@@ -24,9 +24,11 @@ namespace PokemonRandomizer.Backend.Utilities
                 i = ++i == columns ? 0 : i;
                 last = formatText;
             }
-            SaveFileDialog saveFileDialog = new SaveFileDialog();
-            saveFileDialog.Filter = "txt file|*.txt";
-            saveFileDialog.Title = "Save Table Text";
+            SaveFileDialog saveFileDialog = new SaveFileDialog
+            {
+                Filter = "txt file|*.txt",
+                Title = "Save Table Text"
+            };
             if (saveFileDialog.ShowDialog() == true)
             {
                 File.WriteAllLines(saveFileDialog.FileName, newText.ToArray());

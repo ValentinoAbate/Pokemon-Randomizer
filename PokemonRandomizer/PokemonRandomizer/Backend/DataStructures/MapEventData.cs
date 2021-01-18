@@ -73,7 +73,7 @@ namespace PokemonRandomizer.Backend.DataStructures
 			public EnumTypes.Item hiddenItem;
 			public byte hiddenID;
 			/// <summary>
-			/// The amount of item to be picked up (-1). Add 1 for the actual amount.
+			/// 1 less than the amount of item(s) to be picked up. Add 1 for the actual amount.
 			/// </summary>
 			public byte hiddenItemAmount;
 
