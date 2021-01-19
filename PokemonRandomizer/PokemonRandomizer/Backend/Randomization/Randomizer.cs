@@ -34,6 +34,7 @@ namespace PokemonRandomizer.Backend.Randomization
         {
             var pokemonSet = DefinePokemonSet();
             var types = DefinePokemonTypes();
+            var items = DefineItemSet();
 
             #region Combat Hacks (NOTHING YET)
             // Combat Hacks
@@ -485,6 +486,13 @@ namespace PokemonRandomizer.Backend.Randomization
                 // Set tags (gym trainer, gym leader, elite 4, rival, reoccuring, etc)
                 // Set class
                 // Natural trainers? (trainer types are based on environment type)
+                foreach(var sEvent in map.eventData.signEvents)
+                {
+                    if(sEvent.IsHiddenItem)
+                    {
+                        //sEvent.hiddenItem = RandomItem(items, sEvent.hiddenItem, settings.PcItemSettings);
+                    }
+                }
                 //Mutate battle here later?
             }
             #endregion
@@ -667,9 +675,13 @@ namespace PokemonRandomizer.Backend.Randomization
             #region Misc
 
             // Randomize PC starting item
-            if (settings.RandomizePcPotion)
+            if (settings.PcPotionOption == Settings.PcItemOption.Random)
             {
-                data.PcStartItem = rand.Choice(EnumUtils.GetValues<Item>());
+                data.PcStartItem = RandomItem(items, data.PcStartItem, settings.PcItemSettings);
+            }
+            else if(settings.PcPotionOption == Settings.PcItemOption.Custom)
+            {
+                data.PcStartItem = settings.CustomPcItem;
             }
             // Run indoors hack
             data.RunIndoors = settings.RunIndoors;
@@ -727,6 +739,11 @@ namespace PokemonRandomizer.Backend.Randomization
             HashSet<PokemonType> types = EnumUtils.GetValues<PokemonType>().ToHashSet();
             types.Remove(PokemonType.FAI);
             return types;
+        }
+
+        private IEnumerable<ItemData> DefineItemSet()
+        {
+            return data.ItemData.Where((i) => i.Item != Item.None);
         }
 
         #endregion
@@ -1268,6 +1285,17 @@ namespace PokemonRandomizer.Backend.Randomization
                     ChooseWeather(map, s, false);
                 }
             }
+        }
+
+        private Item RandomItem(IEnumerable<ItemData> possibleItems, Item input, Settings.ItemSettings settings)
+        {
+            var inputData = data.ItemData[(int)input];
+            var itemWeights = new WeightedSet<ItemData>(possibleItems, 1);
+            if(rand.RollSuccess(settings.SamePocketChance))
+            {
+                itemWeights.RemoveWhere((i) => i.pocket != inputData.pocket);
+            }
+            return itemWeights.Count <= 0 ? input : rand.Choice(itemWeights).Item;
         }
     }
 }

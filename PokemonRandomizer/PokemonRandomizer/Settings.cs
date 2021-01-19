@@ -459,8 +459,23 @@ namespace PokemonRandomizer
 
         #region Misc
 
-        public bool RandomizePcPotion { get => true; }
-        public bool RunIndoors { get => true; }
+        public enum PcItemOption
+        { 
+            Unchanged,
+            Random,
+            Custom,
+        }
+
+        public PcItemOption PcPotionOption => PcItemOption.Random;
+
+        public Item CustomPcItem => Item.Mach_Bike;
+
+        public ItemSettings PcItemSettings => new ItemSettings()
+        { 
+            SamePocketChance = 0.75,
+        };
+
+        public bool RunIndoors => true;
 
         #endregion
 
@@ -530,6 +545,11 @@ namespace PokemonRandomizer
             public bool MakeSoloPokemonBattlesSingle => true;
         }
 
+        public class ItemSettings
+        {
+            public double SamePocketChance { get; set; } = 1;
+        
+        }
 
         #endregion
     }
