@@ -45,10 +45,10 @@ namespace PokemonRandomizer.Backend.Reading
             // Read Catching tutorial pokemon
             data.CatchingTutPokemon = ReadCatchingTutOpponent(rom, info);
             // Read the PC item
-            var pcPotionOffset = info.FindOffset("pcPotion", rom);
-            if (pcPotionOffset != null)
+            int pcPotionOffset = info.FindOffset(ElementNames.pcPotion, rom);
+            if (pcPotionOffset != Rom.nullPointer)
             {
-                data.PcStartItem = (Item)rom.ReadUInt16((int)pcPotionOffset);
+                data.PcStartItem = (Item)rom.ReadUInt16(pcPotionOffset);
             }
             // Trainers and associated data
             data.ClassNames = ReadTrainerClassNames(rom, info);
@@ -147,36 +147,35 @@ namespace PokemonRandomizer.Backend.Reading
         // Read the Pokemon base stat definitions from the ROM
         private List<PokemonBaseStats> ReadPokemonBaseStats(Rom rom, XmlManager info, out byte[] skippedData)
         {
-            const string evolutionsElt = "evolutions";
-            const string pokemonBaseStatsElt = "pokemonBaseStats";
             skippedData = null;
-            int? offsetCheck = null;
             List<PokemonBaseStats> pokemon = new List<PokemonBaseStats>();
-            int pkmnPtr = info.Offset(pokemonBaseStatsElt);
-            int pkmnSize = info.Size(pokemonBaseStatsElt);
-            int tmHmSize = info.Size("tmHmCompat");
+            // Setup evolution offset
+            int evolutionOffset = info.FindOffset(ElementNames.evolutions, rom);
+            if (evolutionOffset == Rom.nullPointer)
+                return pokemon;
+            int evolutionSize = info.Size(ElementNames.evolutions);
+            // Add evolution size to skip the null pokemon
+            evolutionOffset += evolutionSize;
+
+            int pkmnPtr = info.Offset(ElementNames.pokemonBaseStats);
+            int pkmnSize = info.Size(ElementNames.pokemonBaseStats);
+            int tmHmSize = info.Size(ElementNames.tmHmCompat);
             // Skip over the null pokemon
-            int tmPtr = info.Offset("tmHmCompat") + tmHmSize;
+            int tmPtr = info.Offset(ElementNames.tmHmCompat) + tmHmSize;
             int tutorSize = info.Size("moveTutorCompat");
             // Need an extra +4 to skip the null pokemon. Determined from the move tutor move table's offset
             int tutorPtr = info.Offset("moveTutorMoves") + info.Num("moveTutorMoves") * info.Size("moveTutorMoves") + tutorSize;
             int movePtr = info.Offset("movesets");
-            // Setup evolution offset
-            offsetCheck = info.FindOffset(evolutionsElt, rom);
-            if (offsetCheck == null)
-                return pokemon;
-            int evolutionSize = info.Size(evolutionsElt);
-            // Add evolution size to skip the null pokemon
-            int evolutionOffset = (int)offsetCheck + evolutionSize;
+
             // Read Egg Moves
             var eggMoves = ReadEggMoves(rom, info);
             // Find skip index if one exists
-            int skipAt = info.HasElementWithAttr(pokemonBaseStatsElt, "skipAt") ? info.IntAttr(pokemonBaseStatsElt, "skipAt") : -1; 
-            for (int i = 0; i < info.Num(pokemonBaseStatsElt); i++)
+            int skipAt = info.HasElementWithAttr(ElementNames.pokemonBaseStats, "skipAt") ? info.IntAttr(ElementNames.pokemonBaseStats, "skipAt") : -1; 
+            for (int i = 0; i < info.Num(ElementNames.pokemonBaseStats); i++)
             {
                 if (i == skipAt) // potentially skip empty slots
                 {
-                    int skipNum = info.IntAttr(pokemonBaseStatsElt, "skip");
+                    int skipNum = info.IntAttr(ElementNames.pokemonBaseStats, "skip");
                     skippedData = rom.ReadBlock(movePtr, skipNum * 4);
                     i += skipNum;
                     movePtr += skipNum * 4; // (don't know why this is 4, cuz move segments are variable lengths possibly terminators?)

@@ -2,9 +2,11 @@
 using PokemonRandomizer.Backend.EnumTypes;
 using PokemonRandomizer.Backend.Scripting;
 using PokemonRandomizer.Backend.Utilities;
+using PokemonRandomizer.Backend.GenIII.Constants.ElementNames;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
 
 namespace PokemonRandomizer.Backend.Writing
 {
@@ -49,38 +51,37 @@ namespace PokemonRandomizer.Backend.Writing
             // Hacks and tweaks
 
             // Write the pc potion item
-            int? pcPotionOffset = info.FindOffset("pcPotion", rom);
-            if (pcPotionOffset != null)
+            int pcPotionOffset = info.FindOffset(ElementNames.pcPotion, rom);
+            if (pcPotionOffset != Rom.nullPointer)
             {
-                rom.WriteUInt16((int)pcPotionOffset, (int)data.PcStartItem);
+                rom.WriteUInt16(pcPotionOffset, (int)data.PcStartItem);
             }
             // Write the run indoors hack if applicable
             if (data.RunIndoors)
             {
-                int? offset = info.FindOffset("runIndoors", rom);
+                int offset = info.FindOffset(ElementNames.runIndoors, rom);
                 // If hack is supported
-                if (offset != null)
+                if (offset != Rom.nullPointer)
                 {
-                    rom.WriteByte((int)offset, 0x00);
+                    rom.WriteByte(offset, 0x00);
                 }
             }
             // Write the text speed hack if applicable.
             if(data.FastText)
             {
-                int? offset = info.FindOffset("textSpeed", rom);
+                int offset = info.FindOffset(ElementNames.textSpeed, rom);
                 // If hack is supported
-                if(offset != null)
+                if(offset != Rom.nullPointer)
                 {
-                    int realOffset = (int)offset;
-                    int val = rom.ReadByte(realOffset);
-                    val = rom.ReadByte(realOffset + 1);
-                    val = rom.ReadByte(realOffset + 2);
+                    int val = rom.ReadByte(offset);
+                    val = rom.ReadByte(offset + 1);
+                    val = rom.ReadByte(offset + 2);
                     // Slow Text Becomes Medium
-                    rom.WriteByte(realOffset, 0x04);
+                    rom.WriteByte(offset, 0x04);
                     // Medium Text Becomes Slow
-                    rom.WriteByte(realOffset + 1, 0x01);
+                    rom.WriteByte(offset + 1, 0x01);
                     // Fast Text Becomes instant (Glitchy, more like a skip)
-                    rom.WriteByte(realOffset + 2, 0x00);
+                    rom.WriteByte(offset + 2, 0x00);
                 }
             }
             // Make ??? a valid type for moves if applicable. Currently only supported for emerald
@@ -123,13 +124,12 @@ namespace PokemonRandomizer.Backend.Writing
             // Apply evolve without national dex hack if supported
             if(data.EvolveWithoutNationalDex)
             {
-                const string noNatDexElt = "evolveWihtoutNationalDex";
-                int? evolveWithoutNationalDexOffset = info.FindOffset(noNatDexElt, rom);
-                if(evolveWithoutNationalDexOffset != null)
+                int offset = info.FindOffset(ElementNames.evolveWithoutNatDex, rom);
+                if(offset != Rom.nullPointer)
                 {
                     // Get the data from the attribute
-                    var byteData = info.HexArrayAttr(noNatDexElt, "data").Select((b) => (byte)b).ToArray();
-                    rom.WriteBlock((int)evolveWithoutNationalDexOffset, byteData);
+                    var byteData = info.HexArrayAttr(ElementNames.evolveWithoutNatDex, "data").Select((b) => (byte)b).ToArray();
+                    rom.WriteBlock(offset, byteData);
                 }
             }
 
@@ -140,21 +140,20 @@ namespace PokemonRandomizer.Backend.Writing
 
         private void WriteMoveData(List<MoveData> data, Rom rom, XmlManager info, ref RepointList repoints)
         {
-            const string moveDataElt = "moveData";
-            int? dataOffset = info.FindOffset(moveDataElt, rom);
+            int dataOffset = info.FindOffset(ElementNames.moveData, rom);
             // No data offset, move data writing unsupported
-            if (dataOffset == null)
+            if (dataOffset == Rom.nullPointer)
                 return;
-            int moveCount = info.IntAttr(moveDataElt, "num");
+            int moveCount = info.Num(ElementNames.moveData);
             if (data.Count == moveCount + 1) // original number of moves (move 0 is empty)
             {
-                rom.Seek((int)dataOffset);
+                rom.Seek(dataOffset);
                 foreach (var moveData in data)
                     WriteMoveDataSingular(rom, moveData);
             }
             else // repoint necessary
             {
-                int dataSize = info.Size("moveData");
+                int dataSize = info.Size(ElementNames.moveData);
                 // Creat an empty rom block to write to
                 Rom moveDataBlock = new Rom(dataSize * data.Count, rom.FreeSpaceByte);
                 foreach (var moveData in data)
@@ -164,13 +163,12 @@ namespace PokemonRandomizer.Backend.Writing
                 {
                     const int ppOffset = 4;
                     int newOffsetInt = (int)newOffset;
-                    int dataOffsetInt = (int)dataOffset;
                     // Log repoint for main movedata
-                    repoints.Add(dataOffsetInt, newOffsetInt);
+                    repoints.Add(dataOffset, newOffsetInt);
                     // Log repoint for PP data (original offset + 4)
-                    repoints.Add(dataOffsetInt + ppOffset, newOffsetInt + ppOffset);
+                    repoints.Add(dataOffset + ppOffset, newOffsetInt + ppOffset);
                     // Wipe the old moveData location
-                    rom.WipeBlock(dataOffsetInt, dataSize * moveCount);
+                    rom.WipeBlock(dataOffset, dataSize * moveCount);
                 }
             }
         }
@@ -531,9 +529,13 @@ namespace PokemonRandomizer.Backend.Writing
         /// </summary>
         private void WriteMapData(RomData data, Rom rom, XmlManager info)
         {
-            int bankPtrOffset = info.Offset("mapBankPointers");
-            int ptrSize = info.Size("mapBankPointers");
-            int labelOffset = rom.ReadPointer(rom.FindFromPrefix(info.Attr("mapLabels", "ptrPrefix").Value));
+            int bankPtrOffset = info.FindOffset(ElementNames.mapBankPointers, rom);
+            if (bankPtrOffset == Rom.nullPointer)
+                return;
+            int ptrSize = info.Size(ElementNames.mapBankPointers);
+            int labelOffset = info.FindOffset(ElementNames.mapLabels, rom);
+            if (labelOffset == Rom.nullPointer)
+                return;
             // Construct map data structures
             for (int i = 0; i < data.MapBanks.Length; ++i)
             {

@@ -89,6 +89,7 @@ FEATURES:
 - Wally Text Fix ("RALTS" to current pokemon)
 - UI
 	- Show version number in UI
+	- Output logger (for showing compatibility issues, etc)
 - HM Compat randomization
 	- Should probably have a separate settings block from the TM / MT setting
 - Game corner randomization????

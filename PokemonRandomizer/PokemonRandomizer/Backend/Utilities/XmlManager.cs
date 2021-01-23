@@ -66,12 +66,12 @@ namespace PokemonRandomizer.Backend.Utilities
         }
         /// <summary>
         /// Finds the offset of the specified data using various methods.
-        /// If no method successfully finds a valid offset, return null.
+        /// If no method successfully finds a valid offset, return Rom.nullPointer.
         /// If "isAtValidOffset" == null, any offset in the rom is considered valid.
         /// TODO: Check that the thing at the "pointer" location is actually a pointer
         /// TODO: Check that the thing after the prefix in find pointer prefix is actually a pointer
         /// </summary>
-        public int? FindOffset(string element, Rom rom, Func<Rom, int, bool> isValidOffset = null)
+        public int FindOffset(string element, Rom rom, Func<Rom, int, bool> isValidOffset = null)
         {
             if(HasPointerPrefix(element))
             {
@@ -104,7 +104,7 @@ namespace PokemonRandomizer.Backend.Utilities
                         return offset;
                 }
             }
-            return null;
+            return Rom.nullPointer;
         }
         /// <summary>
         /// Set the Rom's internal offset to the offset of the specified data (found using FindOffset).
@@ -112,10 +112,10 @@ namespace PokemonRandomizer.Backend.Utilities
         /// </summary>
         public bool FindAndSeekOffset(string element, Rom rom, Func<Rom, int, bool> isValidOffset = null)
         {
-            int? offset = FindOffset(element, rom, isValidOffset);
-            if(offset != null)
+            int offset = FindOffset(element, rom, isValidOffset);
+            if(offset != Rom.nullPointer)
             {
-                rom.Seek((int)offset);
+                rom.Seek(offset);
                 return true;
             }
             return false;
