@@ -16,6 +16,7 @@ namespace PokemonRandomizer.Backend.GenIII.Constants.ElementNames
         // Map elements
         public const string mapLabels = "mapLabels";
         public const string mapBankPointers = "mapBankPointers";
+        public const string maps = "maps";
         // Pokemon Elements
         public const string evolutions = "evolutions";
         public const string tmHmCompat = "tmHmCompat";

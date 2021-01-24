@@ -462,11 +462,15 @@ namespace PokemonRandomizer.Backend.Reading
         private Map[][] ReadMapBanks(Rom rom, XmlManager info, RomMetadata metadata)
         {
             // Read data from XML file
-            int bankPtrOffset = info.Offset("mapBankPointers");
-            int ptrSize = info.Size("mapBankPointers");
-            Map[][] mapBanks = new Map[info.Num("mapBankPointers")][];
-            int[] bankLengths = info.IntArrayAttr("maps", "bankLengths");
-            int labelOffset = rom.ReadPointer(rom.FindFromPrefix(info.Attr("mapLabels", XmlManager.pointerPrefixAttr).Value));
+            int bankPtrOffset = info.FindOffset(ElementNames.mapBankPointers, rom);
+            if (bankPtrOffset == Rom.nullPointer)
+                return new Map[0][];
+            int ptrSize = info.Size(ElementNames.mapBankPointers);
+            int labelOffset = info.FindOffset(ElementNames.mapLabels, rom);
+            if (labelOffset == Rom.nullPointer)
+                return new Map[0][];
+            Map[][] mapBanks = new Map[info.Num(ElementNames.mapBankPointers)][];
+            int[] bankLengths = info.IntArrayAttr(ElementNames.maps, "bankLengths");
             // Construct map data structures
             for (int i = 0; i < mapBanks.Length; ++i)
             {
