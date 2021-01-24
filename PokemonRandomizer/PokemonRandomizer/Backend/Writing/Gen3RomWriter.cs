@@ -233,26 +233,43 @@ namespace PokemonRandomizer.Backend.Writing
         }
         private void WritePokemonBaseStats(RomData romData, Rom rom, XmlManager info, ref RepointList repoints)
         {
-            int? offsetCheck = null;
-            int pkmnPtr = info.Offset("pokemonBaseStats");
-            int pkmnSize = info.Size("pokemonBaseStats");
-            int tmHmSize = info.Size("tmHmCompat");
-            // Skip over the null pokemon
-            int tmPtr = info.Offset("tmHmCompat") + tmHmSize;
-            int tutorSize = info.Size("moveTutorCompat");
-            // Need an extra +4 to skip the null pokemon. Determined from the move tutor move table's offset
-            int tutorPtr = info.Offset("moveTutorMoves") + info.Num("moveTutorMoves") * info.Size("moveTutorMoves") + tutorSize;
-            int originalMovePtr = info.Offset("movesets");
-            int movePtr = 0;
-            // Setup evolution offset
-            const string evolutionsElt = "evolutions";
-            offsetCheck = info.FindOffset(evolutionsElt, rom);
-            if (offsetCheck == null)
+            #region Setup Offsets
+
+            // Setup pokemon offset
+            int pkmnOffset = info.FindOffset(ElementNames.pokemonBaseStats, rom);
+            if (pkmnOffset == Rom.nullPointer)
                 return;
-            int evolutionSize = info.Size(evolutionsElt);
+            int pkmnSize = info.Size(ElementNames.pokemonBaseStats);
+            // Setup evolution offset
+            int evolutionOffset = info.FindOffset(ElementNames.evolutions, rom);
+            if (evolutionOffset == Rom.nullPointer)
+                return;
+            int evolutionSize = info.Size(ElementNames.evolutions);
             // Add evolution size to skip the null pokemon
-            int evolutionOffset = (int)offsetCheck + evolutionSize;
-            int skipNum = (int)info.Attr("pokemonBaseStats", "skip");
+            evolutionOffset += evolutionSize;
+            // setup TmHmCompat offset
+            int tmHmCompatOffset = info.FindOffset(ElementNames.tmHmCompat, rom);
+            if (tmHmCompatOffset == Rom.nullPointer)
+                return;
+            int tmHmSize = info.Size(ElementNames.tmHmCompat);
+            // Skip over the null pokemon
+            tmHmCompatOffset += tmHmSize;
+            // Setup Move Tutor Compat offset
+            int tutorCompatOffset = info.FindOffset(ElementNames.tutorMoves, rom);
+            if (tutorCompatOffset == Rom.nullPointer)
+                return;
+            int tutorSize = info.Size(ElementNames.tutorCompat);
+            // Skip over the tutor move definitions to get to the compatibilities, and +tutorSize to skip the null pkmn
+            tutorCompatOffset += (info.Num(ElementNames.tutorMoves) * info.Size(ElementNames.tutorMoves)) + tutorSize;
+            // Setup moveset offset
+            int originalMovesetOffset = info.FindOffset(ElementNames.movesets, rom);
+            if (originalMovesetOffset == Rom.nullPointer)
+                return;
+
+            #endregion
+
+            int movesetIndex = 0;
+            int skipNum = (int)info.Attr(ElementNames.pokemonBaseStats, "skip");
             // Create an empty ROM block to write the learnsetData to
             Rom moveData = new Rom(romData.Pokemon.Sum((stats) => (stats.learnSet.Count * 2) + 2) + (skipNum * 4), rom.FreeSpaceByte);
             // If any of the movesets have changed we will have to perform repoint operations
@@ -260,33 +277,33 @@ namespace PokemonRandomizer.Backend.Writing
             // Find a block to write to in so we can log repoints if we need to
             int newMoveDataOffset = needToRelocateMoveData ? rom.ScanForFreeSpace(moveData.Length).offset : 0;
             // Main writing loop
-            for (int i = 0; i < info.Num("pokemonBaseStats"); i++)
+            for (int i = 0; i < info.Num(ElementNames.pokemonBaseStats); i++)
             {
-                if (i == (int)info.Attr("pokemonBaseStats", "skipAt")) // potentially skip empty slots
+                if (i == (int)info.Attr(ElementNames.pokemonBaseStats, "skipAt")) // potentially skip empty slots
                 {
                     i += skipNum;
-                    moveData.WriteBlock(movePtr, romData.SkippedLearnSetData);
-                    movePtr += skipNum * 4; // (don't know why this is 4, cuz move segments are variable lengths possibly terminators?)
+                    moveData.WriteBlock(movesetIndex, romData.SkippedLearnSetData);
+                    movesetIndex += skipNum * 4; // (don't know why this is 4, cuz move segments are variable lengths possibly terminators?)
                 }
                 var stats = romData.PokemonLookup[(PokemonSpecies)(i + 1)];
-                WriteBaseStatsSingle(stats, pkmnPtr + (i * pkmnSize), rom);
+                WriteBaseStatsSingle(stats, pkmnOffset + (i * pkmnSize), rom);
                 // Log a repoint if necessary
                 if (needToRelocateMoveData)
-                    repoints.Add(stats.learnSet.OriginalOffset, newMoveDataOffset + movePtr);
+                    repoints.Add(stats.learnSet.OriginalOffset, newMoveDataOffset + movesetIndex);
                 // Write moveset
-                movePtr = WriteAttacks(moveData, stats.learnSet, movePtr);
-                WriteTMHMCompat(stats, tmPtr + (i * tmHmSize), rom);
-                WriteTutorCompat(stats, tutorPtr + (i * tutorSize), rom);
+                movesetIndex = WriteAttacks(moveData, stats.learnSet, movesetIndex);
+                WriteTMHMCompat(stats, tmHmCompatOffset + (i * tmHmSize), rom);
+                WriteTutorCompat(stats, tutorCompatOffset + (i * tutorSize), rom);
                 WriteEvolutions(stats, evolutionOffset + (i * evolutionSize), rom);
             }
             // If we don't need to repoint move data, write it in it's original location
             if (!needToRelocateMoveData)
-                rom.WriteBlock(originalMovePtr, moveData.File);
+                rom.WriteBlock(originalMovesetOffset, moveData.File);
             else // else move and log repoint
             {
                 rom.WriteBlock(newMoveDataOffset, moveData.File);
-                rom.WipeBlock(originalMovePtr, moveData.File.Length);
-                repoints.Add(originalMovePtr, (int)newMoveDataOffset);
+                rom.WipeBlock(originalMovesetOffset, moveData.File.Length);
+                repoints.Add(originalMovesetOffset, newMoveDataOffset);
             }
         }
         private void WriteBaseStatsSingle(PokemonBaseStats pokemon, int offset, Rom rom)

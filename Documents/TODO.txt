@@ -104,6 +104,7 @@ CLEANUP:
 - Move Trainer / Trainerpokemon reading code out of the trainer classes to make the model gen-agnostic
 - Move Evolution Reading code out of the Evolution classes to make the model gen agnostic
 - Move Elt name constants into constants class(es)
+- Check to see if pkmn base stat offsets point to after the null pokemon
 FIXES:
 - Pokemon that evolve with stones have bad default movesets due to not learning stuff by level up.
 	- Still an issue, but fixed in smart moveset generation. Currently no fix for default movesets

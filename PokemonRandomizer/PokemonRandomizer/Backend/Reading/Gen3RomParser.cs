@@ -149,6 +149,14 @@ namespace PokemonRandomizer.Backend.Reading
         {
             skippedData = null;
             List<PokemonBaseStats> pokemon = new List<PokemonBaseStats>();
+
+            #region Setup Offsets
+
+            // Setup pokemon offset
+            int pkmnOffset = info.FindOffset(ElementNames.pokemonBaseStats, rom);
+            if (pkmnOffset == Rom.nullPointer)
+                return pokemon;
+            int pkmnSize = info.Size(ElementNames.pokemonBaseStats);
             // Setup evolution offset
             int evolutionOffset = info.FindOffset(ElementNames.evolutions, rom);
             if (evolutionOffset == Rom.nullPointer)
@@ -156,16 +164,26 @@ namespace PokemonRandomizer.Backend.Reading
             int evolutionSize = info.Size(ElementNames.evolutions);
             // Add evolution size to skip the null pokemon
             evolutionOffset += evolutionSize;
-
-            int pkmnPtr = info.Offset(ElementNames.pokemonBaseStats);
-            int pkmnSize = info.Size(ElementNames.pokemonBaseStats);
+            // setup TmHmCompat offset
+            int tmHmCompatOffset = info.FindOffset(ElementNames.tmHmCompat, rom);
+            if (tmHmCompatOffset == Rom.nullPointer)
+                return pokemon;
             int tmHmSize = info.Size(ElementNames.tmHmCompat);
             // Skip over the null pokemon
-            int tmPtr = info.Offset(ElementNames.tmHmCompat) + tmHmSize;
-            int tutorSize = info.Size("moveTutorCompat");
-            // Need an extra +4 to skip the null pokemon. Determined from the move tutor move table's offset
-            int tutorPtr = info.Offset("moveTutorMoves") + info.Num("moveTutorMoves") * info.Size("moveTutorMoves") + tutorSize;
-            int movePtr = info.Offset("movesets");
+            tmHmCompatOffset += tmHmSize;
+            // Setup Move Tutor Compat offset
+            int tutorCompatOffset = info.FindOffset(ElementNames.tutorMoves, rom);
+            if (tutorCompatOffset == Rom.nullPointer)
+                return pokemon;
+            int tutorSize = info.Size(ElementNames.tutorCompat);
+            // Skip over the tutor move definitions to get to the compatibilities, and +tutorSize to skip the null pkmn
+            tutorCompatOffset += (info.Num(ElementNames.tutorMoves) * info.Size(ElementNames.tutorMoves)) + tutorSize;
+            // Setup moveset offset
+            int movesetOffset = info.FindOffset(ElementNames.movesets, rom);
+            if (movesetOffset == Rom.nullPointer)
+                return pokemon;
+
+            #endregion
 
             // Read Egg Moves
             var eggMoves = ReadEggMoves(rom, info);
@@ -176,19 +194,19 @@ namespace PokemonRandomizer.Backend.Reading
                 if (i == skipAt) // potentially skip empty slots
                 {
                     int skipNum = info.IntAttr(ElementNames.pokemonBaseStats, "skip");
-                    skippedData = rom.ReadBlock(movePtr, skipNum * 4);
+                    skippedData = rom.ReadBlock(movesetOffset, skipNum * 4);
                     i += skipNum;
-                    movePtr += skipNum * 4; // (don't know why this is 4, cuz move segments are variable lengths possibly terminators?)
+                    movesetOffset += skipNum * 4; // (don't know why this is 4, cuz move segments are variable lengths possibly terminators?)
                 }
                 // Create Pokemon
-                PokemonBaseStats pkmn = ReadBaseStatsSingle(rom, pkmnPtr + (i * pkmnSize), (PokemonSpecies)(i + 1));
+                PokemonBaseStats pkmn = ReadBaseStatsSingle(rom, pkmnOffset + (i * pkmnSize), (PokemonSpecies)(i + 1));
                 // Set Egg Moves
                 pkmn.eggMoves = eggMoves.ContainsKey(pkmn.species) ? eggMoves[pkmn.species] : new List<Move>();
                 // Read Learn Set
-                movePtr = ReadAttacks(rom, movePtr, out pkmn.learnSet);
+                movesetOffset = ReadAttacks(rom, movesetOffset, out pkmn.learnSet);
                 // Read Tm/Hm/Mt compat
-                ReadTMHMCompat(rom, info, tmPtr + (i * tmHmSize), out pkmn.TMCompat, out pkmn.HMCompat);
-                ReadTutorCompat(rom, info, tutorPtr + (i * tutorSize), out pkmn.moveTutorCompat);
+                ReadTMHMCompat(rom, info, tmHmCompatOffset + (i * tmHmSize), out pkmn.TMCompat, out pkmn.HMCompat);
+                ReadTutorCompat(rom, info, tutorCompatOffset + (i * tutorSize), out pkmn.moveTutorCompat);
                 ReadEvolutions(rom, info, evolutionOffset + (i * evolutionSize), out pkmn.evolvesTo);
                 pokemon.Add(pkmn);
             }

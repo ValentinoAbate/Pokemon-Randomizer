@@ -20,8 +20,11 @@ namespace PokemonRandomizer.Backend.GenIII.Constants.ElementNames
         public const string evolutions = "evolutions";
         public const string tmHmCompat = "tmHmCompat";
         public const string pokemonBaseStats = "pokemonBaseStats";
+        public const string tutorCompat = "moveTutorCompat";
+        public const string movesets = "movesets";
         // Data elements
         public const string moveData = "moveData";
+        public const string tutorMoves = "moveTutorMoves";
         // Hacks and Tweaks / Misc
         public const string runIndoors = "runIndoors";
         public const string textSpeed = "textSpeed";
