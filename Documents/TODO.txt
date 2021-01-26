@@ -95,6 +95,7 @@ FEATURES:
 - Game corner randomization????
 	- High stakes roulette
 - Don't randomize secret TM option
+- Gen 3 fixed-length string writing
 UNIT TESTS:
 - Clean rom hash compare (reading and writing an input rom skipping randomization should produce the same hash)
 CLEANUP:

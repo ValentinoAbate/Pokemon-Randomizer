@@ -22,20 +22,17 @@ namespace PokemonRandomizer.Backend.Writing
             // Main Data
 
             // Write TM definitions
-            WriteMoveMappings(rom, info.Offset("tmMoves"), data.TMMoves, info.HexAttr("tmMoves", "duplicateOffset"));
+            WriteMoveMappings(rom, info, ElementNames.tmMoves, data.TMMoves, info.HexAttr(ElementNames.tmMoves, "duplicateOffset"));
             // Write HM definitions
-            WriteMoveMappings(rom, info.Offset("hmMoves"), data.HMMoves, info.HexAttr("hmMoves", "duplicateOffset"));
+            WriteMoveMappings(rom, info, ElementNames.hmMoves, data.HMMoves, info.HexAttr(ElementNames.hmMoves, "duplicateOffset"));
             // Write Move Tutor definitions
-            WriteMoveMappings(rom, info.Offset("moveTutorMoves"), data.tutorMoves);
+            WriteMoveMappings(rom, info, ElementNames.tutorMoves, data.tutorMoves);
             // Write the move definitions
             WriteMoveData(data.MoveData, rom, info, ref repoints);
-            // Starter Writing currently only supported for Gen III
-            if(metadata.Gen == Generation.III)
-            {
-                WriteStarters(data, rom, info);
-            }
+            // Write the starter pokemon
+            WriteStarters(data, rom, info);
             // Catching tut currently only supported on BPEE
-            if(metadata.IsEmerald)
+            if (metadata.IsEmerald)
             {
                 WriteCatchingTutOpponent(data, rom, info);
             }
@@ -47,7 +44,7 @@ namespace PokemonRandomizer.Backend.Writing
             {
                 WriteMapData(data, rom, info);
             }
-
+            WriteItemData(data.ItemData, rom, info);
             // Hacks and tweaks
 
             // Write the pc potion item
@@ -189,9 +186,10 @@ namespace PokemonRandomizer.Backend.Writing
         }
 
         // Write TM, HM, or Move tutor definitions to the rom (depending on args)
-        private void WriteMoveMappings(Rom rom, int offset, Move[] moves, int? altOffset = null)
+        private void WriteMoveMappings(Rom rom, XmlManager info, string elementName, Move[] moves, int? altOffset = null)
         {
-            rom.Seek(offset);
+            if (!info.FindAndSeekOffset(elementName, rom))
+                return;
             foreach (var move in moves)
                 rom.WriteUInt16((int)move);
             // 0 check guards against alt offset not existing. Will make better in the future
@@ -606,6 +604,28 @@ namespace PokemonRandomizer.Backend.Writing
             #endregion
         }
 
+        private void WriteItemData(IEnumerable<ItemData> itemData, Rom rom, XmlManager info)
+        {
+            if (!info.FindAndSeekOffset(ElementNames.itemData, rom))
+                return;
+            foreach (var item in itemData)
+            {
+                rom.Skip(ItemData.nameLength); // Cannot write strings yet
+                rom.WriteUInt16((int)item.Item);
+                rom.WriteUInt16(item.Price);
+                rom.WriteByte(item.holdEffect);
+                rom.WriteByte(item.param);
+                rom.WritePointer(item.descriptionOffset);
+                rom.WriteByte(item.keyItemValue);
+                rom.WriteByte(Convert.ToByte(item.RegisterableKeyItem));
+                rom.WriteByte(item.pocket);
+                rom.WriteByte(item.type);
+                rom.WritePointer(item.fieldEffectOffset);
+                rom.WriteUInt32(item.battleUsage);
+                rom.WritePointer(item.battleEffectOffset);
+                rom.WriteUInt32(item.extraData);
+            }
+        }
         private class RepointList : List<Tuple<int, int>>
         {
             public void Add(int oldOffset, int newOffset)

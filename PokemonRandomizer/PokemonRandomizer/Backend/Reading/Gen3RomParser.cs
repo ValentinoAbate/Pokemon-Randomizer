@@ -17,11 +17,11 @@ namespace PokemonRandomizer.Backend.Reading
 
             #region Move Mappings (TMs/HMs/Tutors)
             //Read the TM move mappings from the ROM
-            data.TMMoves = ReadMoveMappings("tmMoves", rom, info);
+            data.TMMoves = ReadMoveMappings(ElementNames.tmMoves, rom, info);
             //Read the HM move mappings from the ROM
-            data.HMMoves = ReadMoveMappings("hmMoves", rom, info);
+            data.HMMoves = ReadMoveMappings(ElementNames.hmMoves, rom, info);
             //Read the move tutor move mappings from the ROM
-            data.tutorMoves = ReadMoveMappings("moveTutorMoves", rom, info); ;
+            data.tutorMoves = ReadMoveMappings(ElementNames.tutorMoves, rom, info);
             #endregion
 
             data.MoveData = ReadMoves(rom, info);

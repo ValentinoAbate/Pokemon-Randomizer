@@ -26,6 +26,8 @@ namespace PokemonRandomizer.Backend.GenIII.Constants.ElementNames
         // Data elements
         public const string moveData = "moveData";
         public const string tutorMoves = "moveTutorMoves";
+        public const string tmMoves = "tmMoves";
+        public const string hmMoves = "hmMoves";
         // Hacks and Tweaks / Misc
         public const string runIndoors = "runIndoors";
         public const string textSpeed = "textSpeed";
