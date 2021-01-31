@@ -16,7 +16,7 @@ namespace PokemonRandomizer.Backend.DataStructures
         private const int ramOffset = 0x08000000;
         public const int nullPointer = -ramOffset; // Due to how ReadPointer() Reads the 0x00000000 pointer
         public const int pointerSize = 4; //size of a pointer in bytes
-        public const byte pointerPrefix = 0x08; //conmes at the beginning of a pointer
+        public const byte pointerPrefix = 0x08; //comes at the beginning of a pointer
         /// <summary>The byte that WriteInFreeSpace(byte[] data) considers free space </summary>
         public byte FreeSpaceByte { get; }
         /// <summary>The offset that WriteInFreeSpace(byte[] data) starts searching at </summary>
@@ -24,7 +24,18 @@ namespace PokemonRandomizer.Backend.DataStructures
         public int InternalOffset { get; private set; }
         public Stack<int> SavedOffsets { get; } = new Stack<int>();
         public int Length { get => File.Length; }
-        public byte[] File {get;}
+        public byte[] File { get;}
+
+        static Rom()
+        {
+            // Initialize the reverse-text table
+            textToSymTable = new Dictionary<string, byte>();
+            foreach(var kvp in symTable)
+            {
+                if (!textToSymTable.ContainsKey(kvp.Value))
+                    textToSymTable.Add(kvp.Value, kvp.Key);
+            }
+        }
 
         /// <summary> Initilize a new Rom from raw data </summary>
         public Rom(byte[] rawRom, byte freeSpaceByte, int searchStartOffset)
@@ -55,7 +66,7 @@ namespace PokemonRandomizer.Backend.DataStructures
         public byte[] ReadBlock(int length)
         {
             byte[] block = new byte[length];
-            System.Array.ConstrainedCopy(File, InternalOffset, block, 0, length);
+            System.Array.Copy(File, InternalOffset, block, 0, length);
             InternalOffset += length;
             return block;
         }
@@ -63,24 +74,24 @@ namespace PokemonRandomizer.Backend.DataStructures
         public byte[] ReadBlock(int offset, int length)
         {
             byte[] block = new byte[length];
-            System.Array.ConstrainedCopy(File, offset, block, 0, length);
+            System.Array.Copy(File, offset, block, 0, length);
             return block;
         }
         /// <summary>Write a block of bytes to the internal offset</summary>
         public void WriteBlock(byte[] data)
         {
-            Array.ConstrainedCopy(data, 0, File, InternalOffset, data.Length);
+            Array.Copy(data, 0, File, InternalOffset, data.Length);
             InternalOffset += data.Length;
         }
         /// <summary>Write a block of bytes to the given offset</summary>
         public void WriteBlock(int offset, byte[] data)
         {
-            Array.ConstrainedCopy(data, 0, File, offset, data.Length);
+            Array.Copy(data, 0, File, offset, data.Length);
         }
         /// <summary>Write a block of bytes to the given offset</summary>
         public void WriteBlock(int offset, byte[] data, int sourceInd, int length)
         {
-            Array.ConstrainedCopy(data, sourceInd, File, offset, length);
+            Array.Copy(data, sourceInd, File, offset, length);
         }
 
         #region Free Space and Hacking Utils
@@ -138,7 +149,7 @@ namespace PokemonRandomizer.Backend.DataStructures
             int? blockOffset = ScanForFreeSpaceOffset(FreeSpaceByte, startOffset ?? SearchStartOffset, data.Length);
             if (blockOffset == null)
                 return null;
-            System.Array.ConstrainedCopy(data, 0, File, (int)blockOffset, data.Length);
+            System.Array.Copy(data, 0, File, (int)blockOffset, data.Length);
             return blockOffset;
         }
         /// <summary> Repoint all pointers to an offset to a target offset. 
@@ -196,13 +207,12 @@ namespace PokemonRandomizer.Backend.DataStructures
         /// <summary> Set entire block to a given byte value at Internal offset</summary>
         public void SetBlock(int length, byte setTo)
         {
-            Array.ConstrainedCopy(Enumerable.Repeat(setTo, length).ToArray(), 0, File, InternalOffset, length);
-            InternalOffset += length;
+            WriteBlock(Enumerable.Repeat(setTo, length).ToArray());
         }
         /// <summary> Set entire block to a given byte value </summary>
         public void SetBlock(int offset, int length, byte setTo)
         {
-            Array.ConstrainedCopy(Enumerable.Repeat(setTo, length).ToArray(), 0, File, offset, length);
+            WriteBlock(offset, Enumerable.Repeat(setTo, length).ToArray());
         }
         /// <summary> Set entire block to the Free Space value </summary>
         public void WipeBlock(int length) => SetBlock(length, FreeSpaceByte);
@@ -429,7 +439,7 @@ namespace PokemonRandomizer.Backend.DataStructures
 
         #region Text Decoding Decoding and Translation
         // Constants
-        private readonly Dictionary<byte, string> symTable = new Dictionary<byte, string>
+        private static readonly Dictionary<byte, string> symTable = new Dictionary<byte, string>
         {
             {0x00," "},    {0x01,"À"},    {0x02,"Á"},    {0x03,"Â"},    {0x04,"Ç"},    {0x05,"È"},
             {0x06,"É"},    {0x07,"Ê"},    {0x08,"Ë"},    {0x09,"Ì"},    {0x0B,"Î"},    {0x0C,"Ï"},
@@ -459,8 +469,14 @@ namespace PokemonRandomizer.Backend.DataStructures
             {0xF5,"ö"},    {0xF6,"ü"},    {0xF7,"[u]"},  {0xF8,"[d]"},  {0xF9,"[l]"},  {0xFA,"\\l"},
             {0xFB,"\\p"},  {0xFC,"\\c"},  {0xFE,"\n"}
         };
-        private const byte textTerminator = 0xFF;
-        private const byte textVariable = 0xFD;
+        private static readonly Dictionary<string, byte> textToSymTable; // Initialized in the static constructor
+        private const byte textTerminatorSym = 0xFF;
+        private const byte textVariableSym = 0xFD;
+        private const char escapeChar = '\\';
+        private const char groupChar = '[';
+        private const char groupEndChar = ']';
+        private const string textVariableStr = "\\v";
+        private const string textUnknownStr = "\\x";
         /// <summary>Read a string of specified length from the File.</summary>
         public string ReadVariableLengthString(int maxLength = int.MaxValue)
         {
@@ -476,113 +492,120 @@ namespace PokemonRandomizer.Backend.DataStructures
             return str;
         }
         /// <summary>Read a string of specified length from the File.
-        /// Use with 2 args to read a variable length string</summary>
+        /// Use with 2 args to read a fixed length string</summary>
         public string ReadString(int offset, int maxLength = int.MaxValue)
         {
-            StringBuilder sb = new StringBuilder();
+            string text = string.Empty;
             for (int i = 0; i < maxLength; i++)
             {
                 byte code = File[offset + i];
-                if (symTable.ContainsKey(code))
-                    sb.Append(symTable[code]);
-                else if (code == textTerminator)
-                    break;
-                else if (code == textVariable)
+                if (code == textTerminatorSym)
                 {
-                    int nextChar = File[offset + i + 1] & 0xFF;
-                    sb.Append("\\v" + string.Format("%02X", nextChar));
-                    i++;
+                    break;
+                }
+                else if (symTable.ContainsKey(code))
+                {
+                    text += symTable[code];
+                }
+                else if (code == textVariableSym)
+                {
+                    int nextChar = File[offset + ++i] & 0xFF;
+                    text += (textVariableStr + string.Format("%02X", nextChar));
                 }
                 else
-                    sb.Append("\\x" + string.Format("%02X", code));
+                {
+                    text += (textUnknownStr + string.Format("%02X", code));
+                }
+
             }
-            return sb.ToString();
+            return text;
         }
 
-        //private byte[] translateString(String text)
-        //{
-        //    List<Byte> data = new ArrayList<Byte>();
-        //    while (text.length() != 0)
-        //    {
-        //        int i = Math.max(0, 4 - text.length());
-        //        if (text.charAt(0) == '\\' && text.charAt(1) == 'x')
-        //        {
-        //            data.add((byte)Integer.parseInt(text.substring(2, 4), 16));
-        //            text = text.substring(4);
-        //        }
-        //        else if (text.charAt(0) == '\\' && text.charAt(1) == 'v')
-        //        {
-        //            data.add((byte)Gen3Constants.textVariable);
-        //            data.add((byte)Integer.parseInt(text.substring(2, 4), 16));
-        //            text = text.substring(4);
-        //        }
-        //        else
-        //        {
-        //            while (!(d.containsKey(text.substring(0, 4 - i)) || (i == 4)))
-        //            {
-        //                i++;
-        //            }
-        //            if (i == 4)
-        //            {
-        //                text = text.substring(1);
-        //            }
-        //            else
-        //            {
-        //                data.add(d.get(text.substring(0, 4 - i)));
-        //                text = text.substring(4 - i);
-        //            }
-        //        }
-        //    }
-        //    byte[] ret = new byte[data.size()];
-        //    for (int i = 0; i < ret.length; i++)
-        //    {
-        //        ret[i] = data.get(i);
-        //    }
-        //    return ret;
-        //}
+        private byte[] TranslateString(string text)
+        {
+            var bytes = new List<byte>(text.Length * 2);
+            for(int i = 0; i < text.Length; ++i)
+            {
+                char currChar = text[i];
+                string currSym;
+                if(currChar == escapeChar)
+                {
+                    currSym = text.Substring(i++, 2);
+                    if(currSym == textUnknownStr)
+                    {
+                        bytes.Add(byte.Parse(text.Substring(i, 2)));
+                        i += 2;
+                        continue;
+                    }
+                    else if(currSym == textVariableStr)
+                    {
+                        bytes.Add(textVariableSym);
+                        bytes.Add(byte.Parse(text.Substring(i, 2)));
+                        i += 2;
+                        continue;
+                    }
+                }
+                else if(currChar == groupChar)
+                {
+                    int groupLength = text.IndexOf(groupEndChar, i + 1) - i;
+                    currSym = text.Substring(i, groupLength);
+                    i += groupLength;
+                }
+                else
+                {
+                    currSym = currChar.ToString();
+                }
+                if(textToSymTable.ContainsKey(currSym))
+                {
+                    bytes.Add(textToSymTable[currSym]);
+                }
+            }
+            return bytes.ToArray();
+        }
 
-        //private String readFixedLengthString(int offset, int length)
-        //{
-        //    return readString(offset, length);
-        //}
+        public void WriteFixedLengthString(string text, int length)
+        {
+            WriteFixedLengthString(InternalOffset, text, length);
+            InternalOffset += length;
+        }
 
-        //public String readVariableLengthString(int offset)
-        //{
-        //    return readString(offset, Integer.MAX_VALUE);
-        //}
+        public void WriteFixedLengthString(int offset, string text, int length)
+        {
+            var translated = TranslateString(text);
+            if(translated.Length >= length)
+            {
+                // Write as much of the translated string as we can
+                Array.Copy(translated, 0, File, offset, length);
+            }
+            else
+            {
+                // Write the translated string
+                WriteBlock(offset, translated);
+                // Write the text terminator
+                WriteByte(offset + translated.Length, textTerminatorSym);
+                // Wipe the rest of the space
+                int lengthUsed = translated.Length + 1;
+                if(lengthUsed < length)
+                {
+                    SetBlock(offset + lengthUsed, length - lengthUsed, 0x00);
+                }
+            }
+        }
 
-        //private void writeFixedLengthString(String str, int offset, int length)
-        //{
-        //    byte[] translated = translateString(str);
-        //    int len = Math.min(translated.length, length);
-        //    System.arraycopy(translated, 0, File, offset, len);
-        //    if (len < length)
-        //    {
-        //        File[offset + len] = (byte)Gen3Constants.textTerminator;
-        //        len++;
-        //    }
-        //    while (len < length)
-        //    {
-        //        File[offset + len] = 0;
-        //        len++;
-        //    }
-        //}
+        public void WriteVariableLengthString(string text)
+        {
+            var translated = TranslateString(text);
+            WriteBlock(translated);
+            WriteByte(textTerminatorSym);
+        }
 
-        //private void writeVariableLengthString(String str, int offset)
-        //{
-        //    byte[] translated = translateString(str);
-        //    System.arraycopy(translated, 0, File, offset, translated.length);
-        //    File[offset + translated.length] = (byte)0xFF;
-        //}
+        public void WriteVariableLengthString(int offset, string text)
+        {
+            var translated = TranslateString(text);
+            WriteBlock(offset, translated);
+            WriteByte(offset + translated.Length, textTerminatorSym);
+        }
 
-        //private int lengthOfStringAt(int offset)
-        //{
-        //    int len = 0;
-        //    while ((File[offset + (len++)] & 0xFF) != 0xFF)
-        //    {
-        //    }
-        //    return len - 1;
-        //}
         #endregion
     }
 }

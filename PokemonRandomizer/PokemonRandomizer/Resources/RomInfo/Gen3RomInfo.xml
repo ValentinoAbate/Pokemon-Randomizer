@@ -84,6 +84,7 @@
     <!-- Items -->
 
     <itemDefinitions pointer="0x0001C8" num="377"/>
+    <itemSprites pointer="0x1B0034"/>
     <itemEvents spriteSetIndex="59"/>
     
     <!-- from dabomstew's UP randomizer source https://github.com/Dabomstew/universal-pokemon-randomizer -->
@@ -173,6 +174,7 @@
     <!-- Items -->
 
     <itemDefinitions pointer="0x0001C8" num="375"/>
+    <itemSprites pointer="0x09899C"/>
     <itemEvents spriteSetIndex="92"/>
 
     <!-- from dabomstew's UP randomizer source https://github.com/Dabomstew/universal-pokemon-randomizer (untested)-->

@@ -119,6 +119,7 @@ namespace PokemonRandomizer.Backend.Writing
                 }
             }
             // Apply evolve without national dex hack if supported
+            // Right now, only supports level-up evolves (not evo stones)
             if(data.EvolveWithoutNationalDex)
             {
                 int offset = info.FindOffset(ElementNames.evolveWithoutNatDex, rom);
@@ -202,13 +203,12 @@ namespace PokemonRandomizer.Backend.Writing
         }
         private void WriteStarters(RomData romData, Rom rom, XmlManager info)
         {
-            const string starterPokemonElt = "starterPokemon";
-            if (!info.FindAndSeekOffset(starterPokemonElt, rom))
+            if (!info.FindAndSeekOffset(ElementNames.starterPokemon, rom))
                 return;
             rom.WriteUInt16((int)romData.Starters[0]);
-            rom.Skip(info.IntAttr("starterPokemon", "skip1"));
+            rom.Skip(info.IntAttr(ElementNames.starterPokemon, "skip1"));
             rom.WriteUInt16((int)romData.Starters[1]);
-            rom.Skip(info.IntAttr("starterPokemon", "skip2"));
+            rom.Skip(info.IntAttr(ElementNames.starterPokemon, "skip2"));
             rom.WriteUInt16((int)romData.Starters[2]);
         }
         private void WriteCatchingTutOpponent(RomData data, Rom rom, XmlManager info)
@@ -474,8 +474,10 @@ namespace PokemonRandomizer.Backend.Writing
         /// </summary>
         private void WriteTrainerBattles(RomData romData, Rom rom, XmlManager info)
         {
+            // If fail, reading trainer battles is not supported for this ROM
+            if (!info.FindAndSeekOffset(ElementNames.trainerBattles, rom))
+                return;
             //int numTrainers = info.Num("trainerBattles"); // Needed later for determining if expansion is necessary
-            rom.Seek(info.Offset("trainerBattles"));
             foreach (var trainer in romData.Trainers)
             {
                 rom.WriteByte((byte)trainer.dataType);
@@ -487,9 +489,8 @@ namespace PokemonRandomizer.Backend.Writing
                 rom.Skip(1);
                 // Write sprite index (byte 3)
                 rom.WriteByte(trainer.spriteIndex);
-                //// Write name (I think bytes 4 - 15?)
-                //name = rom.WriteFixedLengthString(12);
-                rom.Skip(12);
+                // Write name (I think bytes 4 - 15?)
+                rom.WriteFixedLengthString(trainer.name, Trainer.nameLength);
                 // Write items (bytes 16-23)
                 for (int i = 0; i < 4; ++i)
                     rom.WriteUInt16((int)trainer.useItems[i]);
@@ -610,7 +611,7 @@ namespace PokemonRandomizer.Backend.Writing
                 return;
             foreach (var item in itemData)
             {
-                rom.Skip(ItemData.nameLength); // Cannot write strings yet
+                rom.WriteFixedLengthString(item.Name, ItemData.nameLength);
                 rom.WriteUInt16((int)item.Item);
                 rom.WriteUInt16(item.Price);
                 rom.WriteByte(item.holdEffect);

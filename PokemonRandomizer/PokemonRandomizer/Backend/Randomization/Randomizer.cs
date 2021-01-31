@@ -132,7 +132,7 @@ namespace PokemonRandomizer.Backend.Randomization
                         continue;
 
                     #region Dunsparse Plague
-                    if(rand.RandomDouble() < settings.DunsparsePlaugeChance)
+                    if(rand.RollSuccess(settings.DunsparsePlaugeChance))
                     {
                         // Add the plague
                         if(evo.Type == EvolutionType.LevelUp)

@@ -11,8 +11,6 @@ namespace PokemonRandomizer.Backend.GenIII.Constants.ElementNames
     /// </summary>
     public static class ElementNames
     {
-        public const string itemData = "itemDefinitions";
-        public const string pcPotion = "pcPotion";
         // Map elements
         public const string mapLabels = "mapLabels";
         public const string mapBankPointers = "mapBankPointers";
@@ -23,12 +21,16 @@ namespace PokemonRandomizer.Backend.GenIII.Constants.ElementNames
         public const string pokemonBaseStats = "pokemonBaseStats";
         public const string tutorCompat = "moveTutorCompat";
         public const string movesets = "movesets";
+        public const string starterPokemon = "starterPokemon";
         // Data elements
         public const string moveData = "moveData";
         public const string tutorMoves = "moveTutorMoves";
         public const string tmMoves = "tmMoves";
         public const string hmMoves = "hmMoves";
+        public const string itemData = "itemDefinitions";
+        public const string trainerBattles = "trainerBattles";
         // Hacks and Tweaks / Misc
+        public const string pcPotion = "pcPotion";
         public const string runIndoors = "runIndoors";
         public const string textSpeed = "textSpeed";
         public const string evolveWithoutNatDex = "evolveWithoutNationalDex";

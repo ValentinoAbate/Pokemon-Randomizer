@@ -15,6 +15,7 @@ namespace PokemonRandomizer.Backend.DataStructures
 
     public class Trainer
     {
+        public const int nameLength = 12;
         // The all of the class names (mostly for debugging)
         public List<string> classNames;
         public string Class { get => classNames[trainerClass]; }
@@ -45,7 +46,7 @@ namespace PokemonRandomizer.Backend.DataStructures
             // Read sprite index (byte 3)
             spriteIndex = rom.ReadByte();
             // Read name (I think bytes 4 - 15?)
-            name = rom.ReadFixedLengthString(12);
+            name = rom.ReadFixedLengthString(nameLength);
             // Read items (bytes 16-23)
             for (int i = 0; i < 4; ++i)
                 useItems[i] = (Item)rom.ReadUInt16();

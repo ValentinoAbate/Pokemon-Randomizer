@@ -325,14 +325,13 @@ namespace PokemonRandomizer.Backend.Reading
         // Read the starter pokemon
         private List<PokemonSpecies> ReadStarters(Rom rom, XmlManager info)
         {
-            const string starterPokemonElt = "starterPokemon";
             var starters = new List<PokemonSpecies>();
-            if (!info.FindAndSeekOffset(starterPokemonElt, rom))
+            if (!info.FindAndSeekOffset(ElementNames.starterPokemon, rom))
                 return starters;
             starters.Add((PokemonSpecies)rom.ReadUInt16());
-            rom.Skip(info.IntAttr(starterPokemonElt, "skip1"));
+            rom.Skip(info.IntAttr(ElementNames.starterPokemon, "skip1"));
             starters.Add((PokemonSpecies)rom.ReadUInt16());
-            rom.Skip(info.IntAttr(starterPokemonElt, "skip2"));
+            rom.Skip(info.IntAttr(ElementNames.starterPokemon, "skip2"));
             starters.Add((PokemonSpecies)rom.ReadUInt16());
             return starters;
         }
@@ -369,11 +368,10 @@ namespace PokemonRandomizer.Backend.Reading
         // Readainers
         private List<Trainer> ReadTrainers(Rom rom, XmlManager info, List<string> classNames)
         {
-            const string trainerBattleElt = "trainerBattles";
             // If fail, reading trainer battles is not supported for this ROM
-            if (!info.FindAndSeekOffset(trainerBattleElt, rom))
+            if (!info.FindAndSeekOffset(ElementNames.trainerBattles, rom))
                 return new List<Trainer>();
-            int numTrainers = info.Num(trainerBattleElt);
+            int numTrainers = info.Num(ElementNames.trainerBattles);
             List<Trainer> ret = new List<Trainer>(numTrainers);
             for (int i = 0; i < numTrainers; ++i)
             {
