@@ -11,6 +11,15 @@ IDEAS:
 		- Add option to include rivals, elite4, etc in pool
 		- Add option to take characters from other same-gen roms (firered gym leaders, etc)
 	- Place hints in trainer and sign dialog about upcoming gym info and / location of cool items
+- Improve Impossible Evo fix and evo levels
+	- Make evolution level determined by previous evols
+		- Example scyther did evolve so can evolve at like 32, but gengar is haunter's 25 +12 so 37
+	- Item remapping
+		- field items
+		- store items
+		- event items (scanner and steven event especially)
+		- pickup items
+		- modify old items to make it clear that they cannot evolve (maybe names for now and then palettes later when/if I can do that without messing the new clones up)
 - Trainer / Event Ideas
 	- Champion randomization (the champion could be Brendan/May, wally, or any other reoccuring / special trainer in the game or that is added)
 	- Extra reoccuring trainers (you might encounter youngster joey multiple times throughout the game, etc)

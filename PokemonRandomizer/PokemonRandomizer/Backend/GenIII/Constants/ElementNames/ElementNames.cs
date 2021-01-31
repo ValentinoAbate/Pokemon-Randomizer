@@ -28,6 +28,9 @@ namespace PokemonRandomizer.Backend.GenIII.Constants.ElementNames
         public const string tmMoves = "tmMoves";
         public const string hmMoves = "hmMoves";
         public const string itemData = "itemDefinitions";
+        public const string itemSprites = "itemSprites";
+        public const string itemEffectsTable = "itemEffectsTable";
+        public const string stoneEffect = "stoneEffect";
         public const string trainerBattles = "trainerBattles";
         // Hacks and Tweaks / Misc
         public const string pcPotion = "pcPotion";

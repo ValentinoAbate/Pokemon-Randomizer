@@ -822,6 +822,15 @@ namespace PokemonRandomizer.Backend.Reading
                     battleEffectOffset = rom.ReadPointer(),
                     extraData = rom.ReadUInt32(),
                 });
+                itemData[i].Description = rom.ReadString(itemData[i].descriptionOffset);
+            }
+            // If we have the offset for the item sprites, read the item sprite data
+            if (!info.FindAndSeekOffset(ElementNames.itemSprites, rom))
+                return itemData;
+            foreach(var item in itemData)
+            {
+                item.spriteOffset = rom.ReadPointer();
+                item.paletteOffset = rom.ReadPointer();
             }
             return itemData;
         }

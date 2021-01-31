@@ -130,6 +130,19 @@ namespace PokemonRandomizer.Backend.Writing
                     rom.WriteBlock(offset, byteData);
                 }
             }
+            // Add additional evolution stones
+            int itemEffectTableOffset = info.FindOffset(ElementNames.itemEffectsTable, rom);
+            int stoneEffectOffset = info.FindOffset(ElementNames.stoneEffect, rom);
+            if(itemEffectTableOffset != Rom.nullPointer && stoneEffectOffset != Rom.nullPointer)
+            {
+                // Add the evolution stone effect into the correct slot in the itemeffect table
+                foreach(var newStone in data.NewEvolutionStones)
+                {
+                    int tableIndex = (newStone - Item.Potion) * Rom.pointerSize;
+                    rom.WritePointer(itemEffectTableOffset + tableIndex, stoneEffectOffset);
+                }
+            }
+
 
             // Perform all of the repoint operations
             rom.RepointMany(repoints);
@@ -625,6 +638,14 @@ namespace PokemonRandomizer.Backend.Writing
                 rom.WriteUInt32(item.battleUsage);
                 rom.WritePointer(item.battleEffectOffset);
                 rom.WriteUInt32(item.extraData);
+            }
+            // If we have the offset for the item sprites, write the item sprite data
+            if (!info.FindAndSeekOffset(ElementNames.itemSprites, rom))
+                return;
+            foreach (var item in itemData)
+            {
+                rom.WritePointer(item.spriteOffset);
+                rom.WritePointer(item.paletteOffset);
             }
         }
         private class RepointList : List<Tuple<int, int>>

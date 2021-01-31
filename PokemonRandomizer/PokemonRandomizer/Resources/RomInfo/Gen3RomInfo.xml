@@ -85,6 +85,8 @@
 
     <itemDefinitions pointer="0x0001C8" num="377"/>
     <itemSprites pointer="0x1B0034"/>
+    <itemEffectsTable offset="0x31E58C"/>
+    <stoneEffect offset="0x31E6D0"/>
     <itemEvents spriteSetIndex="59"/>
     
     <!-- from dabomstew's UP randomizer source https://github.com/Dabomstew/universal-pokemon-randomizer -->
@@ -175,6 +177,8 @@
 
     <itemDefinitions pointer="0x0001C8" num="375"/>
     <itemSprites pointer="0x09899C"/>
+    <itemEffectsTable offset="0x2528BC"/>
+    <stoneEffect offset="0x252856"/>
     <itemEvents spriteSetIndex="92"/>
 
     <!-- from dabomstew's UP randomizer source https://github.com/Dabomstew/universal-pokemon-randomizer (untested)-->

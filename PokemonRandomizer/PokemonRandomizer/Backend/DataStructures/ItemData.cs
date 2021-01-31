@@ -4,8 +4,10 @@ namespace PokemonRandomizer.Backend.DataStructures
 {
     public class ItemData
     {
+        public const string unusedName = "????????";
         // Name length limit in RSE
         public const int nameLength = 14;
+        public bool IsUnused => Name == unusedName;
         public string Name { get; set;  }
         public Item Item { get; set; }
         public int Price { get; set; }
@@ -38,10 +40,33 @@ namespace PokemonRandomizer.Backend.DataStructures
         public int battleEffectOffset;
         // seems to indicate ball type, mail type, bike type (also is 1 on eon ticket for some reason)
         public int extraData;
+        // Stored in a different location
+        public int spriteOffset = Rom.nullPointer;
+        public int paletteOffset = Rom.nullPointer;
 
         public override string ToString()
         {
             return Name;
+        }
+
+        public void CopyTo(ItemData other)
+        {
+            other.Name = Name;
+            other.Price = Price;
+            other.holdEffect = holdEffect;
+            other.param = param;
+            other.Description = Description;
+            other.descriptionOffset = descriptionOffset;
+            other.keyItemValue = keyItemValue;
+            other.RegisterableKeyItem = RegisterableKeyItem;
+            other.pocket = pocket;
+            other.type = type;
+            other.fieldEffectOffset = fieldEffectOffset;
+            other.battleUsage = battleUsage;
+            other.battleEffectOffset = battleEffectOffset;
+            other.extraData = extraData;
+            other.spriteOffset = spriteOffset;
+            other.paletteOffset = paletteOffset;
         }
     }
 }

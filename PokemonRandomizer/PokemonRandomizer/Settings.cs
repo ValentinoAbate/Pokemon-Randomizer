@@ -47,7 +47,14 @@ namespace PokemonRandomizer
 
         #region Evolution
 
-        public bool FixImpossibleEvos { get => true; }
+        public bool FixImpossibleEvos => true;
+        public enum TradeItemPokemonOption
+        { 
+            LevelUp,
+            UseItem,
+        }
+        public TradeItemPokemonOption TradeItemEvoSetting => TradeItemPokemonOption.UseItem;
+
 
         #endregion
 

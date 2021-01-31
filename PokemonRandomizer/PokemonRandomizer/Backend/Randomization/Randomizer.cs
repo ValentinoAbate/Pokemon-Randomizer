@@ -103,8 +103,21 @@ namespace PokemonRandomizer.Backend.Randomization
             #region Item Definitions (NOTHING YET)
             // Define Item Definitions
             // Hack in new items if applicable
+            // Hack in trade item remaps
+            var tradeItemRemaps = new Dictionary<Item, Item>();
+            var blankItemsWithEffects = new List<Tuple<ItemData, int>>();
+            for(int i = (int)Item.Potion; i < (int)Item.Sitrus_Berry; ++i)
+            {
+                var itemData = data.ItemData[i];
+                if(itemData.IsUnused)
+                {
+                    blankItemsWithEffects.Add(new Tuple<ItemData, int>(itemData, i));
+                }
+            }
+
             // Possible Hacks: Add GenIV items (some might not be possible), add fairy-related items
             // Mutate item definitions
+
             #endregion
 
             #region Pokemon Base Attributes
@@ -171,8 +184,43 @@ namespace PokemonRandomizer.Backend.Randomization
                         }
                         else if(evo.Type == EvolutionType.TradeWithItem)
                         {
-                            evo.Type = EvolutionType.UseItem;
-                            evo.parameter = (int)Item.Fire_Stone;
+                            if(settings.TradeItemEvoSetting == Settings.TradeItemPokemonOption.UseItem)
+                            {
+                                evo.Type = EvolutionType.UseItem;
+                                var item = (Item)evo.parameter;
+                                // We have already made the item into an evolution stone
+                                if (tradeItemRemaps.ContainsKey(item))
+                                {
+                                    evo.parameter = (int)tradeItemRemaps[item];
+                                }
+                                else if(blankItemsWithEffects.Count > 0) // Make the item into an evolution stone
+                                {
+                                    int newIndex = blankItemsWithEffects[0].Item2;
+                                    var itemData = blankItemsWithEffects[0].Item1;
+                                    blankItemsWithEffects.RemoveAt(0);
+                                    data.ItemData[evo.parameter].CopyTo(itemData);
+                                    // Copy the moonstone type and field effect offset
+                                    var moonStone = data.ItemData[(int)Item.Moon_Stone];
+                                    itemData.type = moonStone.type;
+                                    itemData.fieldEffectOffset = moonStone.fieldEffectOffset;
+                                    // Set the proper index
+                                    evo.parameter = newIndex;
+                                    itemData.Item = (Item)newIndex;
+                                    // Add the item to the remap
+                                    tradeItemRemaps.Add(item, itemData.Item);
+                                    data.NewEvolutionStones.Add(itemData.Item);
+                                }
+                                else // Fall back on level up settings
+                                {
+                                    evo.Type = EvolutionType.LevelUp;
+                                    evo.parameter = 32;
+                                }
+                            }
+                            else // Use level up settings
+                            {
+                                evo.Type = EvolutionType.LevelUp;
+                                evo.parameter = 32;
+                            }
                         }                            
                     }
                     #endregion
@@ -405,6 +453,19 @@ namespace PokemonRandomizer.Backend.Randomization
                 }
                 #endregion
             }
+            // Remap Items if necessary
+            if(tradeItemRemaps.Count > 0)
+            {
+                foreach (var pkmn in data.Pokemon)
+                {
+                    for (int i = 0; i < pkmn.heldItems.Length; ++i)
+                    {
+                        if (tradeItemRemaps.ContainsKey(pkmn.heldItems[i]))
+                            pkmn.heldItems[i] = tradeItemRemaps[pkmn.heldItems[i]];
+                    }
+                }
+            }
+
             // Set unknown typing if selected
             if (settings.OverrideUnknownType)
             {
@@ -683,6 +744,8 @@ namespace PokemonRandomizer.Backend.Randomization
             {
                 data.PcStartItem = settings.CustomPcItem;
             }
+            if (tradeItemRemaps.ContainsKey(data.PcStartItem))
+                data.PcStartItem = tradeItemRemaps[data.PcStartItem];
             // Run indoors hack
             data.RunIndoors = settings.RunIndoors;
 

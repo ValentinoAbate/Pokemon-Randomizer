@@ -484,6 +484,7 @@ namespace PokemonRandomizer.Backend.DataStructures
             InternalOffset += str.Length;
             return str;
         }
+
         /// <summary>Read a string of specified length from the File.</summary>
         public string ReadFixedLengthString(int length)
         {

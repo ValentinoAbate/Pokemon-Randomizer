@@ -75,6 +75,8 @@ namespace PokemonRandomizer.Backend.DataStructures
 
         public byte[] SkippedLearnSetData { get; set; }
 
+        public List<Item> NewEvolutionStones { get; set; } = new List<Item>();
+
         // updates the metrics from the current data
         public void CalculateMetrics()
         {
