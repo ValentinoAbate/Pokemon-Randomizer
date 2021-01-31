@@ -14,6 +14,7 @@ namespace PokemonRandomizer.Backend.Utilities
         public const string numAttr = "num";
         public const string sizeAttr = "size";
         public const string constantsElt = "constants";
+        public const string inheritanceElt = "inheritFrom";
 
         public XElement Root { get; }
         private XElement searchRoot;
@@ -26,16 +27,41 @@ namespace PokemonRandomizer.Backend.Utilities
         {
             Root = root;
             searchRoot = root;
-            // Add the constants to the cache if applicable
-            if (HasElement(constantsElt, false))
-            {
-                var elts = Element(constantsElt, false).DescendantsAndSelf();
-                foreach (var elt in elts)
+            // Inheritance
+            foreach(var elt in root.Elements())
+            { 
+                // Check if we have a valid inheritance and base element
+                if (!elt.HasElements)
+                    continue;
+                var firstElt = elt.Elements().First();
+                if (firstElt.Name.LocalName != inheritanceElt)
+                    continue;
+                var superElt = Element(firstElt.Value, false);
+                if (superElt == null)
+                    continue;
+                // Do actual inheritance
+                searchRoot = elt;
+                foreach (var inheritedElt in superElt.Descendants())
                 {
-                    if (cache.ContainsKey(elt.Name.LocalName))
-                        continue;
-                    cache.Add(elt.Name.LocalName, elt);
+                    // Does the inheriting element have an element with the same name?
+                    var overrideElt = Element(inheritedElt.Name.LocalName, false);
+                    if (overrideElt == null) // If not, add a clone of the inheritedElt
+                    {
+                        elt.Add(new XElement(inheritedElt) as XNode);
+                    }
+                    else // Add the attributes that are not overriden by the inhering node
+                    {
+                        foreach (var attr in inheritedElt.Attributes())
+                        {
+                            // Only add values that don't have values on the override elt
+                            if (overrideElt.Attribute(attr.Name.LocalName) == null)
+                            {
+                                overrideElt.SetAttributeValue(attr.Name.LocalName, attr.Value);
+                            }
+                        }
+                    }
                 }
+                searchRoot = root;
             }
         }
         #endregion
@@ -225,7 +251,7 @@ namespace PokemonRandomizer.Backend.Utilities
             return Element(element, root)?.Attribute(attribute);
         }
         /// <summary>
-        /// Returns tru if the element exists, else false. If the element is cached, it is looked up,
+        /// Returns true if the element exists, else false. If the element is cached, it is looked up,
         /// else it is searched for (with SearchRoot as the search root Node)
         /// <para>If cache == true, then the element (if found) and all elements searched through will be cached</para>
         /// </summary>
@@ -252,7 +278,7 @@ namespace PokemonRandomizer.Backend.Utilities
             if (this.cache.ContainsKey(element))
                 return this.cache[element];
             if (!cache)
-                return root.DescendantsAndSelf().FirstOrDefault(e => e.Name == element);
+                return root.DescendantsAndSelf().FirstOrDefault(e => e.Name.LocalName == element);
             var elts = root.DescendantsAndSelf();
             foreach(var elt in elts)
             {

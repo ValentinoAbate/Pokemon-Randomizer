@@ -68,12 +68,11 @@ namespace PokemonRandomizer.Backend.Reading
         // Read the move definitions
         private List<MoveData> ReadMoves(Rom rom, XmlManager info)
         {
-            const string moveDataElt = "moveData";
             List<MoveData> moveData = new List<MoveData>();
             // Exit early if the offset doesn't exist (feature unsupported)
-            if (!info.FindAndSeekOffset(moveDataElt, rom))
+            if (!info.FindAndSeekOffset(ElementNames.moveData, rom))
                 return moveData;
-            int moveCount = info.Num("moveData");
+            int moveCount = info.Num(ElementNames.moveData);
             for (int i = 0; i <= moveCount; i++)
             {
                 var move = new MoveData(rom)
@@ -463,7 +462,6 @@ namespace PokemonRandomizer.Backend.Reading
             int bankPtrOffset = info.FindOffset(ElementNames.mapBankPointers, rom);
             if (bankPtrOffset == Rom.nullPointer)
                 return new Map[0][];
-            int ptrSize = info.Size(ElementNames.mapBankPointers);
             int labelOffset = info.FindOffset(ElementNames.mapLabels, rom);
             if (labelOffset == Rom.nullPointer)
                 return new Map[0][];
@@ -472,7 +470,7 @@ namespace PokemonRandomizer.Backend.Reading
             // Construct map data structures
             for (int i = 0; i < mapBanks.Length; ++i)
             {
-                int bankPtr = rom.ReadPointer(bankPtrOffset + (i * ptrSize));
+                int bankPtr = rom.ReadPointer(bankPtrOffset + (i * Rom.pointerSize));
                 mapBanks[i] = ReadMapBank(rom, metadata, bankPtr, bankLengths[i], labelOffset);
             }
             return mapBanks;
@@ -833,6 +831,24 @@ namespace PokemonRandomizer.Backend.Reading
                 item.paletteOffset = rom.ReadPointer();
             }
             return itemData;
+        }
+
+        private PickupData ReadPickupData(Rom rom, XmlManager info, RomMetadata metadata)
+        {
+            var data = new PickupData();
+            if (!info.FindAndSeekOffset(ElementNames.pickupItems, rom))
+                return data;
+            if (metadata.IsEmerald)
+            {
+
+                if (!info.FindAndSeekOffset(ElementNames.pickupRareItems, rom))
+                    return data;
+            }
+            else // Is RS or FRLG
+            {
+
+            }
+            return data;
         }
     }
 }

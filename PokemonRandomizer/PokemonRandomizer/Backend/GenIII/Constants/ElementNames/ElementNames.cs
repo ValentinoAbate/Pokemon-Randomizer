@@ -30,8 +30,11 @@ namespace PokemonRandomizer.Backend.GenIII.Constants.ElementNames
         public const string itemData = "itemDefinitions";
         public const string itemSprites = "itemSprites";
         public const string itemEffectsTable = "itemEffectsTable";
+        public const string pickupItems = "pickupItems";
+        public const string pickupRareItems = "pickupRareItems";
         public const string stoneEffect = "stoneEffect";
         public const string trainerBattles = "trainerBattles";
+
         // Hacks and Tweaks / Misc
         public const string pcPotion = "pcPotion";
         public const string runIndoors = "runIndoors";

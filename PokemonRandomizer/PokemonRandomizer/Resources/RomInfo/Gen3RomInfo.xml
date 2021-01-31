@@ -14,36 +14,81 @@
   <constants>
     <!-- from dabomstew's UP randomizer source https://github.com/Dabomstew/universal-pokemon-randomizer -->
     <wildPokemon pointerPrefix="0x0348048009E00000FFFF0000" grassSlots="12" surfSlots="5" rockSmashSlots="5" fishSlots="10"/>
-    <mapBanks pointerPrefix="0x80180068890B091808687047"/>
     <pokedexOrder pointerPrefix="0x0448814208D0481C0004000C05E00000"/>
+    
+    <!-- Type Data -->
+    
+    <types num="18"/>
+    <typeEffectiveness separator="[0xfe,0xfe,0x00]" terminator="[0xff,0xff,0x00]"/>
+
+    <!-- Move Data -->
+
     <moveData pointer="0x1CC" num="354" size="12"/>
     <moveNames pointer="0x148"/>
+
+    <!-- TMs, HMs, and Move Tutors -->
+
+    <tmMoves num="50" size="2"/>
+    <hmMoves num="8" size="2"/>
+    <moveTutorMoves size="2"/>
+    
+    <!-- Trainer Battle Definitions -->
+
+    <trainerBattles size="40"/>
+
+    <!-- Special Trainer Battles -->
+    
+    <teamGrunts names="[Grunt]"/>
+    
+    <!-- Pokemon Definitions -->
+    
+    <pokemonBaseStats num="411" size="28" skip="25" skipAt="251"/>
+    <tmHmCompat size="8"/>
+    <moveTutorCompat size="4"/>
+    <eggMoves pokemonSigniture="0x4E20"/>
+    <evolutions size="40" sizePerEvolution="8" evolutionsPerPokemon="5"/>
+
+    <!-- Map Data -->
+    
+    <mapBanks pointerPrefix="0x80180068890B091808687047"/>
+    
   </constants>
+
+  <!-- RSE Constants -->
+
+  <rseConstants>
+    <!-- Metadata -->
+
+    <inheritFrom>constants</inheritFrom>
+    
+    <!-- Special Trainer Battles -->
+
+    <rivals names="[Brendan,May]" remap="[1,2,0]"/>
+    <eliteFour names="[Sidney,Phoebe,Glacia,Drake]"/>
+    <teamAdmins names="[Tabitha,Matt,Shelly]"/>
+    <teamLeaders names="[Maxie,Archie]"/>
+    <aceTrainers classNums="[5,48]"/>
+
+    <!-- Map Data -->
+
+    <!-- pointer prefix from dabomstew's UP randomizer source https://github.com/Dabomstew/universal-pokemon-randomizer -->
+    <!-- should be true for Ruby and sapphire as well -->
+    <mapLabels pointerPrefix="0xC078288030BC01BC00470000"/>
+  </rseConstants>
   
   <!-- Emerald Rom Info -->
 
-  <BPEJ0>
-    <!-- Metadata -->
-
-    <name>Pokémon Emerald (J)</name>
-    <support>none</support>
-    <!-- May be incorrect -->
-
-    <!-- Pokemon Base Stats -->
-    <!-- May be incorrect -->
-    <pokemonBaseStats offset="0x2F0D70"/>
-  </BPEJ0>
   <BPEE0>
     <!-- Metadata -->
 
-    <name>Pokémon Emerald (U)</name>
-    <version>0</version>
+    <inheritFrom>rseConstants</inheritFrom>
     <support typeSplit ="true"/>
+    
     <!-- 
        Most of Emerald's free space is in 0x00! (Thanks Sky0fBlades)
-       Reference: http://pokemonhackersonline.com/archive/index.php/t-5742.html
+       Reference: https://web.archive.org/web/20190904175826/http://pokemonhackersonline.com:80/archive/index.php/t-5742.html
        0x00 Free Space (over a million bytes in total)
-       0x9C0B20 to 0xAFFFFF, 0xB98B30 to 0xBFFFFF, 0xD3CEA0 to 0xD437EF, 0xDE4018 to 0xE3CF48, 0xE3CF64 to the End 
+       0x9C0B20 to 0xAFFFFF, 0xB98B30 to 0xBFFFFF, 0xD3CEA0 to 0xD437EF, 0xDE4018 to 0xE3CF48, 0xE3CF64 to End of File
     -->
     <freeSpace byte="0x00" startAddy="0x9C0B20"/>
 
@@ -54,32 +99,27 @@
 
     <!-- Type Data -->
 
-    <numTypes>18</numTypes>
-    <!-- The address where the type effectiveness definitions start -->
-    <!-- ADD TERMINATOR INFO -->
-    <typeEffectiveness offset="0x31ace8" separator="[0xfe,0xfe,0x00]" terminator="[0xff,0xff,0x00]"/>
-
-    <!-- Move Data -->
+    <typeEffectiveness offset="0x31ace8"/>
 
     <!-- TMs, HMs, and Move Tutors -->
 
     <!-- TM Move mappings -->
-    <tmMoves num="50" size="2" offset="0x615b94" duplicateOffset="0x616040"/>
+    <tmMoves offset="0x615b94" duplicateOffset="0x616040"/>
     <!-- HM move mappings -->
-    <hmMoves num="8" size="2" offset="0x615bf8" duplicateOffset="0x6160A4"/>
+    <hmMoves offset="0x615bf8" duplicateOffset="0x6160A4"/>
     <!-- MT move mappings -->
-    <moveTutorMoves num="30" size="2" offset="0x61500c"/>
+    <moveTutorMoves num="30" offset="0x61500c"/>
 
     <!-- Pokemon Definitions -->
 
-    <pokemonBaseStats num="411" size="28" offset="0x3203e8" skip="25" skipAt="251"/>
-    <tmHmCompat size="8" offset="0x31E898" pointer="0x06E048"/>
+    <pokemonBaseStats offset="0x3203e8"/>
+    <tmHmCompat offset="0x31E898" pointer="0x06E048"/>
     <!-- Move Tutor compat offset is determined from the move mappings offset. Default offset is given here (bulbasaur is actually +4 from here) -->
-    <moveTutorCompat size="4" offset="0x615048"/>
+    <moveTutorCompat offset="0x615048"/>
     <movesets offset="0x3230dc"/>
     <!-- pointer found in Hex Editor Advance's Table reference file. offset found from following pointer -->
-    <eggMoves offset="0x32ADD8" pointer="0x0703F0" pokemonSigniture="0x4E20"/>
-    <evolutions size="40" sizePerEvolution="8" evolutionsPerPokemon="5" offset="0x32531C" pointer="0x06D140"/>
+    <eggMoves offset="0x32ADD8" pointer="0x0703F0" />
+    <evolutions offset="0x32531C" pointer="0x06D140"/>
 
     <!-- Items -->
 
@@ -88,6 +128,8 @@
     <itemEffectsTable offset="0x31E58C"/>
     <stoneEffect offset="0x31E6D0"/>
     <itemEvents spriteSetIndex="59"/>
+    <pickupItems pointer="0x055DF4" num="18"/>
+    <pickupRareItems pointer="0x055D2C" num="11"/>
     
     <!-- from dabomstew's UP randomizer source https://github.com/Dabomstew/universal-pokemon-randomizer -->
     <starterItems offset="0xB117A"/>
@@ -103,41 +145,102 @@
 
     <!-- Trainer Battle Definitions -->
 
-    <trainerBattles num="854" size="40" offset="0x310030"/>
+    <trainerBattles num="854" offset="0x310030"/>
     <trainerClassNames num="66" length="13" offset="0x30FCD4"/>
     
     <!-- Special Trainer Battles -->
 
-    <rivals names="[Brendan,May]" remap="[1,2,0]"/>
     <gymLeaders names="[Roxanne,Brawly,Wattson,Flannery,Norman,Winona,Tate&amp;Liza,Juan]"/>
-    <eliteFour names="[Sidney,Phoebe,Glacia,Drake]"/>
     <champion names="[Wallace]"/>
     <uber names="[Steven]"/>
-    <teamGrunts names="[Grunt]"/>
-    <teamAdmins names="[Tabitha,Matt,Shelly]"/>
-    <teamLeaders names="[Maxie,Archie]"/>
-    <aceTrainers classNums="[5,48]"/>
 
     <!-- Map Data -->
 
     <!-- pointer from MEH .ini: https://github.com/shinyquagsire23/MEH (thanks shinyquagsire23) -->
     <!-- and thethethe's forum post: http://pokemonhackersonline.com/showthread.php?t=2586 -->
-    <mapBankPointers num="34" size="4" offset="0x486578" pointer="0x84AA4"/>
+    <mapBankPointers num="34" offset="0x486578" pointer="0x84AA4"/>
     <maps bankLengths="[57,5,5,6,7,8,9,7,7,14,8,17,10,23,13,15,15,2,2,2,3,1,1,1,108,61,89,2,1,13,1,1,2,1]"/>
-    <!-- pointer prefix from dabomstew's UP randomizer source https://github.com/Dabomstew/universal-pokemon-randomizer -->
-    <!-- should be true for Ruby and sapphire as well -->
-    <mapLabels pointerPrefix="0xC078288030BC01BC00470000"/>
     
   </BPEE0>
+  
+  <!-- Ruby / Sapphire Constants -->
+  
+  <rsConstants> 
+    <!-- Metadata -->
+    
+    <inheritFrom>rseConstants</inheritFrom>
+    <freeSpace byte="0xFF" startAddy="0x800000"/>
+    
+    <!-- Special Trainer Battles -->
+    
+    <gymLeaders names="[Roxanne,Brawly,Wattson,Flannery,Norman,Winona,Tate&amp;Liza,Wallace]"/>
+    <champion names="[Steven]"/>
+    
+    <!-- Items -->
 
-  <!-- Fire Red Rom Info -->
+    <pickupItems pointer="0x02AFB8" num="10"/>
+  </rsConstants>
+
+  <!-- Ruby Rom Info -->
+
+  <AXVE0>
+    <!-- Metadata -->
+    <inheritFrom>rsConstants</inheritFrom>
+  </AXVE0>
+  <AXVE1>
+    <!-- Metadata -->
+    <inheritFrom>AXVE1</inheritFrom>
+  </AXVE1>
+  
+  <!-- Sapphire Rom Info -->
+
+  <AXPE0>
+    <!-- Metadata -->
+    <inheritFrom>rsConstants</inheritFrom>
+  </AXPE0>
+  <AXPE1>
+    <!-- Metadata -->
+    <inheritFrom>AXPE1</inheritFrom>
+  </AXPE1>
+  
+  <!-- FRLG Constants -->
+
+  <frlgConstants>
+    <!-- Metadata -->
+
+    <inheritFrom>constants</inheritFrom>
+    <freeSpace byte="0xFF" startAddy="0x800000"/>
+
+
+    <!-- Special Trainer Battles -->
+
+    <rivals names="[Terry]" remap="[1,0,2]"/>
+    <gymLeaders names="[Brock,Misty,Lt. Surge,Erika,Koga,Sabrina,Blaine]"/>
+    <eliteFour names="[Lorelei,Bruno,Agatha,Lance]"/>
+    <teamLeaders names="[Giovanni]"/>
+    <aceTrainers classNums="[9,93,86]"/>
+
+    <!-- TMs, HMs, and Move Tutors -->
+    <moveTutorMoves num="15"/>
+
+    <!-- Items -->
+
+    <pickupItems num="16"/>
+
+    <!-- Map Data -->
+
+    <!-- pointer prefix from dabomstew's UP randomizer source https://github.com/Dabomstew/universal-pokemon-randomizer -->
+    <!-- should work for leaf green as well -->
+    <mapLabels pointerPrefix="0xAC470000AE470000B0470000"/>
+  </frlgConstants>
+  
+  <!-- FRLG Rom Info -->
 
   <BPRE0>
-    <name>Pokémon Fire Red (U) 1.0</name>
-    <version>0</version>
+    <!-- Metadata -->
 
+    <inheritFrom>frlgConstants</inheritFrom>
     <support typeSplit ="true"/>
-    <freeSpace byte="0xFF" startAddy="0x800000"/>
 
     <!-- Hacks and Tweaks -->
 
@@ -147,31 +250,28 @@
 
     <!-- Type Data -->
 
-    <numTypes>18</numTypes>
     <!-- The address where the type effectiveness definitions start -->
-    <typeEffectiveness offset="0x24F050" separator="[0xfe,0xfe,0x00]" terminator="[0xff,0xff,0x00]"/>
-
-    <!-- Move Data -->
+    <typeEffectiveness offset="0x24F050"/>
 
     <!-- TMs, HMs, and Move Tutors -->
 
     <!-- TM Move mappings -->
-    <tmMoves num="50" size="2" offset="0x45A5A4" duplicateOffset ="0x45A80C"/>
+    <tmMoves offset="0x45A5A4" duplicateOffset ="0x45A80C"/>
     <!-- HM move mappings -->
-    <hmMoves num="8" size="2" offset="0x45A608" duplicateOffset ="0x45A870"/>
+    <hmMoves offset="0x45A608" duplicateOffset ="0x45A870"/>
     <!-- MT move mappings -->
-    <moveTutorMoves num="15" size="2" offset="0x459B60"/>
+    <moveTutorMoves offset="0x459B60"/>
 
     <!-- Pokemon Definitions -->
 
-    <pokemonBaseStats num="411" size="28" offset="0x2547A0" skip="25" skipAt="251"/>
-    <tmHmCompat size="8" offset="0x252BC8" pointer="0x043C68"/>
-    <moveTutorCompat size="2" offset="0x459B7E"/>
+    <pokemonBaseStats offset="0x2547A0"/>
+    <tmHmCompat offset="0x252BC8" pointer="0x043C68"/>
+    <moveTutorCompat offset="0x459B7E"/>
     <movesets offset="0x257494"/>
     <!-- offset from thethethethe's forum post (archived on the wayback machine): https://web.archive.org/web/20180316234519/http://pokemonhackersonline.com/showthread.php?t=2586 -->
     <!-- pointer found in Hex Editor Advance's Table reference file -->
-    <eggMoves offset="0x25EF0C" pointer="0x045C50" pokemonSigniture ="0x4E20"/>
-    <evolutions size="40" sizePerEvolution="8" evolutionsPerPokemon="5" offset="0x259754" pointer="0x042F6C"/>
+    <eggMoves offset="0x25EF0C" pointer="0x045C50" />
+    <evolutions offset="0x259754" pointer="0x042F6C"/>
 
     <!-- Items -->
 
@@ -180,6 +280,7 @@
     <itemEffectsTable offset="0x2528BC"/>
     <stoneEffect offset="0x252856"/>
     <itemEvents spriteSetIndex="92"/>
+    <pickupItems pointer="0x02CEE4"/>
 
     <!-- from dabomstew's UP randomizer source https://github.com/Dabomstew/universal-pokemon-randomizer (untested)-->
     <starterItems offset="0x000000"/>
@@ -194,23 +295,42 @@
     <!-- Trainer Battle Definitions -->
 
     <!-- from thethethethe's forum post: http://pokemonhackersonline.com/showthread.php?t=2586 -->
-    <trainerBattles num="743" size="40" offset="0x23EAF0"/>
+    <trainerBattles num="743" offset="0x23EAF0"/>
     <trainerClassNames num="107" length="13" offset="0x23E558"/>
 
-    <!-- Special Trainer Battles -->
-
-    <rivals names="[Terry]" remap="[1,0,2]"/>
-    <gymLeaders names="[Brock,Misty,Lt. Surge,Erika,Koga,Sabrina,Blaine]"/>
-    <eliteFour names="[Lorelei,Bruno,Agatha,Lance]"/>
-    <teamGrunts names="[Grunt]"/>
-    <teamLeaders names="[Giovanni]"/>
-    <aceTrainers classNums="[9,93,86]"/>
-
-    <mapBankPointers num="43" size="4" offset="0x3526A8" pointer="0x5524C"/>
+    <mapBankPointers num="43" offset="0x3526A8" pointer="0x5524C"/>
     <maps bankLengths="[5,123,60,66,4,6,8,10,6,8,20,10,8,2,10,4,2,2,2,1,1,2,2,3,2,3,2,1,1,1,1,7,5,5,8,8,5,5,1,1,1,2,1]"/>
-    <!-- pointer prefix from dabomstew's UP randomizer source https://github.com/Dabomstew/universal-pokemon-randomizer -->
-    <!-- should work for leaf green as well -->
-    <mapLabels pointerPrefix="0xAC470000AE470000B0470000"/>
   </BPRE0>
+  <BPGE0>
+    <!-- Metadata -->
+
+    <inheritFrom>BPRE0</inheritFrom>
+
+
+    <!-- Items -->
+
+  </BPGE0>
+  
+  <!-- FRLG v1.1 Info -->
+
+  <BPRE1>
+    <!-- Metadata -->
+
+    <inheritFrom>BPRE0</inheritFrom>
+
+    <!-- Items -->
+
+    <pickupItems pointer="0x02CEF8"/>
+
+  </BPRE1>
+  <BPGE1>
+    <!-- Metadata -->
+    
+    <inheritFrom>BPRE1</inheritFrom>
+    
+    <!-- Items -->
+
+    
+  </BPGE1>
 
 </gen3RomInfo>

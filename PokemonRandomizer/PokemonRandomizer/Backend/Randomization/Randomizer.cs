@@ -187,28 +187,28 @@ namespace PokemonRandomizer.Backend.Randomization
                             if(settings.TradeItemEvoSetting == Settings.TradeItemPokemonOption.UseItem)
                             {
                                 evo.Type = EvolutionType.UseItem;
-                                var item = (Item)evo.parameter;
+                                var oldItem = (Item)evo.parameter;
                                 // We have already made the item into an evolution stone
-                                if (tradeItemRemaps.ContainsKey(item))
+                                if (tradeItemRemaps.ContainsKey(oldItem))
                                 {
-                                    evo.parameter = (int)tradeItemRemaps[item];
+                                    evo.parameter = (int)tradeItemRemaps[oldItem];
                                 }
                                 else if(blankItemsWithEffects.Count > 0) // Make the item into an evolution stone
                                 {
                                     int newIndex = blankItemsWithEffects[0].Item2;
-                                    var itemData = blankItemsWithEffects[0].Item1;
+                                    var newItemData = blankItemsWithEffects[0].Item1;
                                     blankItemsWithEffects.RemoveAt(0);
-                                    data.ItemData[evo.parameter].CopyTo(itemData);
+                                    data.ItemData[(int)oldItem].CopyTo(newItemData);
                                     // Copy the moonstone type and field effect offset
                                     var moonStone = data.ItemData[(int)Item.Moon_Stone];
-                                    itemData.type = moonStone.type;
-                                    itemData.fieldEffectOffset = moonStone.fieldEffectOffset;
+                                    newItemData.type = moonStone.type;
+                                    newItemData.fieldEffectOffset = moonStone.fieldEffectOffset;
                                     // Set the proper index
+                                    newItemData.Item = (Item)newIndex;
                                     evo.parameter = newIndex;
-                                    itemData.Item = (Item)newIndex;
                                     // Add the item to the remap
-                                    tradeItemRemaps.Add(item, itemData.Item);
-                                    data.NewEvolutionStones.Add(itemData.Item);
+                                    tradeItemRemaps.Add(oldItem, newItemData.Item);
+                                    data.NewEvolutionStones.Add(newItemData.Item);
                                 }
                                 else // Fall back on level up settings
                                 {

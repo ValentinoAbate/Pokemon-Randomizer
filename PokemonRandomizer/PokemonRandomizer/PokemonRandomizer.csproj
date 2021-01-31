@@ -81,6 +81,7 @@
     <Compile Include="Backend\DataStructures\MapData.cs" />
     <Compile Include="Backend\DataStructures\MapEventData.cs" />
     <Compile Include="Backend\DataStructures\MapScriptData.cs" />
+    <Compile Include="Backend\DataStructures\PickupData.cs" />
     <Compile Include="Backend\DataStructures\RomMetadata.cs" />
     <Compile Include="Backend\EnumTypes\Generation.cs" />
     <Compile Include="Backend\GenIII\Constants\ElementNames\ElementNames.cs" />

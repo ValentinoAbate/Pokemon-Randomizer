@@ -561,14 +561,13 @@ namespace PokemonRandomizer.Backend.Writing
             int bankPtrOffset = info.FindOffset(ElementNames.mapBankPointers, rom);
             if (bankPtrOffset == Rom.nullPointer)
                 return;
-            int ptrSize = info.Size(ElementNames.mapBankPointers);
             int labelOffset = info.FindOffset(ElementNames.mapLabels, rom);
             if (labelOffset == Rom.nullPointer)
                 return;
             // Construct map data structures
             for (int i = 0; i < data.MapBanks.Length; ++i)
             {
-                int bankPtr = rom.ReadPointer(bankPtrOffset + (i * ptrSize));
+                int bankPtr = rom.ReadPointer(bankPtrOffset + (i * Rom.pointerSize));
                 WriteBank(data.MapBanks[i], rom, bankPtr, labelOffset);
             }
         }
@@ -580,7 +579,7 @@ namespace PokemonRandomizer.Backend.Writing
         {
             for (int i = 0; i < maps.Length; ++i)
             {
-                int mapOffset = rom.ReadPointer(bankOffset + (i * 4));
+                int mapOffset = rom.ReadPointer(bankOffset + (i * Rom.pointerSize));
                 WriteMap(maps[i], rom, mapOffset, labelOffset);
             }
         }
