@@ -135,7 +135,7 @@ namespace PokemonRandomizer
             if(Metadata.Gen == Generation.III)
             {
                 var writer = new Gen3RomWriter();
-                return writer.Write(randomizedData, OriginalRom, Metadata, RomInfo);
+                return writer.Write(randomizedData, OriginalRom, Metadata, RomInfo, new Settings(this));
             }
             throw new Exception("Attempting to write to unsupported generation.");
         }

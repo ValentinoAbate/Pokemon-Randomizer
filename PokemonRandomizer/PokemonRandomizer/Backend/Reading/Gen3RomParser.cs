@@ -61,6 +61,8 @@ namespace PokemonRandomizer.Backend.Reading
             data.Encounters = ReadEncounters(rom, info);
             // Read in the item data
             data.ItemData = ReadItemData(rom, info);
+            // Read in the pickup items
+            data.PickupItems = ReadPickupData(rom, info, metadata);
             // Calculate the balance metrics from the loaded data
             data.CalculateMetrics();
             return data;
@@ -838,15 +840,31 @@ namespace PokemonRandomizer.Backend.Reading
             var data = new PickupData();
             if (!info.FindAndSeekOffset(ElementNames.pickupItems, rom))
                 return data;
-            if (metadata.IsEmerald)
+            int numItems = info.Num(ElementNames.pickupItems);
+            if (metadata.IsEmerald) // Use the two item tables
             {
-
+                for (int i = 0; i < numItems; i++)
+                {
+                    data.Items.Add((Item)rom.ReadUInt16());
+                }
                 if (!info.FindAndSeekOffset(ElementNames.pickupRareItems, rom))
                     return data;
+                numItems = info.Num(ElementNames.pickupRareItems);
+                for (int i = 0; i < numItems; i++)
+                {
+                    data.RareItems.Add((Item)rom.ReadUInt16());
+                }
             }
-            else // Is RS or FRLG
+            else // Is RS or FRLG, use items + chances
             {
-
+                for (int i = 0; i < numItems; i++)
+                {
+                    data.ItemChances.Add(new PickupData.ItemChance()
+                    {
+                        item = (Item)rom.ReadUInt16(),
+                        chance = rom.ReadUInt16(),
+                    }); 
+                }
             }
             return data;
         }

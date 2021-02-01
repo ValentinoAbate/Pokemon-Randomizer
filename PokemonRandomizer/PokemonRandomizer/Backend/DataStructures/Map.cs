@@ -35,10 +35,11 @@
                                         /// 0x0F - 0xFF: Unknown/unused,
         }
 
-        public static bool WeatherAffectsBattle(Weather w, bool hailHackEnabled)
+        public static bool WeatherAffectsBattle(Weather w, Settings.HailHackOption hailHack)
         {
             return w == Weather.Rain || w == Weather.RainThunderstorm || w == Weather.RainHeavyThunderstrorm ||
-                w == Weather.Sandstorm || w == Weather.StrongSunlight || (hailHackEnabled && (w == Weather.Snow || w == Weather.SnowSteady));
+                w == Weather.Sandstorm || w == Weather.StrongSunlight || (w == Weather.Snow && hailHack.HasFlag(Settings.HailHackOption.Snow)) ||
+                (w == Weather.SnowSteady && hailHack.HasFlag(Settings.HailHackOption.SteadySnow));
         }
 
         public static bool IsWeatherClear(Weather w)

@@ -5,6 +5,6 @@ namespace PokemonRandomizer.Backend.Writing
 {
     public abstract class RomWriter
     {
-        public abstract Rom Write(RomData data, Rom originalRom, RomMetadata metadata, XmlManager info);
+        public abstract Rom Write(RomData data, Rom originalRom, RomMetadata metadata, XmlManager info, Settings settings);
     }
 }

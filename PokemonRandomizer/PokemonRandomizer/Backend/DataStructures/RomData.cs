@@ -54,6 +54,7 @@ namespace PokemonRandomizer.Backend.DataStructures
         public List<EncounterSet> Encounters { get; set; }
         public List<MoveData> MoveData { get; set; }
         public List<ItemData> ItemData { get; set; }
+        public PickupData PickupItems { get; set; }
 
         #region TM, HM, and tutor move definition arrays
         public Move[] TMMoves;
@@ -62,16 +63,6 @@ namespace PokemonRandomizer.Backend.DataStructures
         #endregion
 
         public int[] RivalRemap { get; set; }
-
-        #region Hacks and Tweaks
-
-        public bool RunIndoors { get; set; } = false;
-        public bool FastText { get; set; } = false;
-        public bool UseUnknownTypeForMoves { get; set; } = false;
-        public bool SnowyWeatherApplysHail { get; set; } = false;
-        public bool EvolveWithoutNationalDex { get; set; } = true;
-
-        #endregion
 
         public byte[] SkippedLearnSetData { get; set; }
 

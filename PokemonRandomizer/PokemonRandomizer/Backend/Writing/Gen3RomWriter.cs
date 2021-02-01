@@ -14,10 +14,17 @@ namespace PokemonRandomizer.Backend.Writing
     //to write to a file
     public class Gen3RomWriter : RomWriter
     {
-        public override Rom Write(RomData data, Rom originalRom, RomMetadata metadata, XmlManager info)
+        private readonly Dictionary<Item, Item> itemRemaps = new Dictionary<Item, Item>();
+        private readonly HashSet<Item> failedItemRemaps = new HashSet<Item>();
+        public override Rom Write(RomData data, Rom originalRom, RomMetadata metadata, XmlManager info, Settings settings)
         {
             var rom = new Rom(originalRom);
+            // Initialize repoint list
             var repoints = new RepointList();
+            itemRemaps.Clear();
+            failedItemRemaps.Clear();
+            // Create new evolution stones
+            CreateNewEvolutionStones(data.NewEvolutionStones, data.ItemData, rom, info);
 
             // Main Data
 
@@ -45,16 +52,17 @@ namespace PokemonRandomizer.Backend.Writing
                 WriteMapData(data, rom, info);
             }
             WriteItemData(data.ItemData, rom, info);
+            WritePickupData(data.PickupItems, rom, info, metadata);
             // Hacks and tweaks
 
             // Write the pc potion item
             int pcPotionOffset = info.FindOffset(ElementNames.pcPotion, rom);
             if (pcPotionOffset != Rom.nullPointer)
-            {
-                rom.WriteUInt16(pcPotionOffset, (int)data.PcStartItem);
+            { 
+                rom.WriteUInt16(pcPotionOffset, (int)RemapItem(data.PcStartItem));
             }
             // Write the run indoors hack if applicable
-            if (data.RunIndoors)
+            if (settings.RunIndoors)
             {
                 int offset = info.FindOffset(ElementNames.runIndoors, rom);
                 // If hack is supported
@@ -63,32 +71,14 @@ namespace PokemonRandomizer.Backend.Writing
                     rom.WriteByte(offset, 0x00);
                 }
             }
-            // Write the text speed hack if applicable.
-            if(data.FastText)
-            {
-                int offset = info.FindOffset(ElementNames.textSpeed, rom);
-                // If hack is supported
-                if(offset != Rom.nullPointer)
-                {
-                    int val = rom.ReadByte(offset);
-                    val = rom.ReadByte(offset + 1);
-                    val = rom.ReadByte(offset + 2);
-                    // Slow Text Becomes Medium
-                    rom.WriteByte(offset, 0x04);
-                    // Medium Text Becomes Slow
-                    rom.WriteByte(offset + 1, 0x01);
-                    // Fast Text Becomes instant (Glitchy, more like a skip)
-                    rom.WriteByte(offset + 2, 0x00);
-                }
-            }
             // Make ??? a valid type for moves if applicable. Currently only supported for emerald
-            if (data.UseUnknownTypeForMoves && metadata.IsEmerald)
+            if (settings.UseUnknownTypeForMoves && metadata.IsEmerald)
             {
                 // Hack the ??? type to be a valid type (Uses SP.ATK and SP.DEF)
                 rom.WriteByte(0x069BCF, 0xD2);
             }
             // Apply hail weather hack if applicable. Currently only supported for emerald
-            if (data.SnowyWeatherApplysHail && metadata.IsEmerald)
+            if (settings.HailHackSetting != Settings.HailHackOption.None && metadata.IsEmerald)
             {
                 // Hail Weather Hack. Makes the weather types "steady snow" and "three snowflakes" cause hail in battle
                 // Hack routine compiled from bluRose's ASM routine. Thanks blueRose (https://www.pokecommunity.com/member.php?u=471720)!
@@ -105,22 +95,28 @@ namespace PokemonRandomizer.Backend.Writing
                 int? hailHackroutineOffset = rom.WriteInFreeSpace(hailRoutine);
                 if (hailHackroutineOffset != null)
                 {
-                    // Three snow flakes
-                    rom.WritePointer(0x42AB8, (int)hailHackroutineOffset);
-                    // Steady snow
-                    rom.WritePointer(0x42AC4, (int)hailHackroutineOffset);
                     var hailMessageBlock = new byte[] { 0xF3, 0x00 };
-                    //Three snow flakes
-                    rom.WriteBlock(0x5CC922, hailMessageBlock);
-                    // Steady snow
-                    rom.WriteBlock(0x5CC928, hailMessageBlock);
-                    // Fix Three snow flakes spawning issue
-                    rom.WriteBlock(0xAD39E, new byte[] { 0x4B, 0xE0 });
+                    if (settings.HailHackSetting.HasFlag(Settings.HailHackOption.Snow))
+                    {
+                        // Add battle weather routine
+                        rom.WritePointer(0x42AB8, (int)hailHackroutineOffset);
+                        // Fix message
+                        rom.WriteBlock(0x5CC922, hailMessageBlock);
+                        // Fix Three snow flakes spawning issue
+                        rom.WriteBlock(0xAD39E, new byte[] { 0x4B, 0xE0 });
+                    }
+                    if(settings.HailHackSetting.HasFlag(Settings.HailHackOption.SteadySnow))
+                    {
+                        // Add battle weather routine
+                        rom.WritePointer(0x42AC4, (int)hailHackroutineOffset);
+                        // Fix message
+                        rom.WriteBlock(0x5CC928, hailMessageBlock);
+                    }
                 }
             }
             // Apply evolve without national dex hack if supported
             // Right now, only supports level-up evolves (not evo stones)
-            if(data.EvolveWithoutNationalDex)
+            if(settings.EvolveWithoutNationalDex)
             {
                 int offset = info.FindOffset(ElementNames.evolveWithoutNatDex, rom);
                 if(offset != Rom.nullPointer)
@@ -130,23 +126,69 @@ namespace PokemonRandomizer.Backend.Writing
                     rom.WriteBlock(offset, byteData);
                 }
             }
-            // Add additional evolution stones
-            int itemEffectTableOffset = info.FindOffset(ElementNames.itemEffectsTable, rom);
-            int stoneEffectOffset = info.FindOffset(ElementNames.stoneEffect, rom);
-            if(itemEffectTableOffset != Rom.nullPointer && stoneEffectOffset != Rom.nullPointer)
-            {
-                // Add the evolution stone effect into the correct slot in the itemeffect table
-                foreach(var newStone in data.NewEvolutionStones)
-                {
-                    int tableIndex = (newStone - Item.Potion) * Rom.pointerSize;
-                    rom.WritePointer(itemEffectTableOffset + tableIndex, stoneEffectOffset);
-                }
-            }
-
 
             // Perform all of the repoint operations
             rom.RepointMany(repoints);
             return rom;
+        }
+
+        private Item RemapItem(Item item)
+        {
+            return itemRemaps.ContainsKey(item) ? itemRemaps[item] : item;
+        }
+        private void CreateNewEvolutionStones(IEnumerable<Item> newEvolutionStones, List<ItemData> itemData, Rom rom, XmlManager info)
+        {
+            // Item remapping (for generating new evolution stones)
+            var blankItemsWithEffects = new Queue<int>();
+            for (int i = (int)Item.Potion; i < (int)Item.Sitrus_Berry; ++i)
+            {
+                if (itemData[i].IsUnused)
+                {
+                    blankItemsWithEffects.Enqueue(i);
+                }
+            }
+            // New evolution stones
+            itemRemaps.Clear();
+            failedItemRemaps.Clear();
+            int itemEffectTableOffset = info.FindOffset(ElementNames.itemEffectsTable, rom);
+            int stoneEffectOffset = info.FindOffset(ElementNames.stoneEffect, rom);
+            if (itemEffectTableOffset != Rom.nullPointer && stoneEffectOffset != Rom.nullPointer)
+            {
+                // Get the moonstone data
+                var moonStone = itemData[(int)Item.Moon_Stone];
+                foreach (var item in newEvolutionStones)
+                {
+                    if (blankItemsWithEffects.Count <= 0)
+                    {
+                        failedItemRemaps.Add(item);
+                        continue;
+                    }
+                    int newIndex = blankItemsWithEffects.Dequeue();
+                    var newItemData = itemData[newIndex];
+                    // Copy the old item data to the new item data
+                    var oldItemData = itemData[(int)item];
+                    oldItemData.CopyTo(newItemData);
+                    // Set the old item's name to something different so we can recognize it
+                    oldItemData.Name += "?";
+                    // Copy the moonstone type and field effect offset
+                    newItemData.type = moonStone.type;
+                    newItemData.fieldEffectOffset = moonStone.fieldEffectOffset;
+                    // Set the proper index
+                    newItemData.Item = (Item)newIndex;
+                    // Add the item to the remap
+                    itemRemaps.Add(item, newItemData.Item);
+                    // Link the evolution stone script
+                    int tableIndex = (newItemData.Item - Item.Potion) * Rom.pointerSize;
+                    rom.WritePointer(itemEffectTableOffset + tableIndex, stoneEffectOffset);
+                }
+            }
+            else
+            {
+                foreach (var item in newEvolutionStones)
+                {
+                    failedItemRemaps.Add(item);
+                }
+            }
         }
 
         private void WriteMoveData(List<MoveData> data, Rom rom, XmlManager info, ref RepointList repoints)
@@ -329,8 +371,8 @@ namespace PokemonRandomizer.Backend.Writing
             rom.WriteByte(pokemon.baseExpYield);
             // Next two bytes bits 0-11 are ev Yields, in chunks of 2
             rom.WriteBits(2, pokemon.evYields);
-            rom.WriteUInt16((int)pokemon.heldItems[0]);
-            rom.WriteUInt16((int)pokemon.heldItems[1]);
+            rom.WriteUInt16((int)RemapItem(pokemon.heldItems[0]));
+            rom.WriteUInt16((int)RemapItem(pokemon.heldItems[1]));
             rom.WriteByte(pokemon.genderRatio);
             rom.WriteByte(pokemon.eggCycles);
             rom.WriteByte(pokemon.baseFriendship);
@@ -384,8 +426,25 @@ namespace PokemonRandomizer.Backend.Writing
             rom.Seek(offset);
             foreach (var evo in pokemon.evolvesTo)
             {
-                rom.WriteUInt16((int)evo.Type);
-                rom.WriteUInt16(evo.parameter);
+                if(evo.Type == EvolutionType.UseItem)
+                {
+                    var item = (Item)evo.parameter;
+                    if(failedItemRemaps.Contains(item))
+                    {
+                        rom.WriteUInt16((int)EvolutionType.LevelUp);
+                        rom.WriteUInt16(32);
+                    }
+                    else
+                    {
+                        rom.WriteUInt16((int)evo.Type);
+                        rom.WriteUInt16((int)RemapItem(item));
+                    }
+                }
+                else
+                {
+                    rom.WriteUInt16((int)evo.Type);
+                    rom.WriteUInt16(evo.parameter);
+                }
                 rom.WriteUInt16((int)evo.Pokemon);
                 rom.Skip(2);
             }
@@ -506,7 +565,7 @@ namespace PokemonRandomizer.Backend.Writing
                 rom.WriteFixedLengthString(trainer.name, Trainer.nameLength);
                 // Write items (bytes 16-23)
                 for (int i = 0; i < 4; ++i)
-                    rom.WriteUInt16((int)trainer.useItems[i]);
+                    rom.WriteUInt16((int)RemapItem(trainer.useItems[i]));
                 // Write double battle (byte 24)
                 rom.WriteByte(Convert.ToByte(trainer.isDoubleBattle));
                 // What is in bytes 25-27?
@@ -647,6 +706,37 @@ namespace PokemonRandomizer.Backend.Writing
                 rom.WritePointer(item.paletteOffset);
             }
         }
+
+        private void WritePickupData(PickupData data, Rom rom, XmlManager info, RomMetadata metadata)
+        { 
+            if (!info.FindAndSeekOffset(ElementNames.pickupItems, rom))
+                return;
+            int numItems = info.Num(ElementNames.pickupItems);
+            if (metadata.IsEmerald) // Use the two item tables
+            {
+                for (int i = 0; i < numItems; i++)
+                {
+                    rom.WriteUInt16((int)RemapItem(data.Items[i]));
+                }
+                if (!info.FindAndSeekOffset(ElementNames.pickupRareItems, rom))
+                    return;
+                numItems = info.Num(ElementNames.pickupRareItems);
+                for (int i = 0; i < numItems; i++)
+                {
+                    rom.WriteUInt16((int)RemapItem(data.RareItems[i]));
+                }
+            }
+            else // Is RS or FRLG, use items + chances
+            {
+                for (int i = 0; i < numItems; i++)
+                {
+                    var item = data.ItemChances[i];
+                    rom.WriteUInt16((int)RemapItem(item.item));
+                    rom.WriteUInt16(item.chance);
+                }
+            }
+        }
+
         private class RepointList : List<Tuple<int, int>>
         {
             public void Add(int oldOffset, int newOffset)

@@ -13,6 +13,12 @@ namespace PokemonRandomizer.Backend.DataStructures
         public Type DataType => Items.Count > 0 ? Type.ItemsAndRareItems : Type.ItemsWithChances;
         public List<Item> Items { get; } = new List<Item>(18);
         public List<Item> RareItems { get; } = new List<Item>(11);
-        public SortedList<byte, Item> ItemChances { get; } = new SortedList<byte, Item>(16);
+        public List<ItemChance> ItemChances { get; } = new List<ItemChance>(16);
+
+        public struct ItemChance
+        {
+            public Item item;
+            public int chance;
+        }
     }
 }

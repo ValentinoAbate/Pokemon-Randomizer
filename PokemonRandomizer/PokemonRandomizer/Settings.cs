@@ -26,6 +26,10 @@ namespace PokemonRandomizer
         /// </summary>
         public bool ModifyUnknownType { get => false; } //(bool)window.cbModifyUnknownType.IsChecked; }
         /// <summary>
+        /// Should the randomizer hack the ??? to make it usable with mooves (if possible)
+        /// </summary>
+        public bool UseUnknownTypeForMoves { get => false; }
+        /// <summary>
         /// Should the randomizer override UNKNOWN (the pokemon)'s type to the ??? type?
         /// </summary>
         public bool OverrideUnknownType { get => false; }
@@ -365,17 +369,26 @@ namespace PokemonRandomizer
         /// </summary>
         public bool OverrideAllowGymWeather => true;
         /// <summary>
-        /// The chance that a gym will have weather if OverrideAllowGymWeather is tru
+        /// The chance that a gym will have weather if OverrideAllowGymWeather is true
         /// </summary>
         public double GymWeatherRandChance => 0.5;
         /// <summary>
         /// If this is true, only maps that started with clear weather will be random (the desert will still have sandstorm, etc)
         /// </summary>
         public bool OnlyChangeClearWeather => true;
+        [System.Flags]
+        public enum HailHackOption
+        { 
+            None = 0,
+            Snow = 1,
+            SteadySnow = 2,
+            Both = Snow | SteadySnow,
+        }
+
         /// <summary>
-        /// If this is true, snow and steady snow will be considered battle weather and will actually make hail happen
+        /// Controls which gen 3 snow weathers will affect battle
         /// </summary>
-        public bool UseHailHack => true;
+        public HailHackOption HailHackSetting => HailHackOption.Snow;
         private const double defaultWeatherRandChance = 0.33;
         /// <summary>
         /// The chance any given map type will have its weather randomized. If the map type is not in this map, that type of map will not be randomized
@@ -389,8 +402,7 @@ namespace PokemonRandomizer
             { Map.Weather.Rain, 0.85f },
             { Map.Weather.RainThunderstorm, 0.125f },
             { Map.Weather.RainHeavyThunderstrorm, 0.025f },
-            { Map.Weather.Snow, 0.9f },
-            { Map.Weather.SnowSteady, 0.1f },
+            { Map.Weather.Snow, 1f },
             { Map.Weather.StrongSunlight, 1 },
             { Map.Weather.Sandstorm, 0.8f },
         };
@@ -399,7 +411,7 @@ namespace PokemonRandomizer
             { Map.Weather.Rain, 0.85f },
             { Map.Weather.RainThunderstorm, 0.125f },
             { Map.Weather.RainHeavyThunderstrorm, 0.025f },
-            { Map.Weather.Snow, 0.75f },
+            { Map.Weather.Snow, 0.85f },
             { Map.Weather.SnowSteady, 0.1f },
             { Map.Weather.StrongSunlight, 0.9f },
             { Map.Weather.Sandstorm, 0.6f },
@@ -415,10 +427,10 @@ namespace PokemonRandomizer
                 switch (WeatherSetting)
                 {
                     case WeatherOption.InBattleWeather:
-                        if(!UseHailHack)
+                        if(HailHackSetting != HailHackOption.None)
                         {
                             var modWeights = new WeightedSet<Map.Weather>(battleWeatherBalancedWeights);
-                            modWeights.RemoveWhere((w) => Map.WeatherAffectsBattle(w, UseHailHack));
+                            modWeights.RemoveWhere((w) => Map.WeatherAffectsBattle(w, HailHackSetting));
                             return modWeights;
                         }
                         return battleWeatherBalancedWeights;
@@ -473,9 +485,9 @@ namespace PokemonRandomizer
             Custom,
         }
 
-        public PcItemOption PcPotionOption => PcItemOption.Random;
+        public PcItemOption PcPotionOption => PcItemOption.Custom;
 
-        public Item CustomPcItem => Item.Mach_Bike;
+        public Item CustomPcItem => Item.Metal_Coat;
 
         public ItemSettings PcItemSettings => new ItemSettings()
         { 
@@ -483,6 +495,8 @@ namespace PokemonRandomizer
         };
 
         public bool RunIndoors => true;
+
+        public bool EvolveWithoutNationalDex => true;
 
         #endregion
 
