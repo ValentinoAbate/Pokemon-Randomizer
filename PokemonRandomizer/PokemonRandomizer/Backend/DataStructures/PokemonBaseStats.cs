@@ -51,13 +51,14 @@ namespace PokemonRandomizer.Backend.DataStructures
 
         #region Helper Properties
 
-        public int DexIndex { get { return PokedexUtils.PokedexIndex(species); } }
-        public bool IsSingleTyped { get { return types[0] == types[1]; } }
-        public bool IsLegendary { get => legendaries.Contains(species); }
+        public int DexIndex => PokedexUtils.PokedexIndex(species);
+        public bool IsSingleTyped => types[0] == types[1];
+        public bool IsLegendary => legendaries.Contains(species);
 
-        public bool IsBasicOrEvolvesFromBaby { get => IsBasic || EvolvesFromBaby; }
-        public bool IsBasic { get => evolvesFrom.Count == 0; }
-        public bool EvolvesFromBaby { get => evolvesFrom.FirstOrDefault((e) => babyPokemon.Contains(e.Pokemon)) != null; }
+        public bool IsBasicOrEvolvesFromBaby => IsBasic || EvolvesFromBaby;
+        public bool IsBasic => evolvesFrom.Count == 0;
+        public bool IsBaby => babyPokemon.Contains(species);
+        public bool EvolvesFromBaby => evolvesFrom.FirstOrDefault((e) => babyPokemon.Contains(e.Pokemon)) != null;
 
         #endregion
 

@@ -126,56 +126,37 @@ namespace PokemonRandomizer.Backend.Randomization
             }
 
             // Mutate Pokemon
-            foreach (PokemonBaseStats pkmn in data.Pokemon)
+            foreach (PokemonBaseStats pokemon in data.Pokemon)
             {
                 #region Evolutions
-                // Mutate Evolution trees
-                foreach (var evo in pkmn.evolvesTo)
+                // Fix Impossible Evolutions
+                if(settings.FixImpossibleEvos)
                 {
-                    if (evo.Type == EvolutionType.None)
-                        continue;
-
-                    #region Dunsparse Plague
-                    if(rand.RollSuccess(settings.DunsparsePlaugeChance))
+                    // Make a non-levelup evoltion into a level up one. Resolves som conflicts but not all
+                    void MakeEvolutionByLevelUp(Evolution evo)
                     {
-                        // Add the plague
-                        if(evo.Type == EvolutionType.LevelUp)
+                        var evolveByLevelUp = pokemon.evolvesTo.FirstOrDefault((e) => e.Type == EvolutionType.LevelUp);
+                        if (evolveByLevelUp == null)
                         {
-                            evo.Type = EvolutionType.LevelUpWithPersonality1;
-                            if(pkmn.evolvesTo[1].Pokemon == PokemonSpecies.SLOWKING)
-                            {
-                                pkmn.evolvesTo[2].Pokemon = PokemonSpecies.DUNSPARCE;
-                                pkmn.evolvesTo[2].Type = EvolutionType.LevelUpWithPersonality2;
-                                pkmn.evolvesTo[2].parameter = evo.parameter;
-                            }
-                            else
-                            {
-                                pkmn.evolvesTo[1].Pokemon = PokemonSpecies.DUNSPARCE;
-                                pkmn.evolvesTo[1].Type = EvolutionType.LevelUpWithPersonality2;
-                                pkmn.evolvesTo[1].parameter = evo.parameter;
-                            }
+                            evo.parameter = EquivalentLevelReq(evo, pokemon) + rand.RandomGaussianInt(0, settings.ImpossibleEvoLevelStandardDev);
+                            evo.Type = EvolutionType.LevelUp;
                         }
-                        else if(evo.Type == EvolutionType.Friendship)
+                        else
                         {
-                            evo.Type = rand.RandomDouble() < 0.5 ? EvolutionType.FriendshipDay : EvolutionType.FriendshipNight;
-                            pkmn.evolvesTo[1].Pokemon = PokemonSpecies.DUNSPARCE;
-                            pkmn.evolvesTo[1].Type = evo.Type == EvolutionType.FriendshipDay ? EvolutionType.FriendshipNight : EvolutionType.FriendshipDay;
-                            pkmn.evolvesTo[1].parameter = evo.parameter;
+                            evolveByLevelUp.Type = EvolutionType.LevelUpWithPersonality1;
+                            evo.Type = EvolutionType.LevelUpWithPersonality2;
+                            evo.parameter = evolveByLevelUp.parameter;
                         }
                     }
-                    #endregion
-
-                    #region ImpossibleEvoFix
-                    if (settings.FixImpossibleEvos)
+                    foreach (var evo in pokemon.evolvesTo)
                     {
-                        if(evo.Type == EvolutionType.Trade)
+                        if (evo.Type == EvolutionType.Trade)
                         {
-                            evo.Type = EvolutionType.LevelUp;
-                            evo.parameter = 32;
+                            MakeEvolutionByLevelUp(evo);
                         }
-                        else if(evo.Type == EvolutionType.TradeWithItem)
+                        else if (evo.Type == EvolutionType.TradeWithItem)
                         {
-                            if(settings.TradeItemEvoSetting == Settings.TradeItemPokemonOption.UseItem)
+                            if (settings.TradeItemEvoSetting == Settings.TradeItemPokemonOption.UseItem)
                             {
                                 evo.Type = EvolutionType.UseItem;
                                 // Log this as a new evolution stone if necessary
@@ -185,10 +166,51 @@ namespace PokemonRandomizer.Backend.Randomization
                             }
                             else // Use level up settings
                             {
-                                evo.Type = EvolutionType.LevelUp;
-                                evo.parameter = 32;
+                                MakeEvolutionByLevelUp(evo);
                             }
-                        }                            
+                        }
+                    }
+                }
+                foreach (var evo in pokemon.evolvesTo)
+                {
+                    if (evo.Type == EvolutionType.None)
+                        continue;
+
+                    #region Dunsparse Plague
+                    if (rand.RollSuccess(settings.DunsparsePlaugeChance))
+                    {
+                        static int FirstEmptyEvo(Evolution[] evolutions)
+                        {
+                            for (int i = 0; i < evolutions.Length; i++)
+                            {
+                                if (evolutions[i].Pokemon == PokemonSpecies.None)
+                                    return i;
+                            }
+                            return -1;
+                        }
+                        // Add the plague
+                        if(evo.Type == EvolutionType.LevelUp)
+                        {
+                            evo.Type = EvolutionType.LevelUpWithPersonality1;
+                            int index = FirstEmptyEvo(pokemon.evolvesTo);
+                            if(index >= 0)
+                            {
+                                pokemon.evolvesTo[index].Pokemon = PokemonSpecies.DUNSPARCE;
+                                pokemon.evolvesTo[index].Type = EvolutionType.LevelUpWithPersonality2;
+                                pokemon.evolvesTo[index].parameter = evo.parameter;
+                            }
+                        }
+                        else if(evo.Type == EvolutionType.Friendship)
+                        {
+                            evo.Type = rand.RandomDouble() < 0.5 ? EvolutionType.FriendshipDay : EvolutionType.FriendshipNight;
+                            int index = FirstEmptyEvo(pokemon.evolvesTo);
+                            if (index >= 0)
+                            {
+                                pokemon.evolvesTo[index].Pokemon = PokemonSpecies.DUNSPARCE;
+                                pokemon.evolvesTo[index].Type = evo.Type == EvolutionType.FriendshipDay ? EvolutionType.FriendshipNight : EvolutionType.FriendshipDay;
+                                pokemon.evolvesTo[index].parameter = evo.parameter;
+                            }
+                        }
                     }
                     #endregion
                 }
@@ -197,17 +219,17 @@ namespace PokemonRandomizer.Backend.Randomization
 
                 #region Types
                 // Mutate Pokemon Type
-                if (pkmn.IsSingleTyped)
+                if (pokemon.IsSingleTyped)
                 {
                     if (rand.RandomDouble() < settings.SingleTypeRandChance)
-                        pkmn.types[0] = pkmn.types[1] = rand.Choice(data.Metrics.TypeRatiosSingle);
+                        pokemon.types[0] = pokemon.types[1] = rand.Choice(data.Metrics.TypeRatiosSingle);
                 }
                 else
                 {
                     if (rand.RandomDouble() < settings.DualTypePrimaryRandChance)
-                        pkmn.types[0] = rand.Choice(data.Metrics.TypeRatiosDualPrimary);
+                        pokemon.types[0] = rand.Choice(data.Metrics.TypeRatiosDualPrimary);
                     if (rand.RandomDouble() < settings.DualTypeSecondaryRandChance)
-                        pkmn.types[1] = rand.Choice(data.Metrics.TypeRatiosDualSecondary);
+                        pokemon.types[1] = rand.Choice(data.Metrics.TypeRatiosDualSecondary);
                 }
                 #endregion
 
@@ -216,14 +238,14 @@ namespace PokemonRandomizer.Backend.Randomization
                 #region Learn Sets
                 if(settings.BanSelfdestruct)
                 {
-                    pkmn.learnSet.RemoveWhere((m) => m.move == Move.SELFDESTRUCT || m.move == Move.EXPLOSION);
+                    pokemon.learnSet.RemoveWhere((m) => m.move == Move.SELFDESTRUCT || m.move == Move.EXPLOSION);
                 }
-                if(settings.AddMoves && pkmn.IsBasic && rand.RandomDouble() < settings.AddMovesChance)
+                if(settings.AddMoves && pokemon.IsBasic && rand.RandomDouble() < settings.AddMovesChance)
                 {
                     int numMoves = rand.RandomGaussianPositiveNonZeroInt(settings.NumMovesMean, settings.NumMovesStdDeviation);
                     var availableMoves = new List<Move>(availableAddMoves);
-                    availableMoves.RemoveAll((m) => pkmn.learnSet.Learns(m));
-                    var availableEggMoves = pkmn.eggMoves.Where((m) => availableMoves.Contains(m)).ToList();
+                    availableMoves.RemoveAll((m) => pokemon.learnSet.Learns(m));
+                    var availableEggMoves = pokemon.eggMoves.Where((m) => availableMoves.Contains(m)).ToList();
                     for (int i = 0; i < numMoves; ++i)
                     {
                         Move move = Move.None;
@@ -273,7 +295,7 @@ namespace PokemonRandomizer.Backend.Randomization
                                 double mean = data.Metrics.LearnLevelMeans[move];
                                 double stdDev = data.Metrics.LearnLevelStandardDeviations[move];
                                 int learnLevel = rand.RandomGaussianPositiveNonZeroInt(mean, stdDev);
-                                AddMoveToEvoTreeMoveSet(pkmn, move, learnLevel);
+                                AddMoveToEvoTreeMoveSet(pokemon, move, learnLevel);
                                 continue;
                             }
                             int effectivePower = data.MoveData[(int)move].EffectivePower;
@@ -282,7 +304,7 @@ namespace PokemonRandomizer.Backend.Randomization
                                 double mean = data.Metrics.LearnLevelPowerMeans[effectivePower];
                                 double stdDev = data.Metrics.LearnLevelPowerStandardDeviations[effectivePower];
                                 int learnLevel = rand.RandomGaussianPositiveNonZeroInt(mean, stdDev);
-                                AddMoveToEvoTreeMoveSet(pkmn, move, learnLevel);
+                                AddMoveToEvoTreeMoveSet(pokemon, move, learnLevel);
                             }
                             else if(data.Metrics.LearnLevelPowers.Count > 0)
                             {
@@ -302,7 +324,7 @@ namespace PokemonRandomizer.Backend.Randomization
                                 double mean = data.Metrics.LearnLevelPowerMeans[closestPower];
                                 double stdDev = data.Metrics.LearnLevelPowerStandardDeviations[closestPower];
                                 int learnLevel = rand.RandomGaussianPositiveNonZeroInt(mean, stdDev);
-                                AddMoveToEvoTreeMoveSet(pkmn, move, learnLevel);
+                                AddMoveToEvoTreeMoveSet(pokemon, move, learnLevel);
                             }
                         }
                     }
@@ -314,26 +336,26 @@ namespace PokemonRandomizer.Backend.Randomization
                 {
                     if (settings.TmMtCompatSetting == Settings.TmMtCompatOption.AllOn)
                     {
-                        pkmn.TMCompat.SetAll(true);
-                        pkmn.moveTutorCompat.SetAll(true);
-                        for (int i = 0; i < pkmn.TMCompat.Length; ++i)
+                        pokemon.TMCompat.SetAll(true);
+                        pokemon.moveTutorCompat.SetAll(true);
+                        for (int i = 0; i < pokemon.TMCompat.Length; ++i)
                         {
-                            pkmn.TMCompat[i] = true;
+                            pokemon.TMCompat[i] = true;
                         }
-                        for (int i = 0; i < pkmn.moveTutorCompat.Length; ++i)
+                        for (int i = 0; i < pokemon.moveTutorCompat.Length; ++i)
                         {
-                            pkmn.moveTutorCompat[i] = true;
+                            pokemon.moveTutorCompat[i] = true;
                         }
                     }
                     else if (settings.TmMtCompatSetting == Settings.TmMtCompatOption.Random)
                     {
-                        for (int i = 0; i < pkmn.TMCompat.Length; ++i)
+                        for (int i = 0; i < pokemon.TMCompat.Length; ++i)
                         {
-                            pkmn.TMCompat[i] = rand.RandomDouble() < settings.TmMtTrueChance;
+                            pokemon.TMCompat[i] = rand.RandomDouble() < settings.TmMtTrueChance;
                         }
-                        for (int i = 0; i < pkmn.moveTutorCompat.Length; ++i)
+                        for (int i = 0; i < pokemon.moveTutorCompat.Length; ++i)
                         {
-                            pkmn.moveTutorCompat[i] = rand.RandomDouble() < settings.TmMtTrueChance;
+                            pokemon.moveTutorCompat[i] = rand.RandomDouble() < settings.TmMtTrueChance;
                         }
                     }
                     else if (settings.TmMtCompatSetting == Settings.TmMtCompatOption.RandomKeepNumber)
@@ -359,32 +381,32 @@ namespace PokemonRandomizer.Backend.Randomization
                                 choices.Remove(choice);
                             }
                         }
-                        RandomKeepNumber(pkmn.TMCompat, rand);
-                        RandomKeepNumber(pkmn.moveTutorCompat, rand);
+                        RandomKeepNumber(pokemon.TMCompat, rand);
+                        RandomKeepNumber(pokemon.moveTutorCompat, rand);
                     }
                     else if (settings.TmMtCompatSetting == Settings.TmMtCompatOption.Intelligent)
                     {
                         void SetCompatIntelligent(BitArray arr, int ind, Move[] moveList)
                         {
                             var moveData = data.MoveData[(int)moveList[ind]];
-                            if (pkmn.types.Contains(moveData.type))
+                            if (pokemon.types.Contains(moveData.type))
                                 arr[ind] = true;
-                            else if (pkmn.learnSet.Any((l) => l.move == moveData.move))
+                            else if (pokemon.learnSet.Any((l) => l.move == moveData.move))
                                 arr[ind] = true;
-                            else if (pkmn.eggMoves.Contains(moveData.move))
+                            else if (pokemon.eggMoves.Contains(moveData.move))
                                 arr[ind] = true;
                             else if (moveData.type == PokemonType.NRM)
                                 arr[ind] = rand.RandomDouble() < settings.TmMtTrueChance;
                             else
                                 arr[ind] = rand.RandomDouble() < settings.TmMtNoise;
                         }
-                        for (int i = 0; i < pkmn.TMCompat.Length; ++i)
+                        for (int i = 0; i < pokemon.TMCompat.Length; ++i)
                         {
-                            SetCompatIntelligent(pkmn.TMCompat, i, data.TMMoves);
+                            SetCompatIntelligent(pokemon.TMCompat, i, data.TMMoves);
                         }
-                        for (int i = 0; i < pkmn.moveTutorCompat.Length; ++i)
+                        for (int i = 0; i < pokemon.moveTutorCompat.Length; ++i)
                         {
-                            SetCompatIntelligent(pkmn.moveTutorCompat, i, data.tutorMoves);
+                            SetCompatIntelligent(pokemon.moveTutorCompat, i, data.tutorMoves);
                         }
                     }
                 }
@@ -394,26 +416,26 @@ namespace PokemonRandomizer.Backend.Randomization
                 if(settings.CatchRateSetting != Settings.CatchRateOption.Unchanged)
                 {
                     // Do not change if KeepLegendaryCatchRates is on AND this pokemon is a legendary
-                    if(!settings.KeepLegendaryCatchRates || !pkmn.IsLegendary)
+                    if(!settings.KeepLegendaryCatchRates || !pokemon.IsLegendary)
                     {
                         if (settings.CatchRateSetting == Settings.CatchRateOption.CompletelyRandom)
-                            pkmn.catchRate = rand.RandomByte();
+                            pokemon.catchRate = rand.RandomByte();
                         else if (settings.CatchRateSetting == Settings.CatchRateOption.AllEasiest)
-                            pkmn.catchRate = byte.MaxValue;
+                            pokemon.catchRate = byte.MaxValue;
                         else if (settings.CatchRateSetting == Settings.CatchRateOption.Constant)
-                            pkmn.catchRate = settings.CatchRateConstant;
+                            pokemon.catchRate = settings.CatchRateConstant;
                         else // Intelligent
                         {
                             // Basic pokemon (or pokemon with only a baby evolution)
-                            if (pkmn.evolvesFrom.Count == 0 || pkmn.IsBasicOrEvolvesFromBaby)
+                            if (pokemon.evolvesFrom.Count == 0 || pokemon.IsBasicOrEvolvesFromBaby)
                             {
-                                if (pkmn.catchRate < settings.IntelligentCatchRateBasicThreshold)
-                                    pkmn.catchRate = settings.IntelligentCatchRateBasicThreshold;
+                                if (pokemon.catchRate < settings.IntelligentCatchRateBasicThreshold)
+                                    pokemon.catchRate = settings.IntelligentCatchRateBasicThreshold;
                             }
                             else // Evolved pokemon
                             {
-                                if (pkmn.catchRate < settings.IntelligentCatchRateEvolvedThreshold)
-                                    pkmn.catchRate = settings.IntelligentCatchRateEvolvedThreshold;
+                                if (pokemon.catchRate < settings.IntelligentCatchRateEvolvedThreshold)
+                                    pokemon.catchRate = settings.IntelligentCatchRateEvolvedThreshold;
                             }
                         }
                     }
@@ -565,7 +587,7 @@ namespace PokemonRandomizer.Backend.Randomization
                     {
                         enc.pokemon = mapping[enc.pokemon];
                         if (wildSpeciesSettings.RestrictIllegalEvolutions)
-                            enc.pokemon = CorrectImpossibleEvo(enc.pokemon, enc.level, wildSpeciesSettings);
+                            enc.pokemon = CorrectImpossibleEvo(enc.pokemon, enc.level);
                     }
                 }
             }
@@ -582,7 +604,9 @@ namespace PokemonRandomizer.Backend.Randomization
                     {
                         enc.pokemon = mapping[enc.pokemon];
                         if (wildSpeciesSettings.RestrictIllegalEvolutions)
-                            enc.pokemon = CorrectImpossibleEvo(enc.pokemon, enc.level, wildSpeciesSettings);
+                        {
+                            enc.pokemon = CorrectImpossibleEvo(enc.pokemon, enc.level);
+                        }
                     }
                 }
             }
@@ -646,7 +670,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 // Set Wally's first pokemon to the catching tut pokemon
                 RandomizeTrainer(firstBattle, pokemonSet, rivalSettings, false);
                 var firstBattleAce = firstBattle.pokemon[firstBattle.pokemon.Length - 1];
-                firstBattleAce.species = MaxEvolution(data.CatchingTutPokemon, firstBattleAce.level, rivalSettings.SpeciesSettings);
+                firstBattleAce.species = MaxEvolution(data.CatchingTutPokemon, firstBattleAce.level, rivalSettings.SpeciesSettings.RestrictIllegalEvolutions);
                 // Procedurally generate the rest of Wally's battles
                 RandomizeTrainerReoccurring(firstBattle, wallyBattles, pokemonSet, rivalSettings);
             }
@@ -738,6 +762,7 @@ namespace PokemonRandomizer.Backend.Randomization
         {
             //Start with all for now
             HashSet<PokemonSpecies> pokemonSet = EnumUtils.GetValues<PokemonSpecies>().ToHashSet();
+            pokemonSet.Remove(PokemonSpecies.None);
             // Restrict pokemon if applicable
             // Possible restrictions any combination of: GenI, GenI+ (GenI related pokemon from GenII, and/or possibly GenIV), GenII,
             // GenII+ (GenII related from GenI, GenII and/or possilby GenIV), GenIII, GenIII+ (Gen II related pokemon from GenI and/or GenII
@@ -768,9 +793,9 @@ namespace PokemonRandomizer.Backend.Randomization
         {
             var newSpecies = RandomSpeciesTypeGroup(possiblePokemon, pokemon, typeGroup, speciesSettings);
             if (speciesSettings.ForceHighestLegalEvolution)
-                newSpecies = MaxEvolution(newSpecies, level, speciesSettings);
+                newSpecies = MaxEvolution(newSpecies, level, speciesSettings.RestrictIllegalEvolutions);
             else if (speciesSettings.RestrictIllegalEvolutions)
-                newSpecies = CorrectImpossibleEvo(newSpecies, level, speciesSettings);
+                newSpecies = CorrectImpossibleEvo(newSpecies, level);
             // Actually choose the species
             return newSpecies;
         }
@@ -794,9 +819,9 @@ namespace PokemonRandomizer.Backend.Randomization
         {
             var newSpecies = RandomSpecies(possiblePokemon, pokemon, speciesSettings);
             if (speciesSettings.ForceHighestLegalEvolution)
-                newSpecies = MaxEvolution(newSpecies, level, speciesSettings);
+                newSpecies = MaxEvolution(newSpecies, level, speciesSettings.RestrictIllegalEvolutions);
             else if(speciesSettings.RestrictIllegalEvolutions)
-                newSpecies = CorrectImpossibleEvo(newSpecies, level, speciesSettings);
+                newSpecies = CorrectImpossibleEvo(newSpecies, level);
             // Actually choose the species
             return newSpecies;
         }
@@ -942,7 +967,7 @@ namespace PokemonRandomizer.Backend.Randomization
         {
             var set = SpeciesWeightedSet(possiblePokemon, data.Starters[0], speciesSettings);
             if(speciesSettings.RestrictIllegalEvolutions)
-                set.RemoveWhere((p) => !IsPokemonValidLevel(data.PokemonLookup[p].evolvesFrom, 5, speciesSettings));
+                set.RemoveWhere((p) => !IsPokemonValidLevel(data.PokemonLookup[p], 5));
             var pool = new WeightedSet<PokemonSpecies>(set);
             while(pool.Count > 0)
             {
@@ -1048,65 +1073,69 @@ namespace PokemonRandomizer.Backend.Randomization
             return false;
         }
         /// If the pokemon is an invalid level due to evolution state, revert to an earlier evolution
-        private PokemonSpecies CorrectImpossibleEvo(PokemonSpecies species, int level, Settings.SpeciesSettings speciesSettings)
+        private PokemonSpecies CorrectImpossibleEvo(PokemonSpecies species, int level)
         {
-            var newSpecies = species;
-            var evolvesFrom = data.PokemonLookup[newSpecies].evolvesFrom;
-            while (!IsPokemonValidLevel(evolvesFrom, level, speciesSettings))
+            var pokemon = data.PokemonLookup[species];
+            while (!IsPokemonValidLevel(pokemon, level))
             {
                 // Choose a random element from the pokemon this pokemon evolves from
-                newSpecies = rand.Choice(evolvesFrom).Pokemon;
-                evolvesFrom = data.PokemonLookup[newSpecies].evolvesFrom;
+                pokemon = data.PokemonLookup[rand.Choice(pokemon.evolvesFrom).Pokemon];
             }
-            return newSpecies;
+            return pokemon.species;
         }
         /// <summary> returns false if the pokemon is an invalid level. 
         /// (due to not being high enough level to evolve to the current species) </summary>
-        private bool IsPokemonValidLevel(List<Evolution> evolvesFrom, int level, Settings.SpeciesSettings speciesSettings)
+        private bool IsPokemonValidLevel(PokemonBaseStats pokemon, int level)
         {
-            if (evolvesFrom.Count == 0) // basic pokemon
+            if (pokemon.evolvesFrom.Count == 0) // basic pokemon
                 return true;
             // Is there at least one valid evolution
-            foreach (var evo in evolvesFrom)
-                if (EquivalentLevelReq(evo, speciesSettings) - speciesSettings.IllegalEvolutionLeeway <= level)
+            foreach (var evo in pokemon.evolvesFrom)
+            {
+                if (EquivalentLevelReq(evo, pokemon) <= level)
                     return true;
+            }
             return false;
         }
-        /// <summary> Returns the equivalent required level of an evolution (including non-leveling evolutions if applicable) </summary>
-        private int EquivalentLevelReq(Evolution evo, Settings.SpeciesSettings speciesSettings)
+        /// <summary> Returns the equivalent required level of an evolution for a give pokemon (including non-leveling evolutions if applicable) </summary>
+        public int EquivalentLevelReq(Evolution evo, PokemonBaseStats pokemon)
         {
             if (evo.EvolvesByLevel)
                 return evo.parameter;
-            else if (!speciesSettings.SetLevelsOnArtificialEvos)
-                return 0;
-            else if (evo.EvolvesByTrade)
-                return speciesSettings.TradeEvolutionLevel;
-            else if (evo.Type == EvolutionType.UseItem)
-                return speciesSettings.ItemEvolutionLevel;
-            else if (evo.Type == EvolutionType.Beauty)
-                return speciesSettings.BeautyEvolutionLevel;
-            else // Evolves by friendship
+            if(evo.EvolvesByFriendship && pokemon.IsBaby)
             {
-                if (PokemonBaseStats.babyPokemon.Contains(evo.Pokemon))
-                    return speciesSettings.BabyFriendshipEvolutionLevel;
-                return speciesSettings.FriendshipEvolutionLevel;
+                return 18;
+            }
+            // For any other type Calculate level based on evolution tree
+            if (pokemon.evolvesFrom.Count > 0)
+            {
+                return EquivalentLevelReq(pokemon.evolvesFrom[0], data.PokemonLookup[pokemon.evolvesFrom[0].Pokemon]) + 12;
+            }
+            else
+            {
+                int baseLevel = 32;
+                // Is this pokemon a middle stage evolution?
+                if (data.PokemonLookup[evo.Pokemon].evolvesTo.Count((e) => e.Pokemon != PokemonSpecies.None) > 0)
+                    baseLevel -= 8;
+                return baseLevel;
             }
         }
+
         /// <summary> Return the maximum evolved form of the pokemon at the given level.
         /// returns a lower form if the pokemon is an invalid level.
         /// returns a random branch for evolution trees that branch </summary>
-        private PokemonSpecies MaxEvolution(PokemonSpecies p, int level, Settings.SpeciesSettings speciesSettings)
+        private PokemonSpecies MaxEvolution(PokemonSpecies p, int level, bool restrictIllegalEvolutions)
         {
             var stats = data.PokemonLookup[p];
             // If illegal evolutions are disabled, and the pokemon is an illegal level, correct the impossible evolution
-            if (speciesSettings.RestrictIllegalEvolutions && !IsPokemonValidLevel(stats.evolvesFrom, level, speciesSettings))
-                return CorrectImpossibleEvo(p, level, speciesSettings);
+            if (restrictIllegalEvolutions && !IsPokemonValidLevel(stats, level))
+                return CorrectImpossibleEvo(p, level);
             // Else evolve the pokemon until you can't anymore
-            var evos = stats.evolvesTo.Where((evo) => evo.Type != EvolutionType.None && EquivalentLevelReq(evo, speciesSettings) <= level);
+            var evos = stats.evolvesTo.Where((evo) => evo.Type != EvolutionType.None && EquivalentLevelReq(evo, stats) <= level);
             while (evos.Count() > 0)
             {
                 stats = data.PokemonLookup[rand.Choice(evos).Pokemon];
-                evos = stats.evolvesTo.Where((evo) => evo.Type != EvolutionType.None && EquivalentLevelReq(evo, speciesSettings) <= level);
+                evos = stats.evolvesTo.Where((evo) => evo.Type != EvolutionType.None && EquivalentLevelReq(evo, stats) <= level);
             }
             return stats.species;
         }
@@ -1209,7 +1238,7 @@ namespace PokemonRandomizer.Backend.Randomization
                     // Migrate Ace pokemon from the last battle
                     var currAce = battle.pokemon[battle.pokemon.Length - 1];
                     var lastAce = lastBattle.pokemon[lastBattle.pokemon.Length - 1];
-                    currAce.species = MaxEvolution(lastAce.species, currAce.level, speciesSettings);
+                    currAce.species = MaxEvolution(lastAce.species, currAce.level, speciesSettings.RestrictIllegalEvolutions);
                     if (currAce.HasSpecialMoves)
                     {
                         currAce.moves = MovesetGenerator.SmartMoveSet(rand, data, data.PokemonLookup[currAce.species], currAce.level);
@@ -1230,7 +1259,7 @@ namespace PokemonRandomizer.Backend.Randomization
                     {
                         var currPokemon = battle.pokemon[battleSize - (i + 1)];
                         var lastPokemon = lastBattle.pokemon[lastBattleSize - (i + 1)];
-                        currPokemon.species = MaxEvolution(lastPokemon.species, currPokemon.level, speciesSettings);
+                        currPokemon.species = MaxEvolution(lastPokemon.species, currPokemon.level, speciesSettings.RestrictIllegalEvolutions);
                         if(currPokemon.HasSpecialMoves)
                         {
                             currPokemon.moves = MovesetGenerator.SmartMoveSet(rand, data, data.PokemonLookup[currPokemon.species], currPokemon.level);

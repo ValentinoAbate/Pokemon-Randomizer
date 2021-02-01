@@ -52,12 +52,13 @@ namespace PokemonRandomizer
         #region Evolution
 
         public bool FixImpossibleEvos => true;
+        public double ImpossibleEvoLevelStandardDev => 1;
         public enum TradeItemPokemonOption
         { 
             LevelUp,
             UseItem,
         }
-        public TradeItemPokemonOption TradeItemEvoSetting => TradeItemPokemonOption.UseItem;
+        public TradeItemPokemonOption TradeItemEvoSetting => TradeItemPokemonOption.LevelUp;
 
 
         #endregion
@@ -224,10 +225,6 @@ namespace PokemonRandomizer
                     SpeciesSettings = new SpeciesSettings()
                     {
                         BanLegendaries = false,
-                        IllegalEvolutionLeeway = 2,
-                        ItemEvolutionLevel = 20,
-                        FriendshipEvolutionLevel = 20,
-                        TradeEvolutionLevel = 30,
                         ForceHighestLegalEvolution = true,
                         WeightType = SpeciesSettings.WeightingType.Group,
                         Sharpness = 2,
@@ -515,18 +512,8 @@ namespace PokemonRandomizer
                 Group,
             }
 
-            #region Evolution Settings
             public bool RestrictIllegalEvolutions { get; set; } = true;
-            public int IllegalEvolutionLeeway { get; set; } = 0;
             public bool ForceHighestLegalEvolution { get; set; } = false;
-            public bool SetLevelsOnArtificialEvos { get => true; }
-            public int ItemEvolutionLevel { get; set; } = 27;
-            public int TradeEvolutionLevel { get; set; } = 32;
-            public int FriendshipEvolutionLevel { get; set; } = 25;
-            public int BeautyEvolutionLevel { get => 32; }
-            public int BabyFriendshipEvolutionLevel { get; set; } = 10;
-            #endregion
-
             public bool BanLegendaries { get; set; } = false;
             public WeightingType WeightType { get; set; } = WeightingType.Individual;
             public float Sharpness { get; set; } = 0;
