@@ -132,7 +132,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 // Fix Impossible Evolutions
                 if(settings.FixImpossibleEvos)
                 {
-                    // Make a non-levelup evoltion into a level up one. Resolves som conflicts but not all
+                    // Make a non-levelup evoltion into a level up one. Resolves some conflicts but not all
                     void MakeEvolutionByLevelUp(Evolution evo)
                     {
                         var evolveByLevelUp = pokemon.evolvesTo.FirstOrDefault((e) => e.Type == EvolutionType.LevelUp);

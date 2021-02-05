@@ -592,7 +592,7 @@ namespace PokemonRandomizer.Backend.Writing
                     if (trainer.dataType == TrainerPokemon.DataType.Basic)
                         rom.Skip(2); // Skip padding
                     else if (trainer.dataType == TrainerPokemon.DataType.HeldItem)
-                        rom.WriteUInt16((int)pokemon.heldItem);
+                        rom.WriteUInt16((int)RemapItem(pokemon.heldItem));
                     else if (trainer.dataType == TrainerPokemon.DataType.SpecialMoves)
                     {
                         foreach (var move in pokemon.moves)
@@ -601,7 +601,7 @@ namespace PokemonRandomizer.Backend.Writing
                     }
                     else if (trainer.dataType == TrainerPokemon.DataType.SpecialMovesAndHeldItem)
                     {
-                        rom.WriteUInt16((int)pokemon.heldItem);
+                        rom.WriteUInt16((int)RemapItem(pokemon.heldItem));
                         foreach (var move in pokemon.moves)
                             rom.WriteUInt16((int)move);
                     }
