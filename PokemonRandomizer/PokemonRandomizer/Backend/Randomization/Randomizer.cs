@@ -221,14 +221,14 @@ namespace PokemonRandomizer.Backend.Randomization
                 // Mutate Pokemon Type
                 if (pokemon.IsSingleTyped)
                 {
-                    if (rand.RandomDouble() < settings.SingleTypeRandChance)
+                    if (rand.RollSuccess(settings.SingleTypeRandChance))
                         pokemon.types[0] = pokemon.types[1] = rand.Choice(data.Metrics.TypeRatiosSingle);
                 }
                 else
                 {
-                    if (rand.RandomDouble() < settings.DualTypePrimaryRandChance)
+                    if (rand.RollSuccess(settings.DualTypePrimaryRandChance))
                         pokemon.types[0] = rand.Choice(data.Metrics.TypeRatiosDualPrimary);
-                    if (rand.RandomDouble() < settings.DualTypeSecondaryRandChance)
+                    if (rand.RollSuccess(settings.DualTypeSecondaryRandChance))
                         pokemon.types[1] = rand.Choice(data.Metrics.TypeRatiosDualSecondary);
                 }
                 #endregion

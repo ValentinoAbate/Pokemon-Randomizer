@@ -10,6 +10,11 @@ namespace PokemonRandomizer
     {
         private readonly MainWindow window;
 
+        public Settings(MainWindow window)
+        {
+            this.window = window;
+        }
+
         #region Seeding
         public string Seed { get => window.tbSeed.Text; }
         public bool SetSeed { get => (bool)window.cbSeed.IsChecked; }
@@ -496,11 +501,6 @@ namespace PokemonRandomizer
         public bool EvolveWithoutNationalDex => true;
 
         #endregion
-
-        public Settings(MainWindow window)
-        {
-            this.window = window;
-        }
 
         #region Species Randomization
        

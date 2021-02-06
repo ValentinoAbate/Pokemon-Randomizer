@@ -15,6 +15,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.ComponentModel;
 using System.IO;
+using PokemonRandomizer.Windows;
 using PokemonRandomizer.CultureUtils;
 using PokemonRandomizer.Backend.DataStructures;
 using PokemonRandomizer.Backend.EnumTypes;
@@ -29,6 +30,7 @@ namespace PokemonRandomizer
     /// </summary>
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
+        public const string version = "v0.0.6.1";
         #region XAML Properties for bindings
         private bool _isROMLoaded;
         public bool IsROMLoaded
@@ -116,11 +118,11 @@ namespace PokemonRandomizer
             }
             else
             {
-                lblMessageBoxContent.Content = "Failed to open rom - unsupported generation (" + metadata.Gen.ToString() + ")";
+                lblInfoBoxContent.Content = "Failed to open rom - unsupported generation (" + metadata.Gen.ToString() + ")";
                 return false;
             }
             IsROMLoaded = true;
-            lblMessageBoxContent.Content = "Rom opened: " + metadata.Name + " (" + metadata.Code + ")";
+            lblInfoBoxContent.Content = "Rom opened: " + metadata.Name + " (" + metadata.Code + ")";
             LastRandomizationInfo = OriginalData.ToStringArray();
             Metadata = metadata;
             return true;
@@ -188,7 +190,7 @@ namespace PokemonRandomizer
         }
         #endregion
 
-        private void Open_ROM(object sender, RoutedEventArgs e)
+        private void OpenROM(object sender, RoutedEventArgs e)
         {
             var openFileDialog = new OpenFileDialog
             {
@@ -203,12 +205,12 @@ namespace PokemonRandomizer
                 }
                 catch(IOException exception)
                 {
-                    lblMessageBoxContent.Content = "Failed to open rom: " + exception.Message;
+                    lblInfoBoxContent.Content = "Failed to open rom: " + exception.Message;
                 }
             }
         }
 
-        private void Save_ROM(object sender, RoutedEventArgs e)
+        private void SaveROM(object sender, RoutedEventArgs e)
         {
             string filter = gbaRomFileFilter;
             if (Metadata.Gen == Generation.IV)
@@ -226,12 +228,12 @@ namespace PokemonRandomizer
                 }
                 catch (IOException exception)
                 {
-                    lblMessageBoxContent.Content = "Failed to save rom: " + exception.Message;
+                    lblInfoBoxContent.Content = "Failed to save rom: " + exception.Message;
                 }
             }
         }
 
-        private void Generate_Info_Doc(object sender, RoutedEventArgs e)
+        private void GenerateInfoDoc(object sender, RoutedEventArgs e)
         {
             var saveFileDialog = new SaveFileDialog
             {
@@ -244,7 +246,7 @@ namespace PokemonRandomizer
             }
         }
 
-        private void Convert_Table(object sender, RoutedEventArgs e)
+        private void ConvertTable(object sender, RoutedEventArgs e)
         {
             var openFileDialog = new OpenFileDialog
             {
@@ -258,15 +260,22 @@ namespace PokemonRandomizer
 
         }
 
-        private void SeedCheckBox_Changed(object sender, RoutedEventArgs e)
+        private void SeedCheckBoxChanged(object sender, RoutedEventArgs e)
         {
             tbSeed.Visibility = (bool)cbSeed.IsChecked ? Visibility.Visible : Visibility.Collapsed;
         }
 
-        private void Select_On_Right_Click(object sender, RoutedEventArgs e)
+        private void SelectOnRightClick(object sender, RoutedEventArgs e)
         {
             var item = sender as TreeViewItem;
             item.IsSelected = true;
+        }
+
+        private void ShowAboutWindow(object sender, RoutedEventArgs e)
+        {
+            var aboutWindow = new AboutWindow();
+            aboutWindow.Owner = this;
+            aboutWindow.ShowDialog();
         }
     }
     public static class Commands

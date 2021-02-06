@@ -29,17 +29,20 @@
         </Grid.ColumnDefinitions>
         <Menu Grid.Row="0">
             <MenuItem Header="_File">
-                <MenuItem Header="_Open ROM" Click="Open_ROM"/>
-                <MenuItem Name="menuSaveROM" IsEnabled="{Binding IsROMLoaded}" Header="_Save ROM" Click="Save_ROM"/>
-                <MenuItem Name="menuGenerateInfoDoc" IsEnabled="{Binding IsROMLoaded}" Header="_Generate Info" Click="Generate_Info_Doc" />
+                <MenuItem Header="_Open ROM" Click="OpenROM"/>
+                <MenuItem Name="menuSaveROM" IsEnabled="{Binding IsROMLoaded}" Header="_Save ROM" Click="SaveROM"/>
+                <MenuItem Name="menuGenerateInfoDoc" IsEnabled="{Binding IsROMLoaded}" Header="_Generate Info" Click="GenerateInfoDoc" />
                 <MenuItem Visibility="Collapsed" Header="Debug">
                 </MenuItem>
-                <MenuItem Visibility="Collapsed" Header="_Convert Table" Click="Convert_Table" />
+                <MenuItem Visibility="Collapsed" Header="_Convert Table" Click="ConvertTable" />
                     <Separator />
                     <MenuItem Header="_Exit" />
                 </MenuItem>
             <MenuItem Header="Presets">
 
+            </MenuItem>
+            <MenuItem Header="Help">
+                <MenuItem Header="About" Click="ShowAboutWindow"/>
             </MenuItem>
         </Menu>
         
@@ -62,7 +65,7 @@
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
                     <StackPanel Grid.Column="1" Grid.Row="1" Orientation="Vertical">
-                        <CheckBox Name="cbSeed" Checked="SeedCheckBox_Changed" Unchecked="SeedCheckBox_Changed">Use Randomizer Seed</CheckBox>
+                        <CheckBox Name="cbSeed" Checked="SeedCheckBoxChanged" Unchecked="SeedCheckBoxChanged">Use Randomizer Seed</CheckBox>
                         <TextBox Name="tbSeed" Visibility="Collapsed" Text="Enter a seed"/>
                     </StackPanel>
                 </Grid>
@@ -230,7 +233,7 @@
                                 </ContextMenu>
                             <Style x:Key="PkmnMutGroupStyle" TargetType="{x:Type TreeViewItem}">
                                 <Setter Property="ContextMenu" Value="{StaticResource PkmnMutGroupMenu}"/>
-                                <EventSetter Event="MouseRightButtonDown" Handler="Select_On_Right_Click"/>
+                                <EventSetter Event="MouseRightButtonDown" Handler="SelectOnRightClick"/>
                             </Style>
                         </StackPanel.Resources>
                             <Label Margin="0,0,0,0" Content="Mutation Groups" />
@@ -322,9 +325,9 @@
         
         <!--Message Box-->
         
-        <StatusBar Name="MessageBox" Grid.Row="2" Height="45">
+        <StatusBar Name="InfoBox" Grid.Row="2" Height="45">
             <StatusBarItem>
-                <Label Name="lblMessageBoxContent" Content="Please open a Rom! use file-&gt;Open Rom."/>
+                <Label Name="lblInfoBoxContent" Content="Please open a Rom! use file-&gt;Open Rom."/>
             </StatusBarItem>
         </StatusBar>
     </Grid>

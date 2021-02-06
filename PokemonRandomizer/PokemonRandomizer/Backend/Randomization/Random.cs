@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace PokemonRandomizer.Backend.Randomization
 {
@@ -24,6 +25,7 @@ namespace PokemonRandomizer.Backend.Randomization
         /// </summary>
         /// <param name="successChance">Range: 0.0 - 1.0 </param>
         /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool RollSuccess(double successChance)
         {
             if (successChance <= 0)
@@ -37,27 +39,25 @@ namespace PokemonRandomizer.Backend.Randomization
 
         #region General Random Functions
         /// <summary> Generate an int in between min (inclusive) and max (inclusive) </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int RandomInt(int min, int max) => rand.Next(min, max);
         /// <summary> Generate a double in between 0.0 (inclusive) and 1 (exclusive) </summary>
-        public double RandomDouble() => rand.NextDouble(); 
-        /// <summary> Generate a random float (untested) </summary>
-        public float RandomFloat()
-        {
-            double mantissa = (rand.NextDouble() * 2.0) - 1.0;
-            double exponent = Math.Pow(2.0, rand.Next(-127, 128));
-            return (float)(mantissa * exponent);
-        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public double RandomDouble() => rand.NextDouble();
         /// <summary> Generate a byte in between 0 (inclusive) and 255 (inclusive) </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public byte RandomByte() => (byte)RandomInt(0, 255);
         #endregion
 
         #region Random Choice from a collection (With options for weighting)
         /// <summary> Returns an unweighted random choice from the given array </summary> 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public T Choice<T>(T[] items)
         {
             return items[rand.Next(0, items.Length)];
         }
-        /// <summary> Returns an unweighted random choice from the given IEnumerable </summary> 
+        /// <summary> Returns an unweighted random choice from the given IEnumerable </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public T Choice<T>(IEnumerable<T> items)
         {
             if (items.Count() <= 0)
@@ -111,6 +111,7 @@ namespace PokemonRandomizer.Backend.Randomization
             throw new Exception("No item chosen");
         }
         /// <summary> Returns a weighted random choice from the given WeightedSet </summary> 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public T Choice<T>(WeightedSet<T> items)
         {
             return Choice(items.Items, items.Weights);
