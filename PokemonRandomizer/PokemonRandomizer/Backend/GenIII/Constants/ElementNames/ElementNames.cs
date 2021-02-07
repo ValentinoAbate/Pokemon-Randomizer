@@ -11,6 +11,8 @@ namespace PokemonRandomizer.Backend.GenIII.Constants.ElementNames
     /// </summary>
     public static class ElementNames
     {
+        // Pokedex Elements
+        public const string nationalDexOrder = "nationalDexOrder";
         // Map elements
         public const string mapLabels = "mapLabels";
         public const string mapBankPointers = "mapBankPointers";
@@ -19,6 +21,7 @@ namespace PokemonRandomizer.Backend.GenIII.Constants.ElementNames
         public const string evolutions = "evolutions";
         public const string tmHmCompat = "tmHmCompat";
         public const string pokemonBaseStats = "pokemonBaseStats";
+        public const string pokemonNames = "pokemonNames";
         public const string tutorCompat = "moveTutorCompat";
         public const string movesets = "movesets";
         public const string starterPokemon = "starterPokemon";

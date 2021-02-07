@@ -51,7 +51,6 @@ namespace PokemonRandomizer.Backend.DataStructures
 
         #region Helper Properties
 
-        public int DexIndex => PokedexUtils.PokedexIndex(species);
         public bool IsSingleTyped => types[0] == types[1];
         public bool IsLegendary => legendaries.Contains(species);
 
@@ -125,14 +124,17 @@ namespace PokemonRandomizer.Backend.DataStructures
         public BitArray moveTutorCompat; //Compatibility with moveTutors (index maps to RomData.tutorMoves)
         #endregion
 
+        public string Name { get; set; }
+
         public Evolution[] evolvesTo;
         // Just for lookup purposes, not to be written to file
         public List<Evolution> evolvesFrom = new List<Evolution>();
+        public int NationalDexIndex { get; set; }
 
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
-            string dexName = PokedexUtils.DexName(species);
+            string dexName = Name;
             sb.Append(dexName + new string(' ', 15 - dexName.Length) + "| ");
             for (int i = 0; i < 6; i++)
             {

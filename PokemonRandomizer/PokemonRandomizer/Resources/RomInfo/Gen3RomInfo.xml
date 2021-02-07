@@ -10,7 +10,7 @@
 
 <gen3RomInfo>
   <!-- Gen III Constants -->
-  
+  <!-- Things in here should be assumed to be constant for all of gen III, or contant to FRLG+E, in which case they will be overridden in rsConstants -->
   <constants>
     <!-- from dabomstew's UP randomizer source https://github.com/Dabomstew/universal-pokemon-randomizer -->
     <wildPokemon pointerPrefix="0x0348048009E00000FFFF0000" grassSlots="12" surfSlots="5" rockSmashSlots="5" fishSlots="10"/>
@@ -24,7 +24,7 @@
     <!-- Move Data -->
 
     <moveData pointer="0x1CC" num="354" size="12"/>
-    <moveNames pointer="0x148"/>
+    <moveNames pointer="0x148" />
 
     <!-- TMs, HMs, and Move Tutors -->
 
@@ -47,6 +47,7 @@
     <moveTutorCompat size="4"/>
     <eggMoves pokemonSigniture="0x4E20"/>
     <evolutions size="40" sizePerEvolution="8" evolutionsPerPokemon="5"/>
+    <pokemonNames length ="11"/>
 
     <!-- Map Data -->
     
@@ -97,6 +98,10 @@
     <runIndoors offset="0x11A1E8"/>
     <textSpeed offset="0x60F094"/>
 
+    <!-- Pokedex -->
+
+    <nationalDexOrder pointer="0x06D448"/>
+
     <!-- Type Data -->
 
     <typeEffectiveness offset="0x31ace8"/>
@@ -120,6 +125,7 @@
     <!-- pointer found in Hex Editor Advance's Table reference file. offset found from following pointer -->
     <eggMoves offset="0x32ADD8" pointer="0x0703F0" />
     <evolutions offset="0x32531C" pointer="0x06D140"/>
+    <pokemonNames pointer="0x000144"/>
 
     <!-- Items -->
 
@@ -171,6 +177,19 @@
     <inheritFrom>rseConstants</inheritFrom>
     <freeSpace byte="0xFF" startAddy="0x800000"/>
     
+    <!-- Pokedex -->
+
+    <nationalDexOrder pointer="0x03F83C"/>
+
+    <!-- Move Data -->
+
+    <moveData pointer="0x00CA54"/>
+    <moveNames pointer="0x02E18C"/>
+
+    <!-- Pokemon Definitions -->
+
+    <pokemonNames pointer="0x00FA58"/>
+    
     <!-- Special Trainer Battles -->
     
     <gymLeaders names="[Roxanne,Brawly,Wattson,Flannery,Norman,Winona,Tate&amp;Liza,Wallace]"/>
@@ -211,6 +230,13 @@
     <inheritFrom>constants</inheritFrom>
     <freeSpace byte="0xFF" startAddy="0x800000"/>
 
+    <!-- Pokedex -->
+
+    <nationalDexOrder pointer="0x04323C"/>
+
+    <!-- Pokemon Definitions -->
+
+    <pokemonNames pointer="0x000144"/>
 
     <!-- Special Trainer Battles -->
 

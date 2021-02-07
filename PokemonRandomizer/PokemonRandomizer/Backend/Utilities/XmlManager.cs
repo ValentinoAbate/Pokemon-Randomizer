@@ -13,6 +13,7 @@ namespace PokemonRandomizer.Backend.Utilities
         public const string pointerPrefixAttr = "pointerPrefix";
         public const string numAttr = "num";
         public const string sizeAttr = "size";
+        public const string lengthAttr = "length";
         public const string constantsElt = "constants";
         public const string inheritanceElt = "inheritFrom";
 
@@ -155,6 +156,11 @@ namespace PokemonRandomizer.Backend.Utilities
         public int Size(string element)
         {
             return (int)Attr(element, sizeAttr);
+        }
+        /// <summary> returns the "length" (max string length) attribute of the given element. Expects an integer value </summary>
+        public int Length(string element)
+        {
+            return (int)Attr(element, lengthAttr);
         }
         /// <summary> returns true if the element has an "offset" (offset) attribute </summary>
         public bool HasOffset(string element)

@@ -15,17 +15,24 @@ namespace PokemonRandomizer.Backend.DataStructures
         public List<PokemonSpecies> Starters { get; set; }
         public List<Item> StarterItems { get; set; }
         public PokemonSpecies CatchingTutPokemon { get; set; }
-        public List<PokemonBaseStats> Pokemon { get; set; }
-        public PokemonBaseStats[] PokemonDexOrder
+        private List<PokemonBaseStats> pokemon;
+        public List<PokemonBaseStats> Pokemon
         {
-            get
+            get => pokemon;
+            set
             {
-                PokemonBaseStats[] shallowClone = Pokemon.ToArray();
-                Array.Sort(shallowClone, (x, y) => x.DexIndex.CompareTo(y.DexIndex));
-                return shallowClone;
+                pokemon = value;
+                // Refresh the national dex order
+                PokemonNationalDexOrder = Pokemon.ToArray();
+                Array.Sort(PokemonNationalDexOrder, (x, y) => x.NationalDexIndex.CompareTo(y.NationalDexIndex));
+                // Refresh the lookup
+                PokemonLookup.Clear();
+                foreach (var p in pokemon)
+                    PokemonLookup.Add(p.species, p);
             }
         }
-        public Dictionary<PokemonSpecies, PokemonBaseStats> PokemonLookup { get; set; }
+        public PokemonBaseStats[] PokemonNationalDexOrder { get; private set; }
+        public Dictionary<PokemonSpecies, PokemonBaseStats> PokemonLookup { get; } = new Dictionary<PokemonSpecies, PokemonBaseStats>();
         public List<string> ClassNames { get; set; }
         public List<Trainer> Trainers { get; set; }
 
@@ -121,7 +128,7 @@ namespace PokemonRandomizer.Backend.DataStructures
                 " Type(s) |  Ability 1     | Ability 2     | Held Item 1   | Held Item 2   | "));
             outLs.Add(("---------------------------------------------------------" +
                       "----------------------------------------------------------------------------"));
-            var pkmnSorted = PokemonDexOrder;
+            var pkmnSorted = PokemonNationalDexOrder;
             foreach (PokemonBaseStats pkmn in pkmnSorted)
             {
                 outLs.Add(pkmn.ToString());

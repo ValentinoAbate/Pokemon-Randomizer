@@ -154,7 +154,6 @@
     <Compile Include="Backend\DataStructures\Evolution.cs" />
     <Compile Include="Backend\EnumTypes\Item.cs" />
     <Compile Include="Backend\DataStructures\LearnSet.cs" />
-    <Compile Include="Backend\Utilities\PokedexUtils.cs" />
     <Compile Include="Backend\DataStructures\PokemonBaseStats.cs" />
     <Compile Include="Backend\Randomization\Random.cs" />
     <Compile Include="Backend\DataStructures\RomData.cs" />

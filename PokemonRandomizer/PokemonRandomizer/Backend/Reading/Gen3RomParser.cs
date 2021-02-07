@@ -27,12 +27,12 @@ namespace PokemonRandomizer.Backend.Reading
             data.MoveData = ReadMoves(rom, info);
 
             #region Base Stats
-            // Read the pokemon base stats from the Rom
-            data.Pokemon = ReadPokemonBaseStats(rom, info, out byte[] skippedData);
+            // Read the pokemon base stats from the Rom and link dex orders
+            var pokemon = ReadPokemonBaseStats(rom, info, out byte[] skippedData);
+            ReadNationalDexOrder(pokemon, rom, info);
+            // Set the data on the RomData
+            data.Pokemon = pokemon;
             data.SkippedLearnSetData = skippedData;
-            data.PokemonLookup = new Dictionary<PokemonSpecies, PokemonBaseStats>();
-            foreach (var pokemon in data.Pokemon)
-                data.PokemonLookup.Add(pokemon.species, pokemon);
             // Link Pokemon to what they evolved from
             data.LinkEvolutions();
             data.LinkEggMoves();
@@ -66,6 +66,19 @@ namespace PokemonRandomizer.Backend.Reading
             // Calculate the balance metrics from the loaded data
             data.CalculateMetrics();
             return data;
+        }
+
+        // Read national dex order
+        private void ReadNationalDexOrder(IList<PokemonBaseStats> pokemon, Rom rom, XmlManager info)
+        {
+            int[] order = new int[info.Num(ElementNames.pokemonBaseStats) + 1];
+            int offset  = info.FindOffset(ElementNames.nationalDexOrder, rom);
+            if (offset == Rom.nullPointer)
+                return;
+            foreach (var p in pokemon)
+            {
+                p.NationalDexIndex = rom.ReadUInt16(offset + (((int)p.species - 1) * 2));
+            }
         }
         // Read the move definitions
         private List<MoveData> ReadMoves(Rom rom, XmlManager info)
@@ -132,18 +145,6 @@ namespace PokemonRandomizer.Backend.Reading
             return moves;
         }
 
-        //private void loadPokemonNames()
-        //{
-        //    int offs = romEntry.getValue("PokemonNames");
-        //    int nameLen = romEntry.getValue("PokemonNameLength");
-        //    int numInternalPokes = romEntry.getValue("PokemonCount");
-        //    pokeNames = new String[numInternalPokes + 1];
-        //    for (int i = 1; i <= numInternalPokes; i++)
-        //    {
-        //        pokeNames[i] = readFixedLengthString(offs + i * nameLen, nameLen);
-        //    }
-        //}
-
         #region Read Pokemon Base Stats
         // Read the Pokemon base stat definitions from the ROM
         private List<PokemonBaseStats> ReadPokemonBaseStats(Rom rom, XmlManager info, out byte[] skippedData)
@@ -183,7 +184,12 @@ namespace PokemonRandomizer.Backend.Reading
             int movesetOffset = info.FindOffset(ElementNames.movesets, rom);
             if (movesetOffset == Rom.nullPointer)
                 return pokemon;
-
+            // Setup Name offset
+            int namesOffset = info.FindOffset(ElementNames.pokemonNames, rom);
+            if (namesOffset == Rom.nullPointer)
+                return pokemon;
+            int nameLength = info.Length(ElementNames.pokemonNames);
+            namesOffset += nameLength;
             #endregion
 
             // Read Egg Moves
@@ -201,6 +207,8 @@ namespace PokemonRandomizer.Backend.Reading
                 }
                 // Create Pokemon
                 PokemonBaseStats pkmn = ReadBaseStatsSingle(rom, pkmnOffset + (i * pkmnSize), (PokemonSpecies)(i + 1));
+                // Read name
+                pkmn.Name = rom.ReadString(namesOffset + (i * nameLength), nameLength);
                 // Set Egg Moves
                 pkmn.eggMoves = eggMoves.ContainsKey(pkmn.species) ? eggMoves[pkmn.species] : new List<Move>();
                 // Read Learn Set
@@ -311,9 +319,8 @@ namespace PokemonRandomizer.Backend.Reading
         // Read evolutions
         private void ReadEvolutions(Rom rom, XmlManager info, int offset, out Evolution[] evolutions)
         {
-            const string evolutionElt = "evolutions";
-            int bytesPerEvolution = info.IntAttr(evolutionElt, "sizePerEvolution");
-            evolutions = new Evolution[info.IntAttr(evolutionElt, "evolutionsPerPokemon")];
+            int bytesPerEvolution = info.IntAttr(ElementNames.evolutions, "sizePerEvolution");
+            evolutions = new Evolution[info.IntAttr(ElementNames.evolutions, "evolutionsPerPokemon")];
             for(int i = 0; i < evolutions.Length; ++i, offset += bytesPerEvolution)
             {
                 byte[] evolutionBlock = rom.ReadBlock(offset, bytesPerEvolution);
@@ -357,7 +364,7 @@ namespace PokemonRandomizer.Backend.Reading
             if (offset == null)
                 return new List<string>();
             int numClasses = info.Num(trainerClassNameElt);
-            int nameLength = (int)info.Attr(trainerClassNameElt, "length");
+            int nameLength = info.Length(trainerClassNameElt);
             int realOffset = (int)offset;
             List<string> classNames = new List<string>(numClasses);
             for(int i = 0; i < numClasses; ++i)

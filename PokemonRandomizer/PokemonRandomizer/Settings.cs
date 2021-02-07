@@ -169,7 +169,7 @@ namespace PokemonRandomizer
         #endregion
 
         #region Power Scaling
-        public Backend.Randomization.PowerScaling.Options TieringOptions { get => Backend.Randomization.PowerScaling.Options.BaseStatsAggregate; }
+        public PowerScaling.Options TieringOptions => PowerScaling.Options.BaseStatsAggregate;
         #endregion
 
         #region Trainers
