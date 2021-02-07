@@ -132,6 +132,8 @@
     <Compile Include="UI\GroupDataModel.cs" />
     <Compile Include="UI\GroupDataView.cs" />
     <Compile Include="UI\GroupUI.cs" />
+    <Compile Include="UI\PokemonTraitsDataModel.cs" />
+    <Compile Include="UI\PokemonTraitsDataView.cs" />
     <Compile Include="UserControls\MutationRateSlider.xaml.cs">
       <DependentUpon>MutationRateSlider.xaml</DependentUpon>
     </Compile>

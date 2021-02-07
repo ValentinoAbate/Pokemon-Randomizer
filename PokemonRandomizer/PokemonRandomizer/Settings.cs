@@ -64,7 +64,7 @@ namespace PokemonRandomizer
             UseItem,
         }
         public TradeItemPokemonOption TradeItemEvoSetting => TradeItemPokemonOption.LevelUp;
-
+        public double DunsparsePlaugeChance { get => 0.25; }
 
         #endregion
 
@@ -143,6 +143,26 @@ namespace PokemonRandomizer
             { AddMoveSource.Random, 0.01f },
             { AddMoveSource.EggMoves, 0.99f },
         };
+
+        #endregion
+
+        #region TMs, HMs, and Move Tutors
+
+        public enum TmMtCompatOption
+        {
+            Unchanged,
+            AllOn,
+            Random,
+            RandomKeepNumber,
+            Intelligent
+        }
+        public TmMtCompatOption TmMtCompatSetting { get => TmMtCompatOption.RandomKeepNumber; }
+        public double TmMtTrueChance { get => 0.42; }
+        public double TmMtNoise { get => 0.15; }
+        public bool PreventHmMovesInTMsAndMoveTutors { get => true; }
+        public bool PreventDuplicateTMsAndMoveTutors { get => true; }
+        public double TMRandChance { get => 1; }
+        public double MoveTutorRandChance { get => 1; }
 
         #endregion
 
@@ -446,38 +466,6 @@ namespace PokemonRandomizer
 
         #endregion
 
-        #region TMs, HMs, and Move Tutors
-
-        public enum TmMtCompatOption
-        {
-            Unchanged,
-            AllOn,
-            Random,
-            RandomKeepNumber,
-            Intelligent
-        }
-        public TmMtCompatOption TmMtCompatSetting { get => TmMtCompatOption.RandomKeepNumber; }
-        public double TmMtTrueChance { get => 0.42; }
-        public double TmMtNoise { get => 0.15; }
-        public bool PreventHmMovesInTMsAndMoveTutors { get => true; }
-        public bool PreventDuplicateTMsAndMoveTutors { get => true; }
-        public double TMRandChance { get => 1; }
-        public double MoveTutorRandChance { get => 1; }
-
-        #endregion
-
-        #region Evolution
-
-        public enum EvolutionOption
-        {
-            Unchanged,
-            DisableIllegal,
-            ForceHighestLegal,
-        }
-        public double DunsparsePlaugeChance { get => 0.25; }
-
-        #endregion
-
         #region Misc
 
         public enum PcItemOption
@@ -503,7 +491,14 @@ namespace PokemonRandomizer
         #endregion
 
         #region Species Randomization
-       
+
+        public enum EvolutionOption
+        {
+            Unchanged,
+            DisableIllegal,
+            ForceHighestLegal,
+        }
+
         public class SpeciesSettings
         {
             public enum WeightingType
