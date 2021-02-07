@@ -8,7 +8,7 @@
         Title="About" Height="150" Width="250">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Name="Content" Height="*" ></RowDefinition>
+            <RowDefinition Name="ContentRow" Height="*" ></RowDefinition>
             <RowDefinition Name="Controls" Height="Auto" ></RowDefinition>
         </Grid.RowDefinitions>
         <StackPanel Grid.Row="0" Orientation="Vertical" Margin="5">

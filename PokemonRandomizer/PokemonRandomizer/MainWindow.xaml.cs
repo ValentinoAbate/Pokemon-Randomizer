@@ -1,27 +1,16 @@
 ﻿using Microsoft.Win32;
+using PokemonRandomizer.Backend.DataStructures;
+using PokemonRandomizer.Backend.EnumTypes;
+using PokemonRandomizer.Backend.Reading;
+using PokemonRandomizer.Backend.Utilities;
+using PokemonRandomizer.Backend.Writing;
+using PokemonRandomizer.Windows;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.ComponentModel;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.ComponentModel;
-using System.IO;
-using PokemonRandomizer.Windows;
-using PokemonRandomizer.CultureUtils;
-using PokemonRandomizer.Backend.DataStructures;
-using PokemonRandomizer.Backend.EnumTypes;
-using PokemonRandomizer.Backend.Utilities;
-using PokemonRandomizer.Backend.Reading;
-using PokemonRandomizer.Backend.Writing;
 
 namespace PokemonRandomizer
 {
@@ -157,38 +146,7 @@ namespace PokemonRandomizer
 
         #endregion
 
-        #region Routed Commands
-        // ExecutedRoutedEventHandler for the custom command.
-        private void CmdAddTreeItem(object sender, ExecutedRoutedEventArgs e)
-        {
-            var target = e.Source as ItemsControl;
-            if (target != null)
-            {
-                var add = new TreeViewItem()
-                {
-                    Header = "Group " + (target.Items.Count + 1),
-                    Style = e.Parameter as Style
-                };
-                target.Items.Add(add);
-                add.IsSelected = true;
-            }
-        }
-
-        // ExecutedRoutedEventHandler for the custom command.
-        private void CmdRmTreeItem(object sender, ExecutedRoutedEventArgs e)
-        {
-            //var target = (e.Parameter as ContextMenu)?.PlacementTarget as TreeViewItem;
-            var target = e.Source as TreeViewItem;
-            if (target != null)
-                (target.Parent as ItemsControl).Items.Remove(target);
-        }
-
-        // CanExecuteRoutedEventHandler for the custom command.
-        private void AddMutationTargetCmdCanExecute(object sender, CanExecuteRoutedEventArgs e)
-        {
-            e.CanExecute = e.Source is TreeViewItem;
-        }
-        #endregion
+        #region Menu Functions
 
         private void OpenROM(object sender, RoutedEventArgs e)
         {
@@ -260,27 +218,18 @@ namespace PokemonRandomizer
 
         }
 
-        private void SeedCheckBoxChanged(object sender, RoutedEventArgs e)
-        {
-            tbSeed.Visibility = (bool)cbSeed.IsChecked ? Visibility.Visible : Visibility.Collapsed;
-        }
-
-        private void SelectOnRightClick(object sender, RoutedEventArgs e)
-        {
-            var item = sender as TreeViewItem;
-            item.IsSelected = true;
-        }
-
         private void ShowAboutWindow(object sender, RoutedEventArgs e)
         {
             var aboutWindow = new AboutWindow();
             aboutWindow.Owner = this;
             aboutWindow.ShowDialog();
         }
-    }
-    public static class Commands
-    {
-        public static readonly RoutedCommand addTreeItem = new RoutedCommand();
-        public static readonly RoutedCommand rmTreeItem = new RoutedCommand();
+
+        #endregion
+
+        private void SeedCheckBoxChanged(object sender, RoutedEventArgs e)
+        {
+            tbSeed.Visibility = (bool)cbSeed.IsChecked ? Visibility.Visible : Visibility.Collapsed;
+        }
     }
 }

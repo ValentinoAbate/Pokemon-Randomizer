@@ -49,7 +49,7 @@ namespace PokemonRandomizer
         #region Pokemon Base Stats
 
         #region Typing
-        public double SingleTypeRandChance { get => window.mutSlSingleType.Value; }
+        public double SingleTypeRandChance { get => 0.0; }
         public double DualTypePrimaryRandChance { get => 0.0; }
         public double DualTypeSecondaryRandChance { get => 0.0; }
         #endregion

@@ -129,6 +129,9 @@
     <Compile Include="Backend\Utilities\XmlManager.cs" />
     <Compile Include="Search\Kmp.cs" />
     <Compile Include="Statistics\Distribution.cs" />
+    <Compile Include="UI\GroupDataModel.cs" />
+    <Compile Include="UI\GroupDataView.cs" />
+    <Compile Include="UI\GroupUI.cs" />
     <Compile Include="UserControls\MutationRateSlider.xaml.cs">
       <DependentUpon>MutationRateSlider.xaml</DependentUpon>
     </Compile>
@@ -230,5 +233,6 @@
   <ItemGroup>
     <Resource Include="Resources\Patches\Credits.txt" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
