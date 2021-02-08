@@ -71,6 +71,10 @@
                 </Grid>
             </TabItem>
 
+            <TabItem Name="TmHmTutorView" Header="Tm/Hm/Tutors">
+
+            </TabItem>
+
             <!--Type Traits-->
 
             <TabItem Header="Type Traits">
@@ -182,6 +186,8 @@
                         <ColumnDefinition Name="Groups" Width="Auto" />
                         <ColumnDefinition Name="Settings" Width="*" />
                     </Grid.ColumnDefinitions>
+                    <DockPanel Name="TraitsGroupsPanel" Grid.Column="0" Width="105"/>
+                    <DockPanel Name="TraitsViewPanel" Grid.Column="1"/>
                 </Grid>
             </TabItem>
 

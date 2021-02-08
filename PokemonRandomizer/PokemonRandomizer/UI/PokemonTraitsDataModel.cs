@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 
 namespace PokemonRandomizer.UI
 {
-    public class PokemonTraitsDataModel : GroupDataModel
+    public class PokemonTraitsDataModel : DataModel
     {
+        public double SingleTypeRandChance { get; set; }
+        public double DualTypePrimaryRandChance { get; set; }
+        public double DualTypeSecondaryRandChance { get; set; }
     }
 }

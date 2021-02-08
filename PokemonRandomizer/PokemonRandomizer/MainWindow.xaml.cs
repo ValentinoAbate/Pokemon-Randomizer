@@ -5,6 +5,7 @@ using PokemonRandomizer.Backend.Reading;
 using PokemonRandomizer.Backend.Utilities;
 using PokemonRandomizer.Backend.Writing;
 using PokemonRandomizer.Windows;
+using PokemonRandomizer.UI;
 using System;
 using System.ComponentModel;
 using System.IO;
@@ -80,11 +81,16 @@ namespace PokemonRandomizer
         private const string saveRomPrompt = "Save Rom";
         private const string openRomPrompt = "Open Rom";
 
+        private TmHmTutorDataModel tmHmData = new TmHmTutorDataModel();
+
         public MainWindow()
         {
             IsROMLoaded = false;
             InitializeComponent();
             this.DataContext = this;
+            // Create pokemon traits UI
+            new GroupUI<PokemonTraitsDataView, PokemonTraitsDataModel>(TraitsGroupsPanel, TraitsViewPanel, new PokemonTraitsDataModel() { SingleTypeRandChance = 1 });
+            TmHmTutorView.Content = new TmHmTutorDataView(tmHmData);
         }
 
 

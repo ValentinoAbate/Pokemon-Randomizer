@@ -46,6 +46,26 @@ namespace PokemonRandomizer
 
         #endregion
 
+        #region TMs, HMs, and Move Tutors
+
+        public enum TmMtCompatOption
+        {
+            Unchanged,
+            AllOn,
+            Random,
+            RandomKeepNumber,
+            Intelligent
+        }
+        public TmMtCompatOption TmMtCompatSetting { get => TmMtCompatOption.RandomKeepNumber; }
+        public double TmMtTrueChance { get => 0.42; }
+        public double TmMtNoise { get => 0.15; }
+        public bool PreventHmMovesInTMsAndMoveTutors { get => true; }
+        public bool PreventDuplicateTMsAndMoveTutors { get => true; }
+        public double TMRandChance { get => 1; }
+        public double MoveTutorRandChance { get => 1; }
+
+        #endregion
+
         #region Pokemon Base Stats
 
         #region Typing
@@ -143,26 +163,6 @@ namespace PokemonRandomizer
             { AddMoveSource.Random, 0.01f },
             { AddMoveSource.EggMoves, 0.99f },
         };
-
-        #endregion
-
-        #region TMs, HMs, and Move Tutors
-
-        public enum TmMtCompatOption
-        {
-            Unchanged,
-            AllOn,
-            Random,
-            RandomKeepNumber,
-            Intelligent
-        }
-        public TmMtCompatOption TmMtCompatSetting { get => TmMtCompatOption.RandomKeepNumber; }
-        public double TmMtTrueChance { get => 0.42; }
-        public double TmMtNoise { get => 0.15; }
-        public bool PreventHmMovesInTMsAndMoveTutors { get => true; }
-        public bool PreventDuplicateTMsAndMoveTutors { get => true; }
-        public double TMRandChance { get => 1; }
-        public double MoveTutorRandChance { get => 1; }
 
         #endregion
 

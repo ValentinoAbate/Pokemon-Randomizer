@@ -9,14 +9,13 @@ using System.Windows.Input;
 
 namespace PokemonRandomizer.UI
 {
-    public class GroupUI<View, Model> where View : GroupDataView<Model> where Model : GroupDataModel, new()
+    public class GroupUI<View, Model> where View : GroupDataView<Model>, new() where Model : DataModel, new()
     {
         private readonly TreeView groupSelectorTree;
-        private readonly GroupDataView<Model> dataView;
-        public GroupUI(Grid parent, int column, GroupDataView<Model> dataView)
+        private readonly View dataView;
+        public GroupUI(Panel parent, Panel viewParent, Model initialModel)
         {
             var verticalStack = new StackPanel() { Orientation = Orientation.Vertical };
-            verticalStack.SetValue(Grid.ColumnProperty, column);
 
             // Create and add the header GUI
             var headerStack = new StackPanel() { Orientation = Orientation.Horizontal };
@@ -32,23 +31,31 @@ namespace PokemonRandomizer.UI
                 Width = 100,
                 Margin = new Thickness(0, 5, 5, 5)
             };
+            var initialGroup = new Group(initialModel, OnClickGroup)
+            {
+                Header = "Group " + (groupSelectorTree.Items.Count + 1),
+            };
+            initialGroup.IsSelected = true;
+            groupSelectorTree.Items.Add(initialGroup);
             verticalStack.Children.Add(groupSelectorTree);
 
             // Add these to the parent grid
             parent.Children.Add(verticalStack);
 
-            this.dataView = dataView;
+            // Create view
+            dataView = new View();
+            dataView.Initialize(viewParent, initialModel);
         }
 
         private void AddButtonClick(object sender, RoutedEventArgs e)
         {
-            var add = new Group()
+            var add = new Group(OnClickGroup)
             {
                 Header = "Group " + (groupSelectorTree.Items.Count + 1),
             };
-            add.MouseDown += OnClickGroup; 
             add.IsSelected = true;
             groupSelectorTree.Items.Add(add);
+            dataView.SetModel(add.Model);
         }
 
         private void OnClickGroup(object sender, MouseButtonEventArgs e)
@@ -63,10 +70,11 @@ namespace PokemonRandomizer.UI
         { 
             public Model Model { get; private set; }
 
-            public Group() : this(new Model()) { }
+            public Group(MouseButtonEventHandler onClick) : this(new Model(), onClick) { }
 
-            public Group(Model model) : base()
+            public Group(Model model, MouseButtonEventHandler onClick) : base()
             {
+                PreviewMouseLeftButtonDown += onClick;
                 Model = model;
             }
         }
