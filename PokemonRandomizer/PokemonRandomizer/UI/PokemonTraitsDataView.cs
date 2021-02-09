@@ -26,7 +26,6 @@ namespace PokemonRandomizer.UI
 
             tabs.Items.Add(CreateTypesTab(model));
             tabs.Items.Add(new TabItem() { Header = "Evolutions" });
-            tabs.Items.Add(CreateTmHmMtCompatTab(model));
 
             return grid;
         }
@@ -37,16 +36,10 @@ namespace PokemonRandomizer.UI
             var content = new Grid();
             var stack = new StackPanel() { Orientation = Orientation.Vertical };
             stack.Children.Add(new RandomChanceUI("Single Type", model.SingleTypeRandChance, (d) => model.SingleTypeRandChance = d, Orientation.Horizontal));
-            stack.Children.Add(new RandomChanceUI("Dual Type (Primary)", model.DualTypePrimaryRandChance, (d) => model.DualTypePrimaryRandChance = d, Orientation.Vertical));
+            stack.Children.Add(new RandomChanceUI("Dual Type (Primary)", model.DualTypePrimaryRandChance, (d) => model.DualTypePrimaryRandChance = d, Orientation.Horizontal));
             stack.Children.Add(new RandomChanceUI("Dual Type (Secondary)", model.DualTypeSecondaryRandChance, (d) => model.DualTypeSecondaryRandChance = d, Orientation.Horizontal));
             content.Children.Add(stack);
             tab.Content = content;
-            return tab;
-        }
-
-        private TabItem CreateTmHmMtCompatTab(PokemonTraitsDataModel model)
-        {
-            var tab = new TabItem() { Header = "Tm/Hm/Tutor Compat" };
             return tab;
         }
     }

@@ -86,7 +86,7 @@ namespace PokemonRandomizer.Backend.DataStructures
             {
                 foreach (var entry in pkmn.learnSet)
                 {
-                    if (entry.learnLvl == 1 && !pkmn.IsBasic)
+                    if (entry.learnLvl == 1 && !pkmn.IsBasicOrEvolvesFromBaby)
                         continue;
                     if (!LearnLevels.ContainsKey(entry.move))
                         LearnLevels.Add(entry.move, new List<int>());

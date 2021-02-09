@@ -27,6 +27,7 @@ namespace PokemonRandomizer.Backend.DataStructures
     // https://bulbapedia.bulbagarden.net/wiki/Pok%C3%A9mon_evolution_data_structure_in_Generation_III
     public class Evolution
     {
+        public bool IsRealEvolution => Type != EvolutionType.None;
         public EvolutionType Type { get; set; }
         // The parameter to the evolution function (dependend on evolution type)
         // For LevelUp evoltion types, the parameter is the evolution level

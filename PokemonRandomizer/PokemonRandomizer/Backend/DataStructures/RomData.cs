@@ -22,15 +22,21 @@ namespace PokemonRandomizer.Backend.DataStructures
             set
             {
                 pokemon = value;
-                // Refresh the national dex order
-                PokemonNationalDexOrder = Pokemon.ToArray();
-                Array.Sort(PokemonNationalDexOrder, (x, y) => x.NationalDexIndex.CompareTo(y.NationalDexIndex));
                 // Refresh the lookup
                 PokemonLookup.Clear();
                 foreach (var p in pokemon)
                     PokemonLookup.Add(p.species, p);
+                // Refresh the national dex order
+                PokemonNationalDexOrder = Pokemon.ToArray();
+                Array.Sort(PokemonNationalDexOrder, (x, y) => x.NationalDexIndex.CompareTo(y.NationalDexIndex));
+                // Link the evolutions and egg moves
+                LinkEvolutions();
+                LinkEggMoves();
+                // Set up the names
+                PokemonNames = PokemonNationalDexOrder.Select((p) => p.Name).ToArray();
             }
         }
+        public string[] PokemonNames { get; private set; }
         public PokemonBaseStats[] PokemonNationalDexOrder { get; private set; }
         public Dictionary<PokemonSpecies, PokemonBaseStats> PokemonLookup { get; } = new Dictionary<PokemonSpecies, PokemonBaseStats>();
         public List<string> ClassNames { get; set; }

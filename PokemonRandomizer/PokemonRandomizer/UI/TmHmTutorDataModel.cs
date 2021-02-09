@@ -33,7 +33,8 @@ namespace PokemonRandomizer.UI
         public double IntelligentCompatNoise { get; set; } = 0.15;
         public bool PreventHmMovesInTMsAndMoveTutors { get; set; } = true;
         public bool PreventDuplicateTMsAndMoveTutors { get; set; } = true;
-        public bool KeepFieldMoveTms { get; set; } = true;
+        public bool KeepImportantTms { get; set; } = true;
+
         public double TMRandChance { get; set; }
         public double MoveTutorRandChance { get; set; }
     }

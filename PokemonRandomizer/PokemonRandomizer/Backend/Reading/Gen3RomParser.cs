@@ -33,10 +33,6 @@ namespace PokemonRandomizer.Backend.Reading
             // Set the data on the RomData
             data.Pokemon = pokemon;
             data.SkippedLearnSetData = skippedData;
-            // Link Pokemon to what they evolved from
-            data.LinkEvolutions();
-            data.LinkEggMoves();
-
             #endregion
 
             // Read Starters

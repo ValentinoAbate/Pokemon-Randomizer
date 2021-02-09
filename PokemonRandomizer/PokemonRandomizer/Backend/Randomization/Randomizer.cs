@@ -173,7 +173,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 }
                 foreach (var evo in pokemon.evolvesTo)
                 {
-                    if (evo.Type == EvolutionType.None)
+                    if (!evo.IsRealEvolution)
                         continue;
 
                     #region Dunsparse Plague
@@ -183,7 +183,7 @@ namespace PokemonRandomizer.Backend.Randomization
                         {
                             for (int i = 0; i < evolutions.Length; i++)
                             {
-                                if (evolutions[i].Pokemon == PokemonSpecies.None)
+                                if (!evolutions[i].IsRealEvolution)
                                     return i;
                             }
                             return -1;
@@ -281,7 +281,7 @@ namespace PokemonRandomizer.Backend.Randomization
                                 p.learnSet.Add(m, level);
                                 foreach(var evo in p.evolvesTo)
                                 {
-                                    if ((int)evo.Pokemon == 0)
+                                    if (!evo.IsRealEvolution)
                                         return;
                                     // Make this stable with the Dunsparse Plague
                                     if (evo.Pokemon == PokemonSpecies.DUNSPARCE && settings.DunsparsePlaugeChance > 0)
@@ -1047,7 +1047,7 @@ namespace PokemonRandomizer.Backend.Randomization
             var evos = stats.evolvesTo;
             foreach(var evo in evos)
             {
-                if (evo.Type == EvolutionType.None)
+                if (!evo.IsRealEvolution)
                     continue;
                 if (evo.Pokemon == b)
                     return true;
@@ -1063,7 +1063,7 @@ namespace PokemonRandomizer.Backend.Randomization
             var evos = stats.evolvesFrom;
             foreach (var evo in evos)
             {
-                if (evo.Type == EvolutionType.None)
+                if (!evo.IsRealEvolution)
                     continue;
                 if (evo.Pokemon == b)
                     return true;
@@ -1115,7 +1115,7 @@ namespace PokemonRandomizer.Backend.Randomization
             {
                 int baseLevel = 32;
                 // Is this pokemon a middle stage evolution?
-                if (data.PokemonLookup[evo.Pokemon].evolvesTo.Count((e) => e.Pokemon != PokemonSpecies.None) > 0)
+                if (data.PokemonLookup[evo.Pokemon].evolvesTo.Count((e) => e.IsRealEvolution) > 0)
                     baseLevel -= 8;
                 return baseLevel;
             }

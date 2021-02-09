@@ -82,6 +82,7 @@ namespace PokemonRandomizer
         private const string openRomPrompt = "Open Rom";
 
         private TmHmTutorDataModel tmHmData = new TmHmTutorDataModel();
+        private StartersDataModel starterData = new StartersDataModel();
 
         public MainWindow()
         {
@@ -93,6 +94,10 @@ namespace PokemonRandomizer
             TmHmTutorView.Content = new TmHmTutorDataView(tmHmData);
         }
 
+        private void InitializeUI(RomData data)
+        {
+            StarterView.Content = new StartersDataView(starterData, data.PokemonNames);
+        }
 
         private bool GetRomData(byte[] rawRom)
         {
@@ -110,6 +115,7 @@ namespace PokemonRandomizer
                 // Parse the file
                 Parser = new Gen3RomParser();
                 OriginalData = Parser.Parse(OriginalRom, metadata, RomInfo);
+
             }
             else
             {
@@ -117,6 +123,7 @@ namespace PokemonRandomizer
                 return false;
             }
             IsROMLoaded = true;
+            InitializeUI(OriginalData);
             lblInfoBoxContent.Content = "Rom opened: " + metadata.Name + " (" + metadata.Code + ")";
             LastRandomizationInfo = OriginalData.ToStringArray();
             Metadata = metadata;

@@ -21,10 +21,10 @@ namespace PokemonRandomizer.UI
 
         public RandomChanceUI(string featureName, bool enabled, Action<bool> onEnabledChange, double chance, Action<double> onChanceChange, Orientation orientation, Control additionalContent = null) : base()
         {
-            var border = new Border() { BorderThickness = new Thickness(0.5), Margin = new Thickness(2), BorderBrush = System.Windows.Media.Brushes.Black };
-            var mainStack = new StackPanel() { Orientation = orientation, Margin = new Thickness(3) };
-            border.Child = mainStack;
-            var contentStack = new StackPanel() { Orientation = orientation, Margin = new Thickness(3), IsEnabled = enabled };
+            var mainStack = new StackPanel() { Orientation = orientation };
+            double marginH = orientation == Orientation.Horizontal ? 0 : 1.5;
+            double marginW = orientation == Orientation.Vertical ? 0 : 1.5;
+            var contentStack = new StackPanel() { Orientation = orientation, Margin = new Thickness(marginW, marginH, marginW, marginH), IsEnabled = enabled };
             // Set up checkbox
             void OnCheckBox(bool value)
             {
@@ -43,7 +43,7 @@ namespace PokemonRandomizer.UI
             if(additionalContent != null)
                 contentStack.Children.Add(additionalContent);
 
-            Content = border;
+            Content = mainStack;
         }
     }
 }

@@ -192,8 +192,8 @@
             </TabItem>
 
             <!--Starter Pokemon-->
-            
-            <TabItem Header="Starter Pkmn">
+
+            <TabItem Name="StarterView" Header="Starter Pokemon">
 
             </TabItem>
             
