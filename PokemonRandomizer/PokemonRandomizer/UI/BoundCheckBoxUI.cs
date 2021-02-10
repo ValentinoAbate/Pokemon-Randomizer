@@ -16,7 +16,12 @@ namespace PokemonRandomizer.UI
             Unchecked += (_, _2) => onEnabledChange?.Invoke(false);
         }
 
-        public BoundCheckBoxUI(Action<bool> onEnabledChange, string tooltip) : this(onEnabledChange)
+        public BoundCheckBoxUI(Action<bool> onEnabledChange, string label) : this(onEnabledChange)
+        {
+            Content = label;
+        }
+
+        public BoundCheckBoxUI(Action<bool> onEnabledChange, string label, string tooltip) : this(onEnabledChange, label)
         {
             ToolTip = tooltip;
         }

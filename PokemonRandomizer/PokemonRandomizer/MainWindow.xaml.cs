@@ -81,7 +81,7 @@ namespace PokemonRandomizer
         private const string saveRomPrompt = "Save Rom";
         private const string openRomPrompt = "Open Rom";
 
-        private TmHmTutorDataModel tmHmData = new TmHmTutorDataModel();
+        private TmHmTutorModel tmHmData = new TmHmTutorModel();
         private StartersDataModel starterData = new StartersDataModel();
 
         public MainWindow()
@@ -90,7 +90,7 @@ namespace PokemonRandomizer
             InitializeComponent();
             this.DataContext = this;
             // Create pokemon traits UI
-            new GroupUI<PokemonTraitsDataView, PokemonTraitsDataModel>(TraitsGroupsPanel, TraitsViewPanel, new PokemonTraitsDataModel() { SingleTypeRandChance = 1 });
+            new GroupUI<PokemonTraitsDataView, PokemonTraitsModel>(TraitsGroupsPanel, TraitsViewPanel, new PokemonTraitsModel() { SingleTypeRandChance = 1 });
             TmHmTutorView.Content = new TmHmTutorDataView(tmHmData);
         }
 

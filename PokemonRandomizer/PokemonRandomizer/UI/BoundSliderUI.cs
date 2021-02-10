@@ -1,19 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using PokemonRandomizer.Converters;
+﻿using PokemonRandomizer.Converters;
+using System;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
 using System.Windows.Data;
 
 namespace PokemonRandomizer.UI
 {
-    public class PercentSliderUI : StackPanel
+    public class BoundSliderUI : StackPanel
     {
-        public PercentSliderUI(string name, double value, Action<double> onValueChange, double freq = 0.01, double min = 0, double max = 1) : base()
+        public BoundSliderUI(string name, double value, Action<double> onValueChange, bool percent = true, double freq = 0.01, double min = 0, double max = 1) : base()
         {
             Orientation = Orientation.Horizontal;
             Children.Add(new Label() { Content = name, FontSize = 11 });
@@ -40,8 +35,11 @@ namespace PokemonRandomizer.UI
                 Path = new PropertyPath("Value"),
                 Mode = BindingMode.TwoWay,
                 UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
-                Converter = new PercentConverter(),
             };
+            if(percent)
+            {
+                myBinding.Converter = new PercentConverter();
+            }
             BindingOperations.SetBinding(textBox, TextBox.TextProperty, myBinding);
             slider.ValueChanged += (_, args) => onValueChange?.Invoke(args.NewValue);
             Children.Add(slider);

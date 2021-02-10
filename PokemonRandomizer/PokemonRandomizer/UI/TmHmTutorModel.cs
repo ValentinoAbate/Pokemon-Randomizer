@@ -8,7 +8,7 @@ using System.Windows.Controls;
 
 namespace PokemonRandomizer.UI
 {
-    public class TmHmTutorDataModel : DataModel
+    public class TmHmTutorModel : DataModel
     {
         public static CompositeCollection CompatOptionDropdown { get; } = new CompositeCollection()
         {

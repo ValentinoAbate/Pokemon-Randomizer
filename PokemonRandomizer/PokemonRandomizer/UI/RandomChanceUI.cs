@@ -11,7 +11,6 @@ namespace PokemonRandomizer.UI
 {
     public class RandomChanceUI : ContentControl
     {
-        private const string randomizePrefix = "Randomize ";
         private const string chanceText = "Chance";
 
         public RandomChanceUI(string featureName, double chance, Action<double> onChanceChange, Orientation orientation, Control additionalContent = null) : this(featureName, chance > 0, null, chance, onChanceChange, orientation, additionalContent)
@@ -31,7 +30,7 @@ namespace PokemonRandomizer.UI
                 onEnabledChange?.Invoke(value);
                 contentStack.IsEnabled = value;
             }
-            var checkBox = new BoundCheckBoxUI(OnCheckBox) { Content = randomizePrefix + featureName, VerticalAlignment = VerticalAlignment.Center, IsChecked = enabled };
+            var checkBox = new BoundCheckBoxUI(OnCheckBox) { Content = featureName, VerticalAlignment = VerticalAlignment.Center, IsChecked = enabled };
             
             // Add content to main stack
             mainStack.Children.Add(checkBox);
@@ -39,7 +38,7 @@ namespace PokemonRandomizer.UI
             mainStack.Children.Add(contentStack);
 
             // Add content to content stack
-            contentStack.Children.Add(new PercentSliderUI(chanceText, chance, onChanceChange));
+            contentStack.Children.Add(new BoundSliderUI(chanceText, chance, onChanceChange));
             if(additionalContent != null)
                 contentStack.Children.Add(additionalContent);
 
