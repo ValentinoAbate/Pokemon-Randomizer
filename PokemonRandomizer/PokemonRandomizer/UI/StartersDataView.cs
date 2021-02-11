@@ -12,9 +12,9 @@ namespace PokemonRandomizer.UI
     {
         public StartersDataView(StartersDataModel model, string[] pokemonNames)
         {
-            var legendCb = new BoundCheckBoxUI((b) => model.BanLegendaries = b) { Content = "Ban Legendaries", IsChecked = model.BanLegendaries };
-            var safeMovesetsCb = new BoundCheckBoxUI((b) => model.SafeStarterMovesets = b) { Content = "Safe Starter Movesets", IsChecked = model.SafeStarterMovesets };
-            var strongTriangleCb = new BoundCheckBoxUI((b) => model.StrongStarterTypeTriangle = b) { Content = "Force Strong Type Triangle", IsChecked = model.StrongStarterTypeTriangle };
+            var legendCb = new BoundCheckBoxUI(model.BanLegendaries, (b) => model.BanLegendaries = b, "Ban Legendaries");
+            var safeMovesetsCb = new BoundCheckBoxUI(model.SafeStarterMovesets, (b) => model.SafeStarterMovesets = b, "Safe Starter Movesets");
+            var strongTriangleCb = new BoundCheckBoxUI(model.StrongStarterTypeTriangle, (b) => model.StrongStarterTypeTriangle = b, "Force Strong Type Triangle");
 
             // Custom Starter UI
             var pokemonOptions = new List<string>(pokemonNames.Length + 1) { "Random" };

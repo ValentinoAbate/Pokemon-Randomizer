@@ -26,13 +26,14 @@ namespace PokemonRandomizer.UI
 
             tabs.Items.Add(CreateTypesTab(model));
             tabs.Items.Add(CreateEvolutionTab(model));
+            tabs.Items.Add(CreateCatchRateTab(model));
 
             return grid;
         }
 
         private TabItem CreateTypesTab(PokemonTraitsModel model)
         {
-            var tab = new TabItem() { Header = "Types" };
+            var tab = new TabItem() { Header = "Type" };
             var stack = new StackPanel() { Orientation = Orientation.Vertical };
             stack.Add(new RandomChanceUI("Single Type", model.SingleTypeRandChance, (d) => model.SingleTypeRandChance = d, Orientation.Horizontal));
             stack.Add(new RandomChanceUI("Dual Type (Primary)", model.DualTypePrimaryRandChance, (d) => model.DualTypePrimaryRandChance = d, Orientation.Horizontal));
@@ -55,10 +56,28 @@ namespace PokemonRandomizer.UI
                 model.FixImpossibleEvos = b;
                 tradeEvoParams.SetVisibility(b);
             }
-            var impossibleEvoCb = new BoundCheckBoxUI(OnCheck, "Fix Trade Evolutions") { IsChecked = model.FixImpossibleEvos };
+            var impossibleEvoCb = new BoundCheckBoxUI(model.FixImpossibleEvos, OnCheck, "Fix Trade Evolutions");
             stack.Add(impossibleEvoCb, tradeEvoParams);
             stack.Add(new RandomChanceUI("Dunsparse Plague", model.DunsparsePlague,
                 (b) => model.DunsparsePlague = b, model.DunsparsePlaugeChance, (d) => model.DunsparsePlaugeChance = d, Orientation.Horizontal));
+            tab.Content = stack;
+            return tab;
+        }
+
+        private TabItem CreateCatchRateTab(PokemonTraitsModel model)
+        {
+            var tab = new TabItem() { Header = "Catch Rate" };
+            var stack = new StackPanel() { Orientation = Orientation.Vertical };
+            var constantRateSlider = new BoundSliderUI("Constant Difficulty", model.CatchRateConstantDifficulty, (d) => model.CatchRateConstantDifficulty = d, false);
+            constantRateSlider.SetVisibility(model.CatchRateSetting == Settings.CatchRateOption.Constant);
+            void OnOptionChange(int index)
+            {
+                model.CatchRateSetting = (Settings.CatchRateOption)index;
+                constantRateSlider.SetVisibility(model.CatchRateSetting == Settings.CatchRateOption.Constant);
+            }
+            stack.Add(new BoundComboBoxUI("Catch Rate", PokemonTraitsModel.CatchRateOptionDropdown, (int)model.CatchRateSetting, OnOptionChange));
+            stack.Add(constantRateSlider);
+            stack.Add(new BoundCheckBoxUI(model.KeepLegendaryCatchRates, (b) => model.KeepLegendaryCatchRates = b, "Keep Legendary Catch Rates"));
             tab.Content = stack;
             return tab;
         }

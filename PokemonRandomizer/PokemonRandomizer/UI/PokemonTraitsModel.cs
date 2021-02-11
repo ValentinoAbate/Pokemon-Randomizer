@@ -26,5 +26,21 @@ namespace PokemonRandomizer.UI
         public Settings.TradeItemPokemonOption TradeItemEvoSetting { get; set; } = Settings.TradeItemPokemonOption.LevelUp;
         public bool DunsparsePlague { get; set; } = false;
         public double DunsparsePlaugeChance { get; set; } = 0;
+
+        // Catch rate parameters
+        private const string intelligentCatchRateTooltip = "Intelligently make some pokemon easier to catch because they can be found at the beginning of the game";
+        public static CompositeCollection CatchRateOptionDropdown { get; } = new CompositeCollection()
+        {
+            new ComboBoxItem() { Content="Unchanged"},
+            new ComboBoxItem() { Content="Random"},
+            new ComboBoxItem() { Content="Constant", ToolTip = "Set all pokemon to the same catch difficulty"},
+            new ComboBoxItem() { Content="Intelligent (Easy)", ToolTip = intelligentCatchRateTooltip + " (Easy)"},
+            new ComboBoxItem() { Content="Intelligent (Normal)", ToolTip = intelligentCatchRateTooltip},
+            new ComboBoxItem() { Content="Intelligent (Hard)", ToolTip = intelligentCatchRateTooltip + " (Hard)"},
+            new ComboBoxItem() { Content="All Easiest", ToolTip = "All pokemon are as easy to catch as possible"},
+        };
+        public Settings.CatchRateOption CatchRateSetting { get; set; } = Settings.CatchRateOption.Unchanged;
+        public bool KeepLegendaryCatchRates { get; set; } = true;
+        public double CatchRateConstantDifficulty { get; set; } = 0.5;
     }
 }
