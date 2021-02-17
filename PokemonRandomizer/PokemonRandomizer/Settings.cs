@@ -466,10 +466,10 @@ namespace PokemonRandomizer
 
         #endregion
 
-        #region Misc
+        #region Items
 
         public enum PcItemOption
-        { 
+        {
             Unchanged,
             Random,
             Custom,
@@ -480,9 +480,28 @@ namespace PokemonRandomizer
         public Item CustomPcItem => Item.Metal_Coat;
 
         public ItemSettings PcItemSettings => new ItemSettings()
-        { 
+        {
             SamePocketChance = 0.75,
         };
+
+        public bool DontRandomizeTms => false;
+
+        public double FieldItemRandChance => 0;
+        public ItemSettings FieldItemSettings => new ItemSettings()
+        {
+            SamePocketChance = 0.75,
+        };
+
+        public bool UseSeperateHiddenItemSettings => false;
+        public double HiddenItemRandChance => 0;
+        public ItemSettings HiddenItemSettings => new ItemSettings()
+        {
+            SamePocketChance = 0.75,
+        };
+
+        #endregion
+
+        #region Misc
 
         public bool RunIndoors => true;
 

@@ -208,6 +208,10 @@
             <TabItem Header="Items">
 
             </TabItem>
+
+            <TabItem Header="Misc">
+
+            </TabItem>
         </TabControl>
         
         <!--Message Box-->
