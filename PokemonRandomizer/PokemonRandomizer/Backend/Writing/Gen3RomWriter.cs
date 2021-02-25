@@ -6,7 +6,7 @@ using PokemonRandomizer.Backend.GenIII.Constants.ElementNames;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
+using PokemonRandomizer.Backend.Scripting.GenIII;
 
 namespace PokemonRandomizer.Backend.Writing
 {

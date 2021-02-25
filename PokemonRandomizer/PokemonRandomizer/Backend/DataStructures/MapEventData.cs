@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace PokemonRandomizer.Backend.DataStructures
 {
-    public class MapEventData
+	using Scripts;
+	public class MapEventData
     {
 		public byte numNpcEvents;
 		public byte numWarpEvents;
@@ -40,6 +41,7 @@ namespace PokemonRandomizer.Backend.DataStructures
 			public int personID; // Not sure what this is used for, possibly is a script argument?
 			public byte unknown5;
 			public byte unknown6;
+			public Script script;
 		}
 
         public class SignEvent

@@ -10,6 +10,7 @@ namespace PokemonRandomizer.Backend.Reading
 {
     public class Gen3RomParser : RomParser
     {
+        private readonly Gen3ScriptParser scriptParser = new Gen3ScriptParser();
         // Parse the ROM bytes into a RomData object
         public override RomData Parse(Rom rom, RomMetadata metadata, XmlManager info)
         {
@@ -591,7 +592,7 @@ namespace PokemonRandomizer.Backend.Reading
                 rom.Seek(eventData.npcEventOffset);
                 for (int i = 0; i < eventData.numNpcEvents; i++)
                 {
-                    eventData.npcEvents.Add(new MapEventData.NpcEvent
+                    var npc = new MapEventData.NpcEvent
                     {
                         npcEventIndex = rom.ReadByte(),
                         spriteSetIndex = rom.ReadUInt16(),
@@ -608,8 +609,13 @@ namespace PokemonRandomizer.Backend.Reading
                         scriptOffset = rom.ReadPointer(),
                         personID = rom.ReadUInt16(),
                         unknown5 = rom.ReadByte(),
-                        unknown6 = rom.ReadByte()
-                    });
+                        unknown6 = rom.ReadByte(),
+                    };
+                    if(npc.scriptOffset != Rom.nullPointer && !npc.isTrainer) // trainer script is bugged, later
+                    {
+                        npc.script = scriptParser.Parse(rom, npc.scriptOffset);
+                    }
+                    eventData.npcEvents.Add(npc);
                 }
             }
             // Read Warp Events

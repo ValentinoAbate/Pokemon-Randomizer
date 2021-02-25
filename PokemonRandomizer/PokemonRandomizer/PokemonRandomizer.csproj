@@ -99,7 +99,6 @@
     <Compile Include="Backend\EnumTypes\Move.cs" />
     <Compile Include="Backend\EnumTypes\PokemonType.cs" />
     <Compile Include="Backend\EnumTypes\SearchColor.cs" />
-    <Compile Include="Backend\Scripting\GenIII\Gen3ScriptCommands.cs" />
     <Compile Include="Backend\DataStructures\Scripts\GiveItemCommand.cs" />
     <Compile Include="Backend\DataStructures\Scripts\Script.cs" />
     <Compile Include="Backend\DataStructures\Scripts\UnknownCommand.cs" />

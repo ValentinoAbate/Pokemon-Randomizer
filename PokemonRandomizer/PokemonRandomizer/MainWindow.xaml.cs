@@ -81,8 +81,8 @@ namespace PokemonRandomizer
         private const string saveRomPrompt = "Save Rom";
         private const string openRomPrompt = "Open Rom";
 
-        private TmHmTutorModel tmHmData = new TmHmTutorModel();
-        private StartersDataModel starterData = new StartersDataModel();
+        private readonly TmHmTutorModel tmHmData = new TmHmTutorModel();
+        private readonly StartersDataModel starterData = new StartersDataModel();
 
         public MainWindow()
         {
@@ -233,8 +233,10 @@ namespace PokemonRandomizer
 
         private void ShowAboutWindow(object sender, RoutedEventArgs e)
         {
-            var aboutWindow = new AboutWindow();
-            aboutWindow.Owner = this;
+            var aboutWindow = new AboutWindow
+            {
+                Owner = this
+            };
             aboutWindow.ShowDialog();
         }
 
