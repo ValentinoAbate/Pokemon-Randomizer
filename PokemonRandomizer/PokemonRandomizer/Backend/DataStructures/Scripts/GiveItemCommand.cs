@@ -10,12 +10,19 @@ namespace PokemonRandomizer.Backend.DataStructures.Scripts
 {
     public class GiveItemCommand : Command
     {
+        public enum MessageType : byte
+        {
+            Obtain,
+            Find,
+        }
+
         public Item item;
         public int amount;
+        public MessageType messageType;
 
         public override string ToString()
         {
-            return "Get " + amount.ToString() + " " + item.ToDisplayString();
+            return "Give " + amount + " " + item.ToDisplayString() + "(" + messageType.ToDisplayString() + ")";
         }
     }
 }
