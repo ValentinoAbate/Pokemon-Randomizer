@@ -611,7 +611,7 @@ namespace PokemonRandomizer.Backend.Reading
                         unknown5 = rom.ReadByte(),
                         unknown6 = rom.ReadByte(),
                     };
-                    if(npc.scriptOffset != Rom.nullPointer && !npc.isTrainer) // trainer script is bugged, later
+                    if(npc.scriptOffset != Rom.nullPointer)
                     {
                         npc.script = scriptParser.Parse(rom, npc.scriptOffset);
                     }

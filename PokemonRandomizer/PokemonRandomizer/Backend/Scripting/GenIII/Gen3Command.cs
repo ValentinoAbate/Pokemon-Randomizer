@@ -529,6 +529,8 @@ namespace PokemonRandomizer.Backend.Scripting.GenIII
 
         public byte code;
         public List<Argument> args = new List<Argument>(8);
+
+        public int ArgData(int index) => args[index].data;
         public struct Argument 
         { 
 

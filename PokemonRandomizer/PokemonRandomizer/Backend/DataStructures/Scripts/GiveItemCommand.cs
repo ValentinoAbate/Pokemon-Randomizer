@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using PokemonRandomizer.Backend.EnumTypes;
 using PokemonRandomizer.Backend.Utilities;
-using PokemonRandomizer.Backend.EnumTypes;
 
 namespace PokemonRandomizer.Backend.DataStructures.Scripts
 {
@@ -22,7 +17,7 @@ namespace PokemonRandomizer.Backend.DataStructures.Scripts
 
         public override string ToString()
         {
-            return "Give " + amount + " " + item.ToDisplayString() + "(" + messageType.ToDisplayString() + ")";
+            return "give " + amount + " " + item.ToDisplayString() + "(" + messageType.ToDisplayString() + ")";
         }
     }
 }
