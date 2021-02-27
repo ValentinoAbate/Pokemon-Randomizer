@@ -3,7 +3,6 @@
     public class GotoIfCommand : GotoCommand
     {
         public byte condition;
-        public Script branch;
 
         public override string ToString()
         {

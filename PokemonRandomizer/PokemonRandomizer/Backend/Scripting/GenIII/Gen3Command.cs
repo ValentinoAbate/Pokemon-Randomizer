@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace PokemonRandomizer.Backend.Scripting.GenIII
 {
-    public class Gen3Command
+    public class Gen3Command : DataStructures.Scripts.Command
     {
         #region Command Constants
 
@@ -273,6 +273,7 @@ namespace PokemonRandomizer.Backend.Scripting.GenIII
         private static readonly Arg[] word2Pointer = new Arg[] { Arg.Word, Arg.Word, Arg.Pointer };
         private static readonly Arg[] word2Pointer2 = new Arg[] { Arg.Word, Arg.Word, Arg.Pointer, Arg.Pointer };
         private static readonly Arg[] word2Pointer3 = new Arg[] { Arg.Word, Arg.Word, Arg.Pointer, Arg.Pointer, Arg.Pointer };
+        private static readonly Arg[] word2Pointer4 = new Arg[] { Arg.Word, Arg.Word, Arg.Pointer, Arg.Pointer, Arg.Pointer, Arg.Pointer };
         private static readonly Arg[] long1 = new Arg[] { Arg.Long };
         private static readonly Arg[] longByte = new Arg[] { Arg.Long, Arg.Byte };
         private static readonly Arg[] warpArgs = new Arg[] { Arg.Byte, Arg.Byte, Arg.Byte, Arg.Word, Arg.Word };
@@ -513,7 +514,7 @@ namespace PokemonRandomizer.Backend.Scripting.GenIII
             {bufferitems2        , byteWord2         },
         };
 
-        public static readonly Dictionary<byte, Arg[]> trainerCommandMap = new Dictionary<byte, Arg[]>
+        public static readonly Dictionary<int, Arg[]> trainerCommandMap = new Dictionary<int, Arg[]>
         {
             {0x00, word2Pointer2},
             {0x01, word2Pointer3},
@@ -521,9 +522,9 @@ namespace PokemonRandomizer.Backend.Scripting.GenIII
             {0x03, word2Pointer },
             {0x04, word2Pointer3},
             {0x05, word2Pointer2},
-            {0x06, word2Pointer3},
+            {0x06, word2Pointer4},
             {0x07, word2Pointer3},
-            {0x08, word2Pointer3},
+            {0x08, word2Pointer4},
             {0x09, word2Pointer2},
         };
 
@@ -542,6 +543,18 @@ namespace PokemonRandomizer.Backend.Scripting.GenIII
                 this.data = data;
                 this.type = type;
             }
+
+            public override string ToString()
+            {
+                return data.ToString("X2") + " (" + type.ToString() + ")";
+            }
+        }
+
+        public override string ToString()
+        {
+            if (args.Count <= 0)
+                return code.ToString("X2");
+            return code.ToString("X2") + ": " + args.Select(a => a.ToString()).Aggregate((s1, s2) => s1 + ", " + s2);
         }
     }
 }

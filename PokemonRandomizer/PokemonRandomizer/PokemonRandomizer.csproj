@@ -106,7 +106,6 @@
     <Compile Include="Backend\EnumTypes\SearchColor.cs" />
     <Compile Include="Backend\DataStructures\Scripts\GiveItemCommand.cs" />
     <Compile Include="Backend\DataStructures\Scripts\Script.cs" />
-    <Compile Include="Backend\DataStructures\Scripts\UnknownCommand.cs" />
     <Compile Include="Backend\Utilities\ByteArrayUtils.cs" />
     <Compile Include="Backend\Utilities\IpsPatcher.cs" />
     <Compile Include="Backend\DataStructures\MoveData.cs" />

@@ -22,69 +22,71 @@ namespace PokemonRandomizer.Backend.Reading
             rom.SaveOffset();
             rom.Seek(offset);
             var script = new Script();
-            while (rom.Peek() != Gen3Command.end)
+            bool reachedEnd = false;
+            while (!reachedEnd)
             {
                 visited.Add(rom.InternalOffset);
                 var command = ReadCommand(rom);
-                switch (command.code)
+                if(command.code == Gen3Command.end || command.code == Gen3Command.@return)
                 {
-                    case Gen3Command.@goto:
-                        script.Add(new GotoCommand() { offset = command.ArgData(0) });
-                        int gotoOffset = command.ArgData(0);
-                        // If we've already encountered this offset, the script is looping unless branched
-                        if (visited.Contains(gotoOffset))
-                        {
-                            rom.LoadOffset();
-                            return script;
-                        }
-                        // Goto to continue script
-                        rom.Seek(command.ArgData(0));
-                        break;
-                    case Gen3Command.gotoif:
-                        var gotoCommand = new GotoIfCommand()
-                        {
-                            condition = (byte)command.ArgData(0),
-                            offset = command.ArgData(1),
-                        };
-                        if(!visited.Contains(gotoCommand.offset))
-                        {
-                            gotoCommand.branch = Parse(rom, gotoCommand.offset, ref visited);
-                        }
-                        else
-                        {
-                            gotoCommand.branch = new Script();
-                        }
-                        script.Add(gotoCommand);
-                        break;
-                    case Gen3Command.copyvarifnotzero:
-                        // Check for give item multi-command
-                        if (TryParseGiveItemMultiCommand(rom, command, out GiveItemCommand giveItemCommand))
-                        {
-                            script.Add(giveItemCommand);
-                        }
-                        break;
-                    case Gen3Command.trainerbattle:
-                        // Need to add proper trainer command parsing, for now, break if we hit this (command parsing is bugged)
-                        rom.LoadOffset();
-                        return script;
-                    case Gen3Command.givePokemon:
-                        // Add new give pokemon command
-                        script.Add(new GivePokemonCommand()
-                        {
-                            pokemon = (PokemonSpecies)command.ArgData(0),
-                            level = (byte)command.ArgData(1),
-                            heldItem = (Item)command.ArgData(2)
-                        });
-                        break;
-                    case Gen3Command.giveEgg:
-                        // Add new give egg event
-                        script.Add(new GiveEggCommand() { pokemon = (PokemonSpecies)command.ArgData(0) });
-                        break;
-                    default: // Unknown command code, read all data into unknown command
-                        script.Add(new UnknownCommand(new byte[] { command.code })); // Will later need to contain arg data as well
-                        break;
+                    script.Add(command);
+                    break;
                 }
-
+                else if(command.code == Gen3Command.@goto)
+                {
+                    var gotoCommand = new GotoCommand()
+                    {
+                        offset = command.ArgData(0),
+                    };
+                    script.Add(gotoCommand);
+                    // If we haven't encountered this offset, then parse the script at the goto location
+                    if (!visited.Contains(gotoCommand.offset))
+                    {
+                        gotoCommand.script = Parse(rom, gotoCommand.offset, ref visited);
+                    }
+                    break;
+                }
+                else if(command.code == Gen3Command.gotoif)
+                {
+                    var gotoCommand = new GotoIfCommand()
+                    {
+                        condition = (byte)command.ArgData(0),
+                        offset = command.ArgData(1),
+                    };
+                    script.Add(gotoCommand);
+                    // If we haven't encountered this offset, then parse the branch
+                    if (!visited.Contains(gotoCommand.offset))
+                    {
+                        gotoCommand.script = Parse(rom, gotoCommand.offset, ref visited);
+                    }
+                }
+                else if(command.code == Gen3Command.copyvarifnotzero)
+                {
+                    // Check for give item multi-command
+                    if (TryParseGiveItemMultiCommand(rom, command, out GiveItemCommand giveItemCommand))
+                    {
+                        script.Add(giveItemCommand);
+                    }
+                }
+                else if(command.code == Gen3Command.givePokemon)
+                {
+                    // Add new give pokemon command
+                    script.Add(new GivePokemonCommand()
+                    {
+                        pokemon = (PokemonSpecies)command.ArgData(0),
+                        level = (byte)command.ArgData(1),
+                        heldItem = (Item)command.ArgData(2)
+                    });
+                }
+                else if(command.code == Gen3Command.giveEgg)
+                {
+                    // Add new give egg event
+                    script.Add(new GiveEggCommand() { pokemon = (PokemonSpecies)command.ArgData(0) });
+                }
+                else // Not a special code, just push the command
+                {
+                    script.Add(command);
+                }
             }
             rom.LoadOffset();
             return script;
@@ -144,27 +146,30 @@ namespace PokemonRandomizer.Backend.Reading
         {
             foreach (var type in typeArr)
             {
-                command.args.Add(type switch
-                {
-                    Gen3Command.Arg.Byte => new Gen3Command.Argument(rom.ReadByte(), type),
-                    Gen3Command.Arg.Word => new Gen3Command.Argument(rom.ReadUInt16(), type),
-                    Gen3Command.Arg.Long => new Gen3Command.Argument(rom.ReadUInt32(), type),
-                    Gen3Command.Arg.Pointer => new Gen3Command.Argument(rom.ReadPointer(), type),
-                    Gen3Command.Arg.TrainerBattle => new Gen3Command.Argument(rom.ReadByte(), type),
-                    _ => throw new NotImplementedException(),
-                });
                 // Trainer battle commands have different argument layouts based on the first byte
                 if (type == Gen3Command.Arg.TrainerBattle)
                 {
-                    byte trainerType = (byte)command.ArgData(command.args.Count - 1);
-                    if (Gen3Command.trainerCommandMap.TryGetValue(trainerType, out var trainerArgList))
+                    var trainerType = new Gen3Command.Argument(rom.ReadByte(), Gen3Command.Arg.Byte);
+                    command.args.Add(trainerType);
+                    if (Gen3Command.trainerCommandMap.TryGetValue(trainerType.data, out var trainerArgList))
                     {
                         ReadArgs(ref command, rom, trainerArgList);
                     }
                     else // Fallback to basic trainer args
                     {
                         ReadArgs(ref command, rom, Gen3Command.trainerCommandMap[0x00]);
-                    } 
+                    }
+                }
+                else // Normal arg, parse normally
+                {
+                    command.args.Add(type switch
+                    {
+                        Gen3Command.Arg.Byte => new Gen3Command.Argument(rom.ReadByte(), type),
+                        Gen3Command.Arg.Word => new Gen3Command.Argument(rom.ReadUInt16(), type),
+                        Gen3Command.Arg.Long => new Gen3Command.Argument(rom.ReadUInt32(), type),
+                        Gen3Command.Arg.Pointer => new Gen3Command.Argument(rom.ReadPointer(), type),
+                        _ => throw new NotImplementedException(),
+                    });
                 }
             }
         }
