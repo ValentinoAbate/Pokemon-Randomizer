@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace PokemonRandomizer.Backend.Reading
 {
@@ -9,33 +10,55 @@ namespace PokemonRandomizer.Backend.Reading
 
     public class Gen3ScriptParser
     {
-        private const int maxGoto = 5;
         public Script Parse(Rom rom, int offset)
+        {
+            var visited = new HashSet<int>();
+            var script = Parse(rom, offset, ref visited);
+            return script;
+        }
+
+        private Script Parse(Rom rom, int offset, ref HashSet<int> visited)
         {
             rom.SaveOffset();
             rom.Seek(offset);
             var script = new Script();
-            int gotoDepth = 0;
-            while(rom.Peek() != Gen3Command.end)
+            while (rom.Peek() != Gen3Command.end)
             {
-                var rawCommand = ReadCommand(rom);
-                switch (rawCommand.code)
+                visited.Add(rom.InternalOffset);
+                var command = ReadCommand(rom);
+                switch (command.code)
                 {
                     case Gen3Command.@goto:
-                        script.Add(new GotoCommand() { offset = rawCommand.ArgData(0) });
-                        // Quick fix for looping scripts, should properly fix later (possibly with multiple script offsets logged in the script class)
-                        // Like do a dictionary of offset and script chunks or something
-                        if (++gotoDepth >= maxGoto)
+                        script.Add(new GotoCommand() { offset = command.ArgData(0) });
+                        int gotoOffset = command.ArgData(0);
+                        // If we've already encountered this offset, the script is looping unless branched
+                        if (visited.Contains(gotoOffset))
                         {
                             rom.LoadOffset();
                             return script;
                         }
                         // Goto to continue script
-                        rom.Seek(rawCommand.ArgData(0));
+                        rom.Seek(command.ArgData(0));
+                        break;
+                    case Gen3Command.gotoif:
+                        var gotoCommand = new GotoIfCommand()
+                        {
+                            condition = (byte)command.ArgData(0),
+                            offset = command.ArgData(1),
+                        };
+                        if(!visited.Contains(gotoCommand.offset))
+                        {
+                            gotoCommand.branch = Parse(rom, gotoCommand.offset, ref visited);
+                        }
+                        else
+                        {
+                            gotoCommand.branch = new Script();
+                        }
+                        script.Add(gotoCommand);
                         break;
                     case Gen3Command.copyvarifnotzero:
                         // Check for give item multi-command
-                        if(TryParseGiveItemMultiCommand(rom, rawCommand, out GiveItemCommand giveItemCommand))
+                        if (TryParseGiveItemMultiCommand(rom, command, out GiveItemCommand giveItemCommand))
                         {
                             script.Add(giveItemCommand);
                         }
@@ -48,19 +71,20 @@ namespace PokemonRandomizer.Backend.Reading
                         // Add new give pokemon command
                         script.Add(new GivePokemonCommand()
                         {
-                            pokemon = (PokemonSpecies)rawCommand.ArgData(0),
-                            level = (byte)rawCommand.ArgData(1),
-                            heldItem = (Item)rawCommand.ArgData(2)
+                            pokemon = (PokemonSpecies)command.ArgData(0),
+                            level = (byte)command.ArgData(1),
+                            heldItem = (Item)command.ArgData(2)
                         });
                         break;
                     case Gen3Command.giveEgg:
                         // Add new give egg event
-                        script.Add(new GiveEggCommand() { pokemon = (PokemonSpecies)rawCommand.ArgData(0) });
+                        script.Add(new GiveEggCommand() { pokemon = (PokemonSpecies)command.ArgData(0) });
                         break;
                     default: // Unknown command code, read all data into unknown command
-                        script.Add(new UnknownCommand(new byte[] { rawCommand.code })); // Will later need to contain arg data as well
+                        script.Add(new UnknownCommand(new byte[] { command.code })); // Will later need to contain arg data as well
                         break;
                 }
+
             }
             rom.LoadOffset();
             return script;

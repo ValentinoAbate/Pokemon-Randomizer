@@ -13,8 +13,8 @@ namespace PokemonRandomizer.Backend.Scripting.GenIII
         public const byte @return                             = 0x03;
         public const byte call                                = 0x04;
         public const byte @goto                               = 0x05;
-        public const byte callif                              = 0x06;
-        public const byte gotoif                              = 0x07;
+        public const byte gotoif                              = 0x06;
+        public const byte callif                              = 0x07;
         public const byte gotostd                             = 0x08;
         public const byte callstd                             = 0x09;
         public const byte gotostdif                           = 0x0A;
@@ -371,7 +371,7 @@ namespace PokemonRandomizer.Backend.Scripting.GenIII
             {hidespritepos       , wordByte2         },
             {showsprite          , word              },
             {showspritepos       , wordByte2         },
-            {movesprite          , wordByte2         },
+            {movesprite          , word3             },
             {spritevisible       , wordByte2         },
             {spriteinvisible     , wordByte2         },
             {faceplayer          , noArgs            },
