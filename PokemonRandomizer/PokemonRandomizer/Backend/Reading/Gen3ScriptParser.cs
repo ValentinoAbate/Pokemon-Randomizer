@@ -22,8 +22,7 @@ namespace PokemonRandomizer.Backend.Reading
             rom.SaveOffset();
             rom.Seek(offset);
             var script = new Script();
-            bool reachedEnd = false;
-            while (!reachedEnd)
+            while (true)
             {
                 visited.Add(rom.InternalOffset);
                 var command = ReadCommand(rom);
