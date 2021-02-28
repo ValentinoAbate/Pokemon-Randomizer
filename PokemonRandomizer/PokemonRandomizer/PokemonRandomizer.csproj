@@ -110,6 +110,7 @@
     <Compile Include="Backend\Utilities\IpsPatcher.cs" />
     <Compile Include="Backend\DataStructures\MoveData.cs" />
     <Compile Include="Backend\Randomization\MovesetGenerator.cs" />
+    <Compile Include="Backend\Writing\Gen3ScriptWriter.cs" />
     <Compile Include="Backend\Writing\RomWriter.cs" />
     <Compile Include="Resources\Patches\Patches.Designer.cs">
       <AutoGen>True</AutoGen>

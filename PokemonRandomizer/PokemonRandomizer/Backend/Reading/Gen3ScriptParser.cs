@@ -91,16 +91,16 @@ namespace PokemonRandomizer.Backend.Reading
             return script;
         }
 
-        public bool TryParseGiveItemMultiCommand(Rom rom, Gen3Command command1, out GiveItemCommand giveItemMultiCommand)
+        private bool TryParseGiveItemMultiCommand(Rom rom, Gen3Command command1, out GiveItemCommand giveItemMultiCommand)
         {
             giveItemMultiCommand = null;
             // If the first command isn't setting variable 0x8000 or the next command is end return false
-            if (command1.ArgData(0) != 0x8000 || rom.Peek() == Gen3Command.end)
+            if (command1.ArgData(0) != Gen3Command.itemTypeVar || rom.Peek() == Gen3Command.end)
                 return false;
             rom.SaveOffset();
             var command2 = ReadCommand(rom);
             // If the second command copyvarifnotzero with a target of var 0x8001 return false
-            if (command2.code != Gen3Command.copyvarifnotzero || command2.ArgData(0) != 0x8001)
+            if (command2.code != Gen3Command.copyvarifnotzero || command2.ArgData(0) != Gen3Command.itemQuantityVar)
             {
                 rom.LoadOffset();
                 return false;
@@ -126,7 +126,7 @@ namespace PokemonRandomizer.Backend.Reading
         /// <summary>
         /// Read a raw command from the ROM
         /// </summary>
-        public Gen3Command ReadCommand(Rom rom)
+        private Gen3Command ReadCommand(Rom rom)
         {
             var command = new Gen3Command() { code = rom.ReadByte() };
             if (!Gen3Command.commandMap.ContainsKey(command.code))
@@ -141,7 +141,7 @@ namespace PokemonRandomizer.Backend.Reading
         /// <summary>
         /// Read the command args depending on the command code
         /// </summary>
-        public void ReadArgs(ref Gen3Command command, Rom rom, Gen3Command.Arg[] typeArr)
+        private void ReadArgs(ref Gen3Command command, Rom rom, Gen3Command.Arg[] typeArr)
         {
             foreach (var type in typeArr)
             {
@@ -150,14 +150,7 @@ namespace PokemonRandomizer.Backend.Reading
                 {
                     var trainerType = new Gen3Command.Argument(rom.ReadByte(), Gen3Command.Arg.Byte);
                     command.args.Add(trainerType);
-                    if (Gen3Command.trainerCommandMap.TryGetValue(trainerType.data, out var trainerArgList))
-                    {
-                        ReadArgs(ref command, rom, trainerArgList);
-                    }
-                    else // Fallback to basic trainer args
-                    {
-                        ReadArgs(ref command, rom, Gen3Command.trainerCommandMap[0x00]);
-                    }
+                    ReadArgs(ref command, rom, Gen3Command.GetTrainerArgs(trainerType.data));
                 }
                 else // Normal arg, parse normally
                 {

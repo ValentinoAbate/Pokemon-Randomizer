@@ -737,7 +737,7 @@ namespace PokemonRandomizer.Backend.Writing
             }
         }
 
-        private class RepointList : List<Tuple<int, int>>
+        public class RepointList : List<Tuple<int, int>>
         {
             public void Add(int oldOffset, int newOffset)
             {

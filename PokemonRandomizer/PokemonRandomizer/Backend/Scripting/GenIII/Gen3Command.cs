@@ -5,6 +5,9 @@ namespace PokemonRandomizer.Backend.Scripting.GenIII
 {
     public class Gen3Command : DataStructures.Scripts.Command
     {
+        public const int itemTypeVar = 0x8000;
+        public const int itemQuantityVar = 0x8001;
+
         #region Command Constants
 
         public const byte nop                                 = 0x00;
@@ -514,7 +517,14 @@ namespace PokemonRandomizer.Backend.Scripting.GenIII
             {bufferitems2        , byteWord2         },
         };
 
-        public static readonly Dictionary<int, Arg[]> trainerCommandMap = new Dictionary<int, Arg[]>
+        public static Arg[] GetTrainerArgs(int trainerType)
+        {
+            if (trainerCommandMap.TryGetValue(trainerType, out var trainerArgList))
+                return trainerArgList;
+            return trainerCommandMap[0x00]; // If the key isn't in the dictionary, use the default format
+        }
+
+        private static readonly Dictionary<int, Arg[]> trainerCommandMap = new Dictionary<int, Arg[]>
         {
             {0x00, word2Pointer2},
             {0x01, word2Pointer3},
