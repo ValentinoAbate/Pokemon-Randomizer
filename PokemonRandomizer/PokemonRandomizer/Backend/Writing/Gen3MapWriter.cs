@@ -66,7 +66,7 @@ namespace PokemonRandomizer.Backend.Writing
             rom.WriteByte(map.battleField);
             #endregion
 
-            #region Write Non-Header Data (Unimplemented)
+            #region Write Non-Header Data
             // TODO: Write map names
 
             // TODO: Map Data
