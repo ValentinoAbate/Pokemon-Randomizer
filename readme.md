@@ -11,7 +11,7 @@ Check out their website! http://artemis251.fobby.net/downloads/emerald/
 Another project that's been a great reference for writing this is dabomstew's Universal pokemon randomizer.
 Check out their project! https://github.com/Dabomstew/universal-pokemon-randomizer
 
-# Version (v0.0.6.1)
+# Version (v0.1.0)
 
 ### Version Number Convention
 

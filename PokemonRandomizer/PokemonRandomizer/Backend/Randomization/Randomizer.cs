@@ -1,4 +1,5 @@
 ﻿using PokemonRandomizer.Backend.DataStructures;
+using PokemonRandomizer.Backend.DataStructures.Scripts;
 using PokemonRandomizer.Backend.EnumTypes;
 using PokemonRandomizer.Backend.Utilities;
 using System;
@@ -504,9 +505,38 @@ namespace PokemonRandomizer.Backend.Randomization
             #endregion
 
             #region Maps
-
+            void RandomizeScript(Script script)
+            {
+                foreach (var command in script)
+                {
+                    switch (command)
+                    {
+                        case GotoCommand @goto:
+                            RandomizeScript(@goto.script);
+                            break;
+                        case GiveItemCommand giveItem:
+                            if (giveItem.type == GiveItemCommand.Type.Normal && rand.RollSuccess(settings.FieldItemRandChance))
+                            {
+                                giveItem.item = RandomItem(items, giveItem.item, settings.FieldItemSettings);
+                            }
+                            break;
+                        case GivePokemonCommand givePokemon:
+                            if(rand.RollSuccess(settings.GiftPokemonRandChance))
+                            {
+                                givePokemon.pokemon = RandomSpecies(pokemonSet, givePokemon.pokemon, givePokemon.level, settings.GiftSpeciesSettings);
+                            }
+                            break;
+                        case GiveEggCommand giveEgg:
+                            if(rand.RollSuccess(settings.GiftPokemonRandChance))
+                            {
+                                giveEgg.pokemon = RandomSpecies(pokemonSet, giveEgg.pokemon, 1, settings.GiftSpeciesSettings);
+                            }
+                            break;
+                    }
+                }
+            }
             // Mutate Maps (currently just iterate though the maps, but may want to construct and traverse a graph later)
-            foreach(var map in data.Maps)
+            foreach (var map in data.Maps)
             {
                 // If the map names is empty, just continue
                 if (string.IsNullOrEmpty(map.Name))
@@ -523,11 +553,31 @@ namespace PokemonRandomizer.Backend.Randomization
                 // Set tags (gym trainer, gym leader, elite 4, rival, reoccuring, etc)
                 // Set class
                 // Natural trainers? (trainer types are based on environment type)
+                // Randomize Hidden Items
                 foreach(var sEvent in map.eventData.signEvents)
                 {
                     if(sEvent.IsHiddenItem)
                     {
-                        //sEvent.hiddenItem = RandomItem(items, sEvent.hiddenItem, settings.PcItemSettings);
+                        if (settings.UseSeperateHiddenItemSettings)
+                        {
+                            if (rand.RollSuccess(settings.HiddenItemRandChance))
+                            {
+                                sEvent.hiddenItem = RandomItem(items, sEvent.hiddenItem, settings.HiddenItemSettings);
+                            }
+                        }
+                        else if(rand.RollSuccess(settings.FieldItemRandChance))
+                        {
+                            sEvent.hiddenItem = RandomItem(items, sEvent.hiddenItem, settings.FieldItemSettings);
+                        }
+                    }
+                }
+                // Randomize NPCs
+                foreach (var npc in map.eventData.npcEvents)
+                {
+                    // Randomize NPC scripts
+                    if(npc.script != null)
+                    {
+                        RandomizeScript(npc.script);
                     }
                 }
                 //Mutate battle here later?
@@ -707,22 +757,18 @@ namespace PokemonRandomizer.Backend.Randomization
 
             #endregion
 
-            #region Items (NOTHING YET)
-            // Mutate Field Items
-            #endregion
-
-            #region Misc
+            #region Items
+            // Field items happen in map scripts
 
             // Randomize PC starting item
             if (settings.PcPotionOption == Settings.PcItemOption.Random)
             {
                 data.PcStartItem = RandomItem(items, data.PcStartItem, settings.PcItemSettings);
             }
-            else if(settings.PcPotionOption == Settings.PcItemOption.Custom)
+            else if (settings.PcPotionOption == Settings.PcItemOption.Custom)
             {
                 data.PcStartItem = settings.CustomPcItem;
             }
-
             #endregion
 
             #region Debugging / Testing
@@ -1332,6 +1378,8 @@ namespace PokemonRandomizer.Backend.Randomization
         private Item RandomItem(IEnumerable<ItemData> possibleItems, Item input, Settings.ItemSettings settings)
         {
             var inputData = data.ItemData[(int)input];
+            if (inputData.IsKeyItem && settings.KeepKeyItems)
+                return input;
             var itemWeights = new WeightedSet<ItemData>(possibleItems, 1);
             if(rand.RollSuccess(settings.SamePocketChance))
             {

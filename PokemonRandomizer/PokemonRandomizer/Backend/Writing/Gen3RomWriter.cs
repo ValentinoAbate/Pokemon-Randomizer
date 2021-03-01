@@ -20,7 +20,7 @@ namespace PokemonRandomizer.Backend.Writing
         private readonly Gen3MapWriter mapWriter;
         public Gen3RomWriter()
         {
-            scriptWriter = new Gen3ScriptWriter();
+            scriptWriter = new Gen3ScriptWriter(RemapItem);
             mapWriter = new Gen3MapWriter(scriptWriter);
         }
         public override Rom Write(RomData data, Rom originalRom, RomMetadata metadata, XmlManager info, Settings settings)

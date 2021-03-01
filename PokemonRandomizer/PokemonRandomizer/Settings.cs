@@ -330,6 +330,18 @@ namespace PokemonRandomizer
         };
         #endregion
 
+        #region Gift Pokemon
+        public double GiftPokemonRandChance => 1;
+
+        public SpeciesSettings GiftSpeciesSettings { get; } = new SpeciesSettings()
+        {
+            BanLegendaries = true,
+            Noise = 1f,
+            PowerScaleSimilarityMod = 0f,
+            TypeSimilarityMod = 0f,
+        };
+        #endregion
+
         #region Starter Pokemon
         public enum StarterPokemonOption
         {
@@ -468,6 +480,8 @@ namespace PokemonRandomizer
 
         #region Items
 
+        public bool DontRandomizeTms => false;
+
         public enum PcItemOption
         {
             Unchanged,
@@ -476,24 +490,20 @@ namespace PokemonRandomizer
         }
 
         public PcItemOption PcPotionOption => PcItemOption.Custom;
-
         public Item CustomPcItem => Item.Metal_Coat;
-
         public ItemSettings PcItemSettings => new ItemSettings()
         {
             SamePocketChance = 0.75,
         };
 
-        public bool DontRandomizeTms => false;
-
-        public double FieldItemRandChance => 0;
+    
+        public double FieldItemRandChance => 1;
         public ItemSettings FieldItemSettings => new ItemSettings()
         {
             SamePocketChance = 0.75,
         };
-
-        public bool UseSeperateHiddenItemSettings => false;
-        public double HiddenItemRandChance => 0;
+        public bool UseSeperateHiddenItemSettings => true;
+        public double HiddenItemRandChance => 1;
         public ItemSettings HiddenItemSettings => new ItemSettings()
         {
             SamePocketChance = 0.75,
@@ -569,8 +579,8 @@ namespace PokemonRandomizer
 
         public class ItemSettings
         {
+            public bool KeepKeyItems { get; set; } = true;
             public double SamePocketChance { get; set; } = 1;
-        
         }
 
         #endregion

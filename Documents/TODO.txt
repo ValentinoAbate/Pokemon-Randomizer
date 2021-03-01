@@ -14,7 +14,6 @@ IDEAS:
 - Improve Impossible Evo fix and evo levels
 	- Add an option to change slowbro / slowking and huntail / gorebyss to friendship day / night or stones
 	- Item remapping
-		- field items
 		- store items
 		- event items (scanner and steven event especially)
 - Trainer / Event Ideas
@@ -64,6 +63,10 @@ IDEAS:
 	- Choose priority for different heuristics for a category
 		- Heuristics can be on the same level
 	- Map categories can be for "Routes" (Maps with "Route" in the name) and named maps
+- Special Pokemon Randomization
+	- Setting for fossil pokemon to always be fossil pokemon
+	- Setting for egg pokemon to always be baby pokemon
+	- Setting for legenary pokemon to always be legendary pokemon (when relevant)
 FEATURES:
 - FireRed v1.1, LeafGreen v1.0 + v1.1, Sapphire v1.0 + v1.11, and Ruby v1.0 + v1.11 compatibility
 - Enable for FireRed
@@ -77,11 +80,15 @@ FEATURES:
 - ROM Data XML export (randomized rom exports its offsets so it can be re-randomized)
 	- Include data in a human-readable format
 - Item randomization 
-	- field items
 	- pickup items
 	- stores
 	- vending machines
-	- statics
+	- statics / gift items (partially complete)
+	- held items
+		- wild
+		- starter
+		- trade
+		- gift
 	- Use cost as optional weighting
 - RSE berry giver randomization (may be possible with script writing)
 - Script reading / writing

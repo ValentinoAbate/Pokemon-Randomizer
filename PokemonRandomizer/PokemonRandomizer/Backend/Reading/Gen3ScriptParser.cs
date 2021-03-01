@@ -119,6 +119,11 @@ namespace PokemonRandomizer.Backend.Reading
                 amount = command2.ArgData(1),
                 messageType = (GiveItemCommand.MessageType)command3.ArgData(0),
             };
+            // Mark command type
+            if((int)giveItemMultiCommand.item > 10000)
+            {
+                giveItemMultiCommand.type = (int)giveItemMultiCommand.item > 32768 ? GiveItemCommand.Type.Variable : GiveItemCommand.Type.Unknown;
+            }
             rom.DumpOffset();
             return true;
         }
