@@ -1133,7 +1133,7 @@ namespace PokemonRandomizer.Backend.Randomization
         /// (due to not being high enough level to evolve to the current species) </summary>
         private bool IsPokemonValidLevel(PokemonBaseStats pokemon, int level)
         {
-            if (pokemon.evolvesFrom.Count == 0) // basic pokemon
+            if (pokemon.IsBasicOrEvolvesFromBaby) // basic pokemon or evolves from baby
                 return true;
             // Is there at least one valid evolution
             foreach (var evo in pokemon.evolvesFrom)
@@ -1224,7 +1224,7 @@ namespace PokemonRandomizer.Backend.Randomization
             // Set item stock (if applicable)
             // Set Battle Type
             if (rand.RollSuccess(settings.BattleTypeRandChance))
-                trainer.isDoubleBattle = rand.RandomDouble() < settings.DoubleBattleChance;
+                trainer.isDoubleBattle = rand.RollSuccess(settings.DoubleBattleChance);
             // Set pokemon
             if(rand.RollSuccess(settings.PokemonRandChance))
             {
@@ -1320,10 +1320,10 @@ namespace PokemonRandomizer.Backend.Randomization
             {
                 foreach (var battle in battles)
                 {
-                    if (battle.isDoubleBattle && battle.pokemon.Length <= 1)
+                    if (battle.pokemon.Length <= 1)
                         battle.isDoubleBattle = false;
                 }
-                if (firstBattle.isDoubleBattle && firstBattle.pokemon.Length <= 1)
+                if (firstBattle.pokemon.Length <= 1)
                     firstBattle.isDoubleBattle = false;
             }
         }

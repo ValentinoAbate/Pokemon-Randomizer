@@ -47,6 +47,17 @@ namespace PokemonRandomizer.Backend.DataStructures
             PokemonSpecies.LATIAS,
             PokemonSpecies.LATIOS,
         };
+        public static HashSet<PokemonSpecies> fossilPokemon = new HashSet<PokemonSpecies>
+        {
+            PokemonSpecies.KABUTO,
+            PokemonSpecies.KABUTOPS,
+            PokemonSpecies.OMANYTE,
+            PokemonSpecies.OMASTAR,
+            PokemonSpecies.LILEEP,
+            PokemonSpecies.CRADILY,
+            PokemonSpecies.ANORITH,
+            PokemonSpecies.ARMALDO,
+        };
         public PokemonSpecies species;
 
         #region Helper Properties

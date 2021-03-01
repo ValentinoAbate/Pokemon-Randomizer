@@ -337,7 +337,7 @@ namespace PokemonRandomizer
         {
             BanLegendaries = true,
             Noise = 1f,
-            PowerScaleSimilarityMod = 0f,
+            PowerScaleSimilarityMod = 0.1f,
             TypeSimilarityMod = 0f,
         };
         #endregion
