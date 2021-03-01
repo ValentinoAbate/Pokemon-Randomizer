@@ -119,7 +119,7 @@ namespace PokemonRandomizer.Backend.Reading
                 amount = command2.ArgData(1),
                 messageType = (GiveItemCommand.MessageType)command3.ArgData(0),
             };
-            rom.LoadOffset();
+            rom.DumpOffset();
             return true;
         }
 

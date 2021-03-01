@@ -83,9 +83,12 @@ FEATURES:
 	- vending machines
 	- statics
 	- Use cost as optional weighting
-- RSE berry giver randomization
+- RSE berry giver randomization (may be possible with script writing)
+- Script reading / writing
+	- Maps
+	- Signs
+	- Triggers
 - In-Game Trade Randomization
-- ROM variable-length string writing
 - TM Text setting
 - Multi-Rom Data aggregation
 	- For instance, use emerald as a base but pull additional classes and moveset updates from FireRed
@@ -94,7 +97,6 @@ FEATURES:
 - Ban selfdestruct works by move effect rather than explicit move number
 - Wally Text Fix ("RALTS" to current pokemon)
 - UI
-	- Show version number in UI
 	- Output logger (for showing compatibility issues, etc)
 - HM Compat randomization
 	- Should probably have a separate settings block from the TM / MT setting

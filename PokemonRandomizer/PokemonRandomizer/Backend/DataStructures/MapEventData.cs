@@ -88,7 +88,7 @@ namespace PokemonRandomizer.Backend.DataStructures
         {
 			public int xPos;
 			public int yPos;
-			public byte unknown; // Seems to usually by 3?
+			public byte unknown; // Is usually 0, 1, or 3. Could be layer / collision? Could be to do with the arrow graphic
 			// Which warp tile to go to on target map/bank
 			public byte warpIndex;
 			// Map and bank to warp to

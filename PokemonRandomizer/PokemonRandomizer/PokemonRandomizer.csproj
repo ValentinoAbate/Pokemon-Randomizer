@@ -89,6 +89,7 @@
     <Compile Include="Backend\DataStructures\Scripts\GotoIfCommand.cs" />
     <Compile Include="Backend\EnumTypes\Generation.cs" />
     <Compile Include="Backend\GenIII\Constants\ElementNames\ElementNames.cs" />
+    <Compile Include="Backend\Reading\Gen3MapParser.cs" />
     <Compile Include="Backend\Reading\Gen3ScriptParser.cs" />
     <Compile Include="Backend\Reading\Gen4RomParser.cs" />
     <Compile Include="Backend\Reading\RomParser.cs" />
@@ -110,6 +111,7 @@
     <Compile Include="Backend\Utilities\IpsPatcher.cs" />
     <Compile Include="Backend\DataStructures\MoveData.cs" />
     <Compile Include="Backend\Randomization\MovesetGenerator.cs" />
+    <Compile Include="Backend\Writing\Gen3MapWriter.cs" />
     <Compile Include="Backend\Writing\Gen3ScriptWriter.cs" />
     <Compile Include="Backend\Writing\RomWriter.cs" />
     <Compile Include="Resources\Patches\Patches.Designer.cs">

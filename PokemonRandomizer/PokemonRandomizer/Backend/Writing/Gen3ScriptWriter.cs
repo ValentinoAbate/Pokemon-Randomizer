@@ -11,7 +11,7 @@ namespace PokemonRandomizer.Backend.Writing
     using DataStructures;
     public class Gen3ScriptWriter
     {
-        public void Write(Script script, Rom rom, int offset, Gen3RomWriter.RepointList repointList)
+        public void Write(Script script, Rom rom, int offset)
         {
             rom.SaveOffset();
             rom.Seek(offset);
@@ -23,12 +23,12 @@ namespace PokemonRandomizer.Backend.Writing
                         rom.WriteByte(Gen3Command.gotoif);
                         rom.WriteByte(gotoIf.condition);
                         rom.WritePointer(gotoIf.offset);
-                        Write(gotoIf.script, rom, gotoIf.offset, repointList);
+                        Write(gotoIf.script, rom, gotoIf.offset);
                         break;
                     case GotoCommand @goto:
                         rom.WriteByte(Gen3Command.@goto);
                         rom.WritePointer(@goto.offset);
-                        Write(@goto.script, rom, @goto.offset, repointList);
+                        Write(@goto.script, rom, @goto.offset);
                         break;
                     case GiveItemCommand giveItem:
                         rom.WriteByte(Gen3Command.copyvarifnotzero);

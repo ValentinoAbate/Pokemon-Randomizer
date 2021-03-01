@@ -16,6 +16,13 @@ namespace PokemonRandomizer.Backend.Writing
     {
         private readonly Dictionary<Item, Item> itemRemaps = new Dictionary<Item, Item>();
         private readonly HashSet<Item> failedItemRemaps = new HashSet<Item>();
+        private readonly Gen3ScriptWriter scriptWriter;
+        private readonly Gen3MapWriter mapWriter;
+        public Gen3RomWriter()
+        {
+            scriptWriter = new Gen3ScriptWriter();
+            mapWriter = new Gen3MapWriter(scriptWriter);
+        }
         public override Rom Write(RomData data, Rom originalRom, RomMetadata metadata, XmlManager info, Settings settings)
         {
             var rom = new Rom(originalRom);
@@ -49,7 +56,7 @@ namespace PokemonRandomizer.Backend.Writing
             WriteTrainerBattles(data, rom, info);
             if(metadata.IsRubySapphireOrEmerald)
             {
-                WriteMapData(data, rom, info);
+                mapWriter.WriteMapData(data, rom, info, metadata);
             }
             WriteItemData(data.ItemData, rom, info);
             WritePickupData(data.PickupItems, rom, info, metadata);
@@ -609,71 +616,6 @@ namespace PokemonRandomizer.Backend.Writing
                 #endregion
                 rom.LoadOffset();
             }
-        }
-
-        /// <summary>
-        /// Write the maps back to the file. Currently edits in place, and does not support exapansion of Map Bank Table.
-        /// Currently only writes Map Header data.
-        /// </summary>
-        private void WriteMapData(RomData data, Rom rom, XmlManager info)
-        {
-            int bankPtrOffset = info.FindOffset(ElementNames.mapBankPointers, rom);
-            if (bankPtrOffset == Rom.nullPointer)
-                return;
-            int labelOffset = info.FindOffset(ElementNames.mapLabels, rom);
-            if (labelOffset == Rom.nullPointer)
-                return;
-            // Construct map data structures
-            for (int i = 0; i < data.MapBanks.Length; ++i)
-            {
-                int bankPtr = rom.ReadPointer(bankPtrOffset + (i * Rom.pointerSize));
-                WriteBank(data.MapBanks[i], rom, bankPtr, labelOffset);
-            }
-        }
-
-        /// <summary>
-        /// Write the maps in this bank back to the file. Currently edits in place, and does not support exapansion of the given map table
-        /// </summary>
-        private void WriteBank(Map[] maps, Rom rom, int bankOffset, int labelOffset)
-        {
-            for (int i = 0; i < maps.Length; ++i)
-            {
-                int mapOffset = rom.ReadPointer(bankOffset + (i * Rom.pointerSize));
-                WriteMap(maps[i], rom, mapOffset, labelOffset);
-            }
-        }
-        /// <summary>
-        /// Write a map to the rom. Currently only writes header data
-        /// </summary>
-        private void WriteMap(Map map, Rom rom, int mapOffset, int labelOffset)
-        {
-            #region Write Header Data
-            rom.Seek(mapOffset);
-            rom.WritePointer(map.mapDataOffset);
-            rom.WritePointer(map.eventDataOffset);
-            rom.WritePointer(map.mapScriptsOffset);
-            rom.WritePointer(map.connectionOffset);
-            rom.WriteUInt16(map.music);
-            rom.WriteUInt16(map.mapIndex);
-            rom.WriteByte(map.labelIndex);
-            rom.WriteByte(map.visibility);
-            rom.WriteByte((byte)map.weather);
-            rom.WriteByte((byte)map.mapType);
-            rom.WriteByte(map.unknown);
-            rom.WriteByte(map.unknown2);
-            rom.WriteByte(map.showLabelOnEntry);
-            rom.WriteByte(map.battleField);
-            #endregion
-
-            #region Write Non-Header Data (Unimplemented)
-            // Write Map Name
-            //rom.Seek(rom.ReadPointer(labelOffset + map.labelIndex * 8 + 4));
-            //    rom.ReadVariableLengthString();
-
-            //// Connections
-            //if (connectionOffset != Rom.nullPointer)
-            //    connections = new ConnectionData(rom, connectionOffset);
-            #endregion
         }
 
         private void WriteItemData(IEnumerable<ItemData> itemData, Rom rom, XmlManager info)

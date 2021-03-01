@@ -264,6 +264,12 @@ namespace PokemonRandomizer.Backend.DataStructures
             if(SavedOffsets.Count > 0)
                 InternalOffset = SavedOffsets.Pop();
         }
+        /// <summary>Deletes the latest saved offset from the SavedOffsets Stack</summary>
+        public void DumpOffset()
+        {
+            if (SavedOffsets.Count > 0)
+                SavedOffsets.Pop();
+        }
         /// <summary>Reads a byte from the internal offset</summary>
         public byte ReadByte() => File[InternalOffset++];
         /// <summary>Reads a byte from the given offset</summary>
