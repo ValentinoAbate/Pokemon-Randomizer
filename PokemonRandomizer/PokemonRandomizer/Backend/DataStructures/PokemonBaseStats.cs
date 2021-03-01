@@ -53,6 +53,7 @@ namespace PokemonRandomizer.Backend.DataStructures
             PokemonSpecies.KABUTOPS,
             PokemonSpecies.OMANYTE,
             PokemonSpecies.OMASTAR,
+            PokemonSpecies.AERODACTYL,
             PokemonSpecies.LILEEP,
             PokemonSpecies.CRADILY,
             PokemonSpecies.ANORITH,

@@ -332,7 +332,6 @@ namespace PokemonRandomizer
 
         #region Gift Pokemon
         public double GiftPokemonRandChance => 1;
-
         public SpeciesSettings GiftSpeciesSettings { get; } = new SpeciesSettings()
         {
             BanLegendaries = true,
@@ -340,6 +339,8 @@ namespace PokemonRandomizer
             PowerScaleSimilarityMod = 0.1f,
             TypeSimilarityMod = 0f,
         };
+        public bool EnsureFossilRevivesAreFossilPokemon => true;
+        public bool EnsureGiftEggsAreBabyPokemon => true;
         #endregion
 
         #region Starter Pokemon
@@ -516,6 +517,8 @@ namespace PokemonRandomizer
         public bool RunIndoors => true;
 
         public bool EvolveWithoutNationalDex => true;
+
+        public bool CountRelicanthAsFossil => true;
 
         #endregion
 

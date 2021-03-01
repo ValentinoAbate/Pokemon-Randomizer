@@ -34,6 +34,10 @@ namespace PokemonRandomizer.Backend.Randomization
         public RomData Randomize()
         {
             var pokemonSet = DefinePokemonSet();
+            var fossilSet = PokemonBaseStats.fossilPokemon.Where(pokemonSet.Contains).ToHashSet();
+            if (settings.CountRelicanthAsFossil && pokemonSet.Contains(PokemonSpecies.RELICANTH))
+                fossilSet.Add(PokemonSpecies.RELICANTH);
+            var babySet = PokemonBaseStats.babyPokemon.Where(pokemonSet.Contains).ToHashSet();
             var types = DefinePokemonTypes();
             var items = DefineItemSet();
 
@@ -523,13 +527,17 @@ namespace PokemonRandomizer.Backend.Randomization
                         case GivePokemonCommand givePokemon:
                             if(rand.RollSuccess(settings.GiftPokemonRandChance))
                             {
-                                givePokemon.pokemon = RandomSpecies(pokemonSet, givePokemon.pokemon, givePokemon.level, settings.GiftSpeciesSettings);
+                                // Should choose from fossil set?
+                                bool fossil = settings.EnsureFossilRevivesAreFossilPokemon && fossilSet.Count > 0 && PokemonBaseStats.fossilPokemon.Contains(givePokemon.pokemon);
+                                givePokemon.pokemon = RandomSpecies(fossil ? fossilSet : pokemonSet, givePokemon.pokemon, givePokemon.level, settings.GiftSpeciesSettings);
+
                             }
                             break;
                         case GiveEggCommand giveEgg:
                             if(rand.RollSuccess(settings.GiftPokemonRandChance))
                             {
-                                giveEgg.pokemon = RandomSpecies(pokemonSet, giveEgg.pokemon, 1, settings.GiftSpeciesSettings);
+                                bool baby = settings.EnsureGiftEggsAreBabyPokemon && babySet.Count > 0;
+                                giveEgg.pokemon = RandomSpecies(baby ? babySet : pokemonSet, giveEgg.pokemon, 1, settings.GiftSpeciesSettings);
                             }
                             break;
                     }

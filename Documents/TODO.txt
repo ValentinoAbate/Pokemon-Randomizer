@@ -64,8 +64,6 @@ IDEAS:
 		- Heuristics can be on the same level
 	- Map categories can be for "Routes" (Maps with "Route" in the name) and named maps
 - Special Pokemon Randomization
-	- Setting for fossil pokemon to always be fossil pokemon
-	- Setting for egg pokemon to always be baby pokemon
 	- Setting for legenary pokemon to always be legendary pokemon (when relevant)
 - 365 Mode
 	- Ensures all pokemon are obtainable in the game
