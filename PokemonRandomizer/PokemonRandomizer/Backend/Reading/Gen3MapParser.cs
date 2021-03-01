@@ -42,7 +42,7 @@ namespace PokemonRandomizer.Backend.Reading
             Map[] maps = new Map[numMaps];
             for (int i = 0; i < maps.Length; ++i)
             {
-                int mapAddy = rom.ReadPointer(offset + (i * 4));
+                int mapAddy = rom.ReadPointer(offset + (i * Rom.pointerSize));
                 maps[i] = ReadMap(rom, metadata, mapAddy, labelOffset);
             }
             return maps;
