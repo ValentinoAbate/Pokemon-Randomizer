@@ -432,7 +432,7 @@ namespace PokemonRandomizer.Backend.Randomization
                         else // Intelligent
                         {
                             // Basic pokemon (or pokemon with only a baby evolution)
-                            if (pokemon.evolvesFrom.Count == 0 || pokemon.IsBasicOrEvolvesFromBaby)
+                            if (pokemon.IsBasicOrEvolvesFromBaby)
                             {
                                 if (pokemon.catchRate < settings.IntelligentCatchRateBasicThreshold)
                                     pokemon.catchRate = settings.IntelligentCatchRateBasicThreshold;
@@ -1141,7 +1141,7 @@ namespace PokemonRandomizer.Backend.Randomization
         /// (due to not being high enough level to evolve to the current species) </summary>
         private bool IsPokemonValidLevel(PokemonBaseStats pokemon, int level)
         {
-            if (pokemon.IsBasicOrEvolvesFromBaby) // basic pokemon or evolves from baby
+            if (pokemon.IsBasic) // basic pokemon
                 return true;
             // Is there at least one valid evolution
             foreach (var evo in pokemon.evolvesFrom)
@@ -1158,6 +1158,8 @@ namespace PokemonRandomizer.Backend.Randomization
                 return evo.parameter;
             if(evo.EvolvesByFriendship && pokemon.IsBaby)
             {
+                if (data.PokemonLookup[evo.Pokemon].HasRealEvolution)
+                    return 10;
                 return 18;
             }
             // For any other type Calculate level based on evolution tree
@@ -1169,7 +1171,7 @@ namespace PokemonRandomizer.Backend.Randomization
             {
                 int baseLevel = 32;
                 // Is this pokemon a middle stage evolution?
-                if (data.PokemonLookup[evo.Pokemon].evolvesTo.Count((e) => e.IsRealEvolution) > 0)
+                if (data.PokemonLookup[evo.Pokemon].HasRealEvolution)
                     baseLevel -= 8;
                 return baseLevel;
             }
