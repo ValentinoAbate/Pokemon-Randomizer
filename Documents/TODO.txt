@@ -111,7 +111,6 @@ FEATURES:
 	- Should probably have a separate settings block from the TM / MT setting
 - Game corner randomization????
 	- High stakes roulette
-- Don't randomize secret power TM option
 UNIT TESTS:
 - Clean rom hash compare (reading and writing an input rom skipping randomization should produce the same hash)
 CLEANUP:

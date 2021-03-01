@@ -92,9 +92,8 @@ namespace PokemonRandomizer.Backend.Randomization
             // Randomize TM mappings
             for(int i = 0; i < data.TMMoves.Length; ++i)
             {
-                if (settings.KeepImportantTMsAndTutors && settings.ImportantTMsAndTutors.Contains(data.TMMoves[i]))
-                    continue;
-                if (rand.RollSuccess(settings.TMRandChance))
+                bool skipImportant = settings.KeepImportantTMsAndTutors && settings.ImportantTMsAndTutors.Contains(data.TMMoves[i]);
+                if (!skipImportant && rand.RollSuccess(settings.TMRandChance))
                     data.TMMoves[i] = rand.Choice(moves);
                 if (settings.PreventDuplicateTMsAndTutors)
                     moves.Remove(data.TMMoves[i]);
@@ -102,9 +101,8 @@ namespace PokemonRandomizer.Backend.Randomization
             // Randomize Move Tutor mappings
             for (int i = 0; i < data.tutorMoves.Length; ++i)
             {
-                if (settings.KeepImportantTMsAndTutors && settings.ImportantTMsAndTutors.Contains(data.tutorMoves[i]))
-                    continue;
-                if (rand.RollSuccess(settings.MoveTutorRandChance))
+                bool skipImportant = settings.KeepImportantTMsAndTutors && settings.ImportantTMsAndTutors.Contains(data.tutorMoves[i]);
+                if (!skipImportant && rand.RollSuccess(settings.MoveTutorRandChance))
                     data.tutorMoves[i] = rand.Choice(moves);
                 if (settings.PreventDuplicateTMsAndTutors)
                     moves.Remove(data.tutorMoves[i]);
