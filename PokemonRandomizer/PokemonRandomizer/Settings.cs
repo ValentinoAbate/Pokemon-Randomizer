@@ -56,13 +56,21 @@ namespace PokemonRandomizer
             RandomKeepNumber,
             Intelligent
         }
-        public TmMtCompatOption TmMtCompatSetting { get => TmMtCompatOption.RandomKeepNumber; }
-        public double TmMtTrueChance { get => 0.42; }
-        public double TmMtNoise { get => 0.15; }
-        public bool PreventHmMovesInTMsAndMoveTutors { get => true; }
-        public bool PreventDuplicateTMsAndMoveTutors { get => true; }
-        public double TMRandChance { get => 1; }
-        public double MoveTutorRandChance { get => 1; }
+        public TmMtCompatOption TmMtCompatSetting => TmMtCompatOption.Intelligent;
+        public double TmMtTrueChance => 0.42;
+        public double TmMtNoise => 0.15;
+        public bool PreventHmMovesInTMsAndTutors => true;
+        public bool PreventDuplicateTMsAndTutors => true;
+        public bool KeepImportantTMsAndTutors => true;
+        public HashSet<Move> ImportantTMsAndTutors { get; } = new HashSet<Move>()
+        {
+            Move.HEADBUTT,
+            Move.FLASH,
+            Move.ROCK_SMASH,
+            Move.SECRET_POWER,
+        };
+        public double TMRandChance => 1;
+        public double MoveTutorRandChance => 1;
 
         #endregion
 

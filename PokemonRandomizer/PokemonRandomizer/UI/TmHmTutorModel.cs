@@ -31,9 +31,9 @@ namespace PokemonRandomizer.UI
         public CompatOption HmCompatOption { get; set; } = CompatOption.Unchanged;
         public double RandomCompatTrueChance { get; set; } = 0.42;
         public double IntelligentCompatNoise { get; set; } = 0.15;
-        public bool NoHmMovesInTMsAndMoveTutors { get; set; } = true;
-        public bool NoDuplicateTMsAndMoveTutors { get; set; } = true;
-        public bool KeepImportantTms { get; set; } = true;
+        public bool NoHmMovesInTMsAndTutors { get; set; } = true;
+        public bool NoDuplicateTMsAndTutors { get; set; } = true;
+        public bool KeepImportantTmsAndTutors { get; set; } = true;
 
         public double TMRandChance { get; set; }
         public double MoveTutorRandChance { get; set; }

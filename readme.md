@@ -11,15 +11,15 @@ Check out their website! http://artemis251.fobby.net/downloads/emerald/
 Another project that's been a great reference for writing this is dabomstew's Universal pokemon randomizer.
 Check out their project! https://github.com/Dabomstew/universal-pokemon-randomizer
 
-# Version (v0.1.2.1)
+# Version (v0.1.3)
 
 ### Version Number Convention
 
-1st number: release      (0 - unreleased: UI may be incomplete. Features may need to be accessed by modifying source code. 1 - released: All present feature may be accessed from a built release)
+1st number: release         (0 - unreleased: UI may be incomplete. Features may need to be accessed by modifying source code. 1 - released: All present feature may be accessed from a built release)
 
-2nd number: major update (this number will increment when a major update happens)
+2nd number: major update    (this number will increment when a major update happens)
 
-3rd number: minor update (this number will increment when a minor update happens)
+3rd number: minor update    (this number will increment when a minor update happens)
 
 4th number: patch (optional)(this number will increment when a fix has been made to the code that WILL NOT change the randomizer's output except to fix a feature that wasn't working properly)
 

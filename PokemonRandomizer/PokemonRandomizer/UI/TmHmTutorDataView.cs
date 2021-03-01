@@ -19,9 +19,9 @@ namespace PokemonRandomizer.UI
             stack.Add(new Separator());
             stack.Add(new RandomChanceUI("Random Tm Moves", model.TMRandChance, (d) => model.TMRandChance = d, Orientation.Horizontal));
             stack.Add(new RandomChanceUI("Random Tutor Moves", model.MoveTutorRandChance, (d) => model.MoveTutorRandChance = d, Orientation.Horizontal));
-            stack.Add(new BoundCheckBoxUI(model.NoHmMovesInTMsAndMoveTutors, (b) => model.NoHmMovesInTMsAndMoveTutors = b, "Prevent HM moves in TMs and Tutors"));
-            stack.Add(new BoundCheckBoxUI(model.NoDuplicateTMsAndMoveTutors, (b) => model.NoDuplicateTMsAndMoveTutors = b, "Prevent duplicate moves in TMs and Tutors"));
-            stack.Add(new BoundCheckBoxUI(model.KeepImportantTms, (b) => model.KeepImportantTms = b, "Keep important TMs", "Ensures that important TMs won't be randomized (Headbutt, Rock Smash, Secret Power, Flash, etc)"));
+            stack.Add(new BoundCheckBoxUI(model.NoHmMovesInTMsAndTutors, (b) => model.NoHmMovesInTMsAndTutors = b, "Prevent HM moves in TMs and Tutors"));
+            stack.Add(new BoundCheckBoxUI(model.NoDuplicateTMsAndTutors, (b) => model.NoDuplicateTMsAndTutors = b, "Prevent duplicate moves in TMs and Tutors"));
+            stack.Add(new BoundCheckBoxUI(model.KeepImportantTmsAndTutors, (b) => model.KeepImportantTmsAndTutors = b, "Keep important TMs and Tutors", "Ensures that important TMs and Tutors won't be randomized (Headbutt, Rock Smash, Secret Power, Flash, etc)"));
             stack.Add(new Separator());
             stack.Add(new Label() { Content = "Compatibility" });
             stack.Add(new Separator());

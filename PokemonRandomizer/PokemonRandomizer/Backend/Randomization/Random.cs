@@ -38,15 +38,18 @@ namespace PokemonRandomizer.Backend.Randomization
         #endregion
 
         #region General Random Functions
-        /// <summary> Generate an int in between min (inclusive) and max (inclusive) </summary>
+        /// <summary> Generate an int in between min (inclusive) and max (exclusive) </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int RandomInt(int min, int max) => rand.Next(min, max);
+        /// <summary> Generate a random boolean value </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool RandomBool() => rand.Next(2) == 1;
         /// <summary> Generate a double in between 0.0 (inclusive) and 1 (exclusive) </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public double RandomDouble() => rand.NextDouble();
         /// <summary> Generate a byte in between 0 (inclusive) and 255 (inclusive) </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public byte RandomByte() => (byte)RandomInt(0, 255);
+        public byte RandomByte() => (byte)RandomInt(0, byte.MaxValue + 1);
         #endregion
 
         #region Random Choice from a collection (With options for weighting)

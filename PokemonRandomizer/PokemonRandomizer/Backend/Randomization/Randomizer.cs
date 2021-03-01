@@ -84,23 +84,29 @@ namespace PokemonRandomizer.Backend.Randomization
             var moves = EnumUtils.GetValues<Move>().ToHashSet();
             moves.Remove(Move.None); // Remove none as a possible choice
             // Remove HM moves if applicable
-            if(settings.PreventHmMovesInTMsAndMoveTutors)
+            if(settings.PreventHmMovesInTMsAndTutors)
+            {
                 foreach (var move in data.HMMoves)
                     moves.Remove(move);
+            }
             // Randomize TM mappings
             for(int i = 0; i < data.TMMoves.Length; ++i)
             {
-                if (rand.RandomDouble() < settings.TMRandChance)
+                if (settings.KeepImportantTMsAndTutors && settings.ImportantTMsAndTutors.Contains(data.TMMoves[i]))
+                    continue;
+                if (rand.RollSuccess(settings.TMRandChance))
                     data.TMMoves[i] = rand.Choice(moves);
-                if (settings.PreventDuplicateTMsAndMoveTutors)
+                if (settings.PreventDuplicateTMsAndTutors)
                     moves.Remove(data.TMMoves[i]);
             }
             // Randomize Move Tutor mappings
             for (int i = 0; i < data.tutorMoves.Length; ++i)
             {
-                if (rand.RandomDouble() < settings.MoveTutorRandChance)
+                if (settings.KeepImportantTMsAndTutors && settings.ImportantTMsAndTutors.Contains(data.tutorMoves[i]))
+                    continue;
+                if (rand.RollSuccess(settings.MoveTutorRandChance))
                     data.tutorMoves[i] = rand.Choice(moves);
-                if (settings.PreventDuplicateTMsAndMoveTutors)
+                if (settings.PreventDuplicateTMsAndTutors)
                     moves.Remove(data.tutorMoves[i]);
             }
             #endregion
@@ -207,7 +213,7 @@ namespace PokemonRandomizer.Backend.Randomization
                         }
                         else if(evo.Type == EvolutionType.Friendship)
                         {
-                            evo.Type = rand.RandomDouble() < 0.5 ? EvolutionType.FriendshipDay : EvolutionType.FriendshipNight;
+                            evo.Type = rand.RandomBool() ? EvolutionType.FriendshipDay : EvolutionType.FriendshipNight;
                             int index = FirstEmptyEvo(pokemon.evolvesTo);
                             if (index >= 0)
                             {
@@ -245,7 +251,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 {
                     pokemon.learnSet.RemoveWhere((m) => m.move == Move.SELFDESTRUCT || m.move == Move.EXPLOSION);
                 }
-                if(settings.AddMoves && pokemon.IsBasic && rand.RandomDouble() < settings.AddMovesChance)
+                if(settings.AddMoves && pokemon.IsBasic && rand.RollSuccess(settings.AddMovesChance))
                 {
                     int numMoves = rand.RandomGaussianPositiveNonZeroInt(settings.NumMovesMean, settings.NumMovesStdDeviation);
                     var availableMoves = new List<Move>(availableAddMoves);
@@ -356,11 +362,11 @@ namespace PokemonRandomizer.Backend.Randomization
                     {
                         for (int i = 0; i < pokemon.TMCompat.Length; ++i)
                         {
-                            pokemon.TMCompat[i] = rand.RandomDouble() < settings.TmMtTrueChance;
+                            pokemon.TMCompat[i] = rand.RollSuccess(settings.TmMtTrueChance);
                         }
                         for (int i = 0; i < pokemon.moveTutorCompat.Length; ++i)
                         {
-                            pokemon.moveTutorCompat[i] = rand.RandomDouble() < settings.TmMtTrueChance;
+                            pokemon.moveTutorCompat[i] = rand.RollSuccess(settings.TmMtTrueChance);
                         }
                     }
                     else if (settings.TmMtCompatSetting == Settings.TmMtCompatOption.RandomKeepNumber)
@@ -401,9 +407,9 @@ namespace PokemonRandomizer.Backend.Randomization
                             else if (pokemon.eggMoves.Contains(moveData.move))
                                 arr[ind] = true;
                             else if (moveData.type == PokemonType.NRM)
-                                arr[ind] = rand.RandomDouble() < settings.TmMtTrueChance;
+                                arr[ind] = rand.RollSuccess(settings.TmMtTrueChance);
                             else
-                                arr[ind] = rand.RandomDouble() < settings.TmMtNoise;
+                                arr[ind] = rand.RollSuccess(settings.TmMtNoise);
                         }
                         for (int i = 0; i < pokemon.TMCompat.Length; ++i)
                         {
@@ -453,7 +459,7 @@ namespace PokemonRandomizer.Backend.Randomization
             {
                 var unknownPokeData = data.PokemonLookup[PokemonSpecies.UNOWN];
                 unknownPokeData.types[0] = PokemonType.Unknown;
-                if (rand.RandomDouble() < settings.UnknownDualTypeChance)
+                if (rand.RollSuccess(settings.UnknownDualTypeChance))
                     unknownPokeData.types[1] = rand.Choice(data.Metrics.TypeRatiosDualSecondary);
                 else
                     unknownPokeData.types[1] = PokemonType.Unknown;
@@ -1371,14 +1377,14 @@ namespace PokemonRandomizer.Backend.Randomization
             // If Gym override is set and the map is a gym, proceed with randomization
             if (s.OverrideAllowGymWeather && map.battleField == 0x01)
             {
-                if(rand.RandomDouble() < s.GymWeatherRandChance)
+                if(rand.RollSuccess(s.GymWeatherRandChance))
                 {
                     ChooseWeather(map, s, true);
                 }
             }
             else if((!s.OnlyChangeClearWeather || Map.IsWeatherClear(map.weather)) && s.WeatherRandChance.ContainsKey(map.mapType))
             {
-                if(rand.RandomDouble() < s.WeatherRandChance[map.mapType])
+                if(rand.RollSuccess(s.WeatherRandChance[map.mapType]))
                 {
                     ChooseWeather(map, s, false);
                 }
