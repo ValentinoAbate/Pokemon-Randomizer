@@ -163,9 +163,9 @@ namespace PokemonRandomizer.Backend.Randomization
             // Spit Up or Swallow + Stockpile Synergy
             CalculateMoveSynergy((m) => m.effect == MoveData.MoveEffect.SpitUp || m.effect == MoveData.MoveEffect.Swallow,
                              (m) => m.effect == MoveData.MoveEffect.Stockpile, needSynergy);
-            // Spit Up or Swallow + Stockpile Synergy
-            CalculateMoveSynergy((m) => m.effect == MoveData.MoveEffect.SpitUp || m.effect == MoveData.MoveEffect.Swallow,
-                             (m) => m.effect == MoveData.MoveEffect.Stockpile, needSynergy);
+            // Stockpile + Spit Up or Swallow Synergy
+            CalculateMoveSynergy((m) => m.effect == MoveData.MoveEffect.Stockpile, 
+                (m) => m.effect == MoveData.MoveEffect.SpitUp || m.effect == MoveData.MoveEffect.Swallow, preferSynergy);
             // Sun Move + Sun
             CalculateMoveSynergy((m) => m.effect == MoveData.MoveEffect.Solarbeam || m.effect == MoveData.MoveEffect.RecoverHpWeather2,
                              (m) => m.effect == MoveData.MoveEffect.WeatherSun, preferSynergy);
