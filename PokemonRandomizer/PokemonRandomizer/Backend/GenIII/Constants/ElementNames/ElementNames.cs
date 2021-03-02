@@ -37,6 +37,7 @@ namespace PokemonRandomizer.Backend.GenIII.Constants.ElementNames
         public const string pickupRareItems = "pickupRareItems";
         public const string stoneEffect = "stoneEffect";
         public const string trainerBattles = "trainerBattles";
+        public const string trades = "trades";
 
         // Hacks and Tweaks / Misc
         public const string pcPotion = "pcPotion";

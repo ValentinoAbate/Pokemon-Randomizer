@@ -68,6 +68,7 @@ namespace PokemonRandomizer.Backend.DataStructures
         public List<MoveData> MoveData { get; set; }
         public List<ItemData> ItemData { get; set; }
         public PickupData PickupItems { get; set; }
+        public List<InGameTrade> Trades { get; set; }
 
         #region TM, HM, and tutor move definition arrays
         public Move[] TMMoves;

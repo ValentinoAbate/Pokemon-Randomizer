@@ -148,6 +148,7 @@
     <!-- offsets from dabomstew's UP randomizer source https://github.com/Dabomstew/universal-pokemon-randomizer -->
     <catchingTutOpponent offset="0xB0870"/>
     <catchingTutPlayer offset="0x139472"/>
+    <trades pointer="0x07E774" num="4"/>
 
     <!-- Trainer Battle Definitions -->
 
@@ -198,28 +199,41 @@
     <!-- Items -->
 
     <pickupItems pointer="0x02AFB8" num="10"/>
+    
+    <!-- Static Pokemon -->
+
+    <trades num="3"/>
   </rsConstants>
 
-  <!-- Ruby Rom Info -->
+  <!-- Ruby and Sapphire Rom Info -->
 
   <AXVE0>
     <!-- Metadata -->
     <inheritFrom>rsConstants</inheritFrom>
-  </AXVE0>
-  <AXVE1>
-    <!-- Metadata -->
-    <inheritFrom>AXVE1</inheritFrom>
-  </AXVE1>
-  
-  <!-- Sapphire Rom Info -->
 
+    <!-- Static Pokemon -->
+
+    <trades pointer="0x04D8D4"/>
+  </AXVE0>
   <AXPE0>
     <!-- Metadata -->
-    <inheritFrom>rsConstants</inheritFrom>
+    <inheritFrom>AXVE0</inheritFrom>
   </AXPE0>
+
+  
+  <!-- Ruby Sapphire (1.1) Rom Info -->
+
+  <AXVE1>
+    <!-- Metadata -->
+    <inheritFrom>AXVE0</inheritFrom>
+
+    <!-- Static Pokemon -->
+
+    <trades pointer="0x04D8F4"/>
+  </AXVE1>
   <AXPE1>
     <!-- Metadata -->
-    <inheritFrom>AXPE1</inheritFrom>
+    <inheritFrom>AXVE1</inheritFrom>
   </AXPE1>
   
   <!-- FRLG Constants -->
@@ -252,6 +266,10 @@
     <!-- Items -->
 
     <pickupItems num="16"/>
+
+    <!-- Static Pokemon -->
+
+    <trades num="9"/>
 
     <!-- Map Data -->
 
@@ -317,6 +335,7 @@
     <!-- from user Uncommon's forum post https://www.pokecommunity.com/showthread.php?t=406241 -->
     <!-- 0x16BB5 (Bulbasaur), 0x16D82 (Squirtle), 0x16DB8 (Charmander) -->
     <starterPokemon offset="0x169BB5" skip1="459" skip2="52" />
+    <trades pointer="0x053AD4"/>
 
     <!-- Trainer Battle Definitions -->
 
@@ -347,6 +366,10 @@
     <!-- Items -->
 
     <pickupItems pointer="0x02CEF8"/>
+    
+    <!-- Static Pokemon -->
+
+    <trades pointer="0x053AE8"/>
 
   </BPRE1>
   <BPGE1>

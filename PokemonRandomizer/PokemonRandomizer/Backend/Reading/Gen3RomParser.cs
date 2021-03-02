@@ -49,6 +49,8 @@ namespace PokemonRandomizer.Backend.Reading
             //data.StarterItems = ReadStarterItems(rom, info);
             // Read Catching tutorial pokemon
             data.CatchingTutPokemon = ReadCatchingTutOpponent(rom, info);
+            // Read in-game trades
+            data.Trades = ReadInGameTrades(rom, info);
             // Read the PC item
             int pcPotionOffset = info.FindOffset(ElementNames.pcPotion, rom);
             if (pcPotionOffset != Rom.nullPointer)
@@ -360,6 +362,35 @@ namespace PokemonRandomizer.Backend.Reading
             // Maybe add a constant in the ROM info later
             return PokemonSpecies.RALTS; 
         }
+
+        private List<InGameTrade> ReadInGameTrades(Rom rom, XmlManager info)
+        {
+            if (!info.FindAndSeekOffset(ElementNames.trades, rom))
+                return new List<InGameTrade>();
+            int numTrades = info.Num(ElementNames.trades);
+            var trades = new List<InGameTrade>(numTrades);
+            for (int i = 0; i < numTrades; ++i)
+            {
+                var t = new InGameTrade();
+                t.pokemonName = rom.ReadFixedLengthString(InGameTrade.pokemonNameLength);
+                t.pokemonRecieved = (PokemonSpecies)rom.ReadUInt16();
+                t.IVs = rom.ReadBlock(6);
+                t.abilityNum = rom.ReadUInt32();
+                t.trainerID = rom.ReadUInt32();
+                t.contestStats = rom.ReadBlock(5);
+                rom.Skip(3);
+                t.personality = rom.ReadUInt32();
+                t.heldItem = (Item)rom.ReadUInt16();
+                t.mailNum = rom.ReadByte();
+                t.trainerName = rom.ReadFixedLengthString(InGameTrade.trainerNameLength);
+                t.trainerGender = rom.ReadByte();
+                t.sheen = rom.ReadByte();
+                t.pokemonWanted = (PokemonSpecies)rom.ReadUInt32();
+                trades.Add(t);
+            }
+            return trades;
+        }
+
         // Read the Trainer Class names
         private List<string> ReadTrainerClassNames(Rom rom, XmlManager info)
         {
