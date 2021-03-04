@@ -291,6 +291,28 @@ namespace PokemonRandomizer.Backend.Writing
                 rom.WriteByte(Gen3Opcodes.addRegister | Gen3Opcodes.reg1);
             }
         }
+        private void ReadInGameTrades(List<InGameTrade> trades, Rom rom, XmlManager info)
+        {
+            if (!info.FindAndSeekOffset(ElementNames.trades, rom))
+                return; // TODO: Log
+            foreach (var t in trades)
+            {
+                rom.WriteFixedLengthString(t.pokemonName, InGameTrade.pokemonNameLength);
+                rom.WriteUInt16((int)t.pokemonRecieved);
+                rom.WriteBlock(t.IVs);
+                rom.WriteUInt32(t.abilityNum);
+                rom.WriteUInt32(t.trainerID);
+                rom.WriteBlock(t.contestStats);
+                rom.Skip(3);
+                rom.WriteUInt32(t.personality);
+                rom.WriteUInt16((int)RemapItem(t.heldItem));
+                rom.WriteByte(t.mailNum);
+                rom.WriteFixedLengthString(t.trainerName, InGameTrade.trainerNameLength);
+                rom.WriteByte(t.trainerGender);
+                rom.WriteByte(t.sheen);
+                rom.WriteUInt32((int)t.pokemonWanted);
+            }
+        }
         private void WritePokemonBaseStats(RomData romData, Rom rom, XmlManager info, ref RepointList repoints)
         {
             #region Setup Offsets
