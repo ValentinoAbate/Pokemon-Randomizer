@@ -89,7 +89,6 @@ FEATURES:
 	- held items
 		- wild
 		- starter
-		- trade
 		- gift
 	- Use cost as optional weighting
 - RSE berry giver randomization (may be possible with script writing)

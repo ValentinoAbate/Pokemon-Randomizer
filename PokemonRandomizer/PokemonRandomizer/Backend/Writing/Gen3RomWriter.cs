@@ -45,6 +45,8 @@ namespace PokemonRandomizer.Backend.Writing
             WriteMoveData(data.MoveData, rom, info, ref repoints);
             // Write the starter pokemon
             WriteStarters(data, rom, info);
+            // Write the in-game trades
+            WriteInGameTrades(data.Trades, rom, info);
             // Catching tut currently only supported on BPEE
             if (metadata.IsEmerald)
             {
@@ -291,7 +293,7 @@ namespace PokemonRandomizer.Backend.Writing
                 rom.WriteByte(Gen3Opcodes.addRegister | Gen3Opcodes.reg1);
             }
         }
-        private void ReadInGameTrades(List<InGameTrade> trades, Rom rom, XmlManager info)
+        private void WriteInGameTrades(List<InGameTrade> trades, Rom rom, XmlManager info)
         {
             if (!info.FindAndSeekOffset(ElementNames.trades, rom))
                 return; // TODO: Log

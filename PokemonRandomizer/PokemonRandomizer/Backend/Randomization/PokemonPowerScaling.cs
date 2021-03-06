@@ -29,7 +29,8 @@ namespace PokemonRandomizer.Backend.Randomization
                     score += func(p);
                 if (tieringFuncs.Length > 1) // Don't need to divide by 1
                     score /= tieringFuncs.Length;
-                scores.Add(p.species, score);
+                if(!scores.ContainsKey(p.species))
+                    scores.Add(p.species, score);
             }
             return scores;
         }

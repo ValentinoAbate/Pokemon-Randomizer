@@ -2,11 +2,16 @@
 
 namespace PokemonRandomizer.Backend.DataStructures
 {
+    using Utilities;
     public class ItemData
     {
         public const string unusedName = "????????";
         // Name length limit in RSE
         public const int nameLength = 14;
+        public static bool IsMail(Item item)
+        {
+            return item.ToDisplayString().Contains("MAIL");
+        }
         public bool IsUnused => Name == unusedName;
         public string Name { get; set;  }
         public Item Item { get; set; }

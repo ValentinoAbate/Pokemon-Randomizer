@@ -144,17 +144,20 @@ namespace PokemonRandomizer.Backend.Randomization
                     // Make a non-levelup evoltion into a level up one. Resolves some conflicts but not all
                     void MakeEvolutionByLevelUp(Evolution evo)
                     {
-                        var evolveByLevelUp = pokemon.evolvesTo.FirstOrDefault((e) => e.Type == EvolutionType.LevelUp);
+                        var evolveByLevelUp = pokemon.evolvesTo.FirstOrDefault(e => e.Type == EvolutionType.LevelUp);
+                        var newEvo = pokemon.evolvesTo.FirstOrDefault(e => !e.IsRealEvolution) ?? evo;
+                        newEvo.Pokemon = evo.Pokemon;
                         if (evolveByLevelUp == null)
                         {
-                            evo.parameter = EquivalentLevelReq(evo, pokemon) + rand.RandomGaussianInt(0, settings.ImpossibleEvoLevelStandardDev);
-                            evo.Type = EvolutionType.LevelUp;
+
+                            newEvo.parameter = EquivalentLevelReq(evo, pokemon) + rand.RandomGaussianInt(0, settings.ImpossibleEvoLevelStandardDev);
+                            newEvo.Type = EvolutionType.LevelUp;
                         }
                         else
                         {
                             evolveByLevelUp.Type = EvolutionType.LevelUpWithPersonality1;
-                            evo.Type = EvolutionType.LevelUpWithPersonality2;
-                            evo.parameter = evolveByLevelUp.parameter;
+                            newEvo.Type = EvolutionType.LevelUpWithPersonality2;
+                            newEvo.parameter = evolveByLevelUp.parameter;
                         }
                     }
                     foreach (var evo in pokemon.evolvesTo)
@@ -167,9 +170,12 @@ namespace PokemonRandomizer.Backend.Randomization
                         {
                             if (settings.TradeItemEvoSetting == Settings.TradeItemPokemonOption.UseItem)
                             {
-                                evo.Type = EvolutionType.UseItem;
+                                var newEvo = pokemon.evolvesTo.FirstOrDefault(e => !e.IsRealEvolution) ?? evo;
+                                newEvo.Pokemon = evo.Pokemon;
+                                newEvo.Type = EvolutionType.UseItem;
+                                newEvo.parameter = evo.parameter;
                                 // Log this as a new evolution stone if necessary
-                                Item item = (Item)evo.parameter;
+                                Item item = (Item)newEvo.parameter;
                                 if (!data.NewEvolutionStones.Contains(item))
                                     data.NewEvolutionStones.Add(item);
                             }
@@ -498,6 +504,42 @@ namespace PokemonRandomizer.Backend.Randomization
                     foreach (var pkmn in data.Starters)
                         if (data.PokemonLookup[pkmn].learnSet[0].move != Move.TACKLE)
                             data.PokemonLookup[pkmn].learnSet.Add(Move.TACKLE, 1);
+                }
+            }
+            #endregion
+
+            #region In-Game Trades
+            foreach(var trade in data.Trades)
+            {
+                if (rand.RollSuccess(settings.TradePokemonGiveRandChance))
+                {
+                    trade.pokemonWanted = RandomSpecies(pokemonSet, trade.pokemonWanted, settings.TradeSpeciesSettingsGive);
+                }
+                if (rand.RollSuccess(settings.TradePokemonRecievedRandChance))
+                {
+                    trade.pokemonRecieved = RandomSpecies(pokemonSet, trade.pokemonRecieved, settings.TradeSpeciesSettingsReceive);
+                    var pokemonData = data.PokemonLookup[trade.pokemonRecieved];
+                    if (pokemonData.abilities[0] == pokemonData.abilities[1])
+                    {
+                        trade.abilityNum = 0;
+                    }
+                    else
+                    {
+                        trade.abilityNum = rand.RandomInt(0, 2);
+                    }
+                }
+                if (rand.RollSuccess(settings.TradeHeldItemRandChance))
+                {
+                    trade.heldItem = RandomItem(items, trade.heldItem, settings.TradeHeldItemSettings);
+                    if (ItemData.IsMail(trade.heldItem))
+                    {
+                        if (trade.mailNum == 0xFF)
+                            trade.mailNum = 0;
+                    }
+                    else
+                    {
+                        trade.mailNum = 0xFF;
+                    }
                 }
             }
             #endregion
@@ -1391,6 +1433,11 @@ namespace PokemonRandomizer.Backend.Randomization
 
         private Item RandomItem(IEnumerable<ItemData> possibleItems, Item input, Settings.ItemSettings settings)
         {
+            // If the item is none, do special randomization
+            if (input == Item.None)
+            {
+                return rand.RollSuccess(settings.NoneToOtherChance) ? rand.Choice(possibleItems).Item : input;
+            }
             var inputData = data.ItemData[(int)input];
             if (inputData.IsKeyItem && settings.KeepKeyItems)
                 return input;

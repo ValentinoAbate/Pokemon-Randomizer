@@ -338,6 +338,8 @@ namespace PokemonRandomizer
         };
         #endregion
 
+        #region Special Pokemon
+
         #region Gift Pokemon
         public double GiftPokemonRandChance => 1;
         public SpeciesSettings GiftSpeciesSettings { get; } = new SpeciesSettings()
@@ -349,6 +351,31 @@ namespace PokemonRandomizer
         };
         public bool EnsureFossilRevivesAreFossilPokemon => true;
         public bool EnsureGiftEggsAreBabyPokemon => true;
+        #endregion
+
+        #region Trade Pokemon
+        public double TradePokemonGiveRandChance => 1;
+        public double TradePokemonRecievedRandChance => 1;
+        public SpeciesSettings TradeSpeciesSettingsGive { get; } = new SpeciesSettings()
+        {
+            BanLegendaries = true,
+            Noise = 1f,
+            PowerScaleSimilarityMod = 0.1f,
+            TypeSimilarityMod = 0f,
+        };
+        public SpeciesSettings TradeSpeciesSettingsReceive { get; } = new SpeciesSettings()
+        {
+            BanLegendaries = true,
+            Noise = 1f,
+            PowerScaleSimilarityMod = 0.1f,
+            TypeSimilarityMod = 0f,
+        };
+        public double TradeHeldItemRandChance => 1;
+        public ItemSettings TradeHeldItemSettings { get; } = new ItemSettings()
+        {
+            SamePocketChance = 0.75,
+        };
+
         #endregion
 
         #region Starter Pokemon
@@ -384,6 +411,10 @@ namespace PokemonRandomizer
         /// </summary>
         public bool SafeStarterMovesets { get => true; }
         #endregion
+
+        #endregion
+
+
 
         #region Maps
 
@@ -500,20 +531,19 @@ namespace PokemonRandomizer
 
         public PcItemOption PcPotionOption => PcItemOption.Custom;
         public Item CustomPcItem => Item.Metal_Coat;
-        public ItemSettings PcItemSettings => new ItemSettings()
+        public ItemSettings PcItemSettings { get; } = new ItemSettings()
         {
             SamePocketChance = 0.75,
-        };
+        };  
 
-    
         public double FieldItemRandChance => 1;
-        public ItemSettings FieldItemSettings => new ItemSettings()
+        public ItemSettings FieldItemSettings { get; } = new ItemSettings()
         {
             SamePocketChance = 0.75,
         };
         public bool UseSeperateHiddenItemSettings => true;
         public double HiddenItemRandChance => 1;
-        public ItemSettings HiddenItemSettings => new ItemSettings()
+        public ItemSettings HiddenItemSettings { get; } = new ItemSettings()
         {
             SamePocketChance = 0.75,
         };
@@ -592,6 +622,7 @@ namespace PokemonRandomizer
         {
             public bool KeepKeyItems { get; set; } = true;
             public double SamePocketChance { get; set; } = 1;
+            public double NoneToOtherChance { get; set; } = 0;
         }
 
         #endregion
