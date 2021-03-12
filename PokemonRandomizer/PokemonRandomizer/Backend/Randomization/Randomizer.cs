@@ -571,7 +571,7 @@ namespace PokemonRandomizer.Backend.Randomization
                             }
                             break;
                         case GivePokemonCommand givePokemon:
-                            if(rand.RollSuccess(settings.GiftPokemonRandChance))
+                            if(givePokemon.type == GivePokemonCommand.Type.Normal && rand.RollSuccess(settings.GiftPokemonRandChance))
                             {
                                 // Should choose from fossil set?
                                 bool fossil = settings.EnsureFossilRevivesAreFossilPokemon && fossilSet.Count > 0 && PokemonBaseStats.fossilPokemon.Contains(givePokemon.pokemon);

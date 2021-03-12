@@ -69,13 +69,19 @@ namespace PokemonRandomizer.Backend.Reading
                 }
                 else if(command.code == Gen3Command.givePokemon)
                 {
-                    // Add new give pokemon command
-                    script.Add(new GivePokemonCommand()
+                    var givePokemonCommand = new GivePokemonCommand()
                     {
                         pokemon = (PokemonSpecies)command.ArgData(0),
                         level = (byte)command.ArgData(1),
                         heldItem = (Item)command.ArgData(2)
-                    });
+                    };
+                    // Mark command type
+                    if ((int)givePokemonCommand.pokemon > 10000)
+                    {
+                        givePokemonCommand.type = (int)givePokemonCommand.pokemon > 32768 ? GivePokemonCommand.Type.Variable : GivePokemonCommand.Type.Unknown;
+                    }
+                    // Add new give pokemon command
+                    script.Add(givePokemonCommand);
                 }
                 else if(command.code == Gen3Command.giveEgg)
                 {
