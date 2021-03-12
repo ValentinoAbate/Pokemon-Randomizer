@@ -181,7 +181,7 @@ namespace PokemonRandomizer
             }
         }
 
-        private void SaveROM(object sender, RoutedEventArgs e)
+        private void WriteRom(Func<Rom> romFn)
         {
             string filter = gbaRomFileFilter;
             if (Metadata.Gen == Generation.IV)
@@ -195,12 +195,26 @@ namespace PokemonRandomizer
             {
                 try
                 {
-                    File.WriteAllBytes(saveFileDialog.FileName, GetRandomizedRom().File);
+                    File.WriteAllBytes(saveFileDialog.FileName, romFn().File);
                 }
                 catch (IOException exception)
                 {
                     lblInfoBoxContent.Content = "Failed to save rom: " + exception.Message;
                 }
+            }
+        }
+
+        private void SaveROM(object sender, RoutedEventArgs e)
+        {
+            WriteRom(GetRandomizedRom);
+        }
+
+        private void SaveCleanROM(object sender, RoutedEventArgs e)
+        {
+            if (Metadata.Gen == Generation.III)
+            {
+                var writer = new Gen3RomWriter();
+                WriteRom(() => writer.Write(OriginalData, OriginalRom, Metadata, RomInfo, new Settings(this)));
             }
         }
 

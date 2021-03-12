@@ -28,15 +28,16 @@
             <ColumnDefinition Name="RomButtons" Width="*"></ColumnDefinition>-->
         </Grid.ColumnDefinitions>
         <Menu Grid.Row="0">
-            <MenuItem Header="_File">
-                <MenuItem Header="_Open ROM" Click="OpenROM"/>
-                <MenuItem Name="menuSaveROM" IsEnabled="{Binding IsROMLoaded}" Header="_Save ROM" Click="SaveROM"/>
-                <MenuItem Name="menuGenerateInfoDoc" IsEnabled="{Binding IsROMLoaded}" Header="_Generate Info" Click="GenerateInfoDoc" />
-                <MenuItem Visibility="Collapsed" Header="Debug">
+            <MenuItem Header="File">
+                <MenuItem Header="Open ROM" Click="OpenROM"/>
+                <MenuItem Name="menuSaveROM" IsEnabled="{Binding IsROMLoaded}" Header="Save ROM" Click="SaveROM"/>
+                <MenuItem Name="menuGenerateInfoDoc" IsEnabled="{Binding IsROMLoaded}" Header="Generate Info" Click="GenerateInfoDoc" />
+                <MenuItem Visibility="Visible" Header="Debug">
+                    <MenuItem Name="menuDebugSaveCleanRom" IsEnabled="{Binding IsROMLoaded}" Header="Save Clean ROM" Click="SaveCleanROM" />
                 </MenuItem>
                 <MenuItem Visibility="Collapsed" Header="_Convert Table" Click="ConvertTable" />
                     <Separator />
-                    <MenuItem Header="_Exit" />
+                    <MenuItem Header="Exit" />
                 </MenuItem>
             <MenuItem Header="Presets">
 
