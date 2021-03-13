@@ -18,7 +18,7 @@ namespace PokemonRandomizer.Backend.Randomization
         private readonly Settings settings;
         private readonly Random rand;
         private readonly EvolutionUtils evoUtils;
-        private Dictionary<PokemonSpecies, float> powerScores;
+        private readonly SpeciesRandomizer pokeRand;
         /// <summary>
         /// Create a new randomizer with given data and settings
         /// Input data will be mutated by randomizer calls
@@ -26,11 +26,14 @@ namespace PokemonRandomizer.Backend.Randomization
         public Randomizer(RomData data, Settings settings)
         {
             this.data = data;
-            rand = settings.SetSeed ? new Random(settings.Seed) : new Random();
             this.settings = settings;
-            //Calculate original power scores
-            powerScores = PowerScaling.Calculate(data.Pokemon, settings.TieringOptions);
-            evoUtils = new EvolutionUtils(rand, p => data.PokemonLookup[p]);
+            rand = settings.SetSeed ? new Random(settings.Seed) : new Random();
+            PokemonBaseStats BaseStats(PokemonSpecies p) => data.PokemonLookup[p];
+            // Intialize evolution helper
+            evoUtils = new EvolutionUtils(rand, BaseStats);
+            //Initialize Species Randomizer
+            var powerScores = PowerScaling.Calculate(data.Pokemon, settings.TieringOptions);
+            pokeRand = new SpeciesRandomizer(evoUtils, rand, BaseStats, powerScores);
         }
         // Apply mutations based on program settings.
         public RomData Randomize()
@@ -471,8 +474,6 @@ namespace PokemonRandomizer.Backend.Randomization
                     unknownPokeData.types[1] = PokemonType.Unknown;
             }
             // Change pallettes to fit new types
-            // Recalculate power scoring
-            powerScores = PowerScaling.Calculate(data.Pokemon, settings.TieringOptions);
             #endregion
 
             #region Starters
@@ -482,7 +483,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 if(settings.StarterSetting == Settings.StarterPokemonOption.Random)
                 {
                     for(int i = 0; i < data.Starters.Count; ++i)
-                        data.Starters[i] = RandomSpecies(pokemonSet, data.Starters[i], 5, speciesSettings);
+                        data.Starters[i] = pokeRand.RandomSpecies(pokemonSet, data.Starters[i], 5, speciesSettings);
                 }
                 else if (settings.StarterSetting == Settings.StarterPokemonOption.RandomTypeTriangle)
                 {
@@ -492,7 +493,7 @@ namespace PokemonRandomizer.Backend.Randomization
                     else // Fall back on completely random
                     {
                         for (int i = 0; i < data.Starters.Count; ++i)
-                            data.Starters[i] = RandomSpecies(pokemonSet, data.Starters[i], 5, speciesSettings);
+                            data.Starters[i] = pokeRand.RandomSpecies(pokemonSet, data.Starters[i], 5, speciesSettings);
                     }
                 }
                 else if(settings.StarterSetting == Settings.StarterPokemonOption.Custom)
@@ -515,11 +516,11 @@ namespace PokemonRandomizer.Backend.Randomization
             {
                 if (rand.RollSuccess(settings.TradePokemonGiveRandChance))
                 {
-                    trade.pokemonWanted = RandomSpecies(pokemonSet, trade.pokemonWanted, settings.TradeSpeciesSettingsGive);
+                    trade.pokemonWanted = pokeRand.RandomSpecies(pokemonSet, trade.pokemonWanted, settings.TradeSpeciesSettingsGive);
                 }
                 if (rand.RollSuccess(settings.TradePokemonRecievedRandChance))
                 {
-                    trade.pokemonRecieved = RandomSpecies(pokemonSet, trade.pokemonRecieved, settings.TradeSpeciesSettingsReceive);
+                    trade.pokemonRecieved = pokeRand.RandomSpecies(pokemonSet, trade.pokemonRecieved, settings.TradeSpeciesSettingsReceive);
                     var pokemonData = data.PokemonLookup[trade.pokemonRecieved];
                     if (pokemonData.abilities[0] == pokemonData.abilities[1])
                     {
@@ -577,7 +578,7 @@ namespace PokemonRandomizer.Backend.Randomization
                             {
                                 // Should choose from fossil set?
                                 bool fossil = settings.EnsureFossilRevivesAreFossilPokemon && fossilSet.Count > 0 && givePokemon.pokemon.IsFossil();
-                                givePokemon.pokemon = RandomSpecies(fossil ? fossilSet : pokemonSet, givePokemon.pokemon, givePokemon.level, settings.GiftSpeciesSettings);
+                                givePokemon.pokemon = pokeRand.RandomSpecies(fossil ? fossilSet : pokemonSet, givePokemon.pokemon, givePokemon.level, settings.GiftSpeciesSettings);
 
                             }
                             break;
@@ -585,7 +586,7 @@ namespace PokemonRandomizer.Backend.Randomization
                             if(rand.RollSuccess(settings.GiftPokemonRandChance))
                             {
                                 bool baby = settings.EnsureGiftEggsAreBabyPokemon && babySet.Count > 0;
-                                giveEgg.pokemon = RandomSpecies(baby ? babySet : pokemonSet, giveEgg.pokemon, 1, settings.GiftSpeciesSettings);
+                                giveEgg.pokemon = pokeRand.RandomSpecies(baby ? babySet : pokemonSet, giveEgg.pokemon, 1, settings.GiftSpeciesSettings);
                             }
                             break;
                     }
@@ -653,7 +654,7 @@ namespace PokemonRandomizer.Backend.Randomization
                         var typeSample = encounterSet.Select((e) => e.pokemon).ToArray(); //.Distinct();
                         foreach (var enc in encounterSet)
                         {
-                            enc.pokemon = RandomSpeciesTypeGroup(pokemonSet, enc.pokemon, enc.level, typeSample, wildSpeciesSettings);
+                            enc.pokemon = pokeRand.RandomSpeciesTypeGroup(pokemonSet, enc.pokemon, enc.level, typeSample, wildSpeciesSettings);
                         }
                     }
                 }
@@ -663,7 +664,7 @@ namespace PokemonRandomizer.Backend.Randomization
                     {
                         foreach (var enc in encounterSet)
                         {
-                            enc.pokemon = RandomSpecies(pokemonSet, enc.pokemon, enc.level, wildSpeciesSettings);
+                            enc.pokemon = pokeRand.RandomSpecies(pokemonSet, enc.pokemon, enc.level, wildSpeciesSettings);
                         }
                     }
                 }
@@ -682,12 +683,12 @@ namespace PokemonRandomizer.Backend.Randomization
                     if(wildSpeciesSettings.WeightType == Settings.SpeciesSettings.WeightingType.Group)
                     {
                         foreach (var s in species)
-                            mapping.Add(s, RandomSpeciesTypeGroup(pokemonSet, s, typeSample, wildSpeciesSettings));
+                            mapping.Add(s, pokeRand.RandomSpeciesTypeGroup(pokemonSet, s, typeSample, wildSpeciesSettings));
                     }
                     else // Weight type is individual
                     {
                         foreach (var s in species)
-                            mapping.Add(s, RandomSpecies(pokemonSet, s, wildSpeciesSettings));
+                            mapping.Add(s, pokeRand.RandomSpecies(pokemonSet, s, wildSpeciesSettings));
                     }
                     foreach (var enc in encounterSet)
                     {
@@ -703,7 +704,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 var wildSpeciesSettings = settings.WildSpeciesSettings;
                 var mapping = new Dictionary<PokemonSpecies, PokemonSpecies>();
                 foreach (var s in pokemonSet)
-                    mapping.Add(s, RandomSpecies(pokemonSet, s, wildSpeciesSettings));
+                    mapping.Add(s, pokeRand.RandomSpecies(pokemonSet, s, wildSpeciesSettings));
                 foreach (var encounterSet in data.Encounters)
                 {
                     foreach (var enc in encounterSet)
@@ -768,7 +769,7 @@ namespace PokemonRandomizer.Backend.Randomization
             {
                 // Randomize Wally starter if applicable
                 if (settings.RandomizeWallyAce)
-                    data.CatchingTutPokemon = RandomSpecies(pokemonSet, data.CatchingTutPokemon, 5, rivalSettings.SpeciesSettings);
+                    data.CatchingTutPokemon = pokeRand.RandomSpecies(pokemonSet, data.CatchingTutPokemon, 5, rivalSettings.SpeciesSettings);
                 var wallyBattles = new List<Trainer>(data.SpecialTrainers[wallyName]);
                 wallyBattles.Sort((a, b) => a.AvgLvl.CompareTo(b.AvgLvl));
                 var firstBattle = wallyBattles[0];
@@ -888,186 +889,13 @@ namespace PokemonRandomizer.Backend.Randomization
 
         #endregion
 
-        #region Species Randomization
-
-        /// <summary> Chose a random species from the input set based on the given species settings and the type sample given</summary> 
-        private PokemonSpecies RandomSpeciesTypeGroup(IEnumerable<PokemonSpecies> possiblePokemon, PokemonSpecies pokemon, int level, IEnumerable<PokemonSpecies> typeGroup, Settings.SpeciesSettings speciesSettings)
-        {
-            var newSpecies = RandomSpeciesTypeGroup(possiblePokemon, pokemon, typeGroup, speciesSettings);
-            if (speciesSettings.ForceHighestLegalEvolution)
-                newSpecies = evoUtils.MaxEvolution(newSpecies, level, speciesSettings.RestrictIllegalEvolutions);
-            else if (speciesSettings.RestrictIllegalEvolutions)
-                newSpecies = evoUtils.CorrectImpossibleEvo(newSpecies, level);
-            // Actually choose the species
-            return newSpecies;
-        }
-        /// <summary> Chose a random species from the input set based on the given species settings and the type sample given</summary> 
-        private PokemonSpecies RandomSpeciesTypeGroup(IEnumerable<PokemonSpecies> possiblePokemon, PokemonSpecies pokemon, IEnumerable<PokemonSpecies> typeGroup, Settings.SpeciesSettings speciesSettings)
-        {
-            var combinedWeightings = SpeciesWeightedSetTypeGroup(possiblePokemon, pokemon, typeGroup, speciesSettings);
-            // Actually choose the species
-            return rand.Choice(combinedWeightings);
-        }
-        /// <summary> Chose a random species from the input set based on the given species settings</summary> 
-        private PokemonSpecies RandomSpecies(IEnumerable<PokemonSpecies> possiblePokemon, PokemonSpecies pokemon, Settings.SpeciesSettings speciesSettings)
-        {
-            var combinedWeightings = SpeciesWeightedSet(possiblePokemon, pokemon, speciesSettings);
-            // Actually choose the species
-            return rand.Choice(combinedWeightings);
-        }
-        /// <summary> Chose a random species from the input set based on the given species settings.
-        /// If speciesSettings.DisableIllegalEvolutions is true, scale impossible evolutions down to their less evolved forms </summary> 
-        private PokemonSpecies RandomSpecies(IEnumerable<PokemonSpecies> possiblePokemon, PokemonSpecies pokemon, int level, Settings.SpeciesSettings speciesSettings)
-        {
-            var newSpecies = RandomSpecies(possiblePokemon, pokemon, speciesSettings);
-            if (speciesSettings.ForceHighestLegalEvolution)
-                newSpecies = evoUtils.MaxEvolution(newSpecies, level, speciesSettings.RestrictIllegalEvolutions);
-            else if(speciesSettings.RestrictIllegalEvolutions)
-                newSpecies = evoUtils.CorrectImpossibleEvo(newSpecies, level);
-            // Actually choose the species
-            return newSpecies;
-        }
-        
-        private Func<PokemonSpecies, float> GetTypeBalanceFunction(IEnumerable<PokemonSpecies> possiblePokemon)
-        {
-            var typeOccurenceLookup = new Dictionary<PokemonType, float>();
-            foreach (var type in EnumUtils.GetValues<PokemonType>())
-            {
-                typeOccurenceLookup.Add(type, 0);
-            }
-            foreach (var pokemon in possiblePokemon)
-            {
-                var pData = data.PokemonLookup[pokemon];
-                typeOccurenceLookup[pData.types[0]] += 1;
-                if (pData.IsSingleTyped)
-                    continue;
-                typeOccurenceLookup[pData.types[1]] += 1;
-            }
-            foreach (var type in EnumUtils.GetValues<PokemonType>())
-            {
-                float val = typeOccurenceLookup[type];
-                typeOccurenceLookup[type] = val == 0 ? 0 : 1 / val;
-            }
-            float TypeBalanceMetric(PokemonSpecies s)
-            {
-                var pData = data.PokemonLookup[s];
-                if (pData.IsSingleTyped)
-                    return typeOccurenceLookup[pData.types[0]];
-                return (typeOccurenceLookup[pData.types[0]] + typeOccurenceLookup[pData.types[1]]) / 2;
-            }
-            return TypeBalanceMetric;
-        }
-        /// <summary> Get a weighted and culled list of possible pokemon</summary>
-        private WeightedSet<PokemonSpecies> SpeciesWeightedSet(IEnumerable<PokemonSpecies> possiblePokemon, PokemonSpecies pokemon, Settings.SpeciesSettings speciesSettings)
-        {
-            var combinedWeightings = new WeightedSet<PokemonSpecies>(possiblePokemon);
-            // Power level similarity
-            if (speciesSettings.PowerScaleSimilarityMod > 0)
-            {
-                var powerWeighting = PokemonMetrics.PowerSimilarity(combinedWeightings.Items, powerScores, pokemon, speciesSettings.PowerThresholdStronger, speciesSettings.PowerThresholdWeaker);
-                combinedWeightings.Add(powerWeighting, speciesSettings.PowerScaleSimilarityMod);
-                // Cull if necessary
-                if (speciesSettings.PowerScaleCull)
-                    combinedWeightings.RemoveWhere((p) => !powerWeighting.Contains(p));
-            }
-            // Type similarity
-            if (speciesSettings.TypeSimilarityMod > 0)
-            {
-                var typeWeighting = PokemonMetrics.TypeSimilarity(combinedWeightings.Items, data, pokemon);
-                typeWeighting.Multiply(GetTypeBalanceFunction(combinedWeightings.Items)(pokemon));
-                typeWeighting.Normalize();
-                combinedWeightings.Add(typeWeighting, speciesSettings.TypeSimilarityMod);
-                // Cull if necessary
-                if (speciesSettings.TypeSimilarityCull)
-                    combinedWeightings.RemoveWhere((p) => !typeWeighting.Contains(p));
-            }
-            // Sharpen the data if necessary
-            if (speciesSettings.Sharpness > 0)
-            {
-                combinedWeightings.Map((p) => (float)Math.Pow(combinedWeightings[p], speciesSettings.Sharpness));
-                combinedWeightings.Normalize();
-            }
-            // Normalize combined weightings and add noise
-            if (speciesSettings.Noise > 0)
-            {
-                combinedWeightings.Normalize();
-                var noise = new WeightedSet<PokemonSpecies>(possiblePokemon, speciesSettings.Noise);
-                combinedWeightings.Add(noise);
-            }
-            // Remove Legendaries
-            if (speciesSettings.BanLegendaries)
-                combinedWeightings.RemoveWhere(SpeciesUtils.IsLegendary);
-            combinedWeightings.RemoveWhere(p => combinedWeightings[p] <= 0);
-            return combinedWeightings;
-        }
-        private WeightedSet<PokemonSpecies> SpeciesWeightedSetTypeGroup(IEnumerable<PokemonSpecies> possiblePokemon, PokemonSpecies pokemon, IEnumerable<PokemonSpecies> typeGroup, Settings.SpeciesSettings speciesSettings)
-        {
-            var combinedWeightings = new WeightedSet<PokemonSpecies>(possiblePokemon);
-            // Power level similarity
-            if (speciesSettings.PowerScaleSimilarityMod > 0)
-            {
-                var powerWeighting = PokemonMetrics.PowerSimilarity(combinedWeightings.Items, powerScores, pokemon, speciesSettings.PowerThresholdStronger, speciesSettings.PowerThresholdWeaker);
-                combinedWeightings.Add(powerWeighting, speciesSettings.PowerScaleSimilarityMod);
-                // Cull if necessary
-                if (speciesSettings.PowerScaleCull)
-                    combinedWeightings.RemoveWhere((p) => !powerWeighting.Contains(p));
-            }
-            // Type similarity
-            if (speciesSettings.TypeSimilarityMod > 0)
-            {
-                var typeBalanceMetric = GetTypeBalanceFunction(combinedWeightings.Items);
-                var typeWeighting = PokemonMetrics.TypeSimilarity(combinedWeightings.Items, data, pokemon);
-                typeWeighting.Multiply(typeBalanceMetric);
-                foreach (var sample in typeGroup)
-                {
-                    typeWeighting.Add(PokemonMetrics.TypeSimilarity(combinedWeightings.Items, data, sample), typeBalanceMetric(sample));
-                }
-                var sampleTypes = typeGroup.SelectMany((s) => data.PokemonLookup[s].types).Distinct();
-                Tuple<PokemonType, PokemonType> Map(PokemonSpecies p)
-                {
-                    var types = data.PokemonLookup[p].types.Intersect(sampleTypes).ToList();
-                    types.Sort();
-                    if (types.Count == 0)
-                        return null;
-                    if (types.Count == 1)
-                        return new Tuple<PokemonType, PokemonType>(types[0], types[0]);
-                    return new Tuple<PokemonType, PokemonType>(types[0], types[1]);
-                }
-                var typeDistribution = typeWeighting.Distribution(Map);
-                typeWeighting.Normalize();
-                combinedWeightings.Add(typeWeighting, speciesSettings.TypeSimilarityMod);
-                // Cull if necessary
-                if (speciesSettings.TypeSimilarityCull)
-                    combinedWeightings.RemoveWhere((p) => !typeWeighting.Contains(p));
-            }
-            // Sharpen the data if necessary
-            if(speciesSettings.Sharpness > 0)
-            {
-                combinedWeightings.Map((p) => (float)Math.Pow(combinedWeightings[p], speciesSettings.Sharpness));
-                combinedWeightings.Normalize();
-            }
-            // Normalize combined weightings and add noise
-            if (speciesSettings.Noise > 0)
-            {
-                combinedWeightings.Normalize();
-                var noise = new WeightedSet<PokemonSpecies>(possiblePokemon, speciesSettings.Noise);
-                combinedWeightings.Add(noise);
-            }
-            // Remove Legendaries
-            if (speciesSettings.BanLegendaries)
-                combinedWeightings.RemoveWhere(SpeciesUtils.IsLegendary);
-            combinedWeightings.RemoveWhere((p) => combinedWeightings[p] <= 0);
-            return combinedWeightings;
-        }
-        #endregion
-
         #region Typing
 
         /// <summary> Return 3 pokemon that form a valid type traingle, or null if none exist in the input set.
         /// Type triangles require one-way weakness, but allow neutral relations in reverse order (unless strong is true) </summary>
         private List<PokemonSpecies> RandomTypeTriangle(IEnumerable<PokemonSpecies> possiblePokemon, Settings.SpeciesSettings speciesSettings, bool strong = false)
         {
-            var set = SpeciesWeightedSet(possiblePokemon, data.Starters[0], speciesSettings);
+            var set = pokeRand.SpeciesWeightedSet(possiblePokemon, data.Starters[0], speciesSettings);
             if(speciesSettings.RestrictIllegalEvolutions)
                 set.RemoveWhere((p) => !evoUtils.IsPokemonValidLevel(data.PokemonLookup[p], 5));
             var pool = new WeightedSet<PokemonSpecies>(set);
@@ -1076,7 +904,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 var first = rand.Choice(pool);
                 pool.Remove(first);
                 // Get potential second pokemon
-                var secondPossiblities = SpeciesWeightedSet(set.Items, data.Starters[1], speciesSettings);
+                var secondPossiblities = pokeRand.SpeciesWeightedSet(set.Items, data.Starters[1], speciesSettings);
                 secondPossiblities.RemoveWhere((p) => !OneWayWeakness(first, p, strong));
                 // Finish the traiangle if possible
                 var triangle = FinishTriangle(set, secondPossiblities, first, speciesSettings, strong);
@@ -1094,7 +922,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 var second = rand.Choice(possibleSeconds);
                 possibleSeconds.Remove(second);
                 // Get third pokemon
-                var thirdPossiblities = SpeciesWeightedSet(set.Items, data.Starters[2], speciesSettings);
+                var thirdPossiblities = pokeRand.SpeciesWeightedSet(set.Items, data.Starters[2], speciesSettings);
                 thirdPossiblities.RemoveWhere((p) => !(OneWayWeakness(second, p, strong) && OneWayWeakness(p, first, strong)));
                 // If at least one works, choose one randomly
                 if (thirdPossiblities.Count > 0)
@@ -1142,12 +970,12 @@ namespace PokemonRandomizer.Backend.Randomization
             {
                 if (settings.WeightType == Settings.SpeciesSettings.WeightingType.Group)
                 {
-                    pokemon.species = RandomSpeciesTypeGroup(pokemonSet, pokemon.species, pokemon.level, typeSample, settings);
+                    pokemon.species = pokeRand.RandomSpeciesTypeGroup(pokemonSet, pokemon.species, pokemon.level, typeSample, settings);
                 }
                 else
                 {
 
-                    pokemon.species = RandomSpecies(pokemonSet, pokemon.species, pokemon.level, settings);
+                    pokemon.species = pokeRand.RandomSpecies(pokemonSet, pokemon.species, pokemon.level, settings);
                 }
                 // Reset special moves if necessary
                 if (pokemon.HasSpecialMoves)
