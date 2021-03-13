@@ -15,10 +15,10 @@ namespace PokemonRandomizer.Backend.Randomization
     public static class PokemonMetrics
     {
         /// <summary> returns a given pokemon's power similarity to all pokemon in the pokemonSet. Output is normalized </summary>
-        public static WeightedSet<PokemonSpecies> PowerSimilarity(IEnumerable<PokemonSpecies> pokemonSet, Dictionary<PokemonSpecies,float> powerScores, PokemonSpecies species, int maxStronger, int maxWeaker)
+        public static WeightedSet<Pokemon> PowerSimilarity(IEnumerable<Pokemon> pokemonSet, Dictionary<Pokemon,float> powerScores, Pokemon species, int maxStronger, int maxWeaker)
         {
             float myPowerScore = powerScores[species];
-            var powerWeighting = new WeightedSet<PokemonSpecies>();          
+            var powerWeighting = new WeightedSet<Pokemon>();          
             foreach (var pokemon in pokemonSet)
             {
                 float similarity = PowerScoreSimilarity(myPowerScore, powerScores[pokemon], maxStronger, maxWeaker);
@@ -47,10 +47,10 @@ namespace PokemonRandomizer.Backend.Randomization
             }
         }
 
-        public static WeightedSet<PokemonSpecies> TypeSimilarity(IEnumerable<PokemonSpecies> pokemonSet, PokemonSpecies species, Func<PokemonSpecies, PokemonBaseStats> baseStats)
+        public static WeightedSet<Pokemon> TypeSimilarity(IEnumerable<Pokemon> pokemonSet, Pokemon species, Func<Pokemon, PokemonBaseStats> baseStats)
         {
             var myStats = baseStats(species);
-            var typeWeighting = new WeightedSet<PokemonSpecies>();
+            var typeWeighting = new WeightedSet<Pokemon>();
             foreach(var pokemon in pokemonSet)
             {
                 float similarity = TypeSimilarity(myStats, baseStats(pokemon));

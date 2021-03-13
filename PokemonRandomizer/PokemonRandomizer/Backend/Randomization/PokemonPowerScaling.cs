@@ -15,13 +15,13 @@ namespace PokemonRandomizer.Backend.Randomization
             EvolutionStage = 2,
         }
         public delegate float ScoreFunc(PokemonBaseStats pkmn);
-        public static Dictionary<PokemonSpecies, float> Calculate(IEnumerable<PokemonBaseStats> pokemon, Options options)
+        public static Dictionary<Pokemon, float> Calculate(IEnumerable<PokemonBaseStats> pokemon, Options options)
         {
             return Calculate(pokemon, GetScoringFuncs(options));
         }
-        public static Dictionary<PokemonSpecies, float> Calculate(IEnumerable<PokemonBaseStats> pokemon, params ScoreFunc[] tieringFuncs)
+        public static Dictionary<Pokemon, float> Calculate(IEnumerable<PokemonBaseStats> pokemon, params ScoreFunc[] tieringFuncs)
         {
-            var scores = new Dictionary<PokemonSpecies, float>();
+            var scores = new Dictionary<Pokemon, float>();
             foreach(var p in pokemon)
             {
                 float score = 0;

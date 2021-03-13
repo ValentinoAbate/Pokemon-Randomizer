@@ -5,10 +5,10 @@ namespace PokemonRandomizer.Backend.DataStructures
 {
     public class Encounter
     {
-        public PokemonSpecies pokemon;
+        public Pokemon pokemon;
         public int level;
         public int maxLevel;
-        public Encounter(PokemonSpecies pokemon, int level, int maxLevel)
+        public Encounter(Pokemon pokemon, int level, int maxLevel)
         {
             this.pokemon = pokemon;
             this.level = level;

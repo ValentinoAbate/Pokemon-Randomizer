@@ -21,7 +21,7 @@ namespace PokemonRandomizer.Backend.DataStructures
         }
         public bool HasSpecialMoves { get => dataType == DataType.SpecialMoves || dataType == DataType.SpecialMovesAndHeldItem; }
         public DataType dataType;
-        public PokemonSpecies species;
+        public Pokemon species;
         public Item heldItem = Item.None;
         public Move[] moves = new Move[4];
         public int level;

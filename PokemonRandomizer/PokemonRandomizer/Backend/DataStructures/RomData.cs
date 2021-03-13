@@ -12,9 +12,9 @@ namespace PokemonRandomizer.Backend.DataStructures
         // A metrics database calculated from the input ROM data (the base game if the rom being loaded is normal)
         public RomMetrics Metrics { get; private set; }
         public Item PcStartItem { get; set; }
-        public List<PokemonSpecies> Starters { get; set; }
+        public List<Pokemon> Starters { get; set; }
         public List<Item> StarterItems { get; set; }
-        public PokemonSpecies CatchingTutPokemon { get; set; }
+        public Pokemon CatchingTutPokemon { get; set; }
         private List<PokemonBaseStats> pokemon;
         public List<PokemonBaseStats> Pokemon
         {
@@ -38,7 +38,7 @@ namespace PokemonRandomizer.Backend.DataStructures
         }
         public string[] PokemonNames { get; private set; }
         public PokemonBaseStats[] PokemonNationalDexOrder { get; private set; }
-        public Dictionary<PokemonSpecies, PokemonBaseStats> PokemonLookup { get; } = new Dictionary<PokemonSpecies, PokemonBaseStats>();
+        public Dictionary<Pokemon, PokemonBaseStats> PokemonLookup { get; } = new Dictionary<Pokemon, PokemonBaseStats>();
         public List<string> ClassNames { get; set; }
         public List<Trainer> Trainers { get; set; }
 

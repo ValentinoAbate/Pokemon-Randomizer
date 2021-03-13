@@ -13,7 +13,7 @@ namespace PokemonRandomizer.Backend.DataStructures
         public const int trainerNameLength = 11;
 
         public string pokemonName;
-        public PokemonSpecies pokemonRecieved;
+        public Pokemon pokemonRecieved;
         public byte[] IVs = new byte[6];
         public int abilityNum;
         public int trainerID;
@@ -24,7 +24,7 @@ namespace PokemonRandomizer.Backend.DataStructures
         public string trainerName;
         public byte trainerGender;
         public byte sheen;
-        public PokemonSpecies pokemonWanted;
+        public Pokemon pokemonWanted;
 
         public override string ToString()
         {

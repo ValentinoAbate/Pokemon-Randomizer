@@ -9,7 +9,7 @@ namespace PokemonRandomizer.Backend.DataStructures
 {
     public class PokemonBaseStats
     {
-        public PokemonSpecies species;
+        public Pokemon species;
 
         #region Helper Properties
 

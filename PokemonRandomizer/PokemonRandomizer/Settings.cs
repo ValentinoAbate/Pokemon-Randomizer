@@ -208,11 +208,11 @@ namespace PokemonRandomizer
         {
             { TrainerCategory.Trainer, new TrainerSettings()
                 {
-                    SpeciesSettings = new SpeciesRandomizer.Settings()
+                    PokemonSettings = new PkmnRandomizer.Settings()
                     {
                         BanLegendaries = false,
                         ForceHighestLegalEvolution = true,
-                        WeightType = SpeciesRandomizer.Settings.WeightingType.Group,
+                        WeightType = PkmnRandomizer.Settings.WeightingType.Group,
                         Noise = 0.002f,
                         PowerScaleSimilarityMod = 0.01f,
                         PowerScaleCull = true,
@@ -223,7 +223,7 @@ namespace PokemonRandomizer
             },
             { TrainerCategory.AceTrainer, new TrainerSettings()
                 {
-                    SpeciesSettings = new SpeciesRandomizer.Settings()
+                    PokemonSettings = new PkmnRandomizer.Settings()
                     {
                         BanLegendaries = false,
                         ForceHighestLegalEvolution = true,
@@ -238,11 +238,11 @@ namespace PokemonRandomizer
             },
             { TrainerCategory.Rival, new TrainerSettings()
                 {
-                    SpeciesSettings = new SpeciesRandomizer.Settings()
+                    PokemonSettings = new PkmnRandomizer.Settings()
                     {
                         BanLegendaries = false,
                         ForceHighestLegalEvolution = true,
-                        WeightType = SpeciesRandomizer.Settings.WeightingType.Individual,
+                        WeightType = PkmnRandomizer.Settings.WeightingType.Individual,
                         Noise = 0.001f,
                         PowerScaleSimilarityMod = 1f,
                         PowerScaleCull = true,
@@ -255,11 +255,11 @@ namespace PokemonRandomizer
             },
             { TrainerCategory.GymLeader, new TrainerSettings()
                 {
-                    SpeciesSettings = new SpeciesRandomizer.Settings()
+                    PokemonSettings = new PkmnRandomizer.Settings()
                     {
                         BanLegendaries = false,
                         ForceHighestLegalEvolution = true,
-                        WeightType = SpeciesRandomizer.Settings.WeightingType.Group,
+                        WeightType = PkmnRandomizer.Settings.WeightingType.Group,
                         Sharpness = 2,
                         Noise = 0.0001f,
                         PowerScaleSimilarityMod = 0.01f,
@@ -273,12 +273,12 @@ namespace PokemonRandomizer
             },
             { TrainerCategory.EliteFour, new TrainerSettings()
                 {
-                    SpeciesSettings = new SpeciesRandomizer.Settings()
+                    PokemonSettings = new PkmnRandomizer.Settings()
                     {
                         BanLegendaries = false,
                         RestrictIllegalEvolutions = false,
                         ForceHighestLegalEvolution = true,
-                        WeightType = SpeciesRandomizer.Settings.WeightingType.Group,
+                        WeightType = PkmnRandomizer.Settings.WeightingType.Group,
                         Sharpness = 2,
                         Noise = 0.0001f,
                         PowerScaleSimilarityMod = 0.1f,
@@ -292,12 +292,12 @@ namespace PokemonRandomizer
             },
             { TrainerCategory.Champion, new TrainerSettings()
                 {
-                    SpeciesSettings = new SpeciesRandomizer.Settings()
+                    PokemonSettings = new PkmnRandomizer.Settings()
                     {
                         BanLegendaries = false,
                         RestrictIllegalEvolutions = false,
                         ForceHighestLegalEvolution = true,
-                        WeightType = SpeciesRandomizer.Settings.WeightingType.Group,
+                        WeightType = PkmnRandomizer.Settings.WeightingType.Group,
                         Sharpness = 2,
                         Noise = 0.0001f,
                         PowerScaleSimilarityMod = 0.1f,
@@ -323,10 +323,10 @@ namespace PokemonRandomizer
             GlobalOneToOne,
         }
         public WildPokemonOption WildPokemonSetting => WildPokemonOption.AreaOneToOne;
-        public SpeciesRandomizer.Settings WildSpeciesSettings { get; } = new SpeciesRandomizer.Settings()
+        public PkmnRandomizer.Settings WildSpeciesSettings { get; } = new PkmnRandomizer.Settings()
         {
             BanLegendaries = true,
-            WeightType = SpeciesRandomizer.Settings.WeightingType.Group,
+            WeightType = PkmnRandomizer.Settings.WeightingType.Group,
             //Sharpness = 1.1f,
             Noise = 0.001f,
             PowerScaleSimilarityMod = 0.01f,
@@ -342,7 +342,7 @@ namespace PokemonRandomizer
 
         #region Gift Pokemon
         public double GiftPokemonRandChance => 1;
-        public SpeciesRandomizer.Settings GiftSpeciesSettings { get; } = new SpeciesRandomizer.Settings()
+        public PkmnRandomizer.Settings GiftSpeciesSettings { get; } = new PkmnRandomizer.Settings()
         {
             BanLegendaries = true,
             Noise = 1f,
@@ -356,14 +356,14 @@ namespace PokemonRandomizer
         #region Trade Pokemon
         public double TradePokemonGiveRandChance => 1;
         public double TradePokemonRecievedRandChance => 1;
-        public SpeciesRandomizer.Settings TradeSpeciesSettingsGive { get; } = new SpeciesRandomizer.Settings()
+        public PkmnRandomizer.Settings TradeSpeciesSettingsGive { get; } = new PkmnRandomizer.Settings()
         {
             BanLegendaries = true,
             Noise = 1f,
             PowerScaleSimilarityMod = 0.1f,
             TypeSimilarityMod = 0f,
         };
-        public SpeciesRandomizer.Settings TradeSpeciesSettingsReceive { get; } = new SpeciesRandomizer.Settings()
+        public PkmnRandomizer.Settings TradeSpeciesSettingsReceive { get; } = new PkmnRandomizer.Settings()
         {
             BanLegendaries = true,
             Noise = 1f,
@@ -388,13 +388,13 @@ namespace PokemonRandomizer
         }
         public StarterPokemonOption StarterSetting { get => StarterPokemonOption.RandomTypeTriangle; }
         public bool StrongStarterTypeTriangle { get => false; }
-        public PokemonSpecies[] CustomStarters { get; } = new PokemonSpecies[3]
+        public Pokemon[] CustomStarters { get; } = new Pokemon[3]
         {
-            PokemonSpecies.KECLEON,
-            PokemonSpecies.KECLEON,
-            PokemonSpecies.KECLEON,
+            Pokemon.KECLEON,
+            Pokemon.KECLEON,
+            Pokemon.KECLEON,
         };
-        public SpeciesRandomizer.Settings StarterSpeciesSettings { get; } = new SpeciesRandomizer.Settings()
+        public PkmnRandomizer.Settings StarterSpeciesSettings { get; } = new PkmnRandomizer.Settings()
         {
             BanLegendaries = true,
             Noise = 1f,
@@ -586,7 +586,7 @@ namespace PokemonRandomizer
 
             public double PokemonRandChance { get; set; } = 1;
             public PokemonPcgStrategy PokemonStrategy { get; set; } = PokemonPcgStrategy.KeepParty;
-            public SpeciesRandomizer.Settings SpeciesSettings { get; set; } = new SpeciesRandomizer.Settings();
+            public PkmnRandomizer.Settings PokemonSettings { get; set; } = new PkmnRandomizer.Settings();
             public double BattleTypeRandChance { get; set; } = 1;
             public BattleTypePcgStrategy BattleTypeStrategy { get; set; } = BattleTypePcgStrategy.KeepSameType;
             public double DoubleBattleChance { get; set; } = 1;

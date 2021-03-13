@@ -35,7 +35,7 @@ namespace PokemonRandomizer.Backend.DataStructures
         // For the Beauty type, the parameter is the beauty threshold (0-255)
         // On any other types the parameter does not apply
         public int parameter;
-        public PokemonSpecies Pokemon { get; set; }
+        public Pokemon Pokemon { get; set; }
         public bool EvolvesByLevel { get => Type.ToString().Contains("Level"); }
         public bool EvolvesByTrade { get => Type == EvolutionType.Trade || Type == EvolutionType.TradeWithItem; }
         public bool EvolvesByFriendship { get => Type == EvolutionType.Friendship || Type == EvolutionType.FriendshipDay || Type == EvolutionType.FriendshipNight; }
@@ -43,9 +43,9 @@ namespace PokemonRandomizer.Backend.DataStructures
         {
             Type = (EvolutionType)data.ReadUInt16(0);
             parameter = data.ReadUInt16(2);
-            Pokemon = (PokemonSpecies)data.ReadUInt16(4);
+            Pokemon = (Pokemon)data.ReadUInt16(4);
         }
-        public Evolution(EvolutionType type, PokemonSpecies pokemon, int parameter)
+        public Evolution(EvolutionType type, Pokemon pokemon, int parameter)
         {
             Type = type;
             Pokemon = pokemon;

@@ -71,7 +71,7 @@ namespace PokemonRandomizer.Backend.Reading
                 {
                     var givePokemonCommand = new GivePokemonCommand()
                     {
-                        pokemon = (PokemonSpecies)command.ArgData(0),
+                        pokemon = (Pokemon)command.ArgData(0),
                         level = (byte)command.ArgData(1),
                         heldItem = (Item)command.ArgData(2)
                     };
@@ -86,7 +86,7 @@ namespace PokemonRandomizer.Backend.Reading
                 else if(command.code == Gen3Command.giveEgg)
                 {
                     // Add new give egg event
-                    script.Add(new GiveEggCommand() { pokemon = (PokemonSpecies)command.ArgData(0) });
+                    script.Add(new GiveEggCommand() { pokemon = (Pokemon)command.ArgData(0) });
                 }
                 else // Not a special code, just push the command
                 {

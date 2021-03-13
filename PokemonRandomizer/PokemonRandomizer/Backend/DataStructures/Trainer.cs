@@ -117,7 +117,7 @@ namespace PokemonRandomizer.Backend.DataStructures
                 p.dataType = dataType;
                 p.IVLevel = rom.ReadUInt16();
                 p.level = rom.ReadUInt16();
-                p.species = (PokemonSpecies)rom.ReadUInt16();
+                p.species = (Pokemon)rom.ReadUInt16();
                 if (dataType == TrainerPokemon.DataType.Basic)
                     rom.Skip(2); // Skip padding
                 else if (dataType == TrainerPokemon.DataType.HeldItem)

@@ -9,25 +9,25 @@ namespace PokemonRandomizer.Backend.Randomization
     public class EvolutionUtils
     {
         private readonly Random rand;
-        private readonly Func<PokemonSpecies, PokemonBaseStats> baseStats;
-        public EvolutionUtils(Random rand, Func<PokemonSpecies, PokemonBaseStats> baseStatsFn)
+        private readonly Func<Pokemon, PokemonBaseStats> baseStats;
+        public EvolutionUtils(Random rand, Func<Pokemon, PokemonBaseStats> baseStatsFn)
         {
             this.rand = rand;
             baseStats = baseStatsFn;
         }
 
         /// <summary> return true if pokemon a evolves into or from pokemon b or IS pokemon b</summary>
-        public bool RelatedToOrSelf(PokemonSpecies a, PokemonSpecies b)
+        public bool RelatedToOrSelf(Pokemon a, Pokemon b)
         {
             return (a == b) || RelatedTo(a, b);
         }
         /// <summary> return true if pokemon a evolves into or from pokemon b</summary>
-        private bool RelatedTo(PokemonSpecies a, PokemonSpecies b)
+        private bool RelatedTo(Pokemon a, Pokemon b)
         {
             return EvolvesInto(a, b) || EvolvesFrom(a, b);
         }
         /// <summary> return true if pokemon a evolves into pokemon b</summary>
-        private bool EvolvesInto(PokemonSpecies a, PokemonSpecies b)
+        private bool EvolvesInto(Pokemon a, Pokemon b)
         {
             var stats = baseStats(a);
             var evos = stats.evolvesTo;
@@ -43,7 +43,7 @@ namespace PokemonRandomizer.Backend.Randomization
             return false;
         }
         /// <summary> return true if pokemon a evolves from pokemon b</summary>
-        private bool EvolvesFrom(PokemonSpecies a, PokemonSpecies b)
+        private bool EvolvesFrom(Pokemon a, Pokemon b)
         {
             var evos = baseStats(a).evolvesFrom;
             foreach (var evo in evos)
@@ -58,7 +58,7 @@ namespace PokemonRandomizer.Backend.Randomization
             return false;
         }
         /// If the pokemon is an invalid level due to evolution state, revert to an earlier evolution
-        public PokemonSpecies CorrectImpossibleEvo(PokemonSpecies species, int level)
+        public Pokemon CorrectImpossibleEvo(Pokemon species, int level)
         {
             var pokemon = baseStats(species);
             while (!IsPokemonValidLevel(pokemon, level))
@@ -110,7 +110,7 @@ namespace PokemonRandomizer.Backend.Randomization
         /// <summary> Return the maximum evolved form of the pokemon at the given level.
         /// returns a lower form if the pokemon is an invalid level.
         /// returns a random branch for evolution trees that branch </summary>
-        public PokemonSpecies MaxEvolution(PokemonSpecies p, int level, bool restrictIllegalEvolutions)
+        public Pokemon MaxEvolution(Pokemon p, int level, bool restrictIllegalEvolutions)
         {
             var stats = baseStats(p);
             // If illegal evolutions are disabled, and the pokemon is an illegal level, correct the impossible evolution

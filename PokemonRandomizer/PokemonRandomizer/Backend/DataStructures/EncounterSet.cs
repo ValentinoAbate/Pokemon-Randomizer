@@ -37,7 +37,7 @@ namespace PokemonRandomizer.Backend.DataStructures
             {
                 int level = rom.ReadByte();
                 int maxLevel = rom.ReadByte();
-                PokemonSpecies pokemon = (PokemonSpecies)rom.ReadUInt16();
+                Pokemon pokemon = (Pokemon)rom.ReadUInt16();
                 encounters.Add(new Encounter(pokemon, level, maxLevel));
             }
         }

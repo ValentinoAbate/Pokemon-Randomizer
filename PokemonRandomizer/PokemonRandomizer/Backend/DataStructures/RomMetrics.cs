@@ -22,7 +22,7 @@ namespace PokemonRandomizer.Backend.DataStructures
 
         #region Catch Rate Data
 
-        public Dictionary<byte, HashSet<PokemonSpecies>> CatchRateCategories { get; } = new Dictionary<byte, HashSet<PokemonSpecies>>();
+        public Dictionary<byte, HashSet<Pokemon>> CatchRateCategories { get; } = new Dictionary<byte, HashSet<Pokemon>>();
 
         #endregion
 
@@ -79,7 +79,7 @@ namespace PokemonRandomizer.Backend.DataStructures
             foreach (PokemonBaseStats pkmn in data.Pokemon)
             {
                 if (!CatchRateCategories.ContainsKey(pkmn.catchRate))
-                    CatchRateCategories.Add(pkmn.catchRate, new HashSet<PokemonSpecies>());
+                    CatchRateCategories.Add(pkmn.catchRate, new HashSet<Pokemon>());
                 CatchRateCategories[pkmn.catchRate].Add(pkmn.species);
             }
 

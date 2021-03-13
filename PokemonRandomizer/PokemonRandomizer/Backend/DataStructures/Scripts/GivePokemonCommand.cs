@@ -12,7 +12,7 @@
         }
 
         public Type type = Type.Normal;
-        public PokemonSpecies pokemon;
+        public Pokemon pokemon;
         public byte level;
         public Item heldItem;
 

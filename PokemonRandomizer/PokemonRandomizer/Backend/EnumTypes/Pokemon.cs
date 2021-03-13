@@ -2,7 +2,7 @@
 namespace PokemonRandomizer.Backend.EnumTypes
 {
     // Every valid species of pokemon. Some names are modified to be in the enum
-    public enum PokemonSpecies : ushort
+    public enum Pokemon : ushort
     {
         None = 0, BULBASAUR = 1, IVYSAUR, VENUSAUR, CHARMANDER, CHARMELEON, CHARIZARD, SQUIRTLE, WARTORTLE,
         BLASTOISE, CATERPIE, METAPOD, BUTTERFREE, WEEDLE, KAKUNA, BEEDRILL, PIDGEY, PIDGEOTTO, PIDGEOT, RATTATA,

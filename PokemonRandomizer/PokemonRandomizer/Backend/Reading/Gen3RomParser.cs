@@ -117,7 +117,7 @@ namespace PokemonRandomizer.Backend.Reading
             return moves;
         }
 
-        private Dictionary<PokemonSpecies, List<Move>> ReadEggMoves(Rom rom, XmlManager info)
+        private Dictionary<Pokemon, List<Move>> ReadEggMoves(Rom rom, XmlManager info)
         {
             const string eggMoveElt = "eggMoves";
             rom.SaveOffset();
@@ -125,11 +125,11 @@ namespace PokemonRandomizer.Backend.Reading
             if (!info.FindAndSeekOffset(eggMoveElt, rom))
             {
                 rom.LoadOffset();
-                return new Dictionary<PokemonSpecies, List<Move>>();
+                return new Dictionary<Pokemon, List<Move>>();
             }
             int pkmnSigniture = info.HexAttr(eggMoveElt, "pokemonSigniture");
-            var moves = new Dictionary<PokemonSpecies, List<Move>>();
-            var pkmn = (PokemonSpecies)0;
+            var moves = new Dictionary<Pokemon, List<Move>>();
+            var pkmn = (Pokemon)0;
             int counter = 0;
             // Limit on loop just in case we are at the wrong place
             while (++counter < 3000)
@@ -139,7 +139,7 @@ namespace PokemonRandomizer.Backend.Reading
                     break;
                 if(number >= pkmnSigniture)
                 {
-                    pkmn = (PokemonSpecies)(number - pkmnSigniture);
+                    pkmn = (Pokemon)(number - pkmnSigniture);
                     if ((int)pkmn > 0)
                         moves.Add(pkmn, new List<Move>());
                 }
@@ -213,7 +213,7 @@ namespace PokemonRandomizer.Backend.Reading
                     movesetOffset += skipNum * 4; // (don't know why this is 4, cuz move segments are variable lengths possibly terminators?)
                 }
                 // Create Pokemon
-                PokemonBaseStats pkmn = ReadBaseStatsSingle(rom, pkmnOffset + (i * pkmnSize), (PokemonSpecies)(i + 1));
+                PokemonBaseStats pkmn = ReadBaseStatsSingle(rom, pkmnOffset + (i * pkmnSize), (Pokemon)(i + 1));
                 // Read name
                 pkmn.Name = rom.ReadString(namesOffset + (i * nameLength), nameLength);
                 // Set Egg Moves
@@ -229,7 +229,7 @@ namespace PokemonRandomizer.Backend.Reading
             return pokemon;
         }
 
-        private PokemonBaseStats ReadBaseStatsSingle(Rom rom, int offset, PokemonSpecies species)
+        private PokemonBaseStats ReadBaseStatsSingle(Rom rom, int offset, Pokemon species)
         {
             var pkmn = new PokemonBaseStats
             {
@@ -338,16 +338,16 @@ namespace PokemonRandomizer.Backend.Reading
         #endregion
 
         // Read the starter pokemon
-        private List<PokemonSpecies> ReadStarters(Rom rom, XmlManager info)
+        private List<Pokemon> ReadStarters(Rom rom, XmlManager info)
         {
-            var starters = new List<PokemonSpecies>();
+            var starters = new List<Pokemon>();
             if (!info.FindAndSeekOffset(ElementNames.starterPokemon, rom))
                 return starters;
-            starters.Add((PokemonSpecies)rom.ReadUInt16());
+            starters.Add((Pokemon)rom.ReadUInt16());
             rom.Skip(info.IntAttr(ElementNames.starterPokemon, "skip1"));
-            starters.Add((PokemonSpecies)rom.ReadUInt16());
+            starters.Add((Pokemon)rom.ReadUInt16());
             rom.Skip(info.IntAttr(ElementNames.starterPokemon, "skip2"));
-            starters.Add((PokemonSpecies)rom.ReadUInt16());
+            starters.Add((Pokemon)rom.ReadUInt16());
             return starters;
         }
         // Read the starter items
@@ -356,11 +356,11 @@ namespace PokemonRandomizer.Backend.Reading
             throw new System.NotImplementedException();
         }
         //Read the catching tut pokemon
-        private PokemonSpecies ReadCatchingTutOpponent(Rom rom, XmlManager info)
+        private Pokemon ReadCatchingTutOpponent(Rom rom, XmlManager info)
         {
             // Currently have no idea how to actually read this so just return RALTS
             // Maybe add a constant in the ROM info later
-            return PokemonSpecies.RALTS; 
+            return Pokemon.RALTS; 
         }
 
         private List<InGameTrade> ReadInGameTrades(Rom rom, XmlManager info)
@@ -373,7 +373,7 @@ namespace PokemonRandomizer.Backend.Reading
             {
                 var t = new InGameTrade();
                 t.pokemonName = rom.ReadFixedLengthString(InGameTrade.pokemonNameLength);
-                t.pokemonRecieved = (PokemonSpecies)rom.ReadUInt16();
+                t.pokemonRecieved = (Pokemon)rom.ReadUInt16();
                 t.IVs = rom.ReadBlock(6);
                 t.abilityNum = rom.ReadUInt32();
                 t.trainerID = rom.ReadUInt32();
@@ -385,7 +385,7 @@ namespace PokemonRandomizer.Backend.Reading
                 t.trainerName = rom.ReadFixedLengthString(InGameTrade.trainerNameLength);
                 t.trainerGender = rom.ReadByte();
                 t.sheen = rom.ReadByte();
-                t.pokemonWanted = (PokemonSpecies)rom.ReadUInt32();
+                t.pokemonWanted = (Pokemon)rom.ReadUInt32();
                 trades.Add(t);
             }
             return trades;
