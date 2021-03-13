@@ -21,6 +21,7 @@ namespace PokemonRandomizer.Backend.Randomization
             this.baseStats = baseStats;
             this.powerScores = powerScores;
         }
+
         #region Species Randomization
 
         /// <summary> Chose a random species from the input set based on the given species settings and the type sample given</summary> 
@@ -90,8 +91,8 @@ namespace PokemonRandomizer.Backend.Randomization
             }
             return TypeBalanceMetric;
         }
-        /// <summary> Get a weighted and culled list of possible pokemon (TODO: MAKE PRIVATE)</summary>
-        public WeightedSet<PokemonSpecies> SpeciesWeightedSet(IEnumerable<PokemonSpecies> possiblePokemon, PokemonSpecies pokemon, Settings settings)
+        /// <summary> Get a weighted and culled list of possible pokemon</summary>
+        private WeightedSet<PokemonSpecies> SpeciesWeightedSet(IEnumerable<PokemonSpecies> possiblePokemon, PokemonSpecies pokemon, Settings settings)
         {
             var combinedWeightings = new WeightedSet<PokemonSpecies>(possiblePokemon);
             // Power level similarity
@@ -192,6 +193,65 @@ namespace PokemonRandomizer.Backend.Randomization
             combinedWeightings.RemoveWhere((p) => combinedWeightings[p] <= 0);
             return combinedWeightings;
         }
+        #endregion
+
+        #region Type Triangles
+
+        /// <summary> Return 3 pokemon that form a valid type traingle, or null if none exist in the input set.
+        /// Type triangles require one-way weakness, but allow neutral relations in reverse order (unless strong is true) </summary>
+        public List<PokemonSpecies> RandomTypeTriangle(IEnumerable<PokemonSpecies> possiblePokemon, IList<PokemonSpecies> input, TypeEffectivenessChart typeDefinitions, Settings settings, bool strong = false)
+        {
+            // invalid input
+            if (input.Count < 3)
+                return null; // TODO: Log
+            var set = SpeciesWeightedSet(possiblePokemon, input[0], settings);
+            if (settings.RestrictIllegalEvolutions)
+                set.RemoveWhere((p) => !evoUtils.IsPokemonValidLevel(baseStats(p), 5));
+            var pool = new WeightedSet<PokemonSpecies>(set);
+            while (pool.Count > 0)
+            {
+                var first = rand.Choice(pool);
+                pool.Remove(first);
+                // Get potential second pokemon
+                var secondPossiblities = SpeciesWeightedSet(set.Items, input[1], settings);
+                secondPossiblities.RemoveWhere((p) => !OneWayWeakness(typeDefinitions, first, p, strong));
+                // Finish the triangle if possible
+                var triangle = FinishTriangle(set, secondPossiblities, first, input[2], typeDefinitions, settings, strong);
+                if (triangle != null)
+                    return triangle;
+            }
+            return null; // No viable triangle with input spcifications
+        }
+        /// <summary> Helper method for the RandomTypeTriangle method </summary>
+        private List<PokemonSpecies> FinishTriangle(WeightedSet<PokemonSpecies> set, WeightedSet<PokemonSpecies> possibleSeconds, PokemonSpecies first, PokemonSpecies lastInput, TypeEffectivenessChart typeDefinitions, Settings settings, bool strong)
+        {
+            while (possibleSeconds.Count > 0)
+            {
+                var second = rand.Choice(possibleSeconds);
+                possibleSeconds.Remove(second);
+                // Get third pokemon
+                var thirdPossiblities = SpeciesWeightedSet(set.Items, lastInput, settings);
+                thirdPossiblities.RemoveWhere((p) => !(OneWayWeakness(typeDefinitions, second, p, strong) && OneWayWeakness(typeDefinitions, p, first, strong)));
+                // If at least one works, choose one randomly
+                if (thirdPossiblities.Count > 0)
+                    return new List<PokemonSpecies> { first, second, rand.Choice(thirdPossiblities) };
+            }
+            return null;
+        }
+
+        /// <summary> Return true if b is weak to a AND a is not weak to b. 
+        /// If strong is true, b must also not be normally effective against a </summary>
+        private bool OneWayWeakness(TypeEffectivenessChart typeDefinitions, PokemonSpecies a, PokemonSpecies b, bool strong = true)
+        {
+            var aTypes = baseStats(a).types;
+            var bTypes = baseStats(b).types;
+            var aVsB = typeDefinitions.GetEffectiveness(aTypes[0], aTypes[1], bTypes[0], bTypes[1]);
+            var bVsA = typeDefinitions.GetEffectiveness(bTypes[0], bTypes[1], aTypes[0], aTypes[1]);
+            if (strong)
+                return aVsB == TypeEffectiveness.SuperEffective && !(bVsA == TypeEffectiveness.SuperEffective || bVsA == TypeEffectiveness.Normal);
+            return aVsB == TypeEffectiveness.SuperEffective && !(bVsA == TypeEffectiveness.SuperEffective);
+        }
+
         #endregion
 
         public class Settings

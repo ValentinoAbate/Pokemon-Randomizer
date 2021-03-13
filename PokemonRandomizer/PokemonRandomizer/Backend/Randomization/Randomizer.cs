@@ -492,7 +492,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 }
                 else if (settings.StarterSetting == Settings.StarterPokemonOption.RandomTypeTriangle)
                 {
-                    var triangle = RandomTypeTriangle(pokemonSet, speciesSettings, settings.StrongStarterTypeTriangle);
+                    var triangle = pokeRand.RandomTypeTriangle(pokemonSet, data.Starters, data.TypeDefinitions, speciesSettings, settings.StrongStarterTypeTriangle);
                     if (triangle != null)
                         data.Starters = triangle;
                     else // Fall back on completely random
@@ -844,16 +844,6 @@ namespace PokemonRandomizer.Backend.Randomization
                 tmLearns.Add(pkmn.species, moveList);
             }
 
-            var compTypes = new Dictionary<PokemonSpecies, List<PokemonType>>();
-            foreach (var pkmn in data.Pokemon)
-            {
-                var typeList = new List<PokemonType>();
-                foreach (var t in EnumUtils.GetValues<PokemonType>())
-                    if (IsComplementaryType(pkmn.types, t))
-                        typeList.Add(t);
-                compTypes.Add(pkmn.species, typeList);
-            }
-
             //data.UseUnknownTypeForMoves = true;
             //data.MoveData[(int)Move.TACKLE].type = PokemonType.Unknown;
             #endregion
@@ -890,75 +880,6 @@ namespace PokemonRandomizer.Backend.Randomization
         private IEnumerable<ItemData> DefineItemSet()
         {
             return data.ItemData.Where((i) => i.Item != Item.None);
-        }
-
-        #endregion
-
-        #region Typing
-
-        /// <summary> Return 3 pokemon that form a valid type traingle, or null if none exist in the input set.
-        /// Type triangles require one-way weakness, but allow neutral relations in reverse order (unless strong is true) </summary>
-        private List<PokemonSpecies> RandomTypeTriangle(IEnumerable<PokemonSpecies> possiblePokemon, SpeciesRandomizer.Settings speciesSettings, bool strong = false)
-        {
-            var set = pokeRand.SpeciesWeightedSet(possiblePokemon, data.Starters[0], speciesSettings);
-            if(speciesSettings.RestrictIllegalEvolutions)
-                set.RemoveWhere((p) => !evoUtils.IsPokemonValidLevel(data.PokemonLookup[p], 5));
-            var pool = new WeightedSet<PokemonSpecies>(set);
-            while(pool.Count > 0)
-            {
-                var first = rand.Choice(pool);
-                pool.Remove(first);
-                // Get potential second pokemon
-                var secondPossiblities = pokeRand.SpeciesWeightedSet(set.Items, data.Starters[1], speciesSettings);
-                secondPossiblities.RemoveWhere((p) => !OneWayWeakness(first, p, strong));
-                // Finish the traiangle if possible
-                var triangle = FinishTriangle(set, secondPossiblities, first, speciesSettings, strong);
-                if (triangle != null)
-                    return triangle;
-
-            }
-            return null; // No viable triangle with input spcifications
-        }
-        /// <summary> Helper method for the RandomTypeTriangle method </summary>
-        private List<PokemonSpecies> FinishTriangle(WeightedSet<PokemonSpecies> set, WeightedSet<PokemonSpecies> possibleSeconds, PokemonSpecies first, SpeciesRandomizer.Settings speciesSettings, bool strong)
-        {
-            while (possibleSeconds.Count > 0)
-            {
-                var second = rand.Choice(possibleSeconds);
-                possibleSeconds.Remove(second);
-                // Get third pokemon
-                var thirdPossiblities = pokeRand.SpeciesWeightedSet(set.Items, data.Starters[2], speciesSettings);
-                thirdPossiblities.RemoveWhere((p) => !(OneWayWeakness(second, p, strong) && OneWayWeakness(p, first, strong)));
-                // If at least one works, choose one randomly
-                if (thirdPossiblities.Count > 0)
-                    return new List<PokemonSpecies> { first, second, rand.Choice(thirdPossiblities) };
-            }
-            return null;
-        }
-        /// <summary> Return true if b is weak to a AND a is not weak to b. 
-        /// If strong is true, b must also not be normally effective against a </summary>
-        private bool OneWayWeakness(PokemonSpecies a, PokemonSpecies b, bool strong = true)
-        {
-            var aTypes = data.PokemonLookup[a].types;
-            var bTypes = data.PokemonLookup[b].types;
-            var aVsB = data.TypeDefinitions.GetEffectiveness(aTypes[0], aTypes[1], bTypes[0], bTypes[1]);
-            var bVsA = data.TypeDefinitions.GetEffectiveness(bTypes[0], bTypes[1], aTypes[0], aTypes[1]);
-            if(strong)
-                return aVsB == TypeEffectiveness.SuperEffective && !(bVsA == TypeEffectiveness.SuperEffective || bVsA == TypeEffectiveness.Normal);
-            return aVsB == TypeEffectiveness.SuperEffective && !(bVsA == TypeEffectiveness.SuperEffective);
-        }
-        private bool IsComplementaryType(PokemonType[] pokemonType, PokemonType atkType)
-        {
-            var allTypes = EnumUtils.GetValues<PokemonType>();
-            var weakTypes = allTypes.Where((t) => data.TypeDefinitions.GetEffectiveness(t, t, pokemonType[0], pokemonType[1]) == TypeEffectiveness.SuperEffective);           
-            foreach (var t in weakTypes)
-                if (data.TypeDefinitions.GetEffectiveness(atkType, t) == TypeEffectiveness.SuperEffective)
-                    return true;
-            //var resistTypes = allTypes.Where((t) => data.TypeDefinitions.GetEffectiveness(pokemonType[0], pokemonType[1], t, t) == TypeEffectiveness.NotVeryEffective);
-            //foreach (var t in resistTypes)
-            //    if (data.TypeDefinitions.GetEffectiveness(atkType, t) == TypeEffectiveness.SuperEffective)
-            //        return true;
-            return false;
         }
 
         #endregion

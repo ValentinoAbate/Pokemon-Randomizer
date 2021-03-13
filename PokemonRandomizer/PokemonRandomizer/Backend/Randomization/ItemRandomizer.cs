@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PokemonRandomizer.Backend.Randomization
 {
-    using EnumTypes;
     using DataStructures;
+    using EnumTypes;
     public class ItemRandomizer
     {
         private readonly Random rand;
