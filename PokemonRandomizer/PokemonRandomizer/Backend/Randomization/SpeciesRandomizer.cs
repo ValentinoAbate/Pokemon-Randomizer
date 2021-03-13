@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PokemonRandomizer.Backend.Randomization
 {
+    using DataStructures;
     using EnumTypes;
     using Utilities;
-    using DataStructures;
     public class SpeciesRandomizer
     {
         private readonly EvolutionUtils evoUtils;
@@ -26,7 +24,7 @@ namespace PokemonRandomizer.Backend.Randomization
         #region Species Randomization
 
         /// <summary> Chose a random species from the input set based on the given species settings and the type sample given</summary> 
-        public PokemonSpecies RandomSpeciesTypeGroup(IEnumerable<PokemonSpecies> possiblePokemon, PokemonSpecies pokemon, int level, IEnumerable<PokemonSpecies> typeGroup, Settings.SpeciesSettings settings)
+        public PokemonSpecies RandomSpeciesTypeGroup(IEnumerable<PokemonSpecies> possiblePokemon, PokemonSpecies pokemon, int level, IEnumerable<PokemonSpecies> typeGroup, Settings settings)
         {
             var newSpecies = RandomSpeciesTypeGroup(possiblePokemon, pokemon, typeGroup, settings);
             if (settings.ForceHighestLegalEvolution)
@@ -37,14 +35,14 @@ namespace PokemonRandomizer.Backend.Randomization
             return newSpecies;
         }
         /// <summary> Chose a random species from the input set based on the given species settings and the type sample given</summary> 
-        public PokemonSpecies RandomSpeciesTypeGroup(IEnumerable<PokemonSpecies> possiblePokemon, PokemonSpecies pokemon, IEnumerable<PokemonSpecies> typeGroup, Settings.SpeciesSettings settings)
+        public PokemonSpecies RandomSpeciesTypeGroup(IEnumerable<PokemonSpecies> possiblePokemon, PokemonSpecies pokemon, IEnumerable<PokemonSpecies> typeGroup, Settings settings)
         {
             var combinedWeightings = SpeciesWeightedSetTypeGroup(possiblePokemon, pokemon, typeGroup, settings);
             // Actually choose the species
             return rand.Choice(combinedWeightings);
         }
         /// <summary> Chose a random species from the input set based on the given species settings</summary> 
-        public PokemonSpecies RandomSpecies(IEnumerable<PokemonSpecies> possiblePokemon, PokemonSpecies pokemon, Settings.SpeciesSettings settings)
+        public PokemonSpecies RandomSpecies(IEnumerable<PokemonSpecies> possiblePokemon, PokemonSpecies pokemon, Settings settings)
         {
             var combinedWeightings = SpeciesWeightedSet(possiblePokemon, pokemon, settings);
             // Actually choose the species
@@ -52,7 +50,7 @@ namespace PokemonRandomizer.Backend.Randomization
         }
         /// <summary> Chose a random species from the input set based on the given species settings.
         /// If speciesSettings.DisableIllegalEvolutions is true, scale impossible evolutions down to their less evolved forms </summary> 
-        public PokemonSpecies RandomSpecies(IEnumerable<PokemonSpecies> possiblePokemon, PokemonSpecies pokemon, int level, Settings.SpeciesSettings settings)
+        public PokemonSpecies RandomSpecies(IEnumerable<PokemonSpecies> possiblePokemon, PokemonSpecies pokemon, int level, Settings settings)
         {
             var newSpecies = RandomSpecies(possiblePokemon, pokemon, settings);
             if (settings.ForceHighestLegalEvolution)
@@ -93,7 +91,7 @@ namespace PokemonRandomizer.Backend.Randomization
             return TypeBalanceMetric;
         }
         /// <summary> Get a weighted and culled list of possible pokemon (TODO: MAKE PRIVATE)</summary>
-        public WeightedSet<PokemonSpecies> SpeciesWeightedSet(IEnumerable<PokemonSpecies> possiblePokemon, PokemonSpecies pokemon, Settings.SpeciesSettings settings)
+        public WeightedSet<PokemonSpecies> SpeciesWeightedSet(IEnumerable<PokemonSpecies> possiblePokemon, PokemonSpecies pokemon, Settings settings)
         {
             var combinedWeightings = new WeightedSet<PokemonSpecies>(possiblePokemon);
             // Power level similarity
@@ -135,7 +133,7 @@ namespace PokemonRandomizer.Backend.Randomization
             combinedWeightings.RemoveWhere(p => combinedWeightings[p] <= 0);
             return combinedWeightings;
         }
-        private WeightedSet<PokemonSpecies> SpeciesWeightedSetTypeGroup(IEnumerable<PokemonSpecies> possiblePokemon, PokemonSpecies pokemon, IEnumerable<PokemonSpecies> typeGroup, Settings.SpeciesSettings settings)
+        private WeightedSet<PokemonSpecies> SpeciesWeightedSetTypeGroup(IEnumerable<PokemonSpecies> possiblePokemon, PokemonSpecies pokemon, IEnumerable<PokemonSpecies> typeGroup, Settings settings)
         {
             var combinedWeightings = new WeightedSet<PokemonSpecies>(possiblePokemon);
             // Power level similarity
@@ -195,5 +193,27 @@ namespace PokemonRandomizer.Backend.Randomization
             return combinedWeightings;
         }
         #endregion
+
+        public class Settings
+        {
+            public enum WeightingType
+            {
+                Individual,
+                Group,
+            }
+
+            public bool RestrictIllegalEvolutions { get; set; } = true;
+            public bool ForceHighestLegalEvolution { get; set; } = false;
+            public bool BanLegendaries { get; set; } = false;
+            public WeightingType WeightType { get; set; } = WeightingType.Individual;
+            public float Sharpness { get; set; } = 0;
+            public float Noise { get; set; } = 0;
+            public float PowerScaleSimilarityMod { get; set; } = 0;
+            public bool PowerScaleCull { get; set; } = false;
+            public int PowerThresholdStronger { get; set; } = 100;
+            public int PowerThresholdWeaker { get; set; } = 100;
+            public float TypeSimilarityMod { get; set; } = 0;
+            public bool TypeSimilarityCull { get; set; } = false;
+        }
     }
 }

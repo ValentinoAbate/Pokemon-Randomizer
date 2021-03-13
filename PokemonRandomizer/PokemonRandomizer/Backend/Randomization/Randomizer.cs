@@ -19,6 +19,7 @@ namespace PokemonRandomizer.Backend.Randomization
         private readonly Random rand;
         private readonly EvolutionUtils evoUtils;
         private readonly SpeciesRandomizer pokeRand;
+        private readonly ItemRandomizer itemRand;
         /// <summary>
         /// Create a new randomizer with given data and settings
         /// Input data will be mutated by randomizer calls
@@ -27,13 +28,17 @@ namespace PokemonRandomizer.Backend.Randomization
         {
             this.data = data;
             this.settings = settings;
+            // Initialize random generator
             rand = settings.SetSeed ? new Random(settings.Seed) : new Random();
+            // Base stats getter
             PokemonBaseStats BaseStats(PokemonSpecies p) => data.PokemonLookup[p];
             // Intialize evolution helper
             evoUtils = new EvolutionUtils(rand, BaseStats);
             //Initialize Species Randomizer
             var powerScores = PowerScaling.Calculate(data.Pokemon, settings.TieringOptions);
             pokeRand = new SpeciesRandomizer(evoUtils, rand, BaseStats, powerScores);
+            // Initialze item randomizer
+            itemRand = new ItemRandomizer(rand, i => data.ItemData[(int)i]);
         }
         // Apply mutations based on program settings.
         public RomData Randomize()
@@ -533,7 +538,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 }
                 if (rand.RollSuccess(settings.TradeHeldItemRandChance))
                 {
-                    trade.heldItem = RandomItem(items, trade.heldItem, settings.TradeHeldItemSettings);
+                    trade.heldItem = itemRand.RandomItem(items, trade.heldItem, settings.TradeHeldItemSettings);
                     if (ItemData.IsMail(trade.heldItem))
                     {
                         if (trade.mailNum == 0xFF)
@@ -570,7 +575,7 @@ namespace PokemonRandomizer.Backend.Randomization
                         case GiveItemCommand giveItem:
                             if (giveItem.type == GiveItemCommand.Type.Normal && rand.RollSuccess(settings.FieldItemRandChance))
                             {
-                                giveItem.item = RandomItem(items, giveItem.item, settings.FieldItemSettings);
+                                giveItem.item = itemRand.RandomItem(items, giveItem.item, settings.FieldItemSettings);
                             }
                             break;
                         case GivePokemonCommand givePokemon:
@@ -619,12 +624,12 @@ namespace PokemonRandomizer.Backend.Randomization
                         {
                             if (rand.RollSuccess(settings.HiddenItemRandChance))
                             {
-                                sEvent.hiddenItem = RandomItem(items, sEvent.hiddenItem, settings.HiddenItemSettings);
+                                sEvent.hiddenItem = itemRand.RandomItem(items, sEvent.hiddenItem, settings.HiddenItemSettings);
                             }
                         }
                         else if(rand.RollSuccess(settings.FieldItemRandChance))
                         {
-                            sEvent.hiddenItem = RandomItem(items, sEvent.hiddenItem, settings.FieldItemSettings);
+                            sEvent.hiddenItem = itemRand.RandomItem(items, sEvent.hiddenItem, settings.FieldItemSettings);
                         }
                     }
                 }
@@ -647,7 +652,7 @@ namespace PokemonRandomizer.Backend.Randomization
             {
                 // Get the species randomization settings for wild pokemon
                 var wildSpeciesSettings = settings.WildSpeciesSettings;
-                if (wildSpeciesSettings.WeightType == Settings.SpeciesSettings.WeightingType.Group)
+                if (wildSpeciesSettings.WeightType == SpeciesRandomizer.Settings.WeightingType.Group)
                 {
                     foreach (var encounterSet in data.Encounters)
                     {
@@ -680,7 +685,7 @@ namespace PokemonRandomizer.Backend.Randomization
                     // Get all unique species in the encounter set
                     var species = encounterSet.Select((e) => e.pokemon).Distinct();
                     var mapping = new Dictionary<PokemonSpecies, PokemonSpecies>();
-                    if(wildSpeciesSettings.WeightType == Settings.SpeciesSettings.WeightingType.Group)
+                    if(wildSpeciesSettings.WeightType == SpeciesRandomizer.Settings.WeightingType.Group)
                     {
                         foreach (var s in species)
                             mapping.Add(s, pokeRand.RandomSpeciesTypeGroup(pokemonSet, s, typeSample, wildSpeciesSettings));
@@ -820,7 +825,7 @@ namespace PokemonRandomizer.Backend.Randomization
             // Randomize PC starting item
             if (settings.PcPotionOption == Settings.PcItemOption.Random)
             {
-                data.PcStartItem = RandomItem(items, data.PcStartItem, settings.PcItemSettings);
+                data.PcStartItem = itemRand.RandomItem(items, data.PcStartItem, settings.PcItemSettings);
             }
             else if (settings.PcPotionOption == Settings.PcItemOption.Custom)
             {
@@ -893,7 +898,7 @@ namespace PokemonRandomizer.Backend.Randomization
 
         /// <summary> Return 3 pokemon that form a valid type traingle, or null if none exist in the input set.
         /// Type triangles require one-way weakness, but allow neutral relations in reverse order (unless strong is true) </summary>
-        private List<PokemonSpecies> RandomTypeTriangle(IEnumerable<PokemonSpecies> possiblePokemon, Settings.SpeciesSettings speciesSettings, bool strong = false)
+        private List<PokemonSpecies> RandomTypeTriangle(IEnumerable<PokemonSpecies> possiblePokemon, SpeciesRandomizer.Settings speciesSettings, bool strong = false)
         {
             var set = pokeRand.SpeciesWeightedSet(possiblePokemon, data.Starters[0], speciesSettings);
             if(speciesSettings.RestrictIllegalEvolutions)
@@ -915,7 +920,7 @@ namespace PokemonRandomizer.Backend.Randomization
             return null; // No viable triangle with input spcifications
         }
         /// <summary> Helper method for the RandomTypeTriangle method </summary>
-        private List<PokemonSpecies> FinishTriangle(WeightedSet<PokemonSpecies> set, WeightedSet<PokemonSpecies> possibleSeconds, PokemonSpecies first, Settings.SpeciesSettings speciesSettings, bool strong)
+        private List<PokemonSpecies> FinishTriangle(WeightedSet<PokemonSpecies> set, WeightedSet<PokemonSpecies> possibleSeconds, PokemonSpecies first, SpeciesRandomizer.Settings speciesSettings, bool strong)
         {
             while (possibleSeconds.Count > 0)
             {
@@ -960,7 +965,7 @@ namespace PokemonRandomizer.Backend.Randomization
 
         #region Trainer Randomization
 
-        private void RandomizeTrainerPokemon(Trainer trainer, IEnumerable<PokemonSpecies> pokemonSet, Settings.SpeciesSettings settings)
+        private void RandomizeTrainerPokemon(Trainer trainer, IEnumerable<PokemonSpecies> pokemonSet, SpeciesRandomizer.Settings settings)
         {
             // Class based?
             // Local environment based
@@ -968,7 +973,7 @@ namespace PokemonRandomizer.Backend.Randomization
             var typeSample = trainer.pokemon.Select((p) => p.species).ToArray();
             foreach (var pokemon in trainer.pokemon)
             {
-                if (settings.WeightType == Settings.SpeciesSettings.WeightingType.Group)
+                if (settings.WeightType == SpeciesRandomizer.Settings.WeightingType.Group)
                 {
                     pokemon.species = pokeRand.RandomSpeciesTypeGroup(pokemonSet, pokemon.species, pokemon.level, typeSample, settings);
                 }
@@ -1143,24 +1148,6 @@ namespace PokemonRandomizer.Backend.Randomization
                     ChooseWeather(map, s, false);
                 }
             }
-        }
-
-        private Item RandomItem(IEnumerable<ItemData> possibleItems, Item input, Settings.ItemSettings settings)
-        {
-            // If the item is none, do special randomization
-            if (input == Item.None)
-            {
-                return rand.RollSuccess(settings.NoneToOtherChance) ? rand.Choice(possibleItems).Item : input;
-            }
-            var inputData = data.ItemData[(int)input];
-            if (inputData.IsKeyItem && settings.KeepKeyItems)
-                return input;
-            var itemWeights = new WeightedSet<ItemData>(possibleItems, 1);
-            if(rand.RollSuccess(settings.SamePocketChance))
-            {
-                itemWeights.RemoveWhere((i) => i.pocket != inputData.pocket);
-            }
-            return itemWeights.Count <= 0 ? input : rand.Choice(itemWeights).Item;
         }
     }
 }
