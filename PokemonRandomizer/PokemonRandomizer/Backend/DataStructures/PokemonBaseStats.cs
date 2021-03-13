@@ -9,68 +9,18 @@ namespace PokemonRandomizer.Backend.DataStructures
 {
     public class PokemonBaseStats
     {
-        //Special Pokemon Sets (do better later)
-        public static HashSet<PokemonSpecies> babyPokemon = new HashSet<PokemonSpecies>
-        {
-            PokemonSpecies.AZURILL,
-            PokemonSpecies.CLEFFA,
-            PokemonSpecies.ELEKID,
-            PokemonSpecies.IGGLYBUFF,
-            PokemonSpecies.MAGBY,
-            PokemonSpecies.SMOOCHUM,
-            PokemonSpecies.TOGEPI,
-            PokemonSpecies.PICHU,
-            PokemonSpecies.TYROGUE,
-            PokemonSpecies.WYNAUT,
-        };
-        public static HashSet<PokemonSpecies> legendaries = new HashSet<PokemonSpecies>
-        {
-            PokemonSpecies.ARTICUNO,
-            PokemonSpecies.ZAPDOS,
-            PokemonSpecies.MOLTRES,
-            PokemonSpecies.MEW,
-            PokemonSpecies.MEWTWO,
-            PokemonSpecies.SUICUNE,
-            PokemonSpecies.RAIKOU,
-            PokemonSpecies.ENTEI,
-            PokemonSpecies.LUGIA,
-            PokemonSpecies.HOーOH,
-            PokemonSpecies.CELEBI,
-            PokemonSpecies.REGICE,
-            PokemonSpecies.REGIROCK,
-            PokemonSpecies.REGISTEEL,
-            PokemonSpecies.KYOGRE,
-            PokemonSpecies.GROUDON,
-            PokemonSpecies.RAYQUAZA,
-            PokemonSpecies.DEOXYS,
-            PokemonSpecies.JIRACHI,
-            PokemonSpecies.LATIAS,
-            PokemonSpecies.LATIOS,
-        };
-        public static HashSet<PokemonSpecies> fossilPokemon = new HashSet<PokemonSpecies>
-        {
-            PokemonSpecies.KABUTO,
-            PokemonSpecies.KABUTOPS,
-            PokemonSpecies.OMANYTE,
-            PokemonSpecies.OMASTAR,
-            PokemonSpecies.AERODACTYL,
-            PokemonSpecies.LILEEP,
-            PokemonSpecies.CRADILY,
-            PokemonSpecies.ANORITH,
-            PokemonSpecies.ARMALDO,
-        };
         public PokemonSpecies species;
 
         #region Helper Properties
 
         public bool IsSingleTyped => types[0] == types[1];
-        public bool IsLegendary => legendaries.Contains(species);
+        public bool IsLegendary => species.IsLegendary();
 
         public bool HasRealEvolution => evolvesTo.Count(e => e.IsRealEvolution) > 0;
         public bool IsBasicOrEvolvesFromBaby => IsBasic || EvolvesFromBaby;
         public bool IsBasic => evolvesFrom.Count == 0;
-        public bool IsBaby => babyPokemon.Contains(species);
-        public bool EvolvesFromBaby => evolvesFrom.FirstOrDefault(e => babyPokemon.Contains(e.Pokemon)) != null;
+        public bool IsBaby => species.IsBaby();
+        public bool EvolvesFromBaby => evolvesFrom.FirstOrDefault(e => e.Pokemon.IsBaby()) != null;
 
         #endregion
 

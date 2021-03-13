@@ -34,10 +34,10 @@ namespace PokemonRandomizer.Backend.Randomization
         public RomData Randomize()
         {
             var pokemonSet = DefinePokemonSet();
-            var fossilSet = PokemonBaseStats.fossilPokemon.Where(pokemonSet.Contains).ToHashSet();
+            var fossilSet = pokemonSet.Where(SpeciesUtils.IsFossil).ToHashSet();
             if (settings.CountRelicanthAsFossil && pokemonSet.Contains(PokemonSpecies.RELICANTH))
                 fossilSet.Add(PokemonSpecies.RELICANTH);
-            var babySet = PokemonBaseStats.babyPokemon.Where(pokemonSet.Contains).ToHashSet();
+            var babySet = pokemonSet.Where(SpeciesUtils.IsBaby).ToHashSet();
             var types = DefinePokemonTypes();
             var items = DefineItemSet();
 
@@ -574,7 +574,7 @@ namespace PokemonRandomizer.Backend.Randomization
                             if(givePokemon.type == GivePokemonCommand.Type.Normal && rand.RollSuccess(settings.GiftPokemonRandChance))
                             {
                                 // Should choose from fossil set?
-                                bool fossil = settings.EnsureFossilRevivesAreFossilPokemon && fossilSet.Count > 0 && PokemonBaseStats.fossilPokemon.Contains(givePokemon.pokemon);
+                                bool fossil = settings.EnsureFossilRevivesAreFossilPokemon && fossilSet.Count > 0 && givePokemon.pokemon.IsFossil();
                                 givePokemon.pokemon = RandomSpecies(fossil ? fossilSet : pokemonSet, givePokemon.pokemon, givePokemon.level, settings.GiftSpeciesSettings);
 
                             }
@@ -994,8 +994,8 @@ namespace PokemonRandomizer.Backend.Randomization
             }
             // Remove Legendaries
             if (speciesSettings.BanLegendaries)
-                combinedWeightings.RemoveWhere((p) => PokemonBaseStats.legendaries.Contains(p));
-            combinedWeightings.RemoveWhere((p) => combinedWeightings[p] <= 0);
+                combinedWeightings.RemoveWhere(SpeciesUtils.IsLegendary);
+            combinedWeightings.RemoveWhere(p => combinedWeightings[p] <= 0);
             return combinedWeightings;
         }
         private WeightedSet<PokemonSpecies> SpeciesWeightedSetTypeGroup(IEnumerable<PokemonSpecies> possiblePokemon, PokemonSpecies pokemon, IEnumerable<PokemonSpecies> typeGroup, Settings.SpeciesSettings speciesSettings)
@@ -1053,7 +1053,7 @@ namespace PokemonRandomizer.Backend.Randomization
             }
             // Remove Legendaries
             if (speciesSettings.BanLegendaries)
-                combinedWeightings.RemoveWhere((p) => PokemonBaseStats.legendaries.Contains(p));
+                combinedWeightings.RemoveWhere(SpeciesUtils.IsLegendary);
             combinedWeightings.RemoveWhere((p) => combinedWeightings[p] <= 0);
             return combinedWeightings;
         }

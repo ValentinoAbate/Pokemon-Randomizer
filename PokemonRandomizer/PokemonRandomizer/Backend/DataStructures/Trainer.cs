@@ -15,11 +15,12 @@ namespace PokemonRandomizer.Backend.DataStructures
 
     public class Trainer
     {
+        public const string nullName = "??????";
         public const int nameLength = 12;
         // The all of the class names (mostly for debugging)
         public List<string> classNames;
-        public string Class { get => classNames[trainerClass]; }
-        public double AvgLvl { get => pokemon.Average((p) => p.level); }
+        public string Class { get => trainerClass < classNames.Count ? classNames[trainerClass] : nullName; }
+        public double AvgLvl { get => pokemon.Length > 0 ? pokemon.Average((p) => p.level) : 0; }
         // Actual data
         public int offset;
         public TrainerPokemon.DataType dataType;

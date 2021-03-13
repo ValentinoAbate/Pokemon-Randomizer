@@ -26,12 +26,18 @@ namespace PokemonRandomizer.Backend.DataStructures
 
         #endregion
 
+        #region Learnset Data
+
         public Dictionary<Move, List<int>> LearnLevels { get; } = new Dictionary<Move, List<int>>();
         public Dictionary<Move, double> LearnLevelMeans { get; } = new Dictionary<Move, double>();
         public Dictionary<Move, double> LearnLevelStandardDeviations { get; } = new Dictionary<Move, double>();
         public Dictionary<int, List<int>> LearnLevelPowers { get; } = new Dictionary<int, List<int>>();
         public Dictionary<int, double> LearnLevelPowerMeans { get; } = new Dictionary<int, double>();
         public Dictionary<int, double> LearnLevelPowerStandardDeviations { get; } = new Dictionary<int, double>();
+
+        #endregion
+
+        public Dictionary<string, WeightedSet<PokemonType>> TrainerClassTypeOccurence { get; } = new Dictionary<string, WeightedSet<PokemonType>>();
 
         // Calculates the balancing metrics based on the given data
         public RomMetrics(RomData data)
@@ -108,6 +114,24 @@ namespace PokemonRandomizer.Backend.DataStructures
                 LearnLevelPowerStandardDeviations.Add(kvp.Key, Distribution.StandardDeviation(kvp.Value));
             }
             #endregion
+
+            foreach(var trainer in data.Trainers)
+            {
+                if (!TrainerClassTypeOccurence.ContainsKey(trainer.Class))
+                {
+                    TrainerClassTypeOccurence.Add(trainer.Class, new WeightedSet<PokemonType>());
+                }
+                var set = TrainerClassTypeOccurence[trainer.Class];
+                foreach(var pokemon in trainer.pokemon)
+                {
+                    var pData = data.PokemonLookup[pokemon.species];
+                    set.Add(pData.types[0]);
+                    if (!pData.IsSingleTyped)
+                    {
+                        set.Add(pData.types[1]);
+                    }
+                }
+            }
         }
     }
 }
