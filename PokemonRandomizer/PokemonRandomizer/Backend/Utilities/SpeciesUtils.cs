@@ -4,7 +4,7 @@ namespace PokemonRandomizer.Backend.Utilities
 {
     using EnumTypes;
     /// <summary>
-    /// Utility class used to make special species classifications
+    /// Utility class used to make special species classifications.
     /// Should probably think of a better way to do this later!
     /// </summary>
     public static class SpeciesUtils

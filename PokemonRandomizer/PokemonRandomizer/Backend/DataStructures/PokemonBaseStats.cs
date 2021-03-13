@@ -15,7 +15,6 @@ namespace PokemonRandomizer.Backend.DataStructures
 
         public bool IsSingleTyped => types[0] == types[1];
         public bool IsLegendary => species.IsLegendary();
-
         public bool HasRealEvolution => evolvesTo.Count(e => e.IsRealEvolution) > 0;
         public bool IsBasicOrEvolvesFromBaby => IsBasic || EvolvesFromBaby;
         public bool IsBasic => evolvesFrom.Count == 0;

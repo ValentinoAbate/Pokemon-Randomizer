@@ -17,6 +17,7 @@ namespace PokemonRandomizer.Backend.Randomization
         private readonly RomData data;
         private readonly Settings settings;
         private readonly Random rand;
+        private readonly EvolutionUtils evoUtils;
         private Dictionary<PokemonSpecies, float> powerScores;
         /// <summary>
         /// Create a new randomizer with given data and settings
@@ -29,6 +30,7 @@ namespace PokemonRandomizer.Backend.Randomization
             this.settings = settings;
             //Calculate original power scores
             powerScores = PowerScaling.Calculate(data.Pokemon, settings.TieringOptions);
+            evoUtils = new EvolutionUtils(rand, p => data.PokemonLookup[p]);
         }
         // Apply mutations based on program settings.
         public RomData Randomize()
@@ -150,7 +152,7 @@ namespace PokemonRandomizer.Backend.Randomization
                         if (evolveByLevelUp == null)
                         {
 
-                            newEvo.parameter = EquivalentLevelReq(evo, pokemon) + rand.RandomGaussianInt(0, settings.ImpossibleEvoLevelStandardDev);
+                            newEvo.parameter = evoUtils.EquivalentLevelReq(evo, pokemon) + rand.RandomGaussianInt(0, settings.ImpossibleEvoLevelStandardDev);
                             newEvo.Type = EvolutionType.LevelUp;
                         }
                         else
@@ -691,7 +693,7 @@ namespace PokemonRandomizer.Backend.Randomization
                     {
                         enc.pokemon = mapping[enc.pokemon];
                         if (wildSpeciesSettings.RestrictIllegalEvolutions)
-                            enc.pokemon = CorrectImpossibleEvo(enc.pokemon, enc.level);
+                            enc.pokemon = evoUtils.CorrectImpossibleEvo(enc.pokemon, enc.level);
                     }
                 }
             }
@@ -709,7 +711,7 @@ namespace PokemonRandomizer.Backend.Randomization
                         enc.pokemon = mapping[enc.pokemon];
                         if (wildSpeciesSettings.RestrictIllegalEvolutions)
                         {
-                            enc.pokemon = CorrectImpossibleEvo(enc.pokemon, enc.level);
+                            enc.pokemon = evoUtils.CorrectImpossibleEvo(enc.pokemon, enc.level);
                         }
                     }
                 }
@@ -742,7 +744,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 allBattles.Sort((a, b) => a.AvgLvl.CompareTo(b.AvgLvl));
                 // Split the rival battles into their three different options
                 var starters = new PokemonSpecies[] { allBattles[0].pokemon[0].species, allBattles[1].pokemon[0].species, allBattles[2].pokemon[0].species };
-                var rivalBattles = starters.Select((s) => allBattles.Where((b) => b.pokemon.Any((p) => RelatedToOrSelf(p.species, s)))).ToArray();
+                var rivalBattles = starters.Select((s) => allBattles.Where(b => b.pokemon.Any(p => evoUtils.RelatedToOrSelf(p.species, s)))).ToArray();
                 for (int i = 0; i < rivalBattles.Length; ++i)
                 {
                     var battles = new List<Trainer>(rivalBattles[i]);
@@ -774,7 +776,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 // Set Wally's first pokemon to the catching tut pokemon
                 RandomizeTrainer(firstBattle, pokemonSet, rivalSettings, false);
                 var firstBattleAce = firstBattle.pokemon[firstBattle.pokemon.Length - 1];
-                firstBattleAce.species = MaxEvolution(data.CatchingTutPokemon, firstBattleAce.level, rivalSettings.SpeciesSettings.RestrictIllegalEvolutions);
+                firstBattleAce.species = evoUtils.MaxEvolution(data.CatchingTutPokemon, firstBattleAce.level, rivalSettings.SpeciesSettings.RestrictIllegalEvolutions);
                 // Procedurally generate the rest of Wally's battles
                 RandomizeTrainerReoccurring(firstBattle, wallyBattles, pokemonSet, rivalSettings);
             }
@@ -893,9 +895,9 @@ namespace PokemonRandomizer.Backend.Randomization
         {
             var newSpecies = RandomSpeciesTypeGroup(possiblePokemon, pokemon, typeGroup, speciesSettings);
             if (speciesSettings.ForceHighestLegalEvolution)
-                newSpecies = MaxEvolution(newSpecies, level, speciesSettings.RestrictIllegalEvolutions);
+                newSpecies = evoUtils.MaxEvolution(newSpecies, level, speciesSettings.RestrictIllegalEvolutions);
             else if (speciesSettings.RestrictIllegalEvolutions)
-                newSpecies = CorrectImpossibleEvo(newSpecies, level);
+                newSpecies = evoUtils.CorrectImpossibleEvo(newSpecies, level);
             // Actually choose the species
             return newSpecies;
         }
@@ -919,9 +921,9 @@ namespace PokemonRandomizer.Backend.Randomization
         {
             var newSpecies = RandomSpecies(possiblePokemon, pokemon, speciesSettings);
             if (speciesSettings.ForceHighestLegalEvolution)
-                newSpecies = MaxEvolution(newSpecies, level, speciesSettings.RestrictIllegalEvolutions);
+                newSpecies = evoUtils.MaxEvolution(newSpecies, level, speciesSettings.RestrictIllegalEvolutions);
             else if(speciesSettings.RestrictIllegalEvolutions)
-                newSpecies = CorrectImpossibleEvo(newSpecies, level);
+                newSpecies = evoUtils.CorrectImpossibleEvo(newSpecies, level);
             // Actually choose the species
             return newSpecies;
         }
@@ -1067,7 +1069,7 @@ namespace PokemonRandomizer.Backend.Randomization
         {
             var set = SpeciesWeightedSet(possiblePokemon, data.Starters[0], speciesSettings);
             if(speciesSettings.RestrictIllegalEvolutions)
-                set.RemoveWhere((p) => !IsPokemonValidLevel(data.PokemonLookup[p], 5));
+                set.RemoveWhere((p) => !evoUtils.IsPokemonValidLevel(data.PokemonLookup[p], 5));
             var pool = new WeightedSet<PokemonSpecies>(set);
             while(pool.Count > 0)
             {
@@ -1124,122 +1126,6 @@ namespace PokemonRandomizer.Backend.Randomization
             //    if (data.TypeDefinitions.GetEffectiveness(atkType, t) == TypeEffectiveness.SuperEffective)
             //        return true;
             return false;
-        }
-
-        #endregion
-
-        #region Evolution
-
-        /// <summary> return true if pokemon a evolves into or from pokemon b or IS pokemon b</summary>
-        private bool RelatedToOrSelf(PokemonSpecies a, PokemonSpecies b)
-        {
-            return (a == b) || RelatedTo(a,b);
-        }
-        /// <summary> return true if pokemon a evolves into or from pokemon b</summary>
-        private bool RelatedTo(PokemonSpecies a, PokemonSpecies b)
-        {
-            return EvolvesInto(a, b) || EvolvesFrom(a, b);
-        }
-        /// <summary> return true if pokemon a evolves into pokemon b</summary>
-        private bool EvolvesInto(PokemonSpecies a, PokemonSpecies b)
-        {
-            var stats = data.PokemonLookup[a];
-            var evos = stats.evolvesTo;
-            foreach(var evo in evos)
-            {
-                if (!evo.IsRealEvolution)
-                    continue;
-                if (evo.Pokemon == b)
-                    return true;
-                if (EvolvesInto(evo.Pokemon, b))
-                    return true;
-            }
-            return false;
-        }
-        /// <summary> return true if pokemon a evolves from pokemon b</summary>
-        private bool EvolvesFrom(PokemonSpecies a, PokemonSpecies b)
-        {
-            var stats = data.PokemonLookup[a];
-            var evos = stats.evolvesFrom;
-            foreach (var evo in evos)
-            {
-                if (!evo.IsRealEvolution)
-                    continue;
-                if (evo.Pokemon == b)
-                    return true;
-                if (EvolvesFrom(evo.Pokemon, b))
-                    return true;
-            }
-            return false;
-        }
-        /// If the pokemon is an invalid level due to evolution state, revert to an earlier evolution
-        private PokemonSpecies CorrectImpossibleEvo(PokemonSpecies species, int level)
-        {
-            var pokemon = data.PokemonLookup[species];
-            while (!IsPokemonValidLevel(pokemon, level))
-            {
-                // Choose a random element from the pokemon this pokemon evolves from
-                pokemon = data.PokemonLookup[rand.Choice(pokemon.evolvesFrom).Pokemon];
-            }
-            return pokemon.species;
-        }
-        /// <summary> returns false if the pokemon is an invalid level. 
-        /// (due to not being high enough level to evolve to the current species) </summary>
-        private bool IsPokemonValidLevel(PokemonBaseStats pokemon, int level)
-        {
-            if (pokemon.IsBasic) // basic pokemon
-                return true;
-            // Is there at least one valid evolution
-            foreach (var evo in pokemon.evolvesFrom)
-            {
-                if (EquivalentLevelReq(evo, pokemon) <= level)
-                    return true;
-            }
-            return false;
-        }
-        /// <summary> Returns the equivalent required level of an evolution for a give pokemon (including non-leveling evolutions if applicable) </summary>
-        public int EquivalentLevelReq(Evolution evo, PokemonBaseStats pokemon)
-        {
-            if (evo.EvolvesByLevel)
-                return evo.parameter;
-            if(evo.EvolvesByFriendship && pokemon.IsBaby)
-            {
-                if (data.PokemonLookup[evo.Pokemon].HasRealEvolution)
-                    return 10;
-                return 18;
-            }
-            // For any other type Calculate level based on evolution tree
-            if (pokemon.evolvesFrom.Count > 0)
-            {
-                return EquivalentLevelReq(pokemon.evolvesFrom[0], data.PokemonLookup[pokemon.evolvesFrom[0].Pokemon]) + 12;
-            }
-            else
-            {
-                int baseLevel = 32;
-                // Is this pokemon a middle stage evolution?
-                if (data.PokemonLookup[evo.Pokemon].HasRealEvolution)
-                    baseLevel -= 8;
-                return baseLevel;
-            }
-        }
-
-        /// <summary> Return the maximum evolved form of the pokemon at the given level.
-        /// returns a lower form if the pokemon is an invalid level.
-        /// returns a random branch for evolution trees that branch </summary>
-        private PokemonSpecies MaxEvolution(PokemonSpecies p, int level, bool restrictIllegalEvolutions)
-        {
-            var stats = data.PokemonLookup[p];
-            // If illegal evolutions are disabled, and the pokemon is an illegal level, correct the impossible evolution
-            if (restrictIllegalEvolutions && !IsPokemonValidLevel(stats, level))
-                return CorrectImpossibleEvo(p, level);
-            // Else evolve the pokemon until you can't anymore
-            var evos = stats.evolvesTo.Where((evo) => evo.Type != EvolutionType.None && EquivalentLevelReq(evo, stats) <= level);
-            while (evos.Count() > 0)
-            {
-                stats = data.PokemonLookup[rand.Choice(evos).Pokemon];
-                evos = stats.evolvesTo.Where((evo) => evo.Type != EvolutionType.None && EquivalentLevelReq(evo, stats) <= level);
-            }
-            return stats.species;
         }
 
         #endregion
@@ -1340,7 +1226,7 @@ namespace PokemonRandomizer.Backend.Randomization
                     // Migrate Ace pokemon from the last battle
                     var currAce = battle.pokemon[battle.pokemon.Length - 1];
                     var lastAce = lastBattle.pokemon[lastBattle.pokemon.Length - 1];
-                    currAce.species = MaxEvolution(lastAce.species, currAce.level, speciesSettings.RestrictIllegalEvolutions);
+                    currAce.species = evoUtils.MaxEvolution(lastAce.species, currAce.level, speciesSettings.RestrictIllegalEvolutions);
                     if (currAce.HasSpecialMoves)
                     {
                         currAce.moves = MovesetGenerator.SmartMoveSet(rand, data, data.PokemonLookup[currAce.species], currAce.level);
@@ -1361,7 +1247,7 @@ namespace PokemonRandomizer.Backend.Randomization
                     {
                         var currPokemon = battle.pokemon[battleSize - (i + 1)];
                         var lastPokemon = lastBattle.pokemon[lastBattleSize - (i + 1)];
-                        currPokemon.species = MaxEvolution(lastPokemon.species, currPokemon.level, speciesSettings.RestrictIllegalEvolutions);
+                        currPokemon.species = evoUtils.MaxEvolution(lastPokemon.species, currPokemon.level, speciesSettings.RestrictIllegalEvolutions);
                         if(currPokemon.HasSpecialMoves)
                         {
                             currPokemon.moves = MovesetGenerator.SmartMoveSet(rand, data, data.PokemonLookup[currPokemon.species], currPokemon.level);
