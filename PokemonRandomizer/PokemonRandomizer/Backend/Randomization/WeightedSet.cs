@@ -23,18 +23,20 @@ namespace PokemonRandomizer.Backend.Randomization
             }
         }
 
-        private readonly Dictionary<T, float> items = new Dictionary<T, float>();
+        private readonly Dictionary<T, float> items;
 
         #region Constructors
-        public WeightedSet() { }
+        public WeightedSet() { items = new Dictionary<T, float>(); }
         public WeightedSet(WeightedSet<T> toCopy) : this(toCopy.items) { }
         public WeightedSet(IEnumerable<T> items, float weight = 0)
         {
+            this.items = new Dictionary<T, float>(items.Count());
             foreach (var item in items)
                 Add(item, weight);
         }
         public WeightedSet(IEnumerable<T> items, IEnumerable<float> weights)
         {
+            this.items = new Dictionary<T, float>(items.Count());
             if (items.Count() != weights.Count())
                 throw new Exception("Weighted Set Construction Exception: Items and weights are not the same length");
             IEnumerator<float> e = weights.GetEnumerator();
@@ -47,6 +49,7 @@ namespace PokemonRandomizer.Backend.Randomization
         }
         public WeightedSet(IEnumerable<KeyValuePair<T, float>> pairs)
         {
+            items = new Dictionary<T, float>(pairs.Count());
             foreach (var kvp in pairs)
                 Add(kvp.Key, kvp.Value);
         }
@@ -55,6 +58,7 @@ namespace PokemonRandomizer.Backend.Randomization
         /// </summary>
         public WeightedSet(IEnumerable<T> items, Func<T, float> weight)
         {
+            this.items = new Dictionary<T, float>(items.Count());
             foreach (var item in items)
                 Add(item, weight(item));
         }
