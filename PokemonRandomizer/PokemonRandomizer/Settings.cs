@@ -322,19 +322,28 @@ namespace PokemonRandomizer
             AreaOneToOne,
             GlobalOneToOne,
         }
-        public WildPokemonOption WildPokemonSetting => WildPokemonOption.AreaOneToOne;
-        public PkmnRandomizer.Settings WildSpeciesSettings { get; } = new PkmnRandomizer.Settings()
+        public WildEncounterRandomizer.Strategy EncounterStrategy => WildEncounterRandomizer.Strategy.AreaOneToOne;
+        public PkmnRandomizer.Settings EncounterSettings { get; } = new PkmnRandomizer.Settings()
         {
             BanLegendaries = true,
-            WeightType = PkmnRandomizer.Settings.WeightingType.Group,
-            //Sharpness = 1.1f,
             Noise = 0.001f,
-            PowerScaleSimilarityMod = 0.01f,
-            PowerScaleCull = true,
-            PowerThresholdStronger = 300,
-            PowerThresholdWeaker = 200,
-            TypeSimilarityMod = 1f,
-            TypeSimilarityCull = false,
+        };
+
+        public MetricData[] EncounterMetrics { get; } = new MetricData[]
+        {
+            new MetricData(PokemonMetric.typeEncounterSet, 0),
+            new MetricData(PokemonMetric.typeEncounterBankType, 0, 3f, 0.1f)
+            { 
+                Flags = new List<string> 
+                { 
+                    EncounterSet.Type.Surf.ToString(),
+                    EncounterSet.Type.Fish.ToString(),
+                    EncounterSet.Type.RockSmash.ToString(),
+                    EncounterSet.Type.Headbutt.ToString(),
+                }
+            },
+            new MetricData(PokemonMetric.typeIndividual, 1),
+            new MetricData(PokemonMetric.powerIndividual, 1),
         };
         #endregion
 
@@ -363,12 +372,20 @@ namespace PokemonRandomizer
             PowerScaleSimilarityMod = 0.1f,
             TypeSimilarityMod = 0f,
         };
+        public MetricData[] TradeSpeciesMetricsGive { get; } = new MetricData[]
+        {
+            new MetricData(PokemonMetric.powerIndividual)
+        };
         public PkmnRandomizer.Settings TradeSpeciesSettingsReceive { get; } = new PkmnRandomizer.Settings()
         {
             BanLegendaries = true,
             Noise = 1f,
             PowerScaleSimilarityMod = 0.1f,
             TypeSimilarityMod = 0f,
+        };
+        public MetricData[] TradeSpeciesMetricsRecieve { get; } = new MetricData[]
+        {
+            new MetricData(PokemonMetric.powerIndividual)
         };
         public double TradeHeldItemRandChance => 1;
         public ItemRandomizer.Settings TradeHeldItemSettings { get; } = new ItemRandomizer.Settings()
@@ -394,7 +411,7 @@ namespace PokemonRandomizer
             Pokemon.KECLEON,
             Pokemon.KECLEON,
         };
-        public PkmnRandomizer.Settings StarterSpeciesSettings { get; } = new PkmnRandomizer.Settings()
+        public PkmnRandomizer.Settings StarterPokemonSettings { get; } = new PkmnRandomizer.Settings()
         {
             BanLegendaries = true,
             Noise = 1f,
@@ -405,6 +422,7 @@ namespace PokemonRandomizer
             TypeSimilarityMod = 0,
             TypeSimilarityCull = false,
         };
+        public PokemonMetric[] StarterMetricData { get; } = new PokemonMetric[0];
         /// <summary>
         /// Ensures that all starters have an attacking move at lvl1
         /// Currently just makes all starters additionally have tackle
@@ -577,9 +595,8 @@ namespace PokemonRandomizer
                 KeepAce,
                 KeepParty,
             }
-
             public enum BattleTypePcgStrategy
-            { 
+            {
                 None,
                 KeepSameType,
             }
@@ -587,6 +604,7 @@ namespace PokemonRandomizer
             public double PokemonRandChance { get; set; } = 1;
             public PokemonPcgStrategy PokemonStrategy { get; set; } = PokemonPcgStrategy.KeepParty;
             public PkmnRandomizer.Settings PokemonSettings { get; set; } = new PkmnRandomizer.Settings();
+            public MetricData[] PokemonMetrics { get; set; } = new MetricData[] { new MetricData(PokemonMetric.typeIndividual) };
             public double BattleTypeRandChance { get; set; } = 1;
             public BattleTypePcgStrategy BattleTypeStrategy { get; set; } = BattleTypePcgStrategy.KeepSameType;
             public double DoubleBattleChance { get; set; } = 1;
@@ -596,6 +614,32 @@ namespace PokemonRandomizer
             public bool MakeSoloPokemonBattlesSingle => true;
         }
 
+        public class MetricData
+        {
+            public float Filter { get; }
+            public float Sharpness { get; }
+            public int Priority { get; }
+            public string DataSource { get; }
+            public List<string> Flags { get; set; } = new List<string>();
+
+            public MetricData(string dataSource, int priority = 0, float sharpness = 1, float filter = 0)
+            {
+                DataSource = dataSource;
+                Priority = priority;
+                Filter = filter;
+                Sharpness = sharpness;
+            }
+        }
+
+        public abstract class PokemonMetric
+        {
+            public const string typeIndividual = nameof(typeIndividual);
+            public const string typeEncounterSet = nameof(typeEncounterSet);
+            public const string typeEncounterBankType = nameof(typeEncounterBankType);
+            public const string typeTrainerParty = nameof(typeTrainerParty);
+            public const string typeTrainerClass = nameof(typeTrainerClass);
+            public const string powerIndividual = nameof(powerIndividual);
+        }
         #endregion
     }
 }

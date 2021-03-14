@@ -27,6 +27,7 @@ namespace PokemonRandomizer.Backend.Randomization
 
         #region Constructors
         public WeightedSet() { items = new Dictionary<T, float>(); }
+        public WeightedSet(int capacity) { items = new Dictionary<T, float>(capacity); }
         public WeightedSet(WeightedSet<T> toCopy) : this(toCopy.items) { }
         public WeightedSet(IEnumerable<T> items, float weight = 0)
         {
@@ -64,11 +65,18 @@ namespace PokemonRandomizer.Backend.Randomization
         }
         #endregion
 
-        public void Add(WeightedSet<T> set, float multiplier = 1)
+        public void Add(WeightedSet<T> set)
+        {
+            foreach (var item in set.Items)
+                Add(item, set[item]);
+        }
+
+        public void Add(WeightedSet<T> set, float multiplier)
         {
             foreach (var item in set.Items)
                 Add(item, set[item] * multiplier);
         }
+
         public void Add(T item, float weight = 1)
         {
             if (items.ContainsKey(item))

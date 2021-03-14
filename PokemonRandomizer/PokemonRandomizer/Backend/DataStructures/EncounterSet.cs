@@ -8,6 +8,7 @@ namespace PokemonRandomizer.Backend.DataStructures
     {
         public enum Type
         {
+            None = -1,
             Grass,
             Surf,
             Fish,

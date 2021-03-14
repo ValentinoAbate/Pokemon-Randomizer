@@ -9,6 +9,9 @@ namespace PokemonRandomizer.Backend.Randomization
     using Utilities;
     public class PkmnRandomizer
     {
+        public const string powerDataSource = "power";
+        public const string typeDataSource = "type";
+        public const string typeGroupDataSource = typeDataSource + "group";
         private readonly EvolutionUtils evoUtils;
         private readonly Random rand;
         private readonly Func<Pokemon, PokemonBaseStats> baseStats;
@@ -23,6 +26,67 @@ namespace PokemonRandomizer.Backend.Randomization
         }
 
         #region Pokemon Randomization
+
+        public Pokemon RandomPokemon(IEnumerable<Pokemon> all, IEnumerable<Metric<Pokemon>> data, Settings settings, int level)
+        {
+            // Get a random pokemon (could possibly prefilter for level later to even out evolution stage odds unbalance)
+            var newPokemon = RandomPokemon(all, data, settings);
+            // Restrict the evolution if specified in the settings
+            if (settings.ForceHighestLegalEvolution)
+                newPokemon = evoUtils.MaxEvolution(newPokemon, level, settings.RestrictIllegalEvolutions);
+            else if (settings.RestrictIllegalEvolutions)
+                newPokemon = evoUtils.CorrectImpossibleEvo(newPokemon, level);
+            return newPokemon;
+        }
+        public Pokemon RandomPokemon(IEnumerable<Pokemon> all, IEnumerable<Metric<Pokemon>> data, Settings settings)
+        {
+            // If we roll on the noise
+            if (rand.RollSuccess(settings.Noise))
+            {
+                if (settings.BanLegendaries) // Remove legendaries if banned
+                    return rand.Choice(all.Where(p => !p.IsLegendary()));
+                return rand.Choice(all); 
+            }
+            // Process the metrics
+            var set = Metric<Pokemon>.ProcessGroup(data);
+            if (settings.BanLegendaries) // Remove legendaries if banned
+            {
+                set.RemoveWhere(PokemonUtils.IsLegendary);
+            }
+            return rand.Choice(set);
+        }
+
+        public WeightedSet<Pokemon> TypeSimilarityIndividual(IEnumerable<Pokemon> all, Pokemon pokemon)
+        {
+            var set = PokemonMetrics.TypeSimilarity(all, pokemon, baseStats);
+            set.Multiply(GetTypeBalanceFunction(all)(pokemon));
+            return set;
+        }
+
+        public WeightedSet<Pokemon> TypeSimilarityGroup(IEnumerable<Pokemon> all, Pokemon pokemon, WeightedSet<PokemonType> typeData)
+        {
+            var set = new WeightedSet<Pokemon>(all, 1);
+            set.Multiply(GetTypeBalanceFunction(all)(pokemon));
+            float TypeMultiplier(Pokemon p)
+            {
+                var data = baseStats(p);
+                float type1Val = typeData.Contains(data.types[0]) ? typeData[data.types[0]] : 0;
+                if (data.IsSingleTyped) // If single typed, just return the first type value
+                {
+                    return type1Val;
+                }
+                // For dual-typed pokemon, return the sum of their type values
+                return type1Val + (typeData.Contains(data.types[1]) ? typeData[data.types[1]] : 0);
+            }
+            set.Multiply(TypeMultiplier);
+            set.RemoveWhere(p => set[p] <= 0);
+            return set;
+        }
+
+        public WeightedSet<Pokemon> PowerSimilarityIndividual(IEnumerable<Pokemon> all, Pokemon pokemon)
+        {
+            return PokemonMetrics.PowerSimilarity(all, powerScores, pokemon, 300, 300);
+        }
 
         /// <summary> Chose a random species from the input set based on the given species settings and the type sample given</summary> 
         public Pokemon RandomTypeGroup(IEnumerable<Pokemon> possiblePokemon, Pokemon pokemon, int level, IEnumerable<Pokemon> typeGroup, Settings settings)
@@ -62,20 +126,25 @@ namespace PokemonRandomizer.Backend.Randomization
             return newPokemon;
         }
 
-        private Func<Pokemon, float> GetTypeBalanceFunction(IEnumerable<Pokemon> possiblePokemon)
+        /// <summary>
+        /// Function that balance weightings with the occurence rate of the types in all
+        /// Makes water types less likely to dominate just cause there are so many of them, etc
+        /// </summary>
+        private Func<Pokemon, float> GetTypeBalanceFunction(IEnumerable<Pokemon> all)
         {
             var typeOccurenceLookup = new Dictionary<PokemonType, float>();
             foreach (var type in EnumUtils.GetValues<PokemonType>())
             {
                 typeOccurenceLookup.Add(type, 0);
             }
-            foreach (var pokemon in possiblePokemon)
+            foreach (var pokemon in all)
             {
                 var pData = baseStats(pokemon);
                 typeOccurenceLookup[pData.types[0]] += 1;
-                if (pData.IsSingleTyped)
-                    continue;
-                typeOccurenceLookup[pData.types[1]] += 1;
+                if (!pData.IsSingleTyped)
+                {
+                    typeOccurenceLookup[pData.types[1]] += 1;
+                }
             }
             foreach (var type in EnumUtils.GetValues<PokemonType>())
             {

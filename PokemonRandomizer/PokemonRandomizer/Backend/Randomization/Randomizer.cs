@@ -20,6 +20,7 @@ namespace PokemonRandomizer.Backend.Randomization
         private readonly EvolutionUtils evoUtils;
         private readonly PkmnRandomizer pokeRand;
         private readonly ItemRandomizer itemRand;
+        private readonly WildEncounterRandomizer encounterRand;
         /// <summary>
         /// Create a new randomizer with given data and settings
         /// Input data will be mutated by randomizer calls
@@ -37,8 +38,10 @@ namespace PokemonRandomizer.Backend.Randomization
             //Initialize Species Randomizer
             var powerScores = PowerScaling.Calculate(data.Pokemon, settings.TieringOptions);
             pokeRand = new PkmnRandomizer(evoUtils, rand, BaseStats, powerScores);
-            // Initialze item randomizer
+            // Initialize item randomizer
             itemRand = new ItemRandomizer(rand, i => data.ItemData[(int)i]);
+            // Initialize encounter randomizer
+            encounterRand = new WildEncounterRandomizer(pokeRand, evoUtils, data.Metrics, BaseStats);
         }
         // Apply mutations based on program settings.
         public RomData Randomize()
@@ -484,7 +487,7 @@ namespace PokemonRandomizer.Backend.Randomization
             #region Starters
             if (settings.StarterSetting != Settings.StarterPokemonOption.Unchanged)
             {
-                var speciesSettings = settings.StarterSpeciesSettings;
+                var speciesSettings = settings.StarterPokemonSettings;
                 if(settings.StarterSetting == Settings.StarterPokemonOption.Random)
                 {
                     for(int i = 0; i < data.Starters.Count; ++i)
@@ -646,82 +649,9 @@ namespace PokemonRandomizer.Backend.Randomization
             }
             #endregion
 
-            #region Wild Pokemon (may happen during maps later)
+            #region Wild Encounters
 
-            if (settings.WildPokemonSetting == Settings.WildPokemonOption.Individual)
-            {
-                // Get the species randomization settings for wild pokemon
-                var wildSpeciesSettings = settings.WildSpeciesSettings;
-                if (wildSpeciesSettings.WeightType == PkmnRandomizer.Settings.WeightingType.Group)
-                {
-                    foreach (var encounterSet in data.Encounters)
-                    {
-                        var typeSample = encounterSet.Select((e) => e.pokemon).ToArray(); //.Distinct();
-                        foreach (var enc in encounterSet)
-                        {
-                            enc.pokemon = pokeRand.RandomTypeGroup(pokemonSet, enc.pokemon, enc.level, typeSample, wildSpeciesSettings);
-                        }
-                    }
-                }
-                else // Individual Weight Type
-                {
-                    foreach (var encounterSet in data.Encounters)
-                    {
-                        foreach (var enc in encounterSet)
-                        {
-                            enc.pokemon = pokeRand.Random(pokemonSet, enc.pokemon, enc.level, wildSpeciesSettings);
-                        }
-                    }
-                }
-
-            }
-            else if(settings.WildPokemonSetting == Settings.WildPokemonOption.AreaOneToOne)
-            {
-                // Get the species randomization settings for wild pokemon
-                var wildSpeciesSettings = settings.WildSpeciesSettings;
-                foreach (var encounterSet in data.Encounters)
-                {
-                    var typeSample = encounterSet.Select((e) => e.pokemon).ToArray(); //.Distinct();
-                    // Get all unique species in the encounter set
-                    var species = encounterSet.Select((e) => e.pokemon).Distinct();
-                    var mapping = new Dictionary<Pokemon, Pokemon>();
-                    if(wildSpeciesSettings.WeightType == PkmnRandomizer.Settings.WeightingType.Group)
-                    {
-                        foreach (var s in species)
-                            mapping.Add(s, pokeRand.RandomTypeGroup(pokemonSet, s, typeSample, wildSpeciesSettings));
-                    }
-                    else // Weight type is individual
-                    {
-                        foreach (var s in species)
-                            mapping.Add(s, pokeRand.Random(pokemonSet, s, wildSpeciesSettings));
-                    }
-                    foreach (var enc in encounterSet)
-                    {
-                        enc.pokemon = mapping[enc.pokemon];
-                        if (wildSpeciesSettings.RestrictIllegalEvolutions)
-                            enc.pokemon = evoUtils.CorrectImpossibleEvo(enc.pokemon, enc.level);
-                    }
-                }
-            }
-            else if(settings.WildPokemonSetting == Settings.WildPokemonOption.GlobalOneToOne)
-            {
-                // Get the species randomization settings for wild pokemon
-                var wildSpeciesSettings = settings.WildSpeciesSettings;
-                var mapping = new Dictionary<Pokemon, Pokemon>();
-                foreach (var s in pokemonSet)
-                    mapping.Add(s, pokeRand.Random(pokemonSet, s, wildSpeciesSettings));
-                foreach (var encounterSet in data.Encounters)
-                {
-                    foreach (var enc in encounterSet)
-                    {
-                        enc.pokemon = mapping[enc.pokemon];
-                        if (wildSpeciesSettings.RestrictIllegalEvolutions)
-                        {
-                            enc.pokemon = evoUtils.CorrectImpossibleEvo(enc.pokemon, enc.level);
-                        }
-                    }
-                }
-            }
+            encounterRand.RandomizeEncounters(pokemonSet, data.Encounters, settings.EncounterSettings, settings.EncounterMetrics, settings.EncounterStrategy);
 
             #endregion
 

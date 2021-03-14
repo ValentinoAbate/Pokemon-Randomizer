@@ -39,6 +39,8 @@ namespace PokemonRandomizer.Backend.DataStructures
 
         public Dictionary<string, WeightedSet<PokemonType>> TrainerClassTypeOccurence { get; } = new Dictionary<string, WeightedSet<PokemonType>>();
 
+        public Dictionary<EncounterSet.Type, WeightedSet<PokemonType>> EncounterSlotTypeOccurence { get; } = new Dictionary<EncounterSet.Type, WeightedSet<PokemonType>>();
+
         // Calculates the balancing metrics based on the given data
         public RomMetrics(RomData data)
         {
@@ -119,12 +121,30 @@ namespace PokemonRandomizer.Backend.DataStructures
             {
                 if (!TrainerClassTypeOccurence.ContainsKey(trainer.Class))
                 {
-                    TrainerClassTypeOccurence.Add(trainer.Class, new WeightedSet<PokemonType>());
+                    TrainerClassTypeOccurence.Add(trainer.Class, new WeightedSet<PokemonType>(16));
                 }
                 var set = TrainerClassTypeOccurence[trainer.Class];
                 foreach(var pokemon in trainer.pokemon)
                 {
                     var pData = data.PokemonLookup[pokemon.species];
+                    set.Add(pData.types[0]);
+                    if (!pData.IsSingleTyped)
+                    {
+                        set.Add(pData.types[1]);
+                    }
+                }
+            }
+
+            foreach(var encounter in data.Encounters)
+            {
+                if (!EncounterSlotTypeOccurence.ContainsKey(encounter.type))
+                {
+                    EncounterSlotTypeOccurence.Add(encounter.type, new WeightedSet<PokemonType>(16));
+                }
+                var set = EncounterSlotTypeOccurence[encounter.type];
+                foreach(var enc in encounter)
+                {
+                    var pData = data.PokemonLookup[enc.pokemon];
                     set.Add(pData.types[0]);
                     if (!pData.IsSingleTyped)
                     {
