@@ -11,16 +11,14 @@ namespace PokemonRandomizer.Backend.Randomization
         private readonly PkmnRandomizer pokeRand;
         private readonly Random rand;
         private readonly EvolutionUtils evoUtils;
-        private readonly Func<Pokemon, PokemonBaseStats> baseStats;
-        private readonly Func<Move, MoveData> moveData;
+        private readonly IDataTranslator dataT;
 
-        public TrainerRandomizer(Random rand, PkmnRandomizer pokeRand, EvolutionUtils evoUtils, Func<Pokemon, PokemonBaseStats> baseStats, Func<Move, MoveData> moveData)
+        public TrainerRandomizer(Random rand, PkmnRandomizer pokeRand, EvolutionUtils evoUtils, IDataTranslator dataT)
         {
             this.pokeRand = pokeRand;
             this.rand = rand;
             this.evoUtils = evoUtils;
-            this.baseStats = baseStats;
-            this.moveData = moveData;
+            this.dataT = dataT;
         }
 
         #region Trainer Randomization
@@ -46,7 +44,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 if (pokemon.HasSpecialMoves)
                 {
                     //pokemon.moves = MovesetGenerator.DefaultMoveset(data.PokemonLookup[pokemon.species], pokemon.level);
-                    pokemon.moves = MovesetGenerator.SmartMoveSet(rand, baseStats(pokemon.species), pokemon.level, moveData, baseStats);
+                    pokemon.moves = MovesetGenerator.SmartMoveSet(rand, dataT.GetBaseStats(pokemon.species), pokemon.level, dataT);
                 }
             }
         }
@@ -122,7 +120,7 @@ namespace PokemonRandomizer.Backend.Randomization
                     currAce.species = evoUtils.MaxEvolution(lastAce.species, currAce.level, speciesSettings.RestrictIllegalEvolutions);
                     if (currAce.HasSpecialMoves)
                     {
-                        currAce.moves = MovesetGenerator.SmartMoveSet(rand, baseStats(currAce.species), currAce.level, moveData, baseStats);
+                        currAce.moves = MovesetGenerator.SmartMoveSet(rand, dataT.GetBaseStats(currAce.species), currAce.level, dataT);
                     }
                     lastBattle = battle;
                 };
@@ -143,7 +141,7 @@ namespace PokemonRandomizer.Backend.Randomization
                         currPokemon.species = evoUtils.MaxEvolution(lastPokemon.species, currPokemon.level, speciesSettings.RestrictIllegalEvolutions);
                         if (currPokemon.HasSpecialMoves)
                         {
-                            currPokemon.moves = MovesetGenerator.SmartMoveSet(rand, baseStats(currPokemon.species), currPokemon.level, moveData, baseStats);
+                            currPokemon.moves = MovesetGenerator.SmartMoveSet(rand, dataT.GetBaseStats(currPokemon.species), currPokemon.level, dataT);
                         }
                     }
                     lastBattle = battle;

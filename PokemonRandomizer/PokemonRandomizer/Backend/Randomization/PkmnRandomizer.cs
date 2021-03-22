@@ -14,14 +14,14 @@ namespace PokemonRandomizer.Backend.Randomization
         public const string typeGroupDataSource = typeDataSource + "group";
         private readonly EvolutionUtils evoUtils;
         private readonly Random rand;
-        private readonly Func<Pokemon, PokemonBaseStats> baseStats;
+        private readonly IDataTranslator dataT;
         private readonly Dictionary<Pokemon, float> powerScores;
 
-        public PkmnRandomizer(EvolutionUtils evoUtils, Random rand, Func<Pokemon, PokemonBaseStats> baseStats, Dictionary<Pokemon, float> powerScores)
+        public PkmnRandomizer(EvolutionUtils evoUtils, Random rand, IDataTranslator dataT, Dictionary<Pokemon, float> powerScores)
         {
             this.evoUtils = evoUtils;
             this.rand = rand;
-            this.baseStats = baseStats;
+            this.dataT = dataT;
             this.powerScores = powerScores;
         }
 
@@ -58,7 +58,7 @@ namespace PokemonRandomizer.Backend.Randomization
 
         public WeightedSet<Pokemon> TypeSimilarityIndividual(IEnumerable<Pokemon> all, Pokemon pokemon)
         {
-            var set = PokemonMetrics.TypeSimilarity(all, pokemon, baseStats);
+            var set = PokemonMetrics.TypeSimilarity(all, pokemon, dataT);
             set.Multiply(GetTypeBalanceFunction(all)(pokemon));
             return set;
         }
@@ -69,7 +69,7 @@ namespace PokemonRandomizer.Backend.Randomization
             set.Multiply(GetTypeBalanceFunction(all)(pokemon));
             float TypeMultiplier(Pokemon p)
             {
-                var data = baseStats(p);
+                var data = dataT.GetBaseStats(p);
                 float type1Val = typeData.Contains(data.types[0]) ? typeData[data.types[0]] : 0;
                 if (data.IsSingleTyped) // If single typed, just return the first type value
                 {
@@ -139,7 +139,7 @@ namespace PokemonRandomizer.Backend.Randomization
             }
             foreach (var pokemon in all)
             {
-                var pData = baseStats(pokemon);
+                var pData = dataT.GetBaseStats(pokemon);
                 typeOccurenceLookup[pData.types[0]] += 1;
                 if (!pData.IsSingleTyped)
                 {
@@ -153,7 +153,7 @@ namespace PokemonRandomizer.Backend.Randomization
             }
             float TypeBalanceMetric(Pokemon s)
             {
-                var pData = baseStats(s);
+                var pData = dataT.GetBaseStats(s);
                 if (pData.IsSingleTyped)
                     return typeOccurenceLookup[pData.types[0]];
                 return (typeOccurenceLookup[pData.types[0]] + typeOccurenceLookup[pData.types[1]]) / 2;
@@ -176,7 +176,7 @@ namespace PokemonRandomizer.Backend.Randomization
             // Type similarity
             if (settings.TypeSimilarityMod > 0)
             {
-                var typeWeighting = PokemonMetrics.TypeSimilarity(combinedWeightings.Items, pokemon, baseStats);
+                var typeWeighting = PokemonMetrics.TypeSimilarity(combinedWeightings.Items, pokemon, dataT);
                 typeWeighting.Multiply(GetTypeBalanceFunction(combinedWeightings.Items)(pokemon));
                 typeWeighting.Normalize();
                 combinedWeightings.Add(typeWeighting, settings.TypeSimilarityMod);
@@ -219,16 +219,16 @@ namespace PokemonRandomizer.Backend.Randomization
             if (settings.TypeSimilarityMod > 0)
             {
                 var typeBalanceMetric = GetTypeBalanceFunction(combinedWeightings.Items);
-                var typeWeighting = PokemonMetrics.TypeSimilarity(combinedWeightings.Items, pokemon, baseStats);
+                var typeWeighting = PokemonMetrics.TypeSimilarity(combinedWeightings.Items, pokemon, dataT);
                 typeWeighting.Multiply(typeBalanceMetric);
                 foreach (var sample in typeGroup)
                 {
-                    typeWeighting.Add(PokemonMetrics.TypeSimilarity(combinedWeightings.Items, sample, baseStats), typeBalanceMetric(sample));
+                    typeWeighting.Add(PokemonMetrics.TypeSimilarity(combinedWeightings.Items, sample, dataT), typeBalanceMetric(sample));
                 }
-                var sampleTypes = typeGroup.SelectMany((s) => baseStats(s).types).Distinct();
+                var sampleTypes = typeGroup.SelectMany((s) => dataT.GetBaseStats(s).types).Distinct();
                 Tuple<PokemonType, PokemonType> Map(Pokemon p)
                 {
-                    var types = baseStats(p).types.Intersect(sampleTypes).ToList();
+                    var types = dataT.GetBaseStats(p).types.Intersect(sampleTypes).ToList();
                     types.Sort();
                     if (types.Count == 0)
                         return null;
@@ -275,7 +275,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 return null; // TODO: Log
             var set = GetWeightedSet(possiblePokemon, input[0], settings);
             if (settings.RestrictIllegalEvolutions)
-                set.RemoveWhere((p) => !evoUtils.IsPokemonValidLevel(baseStats(p), 5));
+                set.RemoveWhere((p) => !evoUtils.IsPokemonValidLevel(dataT.GetBaseStats(p), 5));
             var pool = new WeightedSet<Pokemon>(set);
             while (pool.Count > 0)
             {
@@ -312,8 +312,8 @@ namespace PokemonRandomizer.Backend.Randomization
         /// If strong is true, b must also not be normally effective against a </summary>
         private bool OneWayWeakness(TypeEffectivenessChart typeDefinitions, Pokemon a, Pokemon b, bool strong = true)
         {
-            var aTypes = baseStats(a).types;
-            var bTypes = baseStats(b).types;
+            var aTypes = dataT.GetBaseStats(a).types;
+            var bTypes = dataT.GetBaseStats(b).types;
             var aVsB = typeDefinitions.GetEffectiveness(aTypes[0], aTypes[1], bTypes[0], bTypes[1]);
             var bVsA = typeDefinitions.GetEffectiveness(bTypes[0], bTypes[1], aTypes[0], aTypes[1]);
             if (strong)

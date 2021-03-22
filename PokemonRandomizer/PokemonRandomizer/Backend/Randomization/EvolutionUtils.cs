@@ -9,11 +9,11 @@ namespace PokemonRandomizer.Backend.Randomization
     public class EvolutionUtils
     {
         private readonly Random rand;
-        private readonly Func<Pokemon, PokemonBaseStats> baseStats;
-        public EvolutionUtils(Random rand, Func<Pokemon, PokemonBaseStats> baseStatsFn)
+        private readonly IDataTranslator dataT;
+        public EvolutionUtils(Random rand, IDataTranslator dataT)
         {
             this.rand = rand;
-            baseStats = baseStatsFn;
+            this.dataT = dataT;
         }
 
         /// <summary> return true if pokemon a evolves into or from pokemon b or IS pokemon b</summary>
@@ -29,7 +29,7 @@ namespace PokemonRandomizer.Backend.Randomization
         /// <summary> return true if pokemon a evolves into pokemon b</summary>
         private bool EvolvesInto(Pokemon a, Pokemon b)
         {
-            var stats = baseStats(a);
+            var stats = dataT.GetBaseStats(a);
             var evos = stats.evolvesTo;
             foreach (var evo in evos)
             {
@@ -45,7 +45,7 @@ namespace PokemonRandomizer.Backend.Randomization
         /// <summary> return true if pokemon a evolves from pokemon b</summary>
         private bool EvolvesFrom(Pokemon a, Pokemon b)
         {
-            var evos = baseStats(a).evolvesFrom;
+            var evos = dataT.GetBaseStats(a).evolvesFrom;
             foreach (var evo in evos)
             {
                 if (!evo.IsRealEvolution)
@@ -60,11 +60,11 @@ namespace PokemonRandomizer.Backend.Randomization
         /// If the pokemon is an invalid level due to evolution state, revert to an earlier evolution
         public Pokemon CorrectImpossibleEvo(Pokemon species, int level)
         {
-            var pokemon = baseStats(species);
+            var pokemon = dataT.GetBaseStats(species);
             while (!IsPokemonValidLevel(pokemon, level))
             {
                 // Choose a random element from the pokemon this pokemon evolves from
-                pokemon = baseStats(rand.Choice(pokemon.evolvesFrom).Pokemon);
+                pokemon = dataT.GetBaseStats(rand.Choice(pokemon.evolvesFrom).Pokemon);
             }
             return pokemon.species;
         }
@@ -89,20 +89,20 @@ namespace PokemonRandomizer.Backend.Randomization
                 return evo.parameter;
             if (evo.EvolvesByFriendship && pokemon.IsBaby)
             {
-                if (baseStats(evo.Pokemon).HasRealEvolution)
+                if (dataT.GetBaseStats(evo.Pokemon).HasRealEvolution)
                     return 10;
                 return 18;
             }
             // For any other type Calculate level based on evolution tree
             if (pokemon.evolvesFrom.Count > 0)
             {
-                return EquivalentLevelReq(pokemon.evolvesFrom[0], baseStats(pokemon.evolvesFrom[0].Pokemon)) + 12;
+                return EquivalentLevelReq(pokemon.evolvesFrom[0], dataT.GetBaseStats(pokemon.evolvesFrom[0].Pokemon)) + 12;
             }
             else
             {
                 int baseLevel = 32;
                 // Is this pokemon a middle stage evolution?
-                if (baseStats(evo.Pokemon).HasRealEvolution)
+                if (dataT.GetBaseStats(evo.Pokemon).HasRealEvolution)
                     baseLevel -= 8;
                 return baseLevel;
             }
@@ -112,7 +112,7 @@ namespace PokemonRandomizer.Backend.Randomization
         /// returns a random branch for evolution trees that branch </summary>
         public Pokemon MaxEvolution(Pokemon p, int level, bool restrictIllegalEvolutions)
         {
-            var stats = baseStats(p);
+            var stats = dataT.GetBaseStats(p);
             // If illegal evolutions are disabled, and the pokemon is an illegal level, correct the impossible evolution
             if (restrictIllegalEvolutions && !IsPokemonValidLevel(stats, level))
                 return CorrectImpossibleEvo(p, level);
@@ -120,7 +120,7 @@ namespace PokemonRandomizer.Backend.Randomization
             var evos = stats.evolvesTo.Where((evo) => evo.Type != EvolutionType.None && EquivalentLevelReq(evo, stats) <= level);
             while (evos.Count() > 0)
             {
-                stats = baseStats(rand.Choice(evos).Pokemon);
+                stats = dataT.GetBaseStats(rand.Choice(evos).Pokemon);
                 evos = stats.evolvesTo.Where((evo) => evo.Type != EvolutionType.None && EquivalentLevelReq(evo, stats) <= level);
             }
             return stats.species;

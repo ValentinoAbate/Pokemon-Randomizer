@@ -18,13 +18,13 @@ namespace PokemonRandomizer.Backend.Randomization
 
         private readonly PkmnRandomizer pokeRand;
         private readonly EvolutionUtils evoUtils;
-        private readonly Func<Pokemon, PokemonBaseStats> baseStats;
+        private readonly IDataTranslator dataT;
         private readonly RomMetrics romMetrics;
-        public WildEncounterRandomizer(PkmnRandomizer pokeRand, EvolutionUtils evoUtils, RomMetrics romMetrics, Func<Pokemon, PokemonBaseStats> baseStats)
+        public WildEncounterRandomizer(PkmnRandomizer pokeRand, EvolutionUtils evoUtils, RomMetrics romMetrics, IDataTranslator dataT)
         {
             this.pokeRand = pokeRand;
             this.evoUtils = evoUtils;
-            this.baseStats = baseStats;
+            this.dataT = dataT;
             this.romMetrics = romMetrics;
         }
 
@@ -71,7 +71,7 @@ namespace PokemonRandomizer.Backend.Randomization
             else if (strategy == Strategy.GlobalOneToOne)
             {
                 // Set wide type occurence data
-                var typeOccurence = PokemonMetrics.TypeOccurence(pokemonSet.Select(baseStats));
+                var typeOccurence = PokemonMetrics.TypeOccurence(pokemonSet.Select(dataT.GetBaseStats));
                 // Create the mapping
                 var mapping = new Dictionary<Pokemon, Pokemon>();
                 foreach (var pokemon in pokemonSet)
@@ -103,7 +103,7 @@ namespace PokemonRandomizer.Backend.Randomization
 
         private WeightedSet<PokemonType> EncounterTypeOccurence(EncounterSet encounter)
         {
-            return PokemonMetrics.TypeOccurence(encounter.Select(e => baseStats(e.pokemon)));
+            return PokemonMetrics.TypeOccurence(encounter.Select(e => dataT.GetBaseStats(e.pokemon)));
         }
 
         private IEnumerable<Metric<Pokemon>> CreateMetrics(IEnumerable<Pokemon> all, Pokemon pokemon, EncounterSet.Type slotType, WeightedSet<PokemonType> typeOccurence, Settings.MetricData[] data)

@@ -47,13 +47,13 @@ namespace PokemonRandomizer.Backend.Randomization
             }
         }
 
-        public static WeightedSet<Pokemon> TypeSimilarity(IEnumerable<Pokemon> pokemonSet, Pokemon species, Func<Pokemon, PokemonBaseStats> baseStats)
+        public static WeightedSet<Pokemon> TypeSimilarity(IEnumerable<Pokemon> pokemonSet, Pokemon species, IDataTranslator dataT)
         {
-            var myStats = baseStats(species);
+            var myStats = dataT.GetBaseStats(species);
             var typeWeighting = new WeightedSet<Pokemon>();
             foreach(var pokemon in pokemonSet)
             {
-                float similarity = TypeSimilarity(myStats, baseStats(pokemon));
+                float similarity = TypeSimilarity(myStats, dataT.GetBaseStats(pokemon));
                 if (similarity > 0)
                     typeWeighting.Add(pokemon, similarity);
             } 

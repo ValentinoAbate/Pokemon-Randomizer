@@ -33,16 +33,16 @@ namespace PokemonRandomizer.Backend.Randomization
             // Initialize random generator
             rand = settings.SetSeed ? new Random(settings.Seed) : new Random();
             // Intialize evolution helper
-            evoUtils = new EvolutionUtils(rand, data.GetBaseStats);
+            evoUtils = new EvolutionUtils(rand, data);
             //Initialize Species Randomizer
             var powerScores = PowerScaling.Calculate(data.Pokemon, settings.TieringOptions);
-            pokeRand = new PkmnRandomizer(evoUtils, rand, data.GetBaseStats, powerScores);
+            pokeRand = new PkmnRandomizer(evoUtils, rand, data, powerScores);
             // Initialize item randomizer
-            itemRand = new ItemRandomizer(rand, data.GetItemData);
+            itemRand = new ItemRandomizer(rand, data);
             // Initialize encounter randomizer
-            encounterRand = new WildEncounterRandomizer(pokeRand, evoUtils, data.Metrics, data.GetBaseStats);
+            encounterRand = new WildEncounterRandomizer(pokeRand, evoUtils, data.Metrics, data);
             // Initialize Trainer randomizer
-            trainerRand = new TrainerRandomizer(rand, pokeRand, evoUtils, data.GetBaseStats, data.GetMoveData);
+            trainerRand = new TrainerRandomizer(rand, pokeRand, evoUtils, data);
         }
         // Apply mutations based on program settings.
         public RomData Randomize()

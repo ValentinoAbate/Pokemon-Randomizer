@@ -8,13 +8,12 @@ namespace PokemonRandomizer.Backend.Randomization
     public class ItemRandomizer
     {
         private readonly Random rand;
-        private readonly Func<Item, ItemData> getData;
-        public ItemRandomizer(Random rand, Func<Item, ItemData> getData)
+        private readonly IDataTranslator dataT;
+        public ItemRandomizer(Random rand, IDataTranslator dataT)
         {
             this.rand = rand;
-            this.getData = getData;
+            this.dataT = dataT;
         }
-        private ItemData GetData(Item item) => getData(item);
 
         public Item RandomItem(IEnumerable<ItemData> possibleItems, Item input, Settings settings)
         {
@@ -23,7 +22,7 @@ namespace PokemonRandomizer.Backend.Randomization
             {
                 return rand.RollSuccess(settings.NoneToOtherChance) ? rand.Choice(possibleItems).Item : input;
             }
-            var inputData = GetData(input);
+            var inputData = dataT.GetItemData(input);
             if (inputData.IsKeyItem && settings.KeepKeyItems)
                 return input;
             var itemWeights = new WeightedSet<ItemData>(possibleItems, 1);

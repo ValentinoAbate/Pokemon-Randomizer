@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace PokemonRandomizer.Backend.DataStructures
 {
-    public class RomData
+    public class RomData : IDataTranslator
     {
 
 
