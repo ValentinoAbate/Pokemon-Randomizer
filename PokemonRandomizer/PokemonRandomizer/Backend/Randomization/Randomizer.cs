@@ -21,6 +21,7 @@ namespace PokemonRandomizer.Backend.Randomization
         private readonly PkmnRandomizer pokeRand;
         private readonly ItemRandomizer itemRand;
         private readonly WildEncounterRandomizer encounterRand;
+        private readonly TrainerRandomizer trainerRand;
         /// <summary>
         /// Create a new randomizer with given data and settings
         /// Input data will be mutated by randomizer calls
@@ -31,17 +32,17 @@ namespace PokemonRandomizer.Backend.Randomization
             this.settings = settings;
             // Initialize random generator
             rand = settings.SetSeed ? new Random(settings.Seed) : new Random();
-            // Base stats getter
-            PokemonBaseStats BaseStats(Pokemon p) => data.PokemonLookup[p];
             // Intialize evolution helper
-            evoUtils = new EvolutionUtils(rand, BaseStats);
+            evoUtils = new EvolutionUtils(rand, data.GetBaseStats);
             //Initialize Species Randomizer
             var powerScores = PowerScaling.Calculate(data.Pokemon, settings.TieringOptions);
-            pokeRand = new PkmnRandomizer(evoUtils, rand, BaseStats, powerScores);
+            pokeRand = new PkmnRandomizer(evoUtils, rand, data.GetBaseStats, powerScores);
             // Initialize item randomizer
-            itemRand = new ItemRandomizer(rand, i => data.ItemData[(int)i]);
+            itemRand = new ItemRandomizer(rand, data.GetItemData);
             // Initialize encounter randomizer
-            encounterRand = new WildEncounterRandomizer(pokeRand, evoUtils, data.Metrics, BaseStats);
+            encounterRand = new WildEncounterRandomizer(pokeRand, evoUtils, data.Metrics, data.GetBaseStats);
+            // Initialize Trainer randomizer
+            trainerRand = new TrainerRandomizer(rand, pokeRand, evoUtils, data.GetBaseStats, data.GetMoveData);
         }
         // Apply mutations based on program settings.
         public RomData Randomize()
@@ -314,7 +315,7 @@ namespace PokemonRandomizer.Backend.Randomization
                                     // Make this stable with the Dunsparse Plague
                                     if (evo.Pokemon == Pokemon.DUNSPARCE && settings.DunsparsePlaugeChance > 0)
                                         continue;
-                                    AddMoveToEvoTreeMoveSet(data.PokemonLookup[evo.Pokemon], m, level + creep, creep);
+                                    AddMoveToEvoTreeMoveSet(data.GetBaseStats(evo.Pokemon), m, level + creep, creep);
                                 }
                             }
                             availableMoves.Remove(move);
@@ -326,7 +327,7 @@ namespace PokemonRandomizer.Backend.Randomization
                                 AddMoveToEvoTreeMoveSet(pokemon, move, learnLevel);
                                 continue;
                             }
-                            int effectivePower = data.MoveData[(int)move].EffectivePower;
+                            int effectivePower = data.GetMoveData(move).EffectivePower;
                             if(data.Metrics.LearnLevelPowers.ContainsKey(effectivePower))
                             {
                                 double mean = data.Metrics.LearnLevelPowerMeans[effectivePower];
@@ -416,7 +417,7 @@ namespace PokemonRandomizer.Backend.Randomization
                     {
                         void SetCompatIntelligent(BitArray arr, int ind, Move[] moveList)
                         {
-                            var moveData = data.MoveData[(int)moveList[ind]];
+                            var moveData = data.GetMoveData(moveList[ind]);
                             if (pokemon.types.Contains(moveData.type))
                                 arr[ind] = true;
                             else if (pokemon.learnSet.Any((l) => l.move == moveData.move))
@@ -474,7 +475,7 @@ namespace PokemonRandomizer.Backend.Randomization
             // Set unknown typing if selected
             if (settings.OverrideUnknownType)
             {
-                var unknownPokeData = data.PokemonLookup[Pokemon.UNOWN];
+                var unknownPokeData = data.GetBaseStats(Pokemon.UNOWN);
                 unknownPokeData.types[0] = PokemonType.Unknown;
                 if (rand.RollSuccess(settings.UnknownDualTypeChance))
                     unknownPokeData.types[1] = rand.Choice(data.Metrics.TypeRatiosDualSecondary);
@@ -513,8 +514,12 @@ namespace PokemonRandomizer.Backend.Randomization
                 {
                     // Hacky tackle fix
                     foreach (var pkmn in data.Starters)
-                        if (data.PokemonLookup[pkmn].learnSet[0].move != Move.TACKLE)
-                            data.PokemonLookup[pkmn].learnSet.Add(Move.TACKLE, 1);
+                    {
+                        var learnSet = data.GetBaseStats(pkmn).learnSet;
+                        if (learnSet[0].move != Move.TACKLE)
+                            learnSet.Add(Move.TACKLE, 1);
+                    }
+
                 }
             }
             #endregion
@@ -529,7 +534,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 if (rand.RollSuccess(settings.TradePokemonRecievedRandChance))
                 {
                     trade.pokemonRecieved = pokeRand.Random(pokemonSet, trade.pokemonRecieved, settings.TradeSpeciesSettingsReceive);
-                    var pokemonData = data.PokemonLookup[trade.pokemonRecieved];
+                    var pokemonData = data.GetBaseStats(trade.pokemonRecieved);
                     if (pokemonData.abilities[0] == pokemonData.abilities[1])
                     {
                         trade.abilityNum = 0;
@@ -661,12 +666,12 @@ namespace PokemonRandomizer.Backend.Randomization
             // Randomize Normal Trainers
             foreach (var trainer in data.NormalTrainers.Values)
             {
-                RandomizeTrainer(trainer, pokemonSet, trainerSpeciesSettings);
+                trainerRand.Randomize(trainer, pokemonSet, trainerSpeciesSettings);
             }
             // Randomize Team Grunts (considered normal trainers currently)
             foreach (var trainer in data.GruntBattles)
             {
-                RandomizeTrainer(trainer, pokemonSet, trainerSpeciesSettings);
+                trainerRand.Randomize(trainer, pokemonSet, trainerSpeciesSettings);
             }
 
             #region Special Trainers
@@ -687,11 +692,11 @@ namespace PokemonRandomizer.Backend.Randomization
                     var firstBattle = battles[0];
                     battles.RemoveAt(0);
                     // Randomize the first battle
-                    RandomizeTrainer(firstBattle, pokemonSet, rivalSettings, false);
+                    trainerRand.Randomize(firstBattle, pokemonSet, rivalSettings, false);
                     // Set the appropriate starter as the ace
                     firstBattle.pokemon[firstBattle.pokemon.Length - 1].species = data.Starters[data.RivalRemap[i]];
                     // Procedurally generate the rest of the battles
-                    RandomizeTrainerReoccurring(firstBattle, battles, pokemonSet, rivalSettings);
+                    trainerRand.RandomizeReoccurring(firstBattle, battles, pokemonSet, rivalSettings);
                 }
             }
 
@@ -710,11 +715,11 @@ namespace PokemonRandomizer.Backend.Randomization
                 var firstBattle = wallyBattles[0];
                 wallyBattles.RemoveAt(0);
                 // Set Wally's first pokemon to the catching tut pokemon
-                RandomizeTrainer(firstBattle, pokemonSet, rivalSettings, false);
+                trainerRand.Randomize(firstBattle, pokemonSet, rivalSettings, false);
                 var firstBattleAce = firstBattle.pokemon[firstBattle.pokemon.Length - 1];
                 firstBattleAce.species = evoUtils.MaxEvolution(data.CatchingTutPokemon, firstBattleAce.level, rivalSettings.PokemonSettings.RestrictIllegalEvolutions);
                 // Procedurally generate the rest of Wally's battles
-                RandomizeTrainerReoccurring(firstBattle, wallyBattles, pokemonSet, rivalSettings);
+                trainerRand.RandomizeReoccurring(firstBattle, wallyBattles, pokemonSet, rivalSettings);
             }
 
             #endregion
@@ -727,8 +732,8 @@ namespace PokemonRandomizer.Backend.Randomization
                     reoccuringBattles.Sort((a, b) => a.AvgLvl.CompareTo(b.AvgLvl));
                     var firstBattle = reoccuringBattles[0];
                     reoccuringBattles.RemoveAt(0);
-                    RandomizeTrainer(firstBattle, pokemonSet, settings, false);
-                    RandomizeTrainerReoccurring(firstBattle, reoccuringBattles, pokemonSet, settings);
+                    trainerRand.Randomize(firstBattle, pokemonSet, settings, false);
+                    trainerRand.RandomizeReoccurring(firstBattle, reoccuringBattles, pokemonSet, settings);
                 }
             }
 
@@ -810,148 +815,6 @@ namespace PokemonRandomizer.Backend.Randomization
         private IEnumerable<ItemData> DefineItemSet()
         {
             return data.ItemData.Where((i) => i.Item != Item.None);
-        }
-
-        #endregion
-
-        #region Trainer Randomization
-
-        private void RandomizeTrainerPokemon(Trainer trainer, IEnumerable<Pokemon> pokemonSet, PkmnRandomizer.Settings settings)
-        {
-            // Class based?
-            // Local environment based
-            // Get type sample
-            var typeSample = trainer.pokemon.Select((p) => p.species).ToArray();
-            foreach (var pokemon in trainer.pokemon)
-            {
-                if (settings.WeightType == PkmnRandomizer.Settings.WeightingType.Group)
-                {
-                    pokemon.species = pokeRand.RandomTypeGroup(pokemonSet, pokemon.species, pokemon.level, typeSample, settings);
-                }
-                else
-                {
-
-                    pokemon.species = pokeRand.Random(pokemonSet, pokemon.species, pokemon.level, settings);
-                }
-                // Reset special moves if necessary
-                if (pokemon.HasSpecialMoves)
-                {
-                    //pokemon.moves = MovesetGenerator.DefaultMoveset(data.PokemonLookup[pokemon.species], pokemon.level);
-                    pokemon.moves = MovesetGenerator.SmartMoveSet(rand, data, data.PokemonLookup[pokemon.species], pokemon.level);
-                }
-            }
-        }
-
-        /// <summary> Radnomize the given trainer encounter </summary>
-        private void RandomizeTrainer(Trainer trainer, IEnumerable<Pokemon> pokemonSet, Settings.TrainerSettings settings, bool safe = true)
-        {
-            // Set data type
-            // Set AI flags
-            // Set item stock (if applicable)
-            // Set Battle Type
-            if (rand.RollSuccess(settings.BattleTypeRandChance))
-                trainer.isDoubleBattle = rand.RollSuccess(settings.DoubleBattleChance);
-            // Set pokemon
-            if(rand.RollSuccess(settings.PokemonRandChance))
-            {
-                RandomizeTrainerPokemon(trainer, pokemonSet, settings.PokemonSettings);
-            }
-            // Fix any unsafe values if safe is set to true
-            if(safe)
-            {
-                // Set 1-pokemon battle to solo if appropriate
-                if (settings.MakeSoloPokemonBattlesSingle && trainer.pokemon.Length == 1)
-                    trainer.isDoubleBattle = false;
-            }
-        }
-
-        /// <summary>
-        /// Randomize A sequence of battles from the same trainer.
-        /// Battles is assumed to be in chronological order, and that the first battle has been appropriately randomized.
-        /// Use unsafe randomization for randomizing the first battle.
-        /// </summary>
-        private void RandomizeTrainerReoccurring(Trainer firstBattle, List<Trainer> battles, IEnumerable<Pokemon> pokemonSet, Settings.TrainerSettings settings)
-        {
-            var speciesSettings = settings.PokemonSettings;
-
-            // Battle Type
-            if(settings.BattleTypeStrategy == Settings.TrainerSettings.BattleTypePcgStrategy.None)
-            {
-                for (int i = 1; i < battles.Count; i++)
-                {
-                    if (rand.RollSuccess(settings.BattleTypeRandChance))
-                    {
-                        battles[i].isDoubleBattle = rand.RollSuccess(settings.DoubleBattleChance);
-                    }
-                }
-            }
-            else if(settings.BattleTypeStrategy == Settings.TrainerSettings.BattleTypePcgStrategy.KeepSameType)
-            {
-                for (int i = 1; i < battles.Count; i++)
-                {
-                    battles[i].isDoubleBattle = battles[0].isDoubleBattle;
-                }
-            }
-
-            // Pokemon
-            if (settings.PokemonStrategy == Settings.TrainerSettings.PokemonPcgStrategy.None)
-            {
-                for (int i = 1; i < battles.Count; i++)
-                {
-                    RandomizeTrainerPokemon(battles[i], pokemonSet, speciesSettings);
-                }
-            }
-            else if (settings.PokemonStrategy == Settings.TrainerSettings.PokemonPcgStrategy.KeepAce)
-            {
-                var lastBattle = firstBattle;
-                foreach (var battle in battles)
-                {
-                    RandomizeTrainerPokemon(battle, pokemonSet, speciesSettings);
-                    // Migrate Ace pokemon from the last battle
-                    var currAce = battle.pokemon[battle.pokemon.Length - 1];
-                    var lastAce = lastBattle.pokemon[lastBattle.pokemon.Length - 1];
-                    currAce.species = evoUtils.MaxEvolution(lastAce.species, currAce.level, speciesSettings.RestrictIllegalEvolutions);
-                    if (currAce.HasSpecialMoves)
-                    {
-                        currAce.moves = MovesetGenerator.SmartMoveSet(rand, data, data.PokemonLookup[currAce.species], currAce.level);
-                    }
-                    lastBattle = battle;
-                };
-            }
-            else if (settings.PokemonStrategy == Settings.TrainerSettings.PokemonPcgStrategy.KeepParty)
-            {
-                var lastBattle = firstBattle;
-                foreach (var battle in battles)
-                {
-                    RandomizeTrainerPokemon(battle, pokemonSet, speciesSettings);
-                    int lastBattleSize = lastBattle.pokemon.Length;
-                    int battleSize = battle.pokemon.Length;
-                    // Migrate pokemon from the last battle
-                    for (int i = 0; i < lastBattleSize && i < battleSize; ++i)
-                    {
-                        var currPokemon = battle.pokemon[battleSize - (i + 1)];
-                        var lastPokemon = lastBattle.pokemon[lastBattleSize - (i + 1)];
-                        currPokemon.species = evoUtils.MaxEvolution(lastPokemon.species, currPokemon.level, speciesSettings.RestrictIllegalEvolutions);
-                        if(currPokemon.HasSpecialMoves)
-                        {
-                            currPokemon.moves = MovesetGenerator.SmartMoveSet(rand, data, data.PokemonLookup[currPokemon.species], currPokemon.level);
-                        }
-                    }
-                    lastBattle = battle;
-                }
-            }
-
-            // Fixes
-            if(settings.MakeSoloPokemonBattlesSingle)
-            {
-                foreach (var battle in battles)
-                {
-                    if (battle.pokemon.Length <= 1)
-                        battle.isDoubleBattle = false;
-                }
-                if (firstBattle.pokemon.Length <= 1)
-                    firstBattle.isDoubleBattle = false;
-            }
         }
 
         #endregion

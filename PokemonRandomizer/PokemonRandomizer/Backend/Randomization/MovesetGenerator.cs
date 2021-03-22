@@ -23,10 +23,9 @@ namespace PokemonRandomizer.Backend.Randomization
             return new Move[] { moves.Pop(), moves.Pop(), moves.Pop(), moves.Pop() };
         }
 
-        public static Move[] SmartMoveSet(Random rand, RomData data, PokemonBaseStats pokemon, int level)
+        public static Move[] SmartMoveSet(Random rand, PokemonBaseStats pokemon, int level, Func<Move, MoveData> getMoveData, Func<Pokemon, PokemonBaseStats> baseStats)
         {
-            MoveData GetData(Move m) => data.MoveData[(int)m];
-            bool IsStab(Move m) => pokemon.types.Contains(GetData(m).type);
+            bool IsStab(Move m) => pokemon.types.Contains(getMoveData(m).type);
             // Initialize move choices
             var availableMoves = new Dictionary<Move, int>();
             foreach(var entry in pokemon.learnSet.Where((e) => e.learnLvl <= level))
@@ -43,8 +42,8 @@ namespace PokemonRandomizer.Backend.Randomization
                     availableMoves.Add(move, learnLevel);
                 }
             }
-            // Add movesets from evolved from
-            for (var pkmn = pokemon; pkmn.evolvesFrom.Count > 0; pkmn = data.PokemonLookup[pkmn.evolvesFrom[0].Pokemon])
+            // Add movesets from evolved from (moves down the chain)
+            for (var pkmn = pokemon; pkmn.evolvesFrom.Count > 0; pkmn = baseStats(pkmn.evolvesFrom[0].Pokemon))
             {
                 foreach(var entry in pkmn.learnSet.Where((e) => e.learnLvl <= level))
                 {
@@ -73,13 +72,13 @@ namespace PokemonRandomizer.Backend.Randomization
             Move[] ret = new Move[4] { Move.None, Move.None, Move.None, Move.None };
             if (availableMoves.Count <= 0)
                 return ret;
-            IEnumerable<Move> GetAttackMoves() => availableMoves.Keys.Where((m) => GetData(m).power > 0);
+            IEnumerable<Move> GetAttackMoves() => availableMoves.Keys.Where((m) => getMoveData(m).power > 0);
             //IEnumerable<LearnSet.Entry> GetNonStabMoves() => GetAttackMoves().Where((e) => !pokemon.types.Contains(GetData(e).type));
-            IEnumerable<Move> GetZeroPowerMoves() => availableMoves.Keys.Where((m) => GetData(m).power <= 0);
-            float PowerWeightScale(Move e) => (float)Math.Pow(GetData(e).EffectivePower * (IsStab(e) ? 1.5 : 1), 3);
+            IEnumerable<Move> GetZeroPowerMoves() => availableMoves.Keys.Where((m) => getMoveData(m).power <= 0);
+            float PowerWeightScale(Move e) => (float)Math.Pow(getMoveData(e).EffectivePower * (IsStab(e) ? 1.5 : 1), 3);
             float RedundantTypeFactor(Move m)
             {
-                int ind = ret.ToList().FindIndex((m2) => m2 != Move.None && GetData(m).type == GetData(m2).type);
+                int ind = ret.ToList().FindIndex((m2) => m2 != Move.None && getMoveData(m).type == getMoveData(m2).type);
                 return ind == -1 ? 1 : 0.25f;
 
             }
@@ -133,7 +132,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 return ret;
 
             var fourthMoveChoice = new WeightedSet<Move>(availableMoves.Keys, LevelWeightScale);
-            var currentMoves = ret.Where((m) => m != Move.None).Select((m) => GetData(m));
+            var currentMoves = ret.Where((m) => m != Move.None).Select((m) => getMoveData(m));
             var metrics = new List<Func<Move, float>>();
             const float needSynergy = 12500;
             const float preferSynergy = needSynergy / 2;
@@ -147,7 +146,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 int count = currentMoves.Count(currMovePred);
                 if (currentMoves.Count(currMovePred) > 0)
                 {
-                    metrics.Add((m) => (moveChoicePred(GetData(m)) ? intensity : 1) * count);
+                    metrics.Add((m) => (moveChoicePred(getMoveData(m)) ? intensity : 1) * count);
                 }
             }
 

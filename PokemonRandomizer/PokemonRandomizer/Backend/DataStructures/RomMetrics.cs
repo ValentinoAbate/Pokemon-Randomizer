@@ -99,7 +99,7 @@ namespace PokemonRandomizer.Backend.DataStructures
                     if (!LearnLevels.ContainsKey(entry.move))
                         LearnLevels.Add(entry.move, new List<int>());
                     LearnLevels[entry.move].Add(entry.learnLvl);
-                    int effectivePower = data.MoveData[(int)entry.move].EffectivePower;
+                    int effectivePower = data.GetMoveData(entry.move).EffectivePower;
                     if (!LearnLevelPowers.ContainsKey(effectivePower))
                         LearnLevelPowers.Add(effectivePower, new List<int>());
                     LearnLevelPowers[effectivePower].Add(entry.learnLvl);
@@ -126,7 +126,7 @@ namespace PokemonRandomizer.Backend.DataStructures
                 var set = TrainerClassTypeOccurence[trainer.Class];
                 foreach(var pokemon in trainer.pokemon)
                 {
-                    var pData = data.PokemonLookup[pokemon.species];
+                    var pData = data.GetBaseStats(pokemon.species);
                     set.Add(pData.types[0]);
                     if (!pData.IsSingleTyped)
                     {
@@ -144,7 +144,7 @@ namespace PokemonRandomizer.Backend.DataStructures
                 var set = EncounterSlotTypeOccurence[encounter.type];
                 foreach(var enc in encounter)
                 {
-                    var pData = data.PokemonLookup[enc.pokemon];
+                    var pData = data.GetBaseStats(enc.pokemon);
                     set.Add(pData.types[0]);
                     if (!pData.IsSingleTyped)
                     {

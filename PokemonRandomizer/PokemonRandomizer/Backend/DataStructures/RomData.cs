@@ -38,7 +38,7 @@ namespace PokemonRandomizer.Backend.DataStructures
         }
         public string[] PokemonNames { get; private set; }
         public PokemonBaseStats[] PokemonNationalDexOrder { get; private set; }
-        public Dictionary<Pokemon, PokemonBaseStats> PokemonLookup { get; } = new Dictionary<Pokemon, PokemonBaseStats>();
+        private Dictionary<Pokemon, PokemonBaseStats> PokemonLookup { get; } = new Dictionary<Pokemon, PokemonBaseStats>();
         public List<string> ClassNames { get; set; }
         public List<Trainer> Trainers { get; set; }
 
@@ -82,6 +82,10 @@ namespace PokemonRandomizer.Backend.DataStructures
 
         public List<Item> NewEvolutionStones { get; set; } = new List<Item>();
 
+        public PokemonBaseStats GetBaseStats(Pokemon p) => PokemonLookup[p];
+        public MoveData GetMoveData(Move m) => MoveData[(int)m];
+        public ItemData GetItemData(Item i) => ItemData[(int)i];
+
         // updates the metrics from the current data
         public void CalculateMetrics()
         {
@@ -108,14 +112,14 @@ namespace PokemonRandomizer.Backend.DataStructures
                 if (pokemon.eggMoves.Count > 0)
                     return pokemon.eggMoves;
                 if (pokemon.evolvesFrom.Count > 0)
-                    return GetEggMoves(PokemonLookup[pokemon.evolvesFrom[0].Pokemon]);
+                    return GetEggMoves(GetBaseStats(pokemon.evolvesFrom[0].Pokemon));
                 return pokemon.eggMoves;
             }
             foreach (var pokemon in Pokemon)
             {
                 if(pokemon.eggMoves.Count <= 0 && pokemon.evolvesFrom.Count > 0)
                 {
-                    pokemon.eggMoves = GetEggMoves(PokemonLookup[pokemon.evolvesFrom[0].Pokemon]);
+                    pokemon.eggMoves = GetEggMoves(GetBaseStats(pokemon.evolvesFrom[0].Pokemon));
                 }
             }
         }

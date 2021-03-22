@@ -369,7 +369,7 @@ namespace PokemonRandomizer.Backend.Writing
                     moveData.WriteBlock(movesetIndex, romData.SkippedLearnSetData);
                     movesetIndex += skipNum * 4; // (don't know why this is 4, cuz move segments are variable lengths possibly terminators?)
                 }
-                var stats = romData.PokemonLookup[(Pokemon)(i + 1)];
+                var stats = romData.GetBaseStats((Pokemon)(i + 1));
                 WriteBaseStatsSingle(stats, pkmnOffset + (i * pkmnSize), rom);
                 // Log a repoint if necessary
                 if (needToRelocateMoveData)
