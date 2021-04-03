@@ -212,12 +212,7 @@ namespace PokemonRandomizer
                     {
                         BanLegendaries = false,
                         ForceHighestLegalEvolution = true,
-                        WeightType = PokemonSettings.WeightingType.Group,
                         Noise = 0.002f,
-                        PowerScaleSimilarityMod = 0.01f,
-                        PowerScaleCull = true,
-                        TypeSimilarityMod = 1f,
-                        TypeSimilarityCull = false,
                     }
                 }
             },
@@ -228,11 +223,6 @@ namespace PokemonRandomizer
                         BanLegendaries = false,
                         ForceHighestLegalEvolution = true,
                         Noise = 0.001f,
-                        PowerScaleSimilarityMod = 1f,
-                        PowerScaleCull = true,
-                        PowerThresholdStronger = 175,
-                        TypeSimilarityMod = 0,
-                        TypeSimilarityCull = false,
                     }
                 }
             },
@@ -242,14 +232,7 @@ namespace PokemonRandomizer
                     {
                         BanLegendaries = false,
                         ForceHighestLegalEvolution = true,
-                        WeightType = PokemonSettings.WeightingType.Individual,
                         Noise = 0.001f,
-                        PowerScaleSimilarityMod = 1f,
-                        PowerScaleCull = true,
-                        PowerThresholdStronger = 175,
-                        PowerThresholdWeaker = 100,
-                        TypeSimilarityMod = 0,
-                        TypeSimilarityCull = false,
                     }
                 }
             },
@@ -259,15 +242,7 @@ namespace PokemonRandomizer
                     {
                         BanLegendaries = false,
                         ForceHighestLegalEvolution = true,
-                        WeightType = PokemonSettings.WeightingType.Group,
-                        Sharpness = 2,
                         Noise = 0.0001f,
-                        PowerScaleSimilarityMod = 0.01f,
-                        PowerScaleCull = true,
-                        PowerThresholdStronger = 200,
-                        PowerThresholdWeaker = 300,
-                        TypeSimilarityMod = 1f,
-                        TypeSimilarityCull = false,
                     }
                 }
             },
@@ -278,15 +253,7 @@ namespace PokemonRandomizer
                         BanLegendaries = false,
                         RestrictIllegalEvolutions = false,
                         ForceHighestLegalEvolution = true,
-                        WeightType = PokemonSettings.WeightingType.Group,
-                        Sharpness = 2,
                         Noise = 0.0001f,
-                        PowerScaleSimilarityMod = 0.1f,
-                        PowerScaleCull = true,
-                        PowerThresholdStronger = 250,
-                        PowerThresholdWeaker = 300,
-                        TypeSimilarityMod = 1f,
-                        TypeSimilarityCull = false,
                     }
                 }
             },
@@ -297,15 +264,7 @@ namespace PokemonRandomizer
                         BanLegendaries = false,
                         RestrictIllegalEvolutions = false,
                         ForceHighestLegalEvolution = true,
-                        WeightType = PokemonSettings.WeightingType.Group,
-                        Sharpness = 2,
                         Noise = 0.0001f,
-                        PowerScaleSimilarityMod = 0.1f,
-                        PowerScaleCull = true,
-                        PowerThresholdStronger = 300,
-                        PowerThresholdWeaker = 300,
-                        TypeSimilarityMod = 1f,
-                        TypeSimilarityCull = false,
                     }
                 }
             },
@@ -354,9 +313,6 @@ namespace PokemonRandomizer
         public PokemonSettings GiftSpeciesSettings { get; } = new PokemonSettings()
         {
             BanLegendaries = true,
-            Noise = 1f,
-            PowerScaleSimilarityMod = 0.1f,
-            TypeSimilarityMod = 0f,
         };
         public bool EnsureFossilRevivesAreFossilPokemon => true;
         public bool EnsureGiftEggsAreBabyPokemon => true;
@@ -368,9 +324,6 @@ namespace PokemonRandomizer
         public PokemonSettings TradeSpeciesSettingsGive { get; } = new PokemonSettings()
         {
             BanLegendaries = true,
-            Noise = 1f,
-            PowerScaleSimilarityMod = 0.1f,
-            TypeSimilarityMod = 0f,
         };
         public MetricData[] TradeSpeciesMetricsGive { get; } = new MetricData[]
         {
@@ -379,9 +332,6 @@ namespace PokemonRandomizer
         public PokemonSettings TradeSpeciesSettingsReceive { get; } = new PokemonSettings()
         {
             BanLegendaries = true,
-            Noise = 1f,
-            PowerScaleSimilarityMod = 0.1f,
-            TypeSimilarityMod = 0f,
         };
         public MetricData[] TradeSpeciesMetricsRecieve { get; } = new MetricData[]
         {
@@ -414,13 +364,6 @@ namespace PokemonRandomizer
         public PokemonSettings StarterPokemonSettings { get; } = new PokemonSettings()
         {
             BanLegendaries = true,
-            Noise = 1f,
-            PowerScaleSimilarityMod = 0.1f,
-            PowerScaleCull = true,
-            PowerThresholdStronger = 300,
-            PowerThresholdWeaker = 200,
-            TypeSimilarityMod = 0,
-            TypeSimilarityCull = false,
         };
         public PokemonMetric[] StarterMetricData { get; } = new PokemonMetric[0];
         /// <summary>
@@ -529,7 +472,7 @@ namespace PokemonRandomizer
                     case WeatherOption.CustomWeighting:
                         return customWeights;
                     default:
-                        return new WeightedSet<Map.Weather>(EnumUtils.GetValues<Map.Weather>(), 1); ;
+                        return new WeightedSet<Map.Weather>(EnumUtils.GetValues<Map.Weather>());
                 }
             }
         }
@@ -604,14 +547,9 @@ namespace PokemonRandomizer
             public double PokemonRandChance { get; set; } = 1;
             public PokemonPcgStrategy PokemonStrategy { get; set; } = PokemonPcgStrategy.KeepParty;
             public PokemonSettings PokemonSettings { get; set; } = new PokemonSettings();
-            public MetricData[] PokemonMetrics { get; set; } = new MetricData[] { new MetricData(PokemonMetric.typeIndividual) };
             public double BattleTypeRandChance { get; set; } = 1;
             public BattleTypePcgStrategy BattleTypeStrategy { get; set; } = BattleTypePcgStrategy.KeepSameType;
             public double DoubleBattleChance { get; set; } = 1;
-            /// <summary>
-            /// WARNING: Setting this to false will cause these battles to be anomalous
-            /// </summary>
-            public bool MakeSoloPokemonBattlesSingle => true;
         }
 
         public class PokemonSettings
@@ -622,19 +560,11 @@ namespace PokemonRandomizer
                 Group,
             }
 
-            public PokemonRandomizer.Settings.MetricData[] Data { get; set; }
+            public MetricData[] Data { get; set; } = new MetricData[0];
             public bool RestrictIllegalEvolutions { get; set; } = true;
             public bool ForceHighestLegalEvolution { get; set; } = false;
             public bool BanLegendaries { get; set; } = false;
-            public WeightingType WeightType { get; set; } = WeightingType.Individual;
-            public float Sharpness { get; set; } = 0;
             public float Noise { get; set; } = 0;
-            public float PowerScaleSimilarityMod { get; set; } = 0;
-            public bool PowerScaleCull { get; set; } = false;
-            public int PowerThresholdStronger { get; set; } = 100;
-            public int PowerThresholdWeaker { get; set; } = 100;
-            public float TypeSimilarityMod { get; set; } = 0;
-            public bool TypeSimilarityCull { get; set; } = false;
         }
 
         public class MetricData

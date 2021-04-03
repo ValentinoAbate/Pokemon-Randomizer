@@ -488,21 +488,28 @@ namespace PokemonRandomizer.Backend.Randomization
             #region Starters
             if (settings.StarterSetting != Settings.StarterPokemonOption.Unchanged)
             {
-                var speciesSettings = settings.StarterPokemonSettings;
+                var starterSettings = settings.StarterPokemonSettings;
                 if(settings.StarterSetting == Settings.StarterPokemonOption.Random)
                 {
                     for(int i = 0; i < data.Starters.Count; ++i)
-                        data.Starters[i] = pokeRand.Random(pokemonSet, data.Starters[i], 5, speciesSettings);
+                    {
+                        data.Starters[i] = pokeRand.RandomPokemon(pokemonSet, data.Starters[i], starterSettings, 5);
+                    }
+
                 }
                 else if (settings.StarterSetting == Settings.StarterPokemonOption.RandomTypeTriangle)
                 {
-                    var triangle = pokeRand.RandomTypeTriangle(pokemonSet, data.Starters, data.TypeDefinitions, speciesSettings, settings.StrongStarterTypeTriangle);
+                    var triangle = pokeRand.RandomTypeTriangle(pokemonSet, data.Starters, data.TypeDefinitions, starterSettings, settings.StrongStarterTypeTriangle);
                     if (triangle != null)
+                    {
                         data.Starters = triangle;
+                    }
                     else // Fall back on completely random
                     {
                         for (int i = 0; i < data.Starters.Count; ++i)
-                            data.Starters[i] = pokeRand.Random(pokemonSet, data.Starters[i], 5, speciesSettings);
+                        {
+                            data.Starters[i] = pokeRand.RandomPokemon(pokemonSet, data.Starters[i], starterSettings, 5);
+                        }
                     }
                 }
                 else if(settings.StarterSetting == Settings.StarterPokemonOption.Custom)
@@ -529,11 +536,11 @@ namespace PokemonRandomizer.Backend.Randomization
             {
                 if (rand.RollSuccess(settings.TradePokemonGiveRandChance))
                 {
-                    trade.pokemonWanted = pokeRand.Random(pokemonSet, trade.pokemonWanted, settings.TradeSpeciesSettingsGive);
+                    trade.pokemonWanted = pokeRand.RandomPokemon(pokemonSet, trade.pokemonWanted, settings.TradeSpeciesSettingsGive);
                 }
                 if (rand.RollSuccess(settings.TradePokemonRecievedRandChance))
                 {
-                    trade.pokemonRecieved = pokeRand.Random(pokemonSet, trade.pokemonRecieved, settings.TradeSpeciesSettingsReceive);
+                    trade.pokemonRecieved = pokeRand.RandomPokemon(pokemonSet, trade.pokemonRecieved, settings.TradeSpeciesSettingsReceive);
                     var pokemonData = data.GetBaseStats(trade.pokemonRecieved);
                     if (pokemonData.abilities[0] == pokemonData.abilities[1])
                     {
@@ -591,7 +598,7 @@ namespace PokemonRandomizer.Backend.Randomization
                             {
                                 // Should choose from fossil set?
                                 bool fossil = settings.EnsureFossilRevivesAreFossilPokemon && fossilSet.Count > 0 && givePokemon.pokemon.IsFossil();
-                                givePokemon.pokemon = pokeRand.Random(fossil ? fossilSet : pokemonSet, givePokemon.pokemon, givePokemon.level, settings.GiftSpeciesSettings);
+                                givePokemon.pokemon = pokeRand.RandomPokemon(fossil ? fossilSet : pokemonSet, givePokemon.pokemon, settings.GiftSpeciesSettings, givePokemon.level);
 
                             }
                             break;
@@ -599,7 +606,7 @@ namespace PokemonRandomizer.Backend.Randomization
                             if(rand.RollSuccess(settings.GiftPokemonRandChance))
                             {
                                 bool baby = settings.EnsureGiftEggsAreBabyPokemon && babySet.Count > 0;
-                                giveEgg.pokemon = pokeRand.Random(baby ? babySet : pokemonSet, giveEgg.pokemon, 1, settings.GiftSpeciesSettings);
+                                giveEgg.pokemon = pokeRand.RandomPokemon(baby ? babySet : pokemonSet, giveEgg.pokemon, settings.GiftSpeciesSettings, 1);
                             }
                             break;
                     }
@@ -709,7 +716,7 @@ namespace PokemonRandomizer.Backend.Randomization
             {
                 // Randomize Wally starter if applicable
                 if (settings.RandomizeWallyAce)
-                    data.CatchingTutPokemon = pokeRand.Random(pokemonSet, data.CatchingTutPokemon, 5, rivalSettings.PokemonSettings);
+                    data.CatchingTutPokemon = pokeRand.RandomPokemon(pokemonSet, data.CatchingTutPokemon, rivalSettings.PokemonSettings, 5);
                 var wallyBattles = new List<Trainer>(data.SpecialTrainers[wallyName]);
                 wallyBattles.Sort((a, b) => a.AvgLvl.CompareTo(b.AvgLvl));
                 var firstBattle = wallyBattles[0];

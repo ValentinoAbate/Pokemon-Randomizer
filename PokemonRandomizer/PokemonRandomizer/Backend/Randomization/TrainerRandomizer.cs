@@ -33,7 +33,7 @@ namespace PokemonRandomizer.Backend.Randomization
             {
                 // Chose pokemon
                 var metrics = CreatePokemonMetrics(pokemonSet, pokemon.species, partyTypeOccurence, settings.Data);
-                pokemon.species = pokeRand.RandomPokemon(pokemonSet, metrics, settings, pokemon.level);
+                pokemon.species = pokeRand.RandomPokemon(pokemonSet, pokemon.species, metrics, settings, pokemon.level);
 
                 // Reset special moves if necessary
                 if (pokemon.HasSpecialMoves)
@@ -80,7 +80,7 @@ namespace PokemonRandomizer.Backend.Randomization
             if (safe)
             {
                 // Set 1-pokemon battle to solo if appropriate
-                if (settings.MakeSoloPokemonBattlesSingle && trainer.pokemon.Length == 1)
+                if (trainer.pokemon.Length == 1)
                     trainer.isDoubleBattle = false;
             }
         }
@@ -161,17 +161,13 @@ namespace PokemonRandomizer.Backend.Randomization
                 }
             }
 
-            // Fixes
-            if (settings.MakeSoloPokemonBattlesSingle)
+            foreach (var battle in battles)
             {
-                foreach (var battle in battles)
-                {
-                    if (battle.pokemon.Length <= 1)
-                        battle.isDoubleBattle = false;
-                }
-                if (firstBattle.pokemon.Length <= 1)
-                    firstBattle.isDoubleBattle = false;
+                if (battle.pokemon.Length <= 1)
+                    battle.isDoubleBattle = false;
             }
+            if (firstBattle.pokemon.Length <= 1)
+                firstBattle.isDoubleBattle = false;
         }
 
         #endregion

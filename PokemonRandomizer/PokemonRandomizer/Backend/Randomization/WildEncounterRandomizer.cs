@@ -43,7 +43,7 @@ namespace PokemonRandomizer.Backend.Randomization
                         // Create metrics
                         var metrics = CreateMetrics(pokemonSet, enc.pokemon, encounterSet.type, typeOccurence, settings.Data);
                         // Choose pokemon
-                        enc.pokemon = pokeRand.RandomPokemon(pokemonSet, metrics, settings);
+                        enc.pokemon = pokeRand.RandomPokemon(pokemonSet, enc.pokemon, metrics, settings);
                     }
                 }
             }
@@ -62,7 +62,7 @@ namespace PokemonRandomizer.Backend.Randomization
                         // Create metrics
                         var metrics = CreateMetrics(pokemonSet, pokemon, encounterSet.type, typeOccurence, settings.Data);
                         // Choose pokemon
-                        mapping.Add(pokemon, pokeRand.RandomPokemon(pokemonSet, metrics, settings));
+                        mapping.Add(pokemon, pokeRand.RandomPokemon(pokemonSet, pokemon, metrics, settings));
                     }
                     // Remap
                     RemapEncounter(encounterSet, mapping, settings.RestrictIllegalEvolutions);
@@ -79,7 +79,7 @@ namespace PokemonRandomizer.Backend.Randomization
                     // Create metrics
                     var metrics = CreateMetrics(pokemonSet, pokemon, EncounterSet.Type.None, typeOccurence, settings.Data);
                     // Choose pokemon
-                    mapping.Add(pokemon, pokeRand.RandomPokemon(pokemonSet, metrics, settings));
+                    mapping.Add(pokemon, pokeRand.RandomPokemon(pokemonSet, pokemon, metrics, settings));
                 }
                 // Remap the encounters
                 foreach (var encounterSet in encounters)

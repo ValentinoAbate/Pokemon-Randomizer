@@ -25,7 +25,7 @@ namespace PokemonRandomizer.Backend.Randomization
             var inputData = dataT.GetItemData(input);
             if (inputData.IsKeyItem && settings.KeepKeyItems)
                 return input;
-            var itemWeights = new WeightedSet<ItemData>(possibleItems, 1);
+            var itemWeights = new WeightedSet<ItemData>(possibleItems);
             if (rand.RollSuccess(settings.SamePocketChance))
             {
                 itemWeights.RemoveWhere((i) => i.pocket != inputData.pocket);

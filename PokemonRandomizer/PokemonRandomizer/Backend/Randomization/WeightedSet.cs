@@ -29,7 +29,7 @@ namespace PokemonRandomizer.Backend.Randomization
         public WeightedSet() { items = new Dictionary<T, float>(); }
         public WeightedSet(int capacity) { items = new Dictionary<T, float>(capacity); }
         public WeightedSet(WeightedSet<T> toCopy) : this(toCopy.items) { }
-        public WeightedSet(IEnumerable<T> items, float weight = 0)
+        public WeightedSet(IEnumerable<T> items, float weight = 1)
         {
             this.items = new Dictionary<T, float>(items.Count());
             foreach (var item in items)
@@ -91,7 +91,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 }
 
             }
-            else if (weight < 0)
+            else if (weight <= 0)
             {
                 return;
             }
@@ -115,7 +115,7 @@ namespace PokemonRandomizer.Backend.Randomization
         {
             if (items.ContainsKey(item))
             {
-                if (items[item] * multiplier < 0)
+                if (items[item] * multiplier <= 0)
                 {
                     Remove(item);
                 }
