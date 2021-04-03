@@ -7,6 +7,7 @@ namespace PokemonRandomizer.Backend.Randomization
     public class Metric<T>
     {
         public const int power = 5;
+
         public static WeightedSet<T> ProcessGroup(IEnumerable<Metric<T>> metricData)
         {
             var outputSet = new WeightedSet<T>();

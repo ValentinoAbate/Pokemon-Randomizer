@@ -62,7 +62,7 @@ namespace PokemonRandomizer.Backend.DataStructures
         #endregion
 
         public TypeEffectivenessChart TypeDefinitions { get; set; }
-        public IEnumerable<Map> Maps => MapBanks.SelectMany((bank) => bank);
+        public IEnumerable<Map> Maps => MapBanks.SelectMany(bank => bank);
         public Map[][] MapBanks { get; set; }
         public List<EncounterSet> Encounters { get; set; }
         public List<MoveData> MoveData { get; set; }
@@ -92,7 +92,7 @@ namespace PokemonRandomizer.Backend.DataStructures
             Metrics = new RomMetrics(this);
         }
         /// <summary>updates the "evolvesFrom" fields of all pokemon</summary> 
-        public void LinkEvolutions()
+        private void LinkEvolutions()
         {
             foreach (var pokemon in Pokemon)
                 pokemon.evolvesFrom.Clear();
@@ -105,7 +105,7 @@ namespace PokemonRandomizer.Backend.DataStructures
         /// updates the "eggMoves" fields of all pokemon from their "evolvesFrom" field 
         /// Link evolutions must be called before this function or it will not work properly
         /// </summary> 
-        public void LinkEggMoves()
+        private void LinkEggMoves()
         {
             List<Move> GetEggMoves(PokemonBaseStats pokemon)
             {

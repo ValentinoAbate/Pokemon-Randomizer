@@ -23,23 +23,18 @@ namespace PokemonRandomizer.Backend.Randomization
 
         #region Trainer Randomization
 
-        private void RandomizeTrainerPokemon(Trainer trainer, IEnumerable<Pokemon> pokemonSet, PkmnRandomizer.Settings settings)
+        private void RandomizeTrainerPokemon(Trainer trainer, IEnumerable<Pokemon> pokemonSet, Settings.PokemonSettings settings)
         {
             // Class based?
             // Local environment based
             // Get type sample
-            var typeSample = trainer.pokemon.Select((p) => p.species).ToArray();
+            var partyTypeOccurence = PokemonMetrics.TypeOccurence(trainer.pokemon.Select(p => dataT.GetBaseStats(p.species)));
             foreach (var pokemon in trainer.pokemon)
             {
-                if (settings.WeightType == PkmnRandomizer.Settings.WeightingType.Group)
-                {
-                    pokemon.species = pokeRand.RandomTypeGroup(pokemonSet, pokemon.species, pokemon.level, typeSample, settings);
-                }
-                else
-                {
+                // Chose pokemon
+                var metrics = CreatePokemonMetrics(pokemonSet, pokemon.species, partyTypeOccurence, settings.Data);
+                pokemon.species = pokeRand.RandomPokemon(pokemonSet, metrics, settings, pokemon.level);
 
-                    pokemon.species = pokeRand.Random(pokemonSet, pokemon.species, pokemon.level, settings);
-                }
                 // Reset special moves if necessary
                 if (pokemon.HasSpecialMoves)
                 {
@@ -47,6 +42,24 @@ namespace PokemonRandomizer.Backend.Randomization
                     pokemon.moves = MovesetGenerator.SmartMoveSet(rand, dataT.GetBaseStats(pokemon.species), pokemon.level, dataT);
                 }
             }
+        }
+
+        private IEnumerable<Metric<Pokemon>> CreatePokemonMetrics(IEnumerable<Pokemon> all, Pokemon pokemon, WeightedSet<PokemonType> partyTypeOccurence, Settings.MetricData[] data)
+        {
+            var metrics = pokeRand.CreateBasicMetrics(all, pokemon, data, out List<Settings.MetricData> specialData);
+            foreach (var d in specialData)
+            {
+                WeightedSet<Pokemon> input = d.DataSource switch
+                {
+                    Settings.PokemonMetric.typeTrainerParty => pokeRand.TypeSimilarityGroup(all, pokemon, partyTypeOccurence),
+                    _ => null,
+                };
+                if (input != null)
+                {
+                    metrics.Add(new Metric<Pokemon>(input, d.Filter, d.Sharpness, d.Priority));
+                }
+            }
+            return metrics;
         }
 
         /// <summary> Radnomize the given trainer encounter </summary>
@@ -79,7 +92,7 @@ namespace PokemonRandomizer.Backend.Randomization
         /// </summary>
         public void RandomizeReoccurring(Trainer firstBattle, List<Trainer> battles, IEnumerable<Pokemon> pokemonSet, Settings.TrainerSettings settings)
         {
-            var speciesSettings = settings.PokemonSettings;
+            var pkmnSettings = settings.PokemonSettings;
 
             // Battle Type
             if (settings.BattleTypeStrategy == Settings.TrainerSettings.BattleTypePcgStrategy.None)
@@ -96,7 +109,7 @@ namespace PokemonRandomizer.Backend.Randomization
             {
                 for (int i = 1; i < battles.Count; i++)
                 {
-                    battles[i].isDoubleBattle = battles[0].isDoubleBattle;
+                    battles[i].isDoubleBattle = firstBattle.isDoubleBattle;
                 }
             }
 
@@ -105,7 +118,7 @@ namespace PokemonRandomizer.Backend.Randomization
             {
                 for (int i = 1; i < battles.Count; i++)
                 {
-                    RandomizeTrainerPokemon(battles[i], pokemonSet, speciesSettings);
+                    RandomizeTrainerPokemon(battles[i], pokemonSet, pkmnSettings);
                 }
             }
             else if (settings.PokemonStrategy == Settings.TrainerSettings.PokemonPcgStrategy.KeepAce)
@@ -113,11 +126,11 @@ namespace PokemonRandomizer.Backend.Randomization
                 var lastBattle = firstBattle;
                 foreach (var battle in battles)
                 {
-                    RandomizeTrainerPokemon(battle, pokemonSet, speciesSettings);
+                    RandomizeTrainerPokemon(battle, pokemonSet, pkmnSettings);
                     // Migrate Ace pokemon from the last battle
                     var currAce = battle.pokemon[battle.pokemon.Length - 1];
                     var lastAce = lastBattle.pokemon[lastBattle.pokemon.Length - 1];
-                    currAce.species = evoUtils.MaxEvolution(lastAce.species, currAce.level, speciesSettings.RestrictIllegalEvolutions);
+                    currAce.species = evoUtils.MaxEvolution(lastAce.species, currAce.level, pkmnSettings.RestrictIllegalEvolutions);
                     if (currAce.HasSpecialMoves)
                     {
                         currAce.moves = MovesetGenerator.SmartMoveSet(rand, dataT.GetBaseStats(currAce.species), currAce.level, dataT);
@@ -130,7 +143,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 var lastBattle = firstBattle;
                 foreach (var battle in battles)
                 {
-                    RandomizeTrainerPokemon(battle, pokemonSet, speciesSettings);
+                    RandomizeTrainerPokemon(battle, pokemonSet, pkmnSettings);
                     int lastBattleSize = lastBattle.pokemon.Length;
                     int battleSize = battle.pokemon.Length;
                     // Migrate pokemon from the last battle
@@ -138,7 +151,7 @@ namespace PokemonRandomizer.Backend.Randomization
                     {
                         var currPokemon = battle.pokemon[battleSize - (i + 1)];
                         var lastPokemon = lastBattle.pokemon[lastBattleSize - (i + 1)];
-                        currPokemon.species = evoUtils.MaxEvolution(lastPokemon.species, currPokemon.level, speciesSettings.RestrictIllegalEvolutions);
+                        currPokemon.species = evoUtils.MaxEvolution(lastPokemon.species, currPokemon.level, pkmnSettings.RestrictIllegalEvolutions);
                         if (currPokemon.HasSpecialMoves)
                         {
                             currPokemon.moves = MovesetGenerator.SmartMoveSet(rand, dataT.GetBaseStats(currPokemon.species), currPokemon.level, dataT);

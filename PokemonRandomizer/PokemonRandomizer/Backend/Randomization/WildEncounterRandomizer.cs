@@ -28,7 +28,7 @@ namespace PokemonRandomizer.Backend.Randomization
             this.romMetrics = romMetrics;
         }
 
-        public void RandomizeEncounters(IEnumerable<Pokemon> pokemonSet, IEnumerable<EncounterSet> encounters, PkmnRandomizer.Settings settings, Settings.MetricData[] data, Strategy strategy)
+        public void RandomizeEncounters(IEnumerable<Pokemon> pokemonSet, IEnumerable<EncounterSet> encounters, Settings.PokemonSettings settings, Strategy strategy)
         {
             if (strategy == Strategy.Unchanged)
                 return;
@@ -41,7 +41,7 @@ namespace PokemonRandomizer.Backend.Randomization
                     foreach (var enc in encounterSet)
                     {
                         // Create metrics
-                        var metrics = CreateMetrics(pokemonSet, enc.pokemon, encounterSet.type, typeOccurence, data);
+                        var metrics = CreateMetrics(pokemonSet, enc.pokemon, encounterSet.type, typeOccurence, settings.Data);
                         // Choose pokemon
                         enc.pokemon = pokeRand.RandomPokemon(pokemonSet, metrics, settings);
                     }
@@ -60,7 +60,7 @@ namespace PokemonRandomizer.Backend.Randomization
                     foreach(var pokemon in species)
                     {
                         // Create metrics
-                        var metrics = CreateMetrics(pokemonSet, pokemon, encounterSet.type, typeOccurence, data);
+                        var metrics = CreateMetrics(pokemonSet, pokemon, encounterSet.type, typeOccurence, settings.Data);
                         // Choose pokemon
                         mapping.Add(pokemon, pokeRand.RandomPokemon(pokemonSet, metrics, settings));
                     }
@@ -77,7 +77,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 foreach (var pokemon in pokemonSet)
                 {
                     // Create metrics
-                    var metrics = CreateMetrics(pokemonSet, pokemon, EncounterSet.Type.None, typeOccurence, data);
+                    var metrics = CreateMetrics(pokemonSet, pokemon, EncounterSet.Type.None, typeOccurence, settings.Data);
                     // Choose pokemon
                     mapping.Add(pokemon, pokeRand.RandomPokemon(pokemonSet, metrics, settings));
                 }
@@ -108,14 +108,12 @@ namespace PokemonRandomizer.Backend.Randomization
 
         private IEnumerable<Metric<Pokemon>> CreateMetrics(IEnumerable<Pokemon> all, Pokemon pokemon, EncounterSet.Type slotType, WeightedSet<PokemonType> typeOccurence, Settings.MetricData[] data)
         {
-            var metrics = new List<Metric<Pokemon>>(data.Count());
-            foreach (var d in data)
+            var metrics = pokeRand.CreateBasicMetrics(all, pokemon, data, out List<Settings.MetricData> specialData);
+            foreach (var d in specialData)
             {
                 WeightedSet<Pokemon> input = d.DataSource switch
                 {
-                    Settings.PokemonMetric.typeIndividual        => pokeRand.TypeSimilarityIndividual(all, pokemon),
                     Settings.PokemonMetric.typeEncounterSet      => pokeRand.TypeSimilarityGroup(all, pokemon, typeOccurence),
-                    Settings.PokemonMetric.powerIndividual       => pokeRand.PowerSimilarityIndividual(all, pokemon),
                     Settings.PokemonMetric.typeEncounterBankType => GetEncounterBankType(all, pokemon, slotType, d),
                     _ => null,
                 };

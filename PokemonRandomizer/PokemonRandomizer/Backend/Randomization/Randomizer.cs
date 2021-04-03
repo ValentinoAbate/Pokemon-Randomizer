@@ -656,7 +656,7 @@ namespace PokemonRandomizer.Backend.Randomization
 
             #region Wild Encounters
 
-            encounterRand.RandomizeEncounters(pokemonSet, data.Encounters, settings.EncounterSettings, settings.EncounterMetrics, settings.EncounterStrategy);
+            encounterRand.RandomizeEncounters(pokemonSet, data.Encounters, settings.EncounterSettings, settings.EncounterStrategy);
 
             #endregion
 

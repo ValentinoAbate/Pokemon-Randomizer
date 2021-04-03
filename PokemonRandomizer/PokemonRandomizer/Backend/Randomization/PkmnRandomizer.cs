@@ -27,7 +27,7 @@ namespace PokemonRandomizer.Backend.Randomization
 
         #region Pokemon Randomization
 
-        public Pokemon RandomPokemon(IEnumerable<Pokemon> all, IEnumerable<Metric<Pokemon>> data, Settings settings, int level)
+        public Pokemon RandomPokemon(IEnumerable<Pokemon> all, IEnumerable<Metric<Pokemon>> data, Settings.PokemonSettings settings, int level)
         {
             // Get a random pokemon (could possibly prefilter for level later to even out evolution stage odds unbalance)
             var newPokemon = RandomPokemon(all, data, settings);
@@ -38,7 +38,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 newPokemon = evoUtils.CorrectImpossibleEvo(newPokemon, level);
             return newPokemon;
         }
-        public Pokemon RandomPokemon(IEnumerable<Pokemon> all, IEnumerable<Metric<Pokemon>> data, Settings settings)
+        public Pokemon RandomPokemon(IEnumerable<Pokemon> all, IEnumerable<Metric<Pokemon>> data, Settings.PokemonSettings settings)
         {
             // If we roll on the noise
             if (rand.RollSuccess(settings.Noise))
@@ -89,7 +89,7 @@ namespace PokemonRandomizer.Backend.Randomization
         }
 
         /// <summary> Chose a random species from the input set based on the given species settings and the type sample given</summary> 
-        public Pokemon RandomTypeGroup(IEnumerable<Pokemon> possiblePokemon, Pokemon pokemon, int level, IEnumerable<Pokemon> typeGroup, Settings settings)
+        public Pokemon RandomTypeGroup(IEnumerable<Pokemon> possiblePokemon, Pokemon pokemon, int level, IEnumerable<Pokemon> typeGroup, Settings.PokemonSettings settings)
         {
             var newPokemon = RandomTypeGroup(possiblePokemon, pokemon, typeGroup, settings);
             if (settings.ForceHighestLegalEvolution)
@@ -100,14 +100,14 @@ namespace PokemonRandomizer.Backend.Randomization
             return newPokemon;
         }
         /// <summary> Chose a random species from the input set based on the given species settings and the type sample given</summary> 
-        public Pokemon RandomTypeGroup(IEnumerable<Pokemon> possiblePokemon, Pokemon pokemon, IEnumerable<Pokemon> typeGroup, Settings settings)
+        public Pokemon RandomTypeGroup(IEnumerable<Pokemon> possiblePokemon, Pokemon pokemon, IEnumerable<Pokemon> typeGroup, Settings.PokemonSettings settings)
         {
             var combinedWeightings = GetWeightedSetTypeGroup(possiblePokemon, pokemon, typeGroup, settings);
             // Actually choose the species
             return rand.Choice(combinedWeightings);
         }
         /// <summary> Chose a random species from the input set based on the given species settings</summary> 
-        public Pokemon Random(IEnumerable<Pokemon> possiblePokemon, Pokemon pokemon, Settings settings)
+        public Pokemon Random(IEnumerable<Pokemon> possiblePokemon, Pokemon pokemon, Settings.PokemonSettings settings)
         {
             var combinedWeightings = GetWeightedSet(possiblePokemon, pokemon, settings);
             // Actually choose the species
@@ -115,7 +115,7 @@ namespace PokemonRandomizer.Backend.Randomization
         }
         /// <summary> Chose a random species from the input set based on the given species settings.
         /// If speciesSettings.DisableIllegalEvolutions is true, scale impossible evolutions down to their less evolved forms </summary> 
-        public Pokemon Random(IEnumerable<Pokemon> possiblePokemon, Pokemon pokemon, int level, Settings settings)
+        public Pokemon Random(IEnumerable<Pokemon> possiblePokemon, Pokemon pokemon, int level, Settings.PokemonSettings settings)
         {
             var newPokemon = Random(possiblePokemon, pokemon, settings);
             if (settings.ForceHighestLegalEvolution)
@@ -161,7 +161,7 @@ namespace PokemonRandomizer.Backend.Randomization
             return TypeBalanceMetric;
         }
         /// <summary> Get a weighted and culled list of possible pokemon</summary>
-        private WeightedSet<Pokemon> GetWeightedSet(IEnumerable<Pokemon> possiblePokemon, Pokemon pokemon, Settings settings)
+        private WeightedSet<Pokemon> GetWeightedSet(IEnumerable<Pokemon> possiblePokemon, Pokemon pokemon, Settings.PokemonSettings settings)
         {
             var combinedWeightings = new WeightedSet<Pokemon>(possiblePokemon);
             // Power level similarity
@@ -203,7 +203,7 @@ namespace PokemonRandomizer.Backend.Randomization
             combinedWeightings.RemoveWhere(p => combinedWeightings[p] <= 0);
             return combinedWeightings;
         }
-        private WeightedSet<Pokemon> GetWeightedSetTypeGroup(IEnumerable<Pokemon> possiblePokemon, Pokemon pokemon, IEnumerable<Pokemon> typeGroup, Settings settings)
+        private WeightedSet<Pokemon> GetWeightedSetTypeGroup(IEnumerable<Pokemon> possiblePokemon, Pokemon pokemon, IEnumerable<Pokemon> typeGroup, Settings.PokemonSettings settings)
         {
             var combinedWeightings = new WeightedSet<Pokemon>(possiblePokemon);
             // Power level similarity
@@ -268,7 +268,7 @@ namespace PokemonRandomizer.Backend.Randomization
 
         /// <summary> Return 3 pokemon that form a valid type traingle, or null if none exist in the input set.
         /// Type triangles require one-way weakness, but allow neutral relations in reverse order (unless strong is true) </summary>
-        public List<Pokemon> RandomTypeTriangle(IEnumerable<Pokemon> possiblePokemon, IList<Pokemon> input, TypeEffectivenessChart typeDefinitions, Settings settings, bool strong = false)
+        public List<Pokemon> RandomTypeTriangle(IEnumerable<Pokemon> possiblePokemon, IList<Pokemon> input, TypeEffectivenessChart typeDefinitions, Settings.PokemonSettings settings, bool strong = false)
         {
             // invalid input
             if (input.Count < 3)
@@ -292,7 +292,7 @@ namespace PokemonRandomizer.Backend.Randomization
             return null; // No viable triangle with input spcifications
         }
         /// <summary> Helper method for the RandomTypeTriangle method </summary>
-        private List<Pokemon> FinishTriangle(WeightedSet<Pokemon> set, WeightedSet<Pokemon> possibleSeconds, Pokemon first, Pokemon lastInput, TypeEffectivenessChart typeDefinitions, Settings settings, bool strong)
+        private List<Pokemon> FinishTriangle(WeightedSet<Pokemon> set, WeightedSet<Pokemon> possibleSeconds, Pokemon first, Pokemon lastInput, TypeEffectivenessChart typeDefinitions, Settings.PokemonSettings settings, bool strong)
         {
             while (possibleSeconds.Count > 0)
             {
@@ -323,26 +323,33 @@ namespace PokemonRandomizer.Backend.Randomization
 
         #endregion
 
-        public class Settings
+        public List<Metric<Pokemon>> CreateBasicMetrics(IEnumerable<Pokemon> all, Pokemon pokemon, Settings.MetricData[] data)
         {
-            public enum WeightingType
-            {
-                Individual,
-                Group,
-            }
+            return CreateBasicMetrics(all, pokemon, data, out var _); // Optimize later
+        }
 
-            public bool RestrictIllegalEvolutions { get; set; } = true;
-            public bool ForceHighestLegalEvolution { get; set; } = false;
-            public bool BanLegendaries { get; set; } = false;
-            public WeightingType WeightType { get; set; } = WeightingType.Individual;
-            public float Sharpness { get; set; } = 0;
-            public float Noise { get; set; } = 0;
-            public float PowerScaleSimilarityMod { get; set; } = 0;
-            public bool PowerScaleCull { get; set; } = false;
-            public int PowerThresholdStronger { get; set; } = 100;
-            public int PowerThresholdWeaker { get; set; } = 100;
-            public float TypeSimilarityMod { get; set; } = 0;
-            public bool TypeSimilarityCull { get; set; } = false;
+        public List<Metric<Pokemon>> CreateBasicMetrics(IEnumerable<Pokemon> all, Pokemon pokemon, Settings.MetricData[] data, out List<Settings.MetricData> nonBasic)
+        {
+            var metrics = new List<Metric<Pokemon>>(data.Count());
+            nonBasic = new List<Settings.MetricData>(data.Count());
+            foreach (var d in data)
+            {
+                WeightedSet<Pokemon> input = d.DataSource switch
+                {
+                    Settings.PokemonMetric.typeIndividual => TypeSimilarityIndividual(all, pokemon),
+                    Settings.PokemonMetric.powerIndividual => PowerSimilarityIndividual(all, pokemon),
+                    _ => null,
+                };
+                if (input != null)
+                {
+                    metrics.Add(new Metric<Pokemon>(input, d.Filter, d.Sharpness, d.Priority));
+                }
+                else
+                {
+                    nonBasic.Add(d);
+                }
+            }
+            return metrics;
         }
     }
 }
