@@ -212,7 +212,12 @@ namespace PokemonRandomizer
                     {
                         BanLegendaries = false,
                         ForceHighestLegalEvolution = true,
-                        Noise = 0.002f,
+                        Noise = 0.01f,
+                        Data = new MetricData[]
+                        {
+                            new MetricData(PokemonMetric.typeIndividual),
+                            new MetricData(PokemonMetric.powerIndividual, 2),
+                        }
                     }
                 }
             },
@@ -222,7 +227,7 @@ namespace PokemonRandomizer
                     {
                         BanLegendaries = false,
                         ForceHighestLegalEvolution = true,
-                        Noise = 0.001f,
+                        Noise = 0.01f,
                     }
                 }
             },
@@ -232,7 +237,7 @@ namespace PokemonRandomizer
                     {
                         BanLegendaries = false,
                         ForceHighestLegalEvolution = true,
-                        Noise = 0.001f,
+                        Noise = 0.01f,
                     }
                 }
             },
@@ -242,7 +247,12 @@ namespace PokemonRandomizer
                     {
                         BanLegendaries = false,
                         ForceHighestLegalEvolution = true,
-                        Noise = 0.0001f,
+                        Data = new MetricData[]
+                        {
+                            new MetricData(PokemonMetric.typeTrainerParty, 0, 10000, 0.2f),
+                            new MetricData(PokemonMetric.powerIndividual, 3),
+                            //new MetricData(PokemonMetric.typeIndividual, 1),
+                        }
                     }
                 }
             },
@@ -253,7 +263,11 @@ namespace PokemonRandomizer
                         BanLegendaries = false,
                         RestrictIllegalEvolutions = false,
                         ForceHighestLegalEvolution = true,
-                        Noise = 0.0001f,
+                        Data = new MetricData[]
+                        {
+                            new MetricData(PokemonMetric.typeTrainerParty, 0, 1000, 0.2f),
+                            //new MetricData(PokemonMetric.typeIndividual, 1),
+                        }
                     }
                 }
             },
@@ -264,7 +278,12 @@ namespace PokemonRandomizer
                         BanLegendaries = false,
                         RestrictIllegalEvolutions = false,
                         ForceHighestLegalEvolution = true,
-                        Noise = 0.0001f,
+                        Noise = 0.001f,
+                        Data = new MetricData[]
+                        {
+                            new MetricData(PokemonMetric.typeTrainerParty, 0, 1000, 0.2f),
+                            //new MetricData(PokemonMetric.typeIndividual, 1),
+                        }
                     }
                 }
             },
@@ -374,8 +393,6 @@ namespace PokemonRandomizer
         #endregion
 
         #endregion
-
-
 
         #region Maps
 

@@ -131,6 +131,14 @@ namespace PokemonRandomizer.Backend.Randomization
             foreach (var key in keys)
                 Multiply(key, m(key));
         }
+
+        public void Pow(float power)
+        {
+            if(power > 0 && power != 1)
+            {
+                Map(i => (float)Math.Pow(items[i], power));
+            }
+        }
         public void Map(Func<T, float> m)
         {
             var keys = new List<T>(Items);

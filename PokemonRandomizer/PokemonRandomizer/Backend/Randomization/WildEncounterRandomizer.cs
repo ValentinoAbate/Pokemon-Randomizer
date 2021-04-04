@@ -113,13 +113,13 @@ namespace PokemonRandomizer.Backend.Randomization
             {
                 WeightedSet<Pokemon> input = d.DataSource switch
                 {
-                    Settings.PokemonMetric.typeEncounterSet      => pokeRand.TypeSimilarityGroup(all, pokemon, typeOccurence),
+                    Settings.PokemonMetric.typeEncounterSet      => pokeRand.TypeSimilarityGroup(all, pokemon, typeOccurence, d.Sharpness),
                     Settings.PokemonMetric.typeEncounterBankType => GetEncounterBankType(all, pokemon, slotType, d),
                     _ => null,
                 };
                 if(input != null)
                 {
-                    metrics.Add(new Metric<Pokemon>(input, d.Filter, d.Sharpness, d.Priority));
+                    metrics.Add(new Metric<Pokemon>(input, d.Filter, d.Priority));
                 }
             }
             return metrics;
@@ -129,7 +129,7 @@ namespace PokemonRandomizer.Backend.Randomization
         {
             if (!data.Flags.Contains(slotType.ToString()) || !romMetrics.EncounterSlotTypeOccurence.ContainsKey(slotType))
                 return null;
-            return pokeRand.TypeSimilarityGroup(all, pokemon, romMetrics.EncounterSlotTypeOccurence[slotType]);
+            return pokeRand.TypeSimilarityGroup(all, pokemon, romMetrics.EncounterSlotTypeOccurence[slotType], data.Sharpness);
         }
     }
 }

@@ -51,12 +51,12 @@ namespace PokemonRandomizer.Backend.Randomization
             {
                 WeightedSet<Pokemon> input = d.DataSource switch
                 {
-                    Settings.PokemonMetric.typeTrainerParty => pokeRand.TypeSimilarityGroup(all, pokemon, partyTypeOccurence),
+                    Settings.PokemonMetric.typeTrainerParty => pokeRand.TypeSimilarityGroup(all, pokemon, partyTypeOccurence, d.Sharpness),
                     _ => null,
                 };
                 if (input != null)
                 {
-                    metrics.Add(new Metric<Pokemon>(input, d.Filter, d.Sharpness, d.Priority));
+                    metrics.Add(new Metric<Pokemon>(input, d.Filter, d.Priority));
                 }
             }
             return metrics;

@@ -36,7 +36,7 @@ namespace PokemonRandomizer.Backend.Randomization
             evoUtils = new EvolutionUtils(rand, data);
             //Initialize Species Randomizer
             var powerScores = PowerScaling.Calculate(data.Pokemon, settings.TieringOptions);
-            pokeRand = new PkmnRandomizer(evoUtils, rand, data, powerScores);
+            pokeRand = new PkmnRandomizer(evoUtils, rand, data, data.Metrics, powerScores);
             // Initialize item randomizer
             itemRand = new ItemRandomizer(rand, data);
             // Initialize encounter randomizer

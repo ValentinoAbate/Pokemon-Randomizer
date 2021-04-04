@@ -16,13 +16,15 @@ namespace PokemonRandomizer.Backend.Randomization
         private readonly Random rand;
         private readonly IDataTranslator dataT;
         private readonly Dictionary<Pokemon, float> powerScores;
+        private readonly RomMetrics romMetrics;
 
-        public PkmnRandomizer(EvolutionUtils evoUtils, Random rand, IDataTranslator dataT, Dictionary<Pokemon, float> powerScores)
+        public PkmnRandomizer(EvolutionUtils evoUtils, Random rand, IDataTranslator dataT, RomMetrics romMetrics, Dictionary<Pokemon, float> powerScores)
         {
             this.evoUtils = evoUtils;
             this.rand = rand;
             this.dataT = dataT;
             this.powerScores = powerScores;
+            this.romMetrics = romMetrics;
         }
 
         #region Pokemon Randomization
@@ -163,28 +165,37 @@ namespace PokemonRandomizer.Backend.Randomization
         public WeightedSet<Pokemon> TypeSimilarityIndividual(IEnumerable<Pokemon> all, Pokemon pokemon)
         {
             var set = PokemonMetrics.TypeSimilarity(all, pokemon, dataT);
-            set.Multiply(GetTypeBalanceFunction(all)(pokemon));
+            set.Multiply(TypeBalanceFunction);
             return set;
         }
 
         public WeightedSet<Pokemon> TypeSimilarityGroup(IEnumerable<Pokemon> all, Pokemon pokemon, WeightedSet<PokemonType> typeData)
         {
             var set = new WeightedSet<Pokemon>(all);
-            set.Multiply(GetTypeBalanceFunction(all)(pokemon));
+            var modTypeData = new WeightedSet<PokemonType>(typeData);
+            modTypeData.Multiply(TypeBalanceFunction);
+            //set.Multiply(TypeBalanceFunction);
             float TypeMultiplier(Pokemon p)
             {
                 var data = dataT.GetBaseStats(p);
-                float type1Val = typeData.Contains(data.types[0]) ? typeData[data.types[0]] : 0;
+                float type1Val = modTypeData.Contains(data.types[0]) ? modTypeData[data.types[0]] : 0;
                 if (data.IsSingleTyped) // If single typed, just return the first type value
                 {
                     return type1Val;
                 }
                 // For dual-typed pokemon, return the sum of their type values
-                return type1Val + (typeData.Contains(data.types[1]) ? typeData[data.types[1]] : 0);
+                return type1Val + (modTypeData.Contains(data.types[1]) ? modTypeData[data.types[1]] : 0);
             }
             set.Multiply(TypeMultiplier);
             set.RemoveWhere(p => set[p] <= 0);
             return set;
+        }
+
+        public WeightedSet<Pokemon> TypeSimilarityGroup(IEnumerable<Pokemon> all, Pokemon pokemon, WeightedSet<PokemonType> typeData, float sharpness)
+        {
+            var newTypeData = new WeightedSet<PokemonType>(typeData);
+            newTypeData.Pow(sharpness);
+            return TypeSimilarityGroup(all, pokemon, typeData);
         }
 
         public WeightedSet<Pokemon> PowerSimilarityIndividual(IEnumerable<Pokemon> all, Pokemon pokemon)
@@ -196,35 +207,23 @@ namespace PokemonRandomizer.Backend.Randomization
         /// Function that balance weightings with the occurence rate of the types in all
         /// Makes water types less likely to dominate just cause there are so many of them, etc
         /// </summary>
-        private Func<Pokemon, float> GetTypeBalanceFunction(IEnumerable<Pokemon> all)
+        private float TypeBalanceFunction(Pokemon p)
         {
-            var typeOccurenceLookup = new Dictionary<PokemonType, float>();
-            foreach (var type in EnumUtils.GetValues<PokemonType>())
+            var typeOccurence = romMetrics.TypeOccurenceAll;
+            var pData = dataT.GetBaseStats(p);
+            float type1 = TypeBalanceFunction(pData.types[0]);
+            if (pData.IsSingleTyped)
             {
-                typeOccurenceLookup.Add(type, 0);
+                return type1;
             }
-            foreach (var pokemon in all)
-            {
-                var pData = dataT.GetBaseStats(pokemon);
-                typeOccurenceLookup[pData.types[0]] += 1;
-                if (!pData.IsSingleTyped)
-                {
-                    typeOccurenceLookup[pData.types[1]] += 1;
-                }
-            }
-            foreach (var type in EnumUtils.GetValues<PokemonType>())
-            {
-                float val = typeOccurenceLookup[type];
-                typeOccurenceLookup[type] = val == 0 ? 0 : 1 / val;
-            }
-            float TypeBalanceMetric(Pokemon s)
-            {
-                var pData = dataT.GetBaseStats(s);
-                if (pData.IsSingleTyped)
-                    return typeOccurenceLookup[pData.types[0]];
-                return (typeOccurenceLookup[pData.types[0]] + typeOccurenceLookup[pData.types[1]]) / 2;
-            }
-            return TypeBalanceMetric;
+            float type2 = TypeBalanceFunction(pData.types[1]);
+            return (type1 + type2) / 2;
+        }
+
+        private float TypeBalanceFunction(PokemonType t)
+        {
+            var typeOccurence = romMetrics.TypeOccurenceAll;
+            return typeOccurence.Contains(t) ? 1 / typeOccurence[t] : 0;
         }
 
         public List<Metric<Pokemon>> CreateBasicMetrics(IEnumerable<Pokemon> all, Pokemon pokemon, Settings.MetricData[] data)
@@ -246,7 +245,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 };
                 if (input != null)
                 {
-                    metrics.Add(new Metric<Pokemon>(input, d.Filter, d.Sharpness, d.Priority));
+                    metrics.Add(new Metric<Pokemon>(input, d.Filter, d.Priority));
                 }
                 else
                 {

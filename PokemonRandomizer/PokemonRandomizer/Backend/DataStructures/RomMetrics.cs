@@ -13,7 +13,7 @@ namespace PokemonRandomizer.Backend.DataStructures
     public class RomMetrics
     {
 
-        public WeightedSet<PokemonType> TypeRatiosAll { get; }
+        public WeightedSet<PokemonType> TypeOccurenceAll { get; }
         public WeightedSet<PokemonType> TypeRatiosSingle { get; }
         public WeightedSet<PokemonType> TypeRatiosDualPrimary { get; }
         public WeightedSet<PokemonType> TypeRatiosDualSecondary { get; }
@@ -47,7 +47,7 @@ namespace PokemonRandomizer.Backend.DataStructures
             #region Pokemon Base Stat Metrics
 
             #region Type Metrics
-            TypeRatiosAll = new WeightedSet<PokemonType>();
+            TypeOccurenceAll = new WeightedSet<PokemonType>();
             TypeRatiosSingle = new WeightedSet<PokemonType>();
             TypeRatiosDualPrimary = new WeightedSet<PokemonType>();
             TypeRatiosDualSecondary = new WeightedSet<PokemonType>();
@@ -56,13 +56,13 @@ namespace PokemonRandomizer.Backend.DataStructures
                 // if pkmn is single-typed
                 if (pkmn.IsSingleTyped)
                 {
-                    TypeRatiosAll.Add(pkmn.types[0]);
+                    TypeOccurenceAll.Add(pkmn.types[0]);
                     TypeRatiosSingle.Add(pkmn.types[0]);
                 }
                 else
                 {
-                    TypeRatiosAll.Add(pkmn.types[0]);
-                    TypeRatiosAll.Add(pkmn.types[1]);
+                    TypeOccurenceAll.Add(pkmn.types[0]);
+                    TypeOccurenceAll.Add(pkmn.types[1]);
                     TypeRatiosDualPrimary.Add(pkmn.types[0]);
                     TypeRatiosDualSecondary.Add(pkmn.types[1]);
                 }

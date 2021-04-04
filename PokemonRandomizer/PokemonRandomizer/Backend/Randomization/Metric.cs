@@ -22,27 +22,22 @@ namespace PokemonRandomizer.Backend.Randomization
         public WeightedSet<T> Processed(int priorityScale)
         {
             var processed = new WeightedSet<T>(input);
-            if(sharpness > 0 && sharpness != 1)
-            {
-                processed.Map((p) => (float)Math.Pow(processed[p], sharpness));
-            }
             processed.Normalize();
             processed.RemoveWhere(t => processed[t] <= filter);
             processed.Multiply((float)Math.Pow(power, priorityScale - priority));
+            processed.Multiply(1f / processed.Count); // Normalize for amount of entries
             return processed;
         }
 
         private readonly WeightedSet<T> input;
         private readonly float filter;
         private readonly int priority;
-        private readonly float sharpness;
 
-        public Metric(WeightedSet<T> input, float filter, float sharpness, int priority)
+        public Metric(WeightedSet<T> input, float filter, int priority)
         {
             this.input = input;
             this.filter = filter;
             this.priority = priority;
-            this.sharpness = sharpness;
         }
     }
 }
