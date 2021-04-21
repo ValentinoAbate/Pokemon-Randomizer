@@ -2,6 +2,7 @@
 using PokemonRandomizer.Backend.EnumTypes;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace PokemonRandomizer.Backend.Randomization
 {
@@ -40,12 +41,8 @@ namespace PokemonRandomizer.Backend.Randomization
                 return new ScoreFunc[0];
             var funcs = new List<ScoreFunc>();
             if (options.HasFlag(Options.BaseStatsAggregate))
-                funcs.Add(BaseStatsAggregate);
+                funcs.Add(p => p.BST);
             return funcs.ToArray();
-        }
-        private static float BaseStatsAggregate(PokemonBaseStats pkmn)
-        {
-            return pkmn.Hp + pkmn.Attack + pkmn.Defense + pkmn.SpAttack + pkmn.SpDefense + pkmn.Speed;
         }
     }
 }

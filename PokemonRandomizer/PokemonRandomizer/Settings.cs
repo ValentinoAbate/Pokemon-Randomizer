@@ -288,8 +288,8 @@ namespace PokemonRandomizer
                 }
             },
         };
-        public bool RandomizeWallyAce { get => true; }
-        public TrainerOption WallySetting { get => TrainerOption.Procedural; }
+        public bool RandomizeWallyAce => true;
+        public TrainerOption WallySetting => TrainerOption.Procedural;
         #endregion
 
         #region Wild Pokemon
@@ -538,6 +538,35 @@ namespace PokemonRandomizer
 
         #endregion
 
+        // This feature will generate 6 pokemon
+        #region Dream Team
+
+        public enum DreamTeamSetting
+        {
+            None,
+            Custom,
+            Random,
+        }
+
+        public DreamTeamSetting DreamTeamOption => DreamTeamSetting.Random;
+
+        public Pokemon[] CustomDreamTeam = new Pokemon[6];
+
+        public DreamTeamSettings DreamTeamOptions { get; } = new DreamTeamSettings();
+
+        public class DreamTeamSettings
+        {
+            public bool BanLegendaries => true;
+            public bool BanIllegalEvolutions => true;
+            public bool UseTotalBST => false;
+            public float BstTotalUpperBound => 2500;
+            public float BstTotalLowerBound => 40;
+            public bool UseTypeFilter => TypeFilter.Length > 0;
+            public PokemonType[] TypeFilter => new PokemonType[0];
+        }
+
+        #endregion
+
         #region Species Randomization
 
         public enum EvolutionOption
@@ -571,12 +600,6 @@ namespace PokemonRandomizer
 
         public class PokemonSettings
         {
-            public enum WeightingType
-            {
-                Individual,
-                Group,
-            }
-
             public MetricData[] Data { get; set; } = new MetricData[0];
             public bool RestrictIllegalEvolutions { get; set; } = true;
             public bool ForceHighestLegalEvolution { get; set; } = false;

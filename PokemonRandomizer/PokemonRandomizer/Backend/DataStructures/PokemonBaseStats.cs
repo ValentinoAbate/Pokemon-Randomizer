@@ -53,13 +53,16 @@ namespace PokemonRandomizer.Backend.DataStructures
         #endregion
 
         #region Stats
+
         public byte[] stats = new byte[6];
-        public byte Hp { get { return stats[0]; } set { stats[0] = value; } }
-        public byte Attack { get { return stats[1]; } set { stats[1] = value; } }
-        public byte Defense { get { return stats[2]; } set { stats[2] = value; } }
-        public byte Speed { get { return stats[3]; } set { stats[3] = value; } }
-        public byte SpAttack { get { return stats[4]; } set { stats[4] = value; } }
-        public byte SpDefense { get { return stats[5]; } set { stats[5] = value; } }
+        public byte Hp { get => stats[0]; set => stats[0] = value; }
+        public byte Attack { get => stats[1]; set => stats[1] = value; }
+        public byte Defense { get => stats[2]; set => stats[2] = value; }
+        public byte Speed { get => stats[3]; set => stats[3] = value; }
+        public byte SpAttack { get => stats[4]; set => stats[4] = value; }
+        public byte SpDefense { get => stats[5]; set => stats[5] = value; }
+        public int BST => stats.Sum(b => b);
+
         #endregion
 
         public int[] evYields = new int[6]; // How many evs you get when you defeat this pokemon

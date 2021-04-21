@@ -495,7 +495,6 @@ namespace PokemonRandomizer.Backend.Randomization
                     {
                         data.Starters[i] = pokeRand.RandomPokemon(pokemonSet, data.Starters[i], starterSettings, 5);
                     }
-
                 }
                 else if (settings.StarterSetting == Settings.StarterPokemonOption.RandomTypeTriangle)
                 {
@@ -664,6 +663,16 @@ namespace PokemonRandomizer.Backend.Randomization
             #region Wild Encounters
 
             encounterRand.RandomizeEncounters(pokemonSet, data.Encounters, settings.EncounterSettings, settings.EncounterStrategy);
+
+            if(settings.DreamTeamOption == Settings.DreamTeamSetting.Custom)
+            {
+
+            }
+            else if(settings.DreamTeamOption == Settings.DreamTeamSetting.Random)
+            {
+                var dreamTeamRandomizer = new DreamTeamRandomizer(rand, data);
+                var team = dreamTeamRandomizer.GenerateDreamTeam(pokemonSet, settings.DreamTeamOptions);
+            }
 
             #endregion
 

@@ -102,6 +102,14 @@ FEATURES:
 	- Signs
 	- Triggers
 - In-Game Trade Randomization
+- Dream Team: A feature that allows you to set up a team from the beginning of the game
+	- Can choose 6 custom pokemon, or choose parameters to generate a team with
+		- So far includes type filters, legendary / illegal evo filters, and TotalBST upper and lower bounds
+	- Pokemon are given to the player
+		- V1: in the first area
+		- V2: in poke balls in the starting town
+		- V3: as in-game trades in the first town (allowing the player to give custom IV values and nicknames, etc)?
+			- May cause boosted exp which could be undesirable
 - TM Text setting
 - Multi-Rom Data aggregation
 	- For instance, use emerald as a base but pull additional classes and moveset updates from FireRed
@@ -144,3 +152,4 @@ DUMB IDEA CORNER:
 	- Random Berry Effects
 	- Just add items that do hella damage
 - Make trainer cut-in lines dumb puns (in gen IV)
+- No evolution zone: pokemon cannot evolve (will make any pokemon a valid level unless done as a post-process (which could be an option))
