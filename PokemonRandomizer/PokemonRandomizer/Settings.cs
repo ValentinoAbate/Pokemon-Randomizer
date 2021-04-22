@@ -569,13 +569,6 @@ namespace PokemonRandomizer
 
         #region Species Randomization
 
-        public enum EvolutionOption
-        {
-            Unchanged,
-            DisableIllegal,
-            ForceHighestLegal,
-        }
-
         public class TrainerSettings
         {
             public enum PokemonPcgStrategy
