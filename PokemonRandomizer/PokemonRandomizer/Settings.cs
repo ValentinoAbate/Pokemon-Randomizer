@@ -558,8 +558,8 @@ namespace PokemonRandomizer
         {
             public bool BanLegendaries => true;
             public bool BanIllegalEvolutions => true;
-            public bool UseTotalBST => false;
-            public float BstTotalUpperBound => 2500;
+            public bool UseTotalBST => true;
+            public float BstTotalUpperBound => 2200;
             public float BstTotalLowerBound => 40;
             public bool UseTypeFilter => TypeFilter.Length > 0;
             public PokemonType[] TypeFilter => new PokemonType[0];

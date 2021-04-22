@@ -75,6 +75,7 @@
     <!-- pointer prefix from dabomstew's UP randomizer source https://github.com/Dabomstew/universal-pokemon-randomizer -->
     <!-- should be true for Ruby and sapphire as well -->
     <mapLabels pointerPrefix="0xC078288030BC01BC00470000"/>
+    <firstRoute bank ="0" map="16"/>
   </rseConstants>
   
   <!-- Emerald Rom Info -->
@@ -276,6 +277,7 @@
     <!-- pointer prefix from dabomstew's UP randomizer source https://github.com/Dabomstew/universal-pokemon-randomizer -->
     <!-- should work for leaf green as well -->
     <mapLabels pointerPrefix="0xAC470000AE470000B0470000"/>
+    <firstRoute bank ="3" map="19"/>
   </frlgConstants>
   
   <!-- FRLG Rom Info -->

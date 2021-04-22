@@ -664,14 +664,17 @@ namespace PokemonRandomizer.Backend.Randomization
 
             encounterRand.RandomizeEncounters(pokemonSet, data.Encounters, settings.EncounterSettings, settings.EncounterStrategy);
 
-            if(settings.DreamTeamOption == Settings.DreamTeamSetting.Custom)
-            {
-
-            }
-            else if(settings.DreamTeamOption == Settings.DreamTeamSetting.Random)
+            // Apply dream team to first encounter if desired
+            if(settings.DreamTeamOption != Settings.DreamTeamSetting.None && data.FirstEncounterSet != null)
             {
                 var dreamTeamRandomizer = new DreamTeamRandomizer(rand, data);
-                var team = dreamTeamRandomizer.GenerateDreamTeam(pokemonSet, settings.DreamTeamOptions);
+                var team = settings.DreamTeamOption switch
+                {
+                    Settings.DreamTeamSetting.Custom => settings.CustomDreamTeam,
+                    Settings.DreamTeamSetting.Random => dreamTeamRandomizer.GenerateDreamTeam(pokemonSet, settings.DreamTeamOptions),
+                    _ => new Pokemon[0],
+                };
+                dreamTeamRandomizer.ApplyDreamTeam(data.FirstEncounterSet, team);
             }
 
             #endregion

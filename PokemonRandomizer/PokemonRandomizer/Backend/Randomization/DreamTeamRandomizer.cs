@@ -48,6 +48,8 @@ namespace PokemonRandomizer.Backend.Randomization
                 party.Add((pokemon.species, bstDict[pokemon.species]));
                 if (party.Count < 6)
                     continue;
+                if (!settings.UseTotalBST)
+                    break;
                 int bstTotal = party.Sum(t => t.maxBst);
                 if (bstTotal > settings.BstTotalUpperBound)
                 {
@@ -89,7 +91,10 @@ namespace PokemonRandomizer.Backend.Randomization
 
         public void ApplyDreamTeam(EncounterSet encounterSet, Pokemon[] team)
         {
-
+            for(int i = 0; i < encounterSet.encounters.Count; ++i)
+            {
+                encounterSet.encounters[i].pokemon = team[i % team.Length];
+            }
         }
     }
 }

@@ -65,6 +65,8 @@ namespace PokemonRandomizer.Backend.DataStructures
         public IEnumerable<Map> Maps => MapBanks.SelectMany(bank => bank);
         public Map[][] MapBanks { get; set; }
         public List<EncounterSet> Encounters { get; set; }
+        // Used in dream team application
+        public EncounterSet FirstEncounterSet { get; set; }
         public List<MoveData> MoveData { get; set; }
         public List<ItemData> ItemData { get; set; }
         public PickupData PickupItems { get; set; }

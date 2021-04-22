@@ -66,6 +66,7 @@ namespace PokemonRandomizer.Backend.Reading
             // Read in the map data
             data.MapBanks = mapParser.ReadMapBanks(rom, info, metadata);
             data.Encounters = ReadEncounters(rom, info);
+            data.FirstEncounterSet = FindFirstEncounter(data.Encounters, info);
             // Read in the item data
             data.ItemData = ReadItemData(rom, info);
             // Read in the pickup items
@@ -559,6 +560,33 @@ namespace PokemonRandomizer.Backend.Reading
             }
 
             return encounters;
+        }
+
+        private EncounterSet FindFirstEncounter(IEnumerable<EncounterSet> encounters, XmlManager info)
+        {
+            if (!info.HasElement(ElementNames.firstEncounter))
+            {
+                // TODO: log
+                return null;
+            }
+            if(!info.HasElementWithAttr(ElementNames.firstEncounter, "map"))
+            {
+                // TODO: log
+                return null;
+            }
+            if(!info.HasElementWithAttr(ElementNames.firstEncounter, "bank"))
+            {
+                // TODO: log
+                return null;
+            }
+            int map = info.IntAttr(ElementNames.firstEncounter, "map");
+            int bank = info.IntAttr(ElementNames.firstEncounter, "bank");
+            foreach(var encounter in encounters)
+            {
+                if (encounter.map == map && encounter.bank == bank && encounter.type == EncounterSet.Type.Grass)
+                    return encounter;
+            }
+            return null;
         }
 
         // Read Type Effectiveness data
