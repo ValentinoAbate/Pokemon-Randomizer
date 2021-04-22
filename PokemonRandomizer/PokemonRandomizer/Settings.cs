@@ -293,13 +293,6 @@ namespace PokemonRandomizer
         #endregion
 
         #region Wild Pokemon
-        public enum WildPokemonOption
-        {
-            Unchanged,
-            Individual,
-            AreaOneToOne,
-            GlobalOneToOne,
-        }
         public WildEncounterRandomizer.Strategy EncounterStrategy => WildEncounterRandomizer.Strategy.AreaOneToOne;
         public PokemonSettings EncounterSettings { get; } = new PokemonSettings()
         {
