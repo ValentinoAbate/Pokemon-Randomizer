@@ -121,6 +121,7 @@
     <Compile Include="Backend\DataStructures\MoveData.cs" />
     <Compile Include="Backend\Randomization\MovesetGenerator.cs" />
     <Compile Include="Backend\Utilities\PokemonUtils.cs" />
+    <Compile Include="Backend\Utilities\RomDiff.cs" />
     <Compile Include="Backend\Writing\Gen3MapWriter.cs" />
     <Compile Include="Backend\Writing\Gen3ScriptWriter.cs" />
     <Compile Include="Backend\Writing\RomWriter.cs" />

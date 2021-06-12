@@ -31,9 +31,10 @@
             <MenuItem Header="File">
                 <MenuItem Header="Open ROM" Click="OpenROM"/>
                 <MenuItem Name="menuSaveROM" IsEnabled="{Binding IsROMLoaded}" Header="Save ROM" Click="SaveROM"/>
-                <MenuItem Name="menuGenerateInfoDoc" IsEnabled="{Binding IsROMLoaded}" Header="Generate Info" Click="GenerateInfoDoc" />
+                <MenuItem Name="menuGenerateInfoDoc" IsEnabled="{Binding IsROMLoaded}" Header="Generate Info" Click="GenerateInfoDoc"/>
                 <MenuItem Visibility="Visible" Header="Debug">
-                    <MenuItem Name="menuDebugSaveCleanRom" IsEnabled="{Binding IsROMLoaded}" Header="Save Clean ROM" Click="SaveCleanROM" />
+                    <MenuItem Name="menuDebugSaveCleanRom" IsEnabled="{Binding IsROMLoaded}" Header="Save Clean ROM" Click="SaveCleanROM"/>
+                    <MenuItem Name="menuDebugDiffRoms" IsEnabled="{Binding IsROMLoaded}" Header="Diff Roms" Click="DiffRoms"/>
                 </MenuItem>
                 <MenuItem Visibility="Collapsed" Header="_Convert Table" Click="ConvertTable" />
                     <Separator />

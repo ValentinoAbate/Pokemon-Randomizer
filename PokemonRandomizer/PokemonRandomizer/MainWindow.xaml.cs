@@ -78,6 +78,8 @@ namespace PokemonRandomizer
         private const string openRomFileFilter = "Rom Files (*.gba,*.nds)|*gba;*nds|" + gbaRomFileFilter + "|" + ndsRomFileFilter;
         private const string gbaRomFileFilter = "GBA Roms (*.gba)|*.gba";
         private const string ndsRomFileFilter = "NDS Roms (*.nds)|*.nds";
+        private const string textFileFilter = "txt files (*.txt)|*.txt";
+        private const string csvFileFilter = "csv files (*.csv)|*.csv";
         private const string saveRomPrompt = "Save Rom";
         private const string openRomPrompt = "Open Rom";
 
@@ -218,11 +220,63 @@ namespace PokemonRandomizer
             }
         }
 
+        private void DiffRoms(object sender, RoutedEventArgs e)
+        {
+            if(OriginalRom == null)
+            {
+                lblInfoBoxContent.Content = "Diff Error: Diff cannot be run with no open rom";
+                return;
+            }
+            var openFileDialog = new OpenFileDialog
+            {
+                Filter = openRomFileFilter,
+                Title = openRomPrompt
+            };
+            if (openFileDialog.ShowDialog() == true)
+            {
+                try
+                {
+                    // Open Rom to diff
+                    var rawRom2 = File.ReadAllBytes(openFileDialog.FileName);
+                    var metadata2 = new RomMetadata(rawRom2);
+                    if(metadata2.Gen != Metadata.Gen)
+                    {
+                        lblInfoBoxContent.Content = "Diff Error: Roms have different generations";
+                        return;
+                    }
+                    var rom2 = new Rom(rawRom2, 0x00, 0x00); // No free space data, will do later
+                    // Diff Roms
+                    var diffData = RomDiff.Diff(OriginalRom, rom2);
+                    // Save diff file
+                    var saveFileDialog = new SaveFileDialog
+                    {
+                        Filter = textFileFilter,
+                        Title = "Save Diff File"
+                    };
+                    if (saveFileDialog.ShowDialog() == true)
+                    {
+                        try
+                        {
+                            File.WriteAllLines(saveFileDialog.FileName, diffData.Readout().ToArray());
+                        }
+                        catch (IOException exception)
+                        {
+                            lblInfoBoxContent.Content = "Failed to save rom: " + exception.Message;
+                        }
+                    }
+                }
+                catch (IOException exception)
+                {
+                    lblInfoBoxContent.Content = "Failed to open rom: " + exception.Message;
+                }
+            }
+        }
+
         private void GenerateInfoDoc(object sender, RoutedEventArgs e)
         {
             var saveFileDialog = new SaveFileDialog
             {
-                Filter = "txt files (*.txt)|*.txt",
+                Filter = textFileFilter,
                 Title = "Generate Info Docs"
             };
             if (saveFileDialog.ShowDialog() == true)
@@ -235,12 +289,12 @@ namespace PokemonRandomizer
         {
             var openFileDialog = new OpenFileDialog
             {
-                Filter = ".csv file|*.csv",
+                Filter = csvFileFilter,
                 Title = "Convert csv"
             };
             if (openFileDialog.ShowDialog() == true)
             {
-                Backend.Utilities.TableReader.TableToDictFormat(openFileDialog.FileName, ',', 15);
+                TableReader.TableToDictFormat(openFileDialog.FileName, ',', 15);
             }
 
         }
