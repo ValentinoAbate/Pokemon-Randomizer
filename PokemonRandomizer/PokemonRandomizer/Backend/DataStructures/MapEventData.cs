@@ -34,7 +34,8 @@ namespace PokemonRandomizer.Backend.DataStructures
 			public byte movementType;
 			public byte movement; // Not sure if this is range, speed etc
 			public byte unknown3;
-			public bool isTrainer;
+			public bool IsTrainer => isTrainer == 0x01;
+			public byte isTrainer;
 			public byte unknown4;
 			public int trainerViewRadius; // Is "PlantID" for berry trees (Not sure what this is)
 			public int scriptOffset;

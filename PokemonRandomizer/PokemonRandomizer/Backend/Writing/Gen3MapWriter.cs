@@ -111,7 +111,7 @@ namespace PokemonRandomizer.Backend.Writing
                     rom.WriteByte(npc.movementType);
                     rom.WriteByte(npc.movement);
                     rom.WriteByte(npc.unknown3);
-                    rom.WriteByte(Convert.ToByte(npc.isTrainer));
+                    rom.WriteByte(npc.isTrainer);
                     rom.WriteByte(npc.unknown4);
                     rom.WriteUInt16(npc.trainerViewRadius);
                     rom.WritePointer(npc.scriptOffset);

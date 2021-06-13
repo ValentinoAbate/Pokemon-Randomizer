@@ -56,10 +56,7 @@ namespace PokemonRandomizer.Backend.Writing
             WriteTypeDefinitions(data, rom, info, ref repoints);
             WriteEncounters(data, rom, info);
             WriteTrainerBattles(data, rom, info);
-            if(metadata.IsRubySapphireOrEmerald)
-            {
-                mapWriter.WriteMapData(data, rom, info, metadata);
-            }
+            mapWriter.WriteMapData(data, rom, info, metadata);
             WriteItemData(data.ItemData, rom, info);
             WritePickupData(data.PickupItems, rom, info, metadata);
             // Hacks and tweaks

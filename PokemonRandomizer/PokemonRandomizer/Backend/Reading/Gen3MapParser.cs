@@ -160,7 +160,7 @@ namespace PokemonRandomizer.Backend.Reading
                         movementType = rom.ReadByte(),
                         movement = rom.ReadByte(),
                         unknown3 = rom.ReadByte(),
-                        isTrainer = rom.ReadByte() == 0x01,
+                        isTrainer = rom.ReadByte(),
                         unknown4 = rom.ReadByte(),
                         trainerViewRadius = rom.ReadUInt16(),
                         scriptOffset = rom.ReadPointer(),
