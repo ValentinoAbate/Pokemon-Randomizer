@@ -425,7 +425,7 @@ namespace PokemonRandomizer.Backend.Reading
             return ret;
         }
         /// <summary>
-        /// Read all the preset trainer data from the info file into the ROM data, and find normal crunt, ace, and reocurring trainers
+        /// Read all the preset trainer data from the info file into the ROM data, and find normal grunt, ace, and reocurring trainers
         /// </summary>
         private void SetSpecialTrainerData(RomData data, RomMetadata metadata, XmlManager info)
         {

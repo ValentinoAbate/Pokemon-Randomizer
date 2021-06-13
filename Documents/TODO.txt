@@ -143,7 +143,6 @@ FIXES:
 - TM Compat and Learnset generation could be dependent on each other
 - Weird hiker man isn't becoming a double battle
 - Text writing has errors with some unicode characters
-- TM duplicate has an issue where it writes weird data even without randomization
 - Script writing has some cases where it writes things that are seriously different in a clean rom
 DUMB IDEA CORNER:
 - Smeargle Hell: A certain percentage of moves have their effects replaced with sketch

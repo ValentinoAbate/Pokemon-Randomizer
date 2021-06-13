@@ -342,7 +342,7 @@
     <!-- Trainer Battle Definitions -->
 
     <!-- from thethethethe's forum post: http://pokemonhackersonline.com/showthread.php?t=2586 -->
-    <trainerBattles num="743" offset="0x23EAF0"/>
+    <trainerBattles num="742" offset="0x23EAF0"/>
     <trainerClassNames num="107" length="13" offset="0x23E558"/>
 
     <mapBankPointers num="43" offset="0x3526A8" pointer="0x5524C"/>
