@@ -12,6 +12,7 @@ using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Linq;
 
 namespace PokemonRandomizer
 {
@@ -32,6 +33,8 @@ namespace PokemonRandomizer
                 OnPropertyChanged("IsROMLoaded");
             }
         }
+
+        public bool LogNotEmpty => Logger.main.Count > 0;
 
         public CompositeCollection TypeTraitWeightDropDown
         {
@@ -82,6 +85,7 @@ namespace PokemonRandomizer
         private const string csvFileFilter = "csv files (*.csv)|*.csv";
         private const string saveRomPrompt = "Save Rom";
         private const string openRomPrompt = "Open Rom";
+        private const string openRomError = "Failed to open rom: ";
 
         private readonly TmHmTutorModel tmHmData = new TmHmTutorModel();
         private readonly StartersDataModel starterData = new StartersDataModel();
@@ -94,6 +98,24 @@ namespace PokemonRandomizer
             // Create pokemon traits UI
             new GroupUI<PokemonTraitsDataView, PokemonTraitsModel>(TraitsGroupsPanel, TraitsViewPanel, new PokemonTraitsModel() { SingleTypeRandChance = 1 });
             TmHmTutorView.Content = new TmHmTutorDataView(tmHmData);
+            Logger.main.OnLog += OnLog;
+        }
+
+        private void OnLog(Logger.LogData data)
+        {
+            if(data.level != Logger.Level.Info)
+            {
+                SetInfoBox(data.ToString());
+            }
+            if(Logger.main.Count == 1)
+            {
+                OnPropertyChanged("LogNotEmpty");
+            }
+        }
+
+        private void SetInfoBox(string content)
+        {
+            lblInfoBoxContent.Content = content;
         }
 
         private void InitializeUI(RomData data)
@@ -121,12 +143,16 @@ namespace PokemonRandomizer
             }
             else
             {
-                lblInfoBoxContent.Content = "Failed to open rom - unsupported generation (" + metadata.Gen.ToString() + ")";
+                Logger.main.Error("Failed to open rom - unsupported generation (" + metadata.Gen.ToString() + ")");
                 return false;
             }
             IsROMLoaded = true;
             InitializeUI(OriginalData);
-            lblInfoBoxContent.Content = "Rom opened: " + metadata.Name + " (" + metadata.Code + ")";
+            // Log open and set info box
+            string msg = "Rom opened: " + metadata.Name + " (" + metadata.Code + ")";
+            Logger.main.Info(msg);
+            SetInfoBox(msg);
+            // Cache metadata and last randomization info
             LastRandomizationInfo = OriginalData.ToStringArray();
             Metadata = metadata;
             return true;
@@ -178,7 +204,7 @@ namespace PokemonRandomizer
                 }
                 catch(IOException exception)
                 {
-                    lblInfoBoxContent.Content = "Failed to open rom: " + exception.Message;
+                    Logger.main.Error(openRomError + exception.Message);
                 }
             }
         }
@@ -201,7 +227,7 @@ namespace PokemonRandomizer
                 }
                 catch (IOException exception)
                 {
-                    lblInfoBoxContent.Content = "Failed to save rom: " + exception.Message;
+                    Logger.main.Error("Failed to save rom: " + exception.Message);
                 }
             }
         }
@@ -224,7 +250,7 @@ namespace PokemonRandomizer
         {
             if(OriginalRom == null)
             {
-                lblInfoBoxContent.Content = "Diff Error: Diff cannot be run with no open rom";
+                Logger.main.Error("Diff Error: Diff cannot be run with no open rom");
                 return;
             }
             var openFileDialog = new OpenFileDialog
@@ -241,7 +267,7 @@ namespace PokemonRandomizer
                     var metadata2 = new RomMetadata(rawRom2);
                     if(metadata2.Gen != Metadata.Gen)
                     {
-                        lblInfoBoxContent.Content = "Diff Error: Roms have different generations";
+                        Logger.main.Error("Diff Error: Roms have different generations");
                         return;
                     }
                     var rom2 = new Rom(rawRom2, 0x00, 0x00); // No free space data, will do later
@@ -251,7 +277,8 @@ namespace PokemonRandomizer
                     var saveFileDialog = new SaveFileDialog
                     {
                         Filter = textFileFilter,
-                        Title = "Save Diff File"
+                        Title = "Save Diff File",
+                        FileName = "diff",
                     };
                     if (saveFileDialog.ShowDialog() == true)
                     {
@@ -261,15 +288,45 @@ namespace PokemonRandomizer
                         }
                         catch (IOException exception)
                         {
-                            lblInfoBoxContent.Content = "Failed to save rom: " + exception.Message;
+                            Logger.main.Error("Failed to save diff file: " + exception.Message);
                         }
                     }
                 }
                 catch (IOException exception)
                 {
-                    lblInfoBoxContent.Content = "Failed to open rom: " + exception.Message;
+                    Logger.main.Error(openRomError + exception.Message);
                 }
             }
+        }
+
+        private void SaveLog(object sender, RoutedEventArgs e)
+        {
+            if (Logger.main.Count <= 0)
+                return;
+            // Save Log File
+            var saveFileDialog = new SaveFileDialog
+            {
+                Filter = textFileFilter,
+                Title = "Save Log File",
+                FileName = "log",
+            };
+            if (saveFileDialog.ShowDialog() == true)
+            {
+                try
+                {
+                    File.WriteAllLines(saveFileDialog.FileName, Logger.main.FullLog.Select(d => d.ToString()));
+                }
+                catch (IOException exception)
+                {
+                    Logger.main.Error("Failed to save log file: " + exception.Message);
+                }
+            }
+        }
+
+        private void ClearLog(object sender, RoutedEventArgs e)
+        {
+            Logger.main.Clear();
+            OnPropertyChanged("LogNotEmpty");
         }
 
         private void GenerateInfoDoc(object sender, RoutedEventArgs e)
