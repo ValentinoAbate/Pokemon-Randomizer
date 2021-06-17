@@ -142,7 +142,6 @@ FIXES:
 - Snow looks weird in some areas
 - TM Compat and Learnset generation could be dependent on each other
 - Weird hiker man isn't becoming a double battle
-- Text writing seems to have errors with group string translation (see pokeblockcase item, and diff)
 - Script writing has some cases where it writes things that are seriously different in a clean rom
 DUMB IDEA CORNER:
 - Smeargle Hell: A certain percentage of moves have their effects replaced with sketch

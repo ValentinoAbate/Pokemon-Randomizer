@@ -5,6 +5,7 @@ using System.Text;
 
 namespace PokemonRandomizer.Backend.DataStructures
 {
+    using Utilities;
     /// <summary>
     /// Wraps a byte[] into a class designed to be read from
     /// </summary>
@@ -530,10 +531,13 @@ namespace PokemonRandomizer.Backend.DataStructures
 
         private byte[] TranslateString(string text)
         {
-            var bytes = new List<byte>(text.Length * 2);
+            // text is strictly longer than the tranlated byte list due to groups and escape chars
+            var bytes = new List<byte>(text.Length);
             for(int i = 0; i < text.Length; ++i)
             {
                 char currChar = text[i];
+
+                // Parse symbol at current index
                 string currSym;
                 if(currChar == escapeChar)
                 {
@@ -554,17 +558,23 @@ namespace PokemonRandomizer.Backend.DataStructures
                 }
                 else if(currChar == groupChar)
                 {
-                    int groupLength = text.IndexOf(groupEndChar, i + 1) - i;
+                    int groupLength = text.IndexOf(groupEndChar, i + 1) - i + 1;
                     currSym = text.Substring(i, groupLength);
-                    i += groupLength;
+                    i += (groupLength - 1); // group length counts the char at i
                 }
                 else
                 {
                     currSym = currChar.ToString();
                 }
+
+                // Translate symbol to byte
                 if(textToSymTable.ContainsKey(currSym))
                 {
                     bytes.Add(textToSymTable[currSym]);
+                }
+                else
+                {
+                    Logger.main.Error("Unrecognized text symbol: " + currSym);
                 }
             }
             return bytes.ToArray();
