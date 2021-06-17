@@ -1,11 +1,4 @@
 ﻿using Microsoft.Win32;
-using PokemonRandomizer.Backend.DataStructures;
-using PokemonRandomizer.Backend.EnumTypes;
-using PokemonRandomizer.Backend.Reading;
-using PokemonRandomizer.Backend.Utilities;
-using PokemonRandomizer.Backend.Writing;
-using PokemonRandomizer.Windows;
-using PokemonRandomizer.UI;
 using System;
 using System.ComponentModel;
 using System.IO;
@@ -16,6 +9,14 @@ using System.Linq;
 
 namespace PokemonRandomizer
 {
+    using Backend.DataStructures;
+    using Backend.EnumTypes;
+    using Backend.Reading;
+    using Backend.Utilities;
+    using Backend.Utilities.Debug;
+    using Backend.Writing;
+    using Windows;
+    using UI;
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>

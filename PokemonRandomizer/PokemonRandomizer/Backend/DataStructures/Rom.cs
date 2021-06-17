@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace PokemonRandomizer.Backend.DataStructures
 {
-    using Utilities;
+    using Utilities.Debug;
     /// <summary>
     /// Wraps a byte[] into a class designed to be read from
     /// </summary>

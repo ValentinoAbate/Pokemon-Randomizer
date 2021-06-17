@@ -6,6 +6,7 @@ namespace PokemonRandomizer.Backend.Reading
     using DataStructures;
     using DataStructures.Scripts;
     using EnumTypes;
+    using Utilities.Debug;
     using Scripting.GenIII;
 
     public class Gen3ScriptParser
@@ -142,7 +143,7 @@ namespace PokemonRandomizer.Backend.Reading
             var command = new Gen3Command() { code = rom.ReadByte() };
             if (!Gen3Command.commandMap.ContainsKey(command.code))
             {
-                // Todo: log error
+                Logger.main.Error("Unrecognized script command code: " + command.code);
                 return command;
             }
             ReadArgs(ref command, rom, Gen3Command.commandMap[command.code]);
