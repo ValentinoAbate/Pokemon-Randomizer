@@ -13,12 +13,23 @@ namespace PokemonRandomizer.Backend.Utilities
         {
             var ret = new DiffData();
             int minLength = Math.Min(original.Length, modified.Length);
+            int lastDiff = int.MinValue;
             for(int i = 0; i < minLength; ++i)
             {
                 byte originalValue = original.ReadByte(i);
                 byte modifiedValue = modified.ReadByte(i);
                 if(originalValue != modifiedValue)
                 {
+                    // New block diff
+                    if(i != lastDiff + 1)
+                    {
+                        ret.BlockDiffs.Add(new DiffData.BlockDiff(i, originalValue, modifiedValue));
+                    }
+                    else
+                    {
+                        ret.CurrBlock.AddValue(originalValue, modifiedValue);
+                    }
+                    lastDiff = i;
                     ret.ByteDiffs.Add(new DiffData.ByteDiff(i, originalValue, modifiedValue));
                 }
             }
@@ -28,12 +39,17 @@ namespace PokemonRandomizer.Backend.Utilities
         {
             public List<string> Readout()
             {
-                var ret = new List<string>(ByteDiffs.Count + 1);
+                var ret = new List<string>();
                 ret.Add("Byte Diffs:");
                 ret.AddRange(ByteDiffs.Select(d => d.ToString()));
+                ret.Add(" ");
+                ret.Add("Block Diffs:");
+                ret.AddRange(BlockDiffs.SelectMany(d => d.Readout()));
                 return ret;
             }
             public List<ByteDiff> ByteDiffs { get; } = new List<ByteDiff>();
+            public BlockDiff CurrBlock => BlockDiffs.Count > 0 ? BlockDiffs[BlockDiffs.Count - 1] : null;
+            public List<BlockDiff> BlockDiffs { get; } = new List<BlockDiff>();
             public struct ByteDiff
             {
                 public int offset;
@@ -50,6 +66,32 @@ namespace PokemonRandomizer.Backend.Utilities
                 public override string ToString()
                 {
                     return offset.ToString("x2") + ": " + originalValue.ToString("x2") + " -> " + changedValue.ToString("x2");
+                }
+            }
+
+            public class BlockDiff
+            {
+                public int offset;
+                public List<(byte, byte)> values = new List<(byte, byte)>();
+
+                public BlockDiff(int offset, byte originalFirstValue, byte changedFirstValue)
+                {
+                    this.offset = offset;
+                    AddValue(originalFirstValue, changedFirstValue);
+                }
+
+                public void AddValue(byte original, byte changed)
+                {
+                    values.Add((original, changed));
+                }
+
+                public List<string> Readout()
+                {
+                    var ret = new List<string>();
+                    ret.Add("// Block: " + offset.ToString("x2") + " - " + (offset + values.Count - 1).ToString("x2") + " (" + values.Count + " bytes)");
+                    ret.AddRange(values.Select(v => v.Item1.ToString("x2") + " -> " + v.Item2.ToString("x2")));
+                    ret.Add(" ");
+                    return ret;
                 }
             }
         }
