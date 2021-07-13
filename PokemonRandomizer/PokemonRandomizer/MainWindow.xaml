@@ -222,6 +222,9 @@
             <StatusBarItem>
                 <Label Name="lblInfoBoxContent" Content="Please open a Rom! use file-&gt;Open Rom."/>
             </StatusBarItem>
+            <StatusBarItem HorizontalAlignment="Right">
+                <Label Name="lblInfoBoxErrorCount" Content=""/>
+            </StatusBarItem>
         </StatusBar>
     </Grid>
     

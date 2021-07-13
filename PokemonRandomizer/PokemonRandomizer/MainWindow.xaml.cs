@@ -91,6 +91,8 @@ namespace PokemonRandomizer
         private readonly TmHmTutorModel tmHmData = new TmHmTutorModel();
         private readonly StartersDataModel starterData = new StartersDataModel();
 
+        private int errorCount = 0;
+
         public MainWindow()
         {
             IsROMLoaded = false;
@@ -106,6 +108,11 @@ namespace PokemonRandomizer
         {
             if(data.level != Logger.Level.Info)
             {
+                if(data.level == Logger.Level.Error)
+                {
+                    ++errorCount;
+                    lblInfoBoxErrorCount.Content = errorCount + " Errors";
+                }
                 SetInfoBox(data.ToString());
             }
             if(Logger.main.Count == 1)
@@ -327,6 +334,8 @@ namespace PokemonRandomizer
         private void ClearLog(object sender, RoutedEventArgs e)
         {
             Logger.main.Clear();
+            errorCount = 0;
+            lblInfoBoxErrorCount.Content = string.Empty;
             OnPropertyChanged("LogNotEmpty");
         }
 

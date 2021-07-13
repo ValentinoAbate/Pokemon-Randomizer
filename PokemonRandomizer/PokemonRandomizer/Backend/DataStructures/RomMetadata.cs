@@ -5,6 +5,7 @@ using System.Text;
 
 namespace PokemonRandomizer.Backend.DataStructures
 {
+    using Utilities.Debug;
     public class RomMetadata
     {
         // Gen III Codes
@@ -81,7 +82,8 @@ namespace PokemonRandomizer.Backend.DataStructures
                 default:
                     //Add fallback based on file extension?
                     //Add manual override?
-                    throw new Exception("rom file is not a valid length, unable to detect generation");
+                    Logger.main.Error("Rom file is not a valid length, unable to detect generation");
+                    return;
             }
         }
 
@@ -91,9 +93,9 @@ namespace PokemonRandomizer.Backend.DataStructures
             switch (Gen)
             {
                 case Generation.I:
-                    break;
+                    goto default;
                 case Generation.II:
-                    break;
+                    goto default;
                 case Generation.III:
                     Name = Encoding.ASCII.GetString(rawRom.ReadBlock(gbaRomNameOffset, gbaRomNameSize));
                     Code = Encoding.ASCII.GetString(rawRom.ReadBlock(gbaRomCodeOffset, gbaRomCodeSize));
@@ -105,13 +107,11 @@ namespace PokemonRandomizer.Backend.DataStructures
                     Version = rawRom[ndsRomVersionOffset]; // Version is one byte
                     break;
                 case Generation.V:
-                    break;
                 case Generation.VI:
-                    break;
                 case Generation.VII:
-                    break;
                 default:
-                    throw new Exception("Gen " + Gen.ToDisplayString() + " is not supported. unable to find metadata");
+                    Logger.main.Warning("Gen " + Gen.ToDisplayString() + " is not currently supported for metadata parsing. Unable to initialize metadata");
+                    return;
             }
             // Remove null terminators from name
             Name = Name.Replace("\0", string.Empty);

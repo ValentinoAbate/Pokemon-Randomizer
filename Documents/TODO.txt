@@ -143,6 +143,7 @@ FIXES:
 - Snow looks weird in some areas
 - TM Compat and Learnset generation could be dependent on each other
 - Weird hiker man isn't becoming a double battle
+- Potentially: write catching tut on emerald has some differences from clean ROMs (see diff9)
 DUMB IDEA CORNER:
 - Smeargle Hell: A certain percentage of moves have their effects replaced with sketch
 - Splash Zone: A certain percentage of moves have their effects replaced with but nothing happened
