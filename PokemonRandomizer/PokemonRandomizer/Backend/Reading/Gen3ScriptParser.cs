@@ -67,6 +67,10 @@ namespace PokemonRandomizer.Backend.Reading
                     {
                         script.Add(giveItemCommand);
                     }
+                    else
+                    {
+                        script.Add(command);
+                    }
                 }
                 else if(command.code == Gen3Command.givePokemon)
                 {
