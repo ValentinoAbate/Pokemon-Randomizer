@@ -57,6 +57,9 @@ namespace PokemonRandomizer.Backend.Writing
                         rom.WriteByte(Gen3Command.giveEgg);
                         rom.WriteUInt16((int)giveEggCommand.pokemon);
                         break;
+                    case ShopCommand shopCommand:
+                        WriteShopCommand(rom, shopCommand);
+                        break;
                     case Gen3Command gen3Command:
                         rom.WriteByte(gen3Command.code);
                         foreach(var arg in gen3Command.args)
@@ -81,6 +84,37 @@ namespace PokemonRandomizer.Backend.Writing
                 }
             }
             rom.LoadOffset();
+        }
+
+        private void WriteShopCommand(Rom rom, ShopCommand command)
+        {
+            rom.WriteByte(command.code);
+            if(command.shop.items.Count <= command.shop.OriginalSize)
+            {
+                rom.WritePointer(command.shopOffset);
+                // Write the shop contents
+                rom.SaveAndSeekOffset(command.shopOffset);
+                foreach(var item in command.shop.items)
+                {
+                    rom.WriteUInt16((int)itemRemap(item));
+                }
+                rom.WriteUInt16((int)Item.None); // Add the terminator
+                rom.LoadOffset();
+            }
+            else // shop has been expanded, repoint necessary
+            {
+                // Create shop data block
+                var dataBlock = new Rom((command.shop.items.Count + 1) * 2, rom.FreeSpaceByte);
+                foreach (var item in command.shop.items)
+                {
+                    dataBlock.WriteUInt16((int)itemRemap(item));
+                }
+                dataBlock.WriteUInt16((int)Item.None);
+                // Attempt to write shop data block in free space
+                var newOffset = rom.WriteInFreeSpace(dataBlock.File);
+                // If successful, write the new offset, else write the old one
+                rom.WritePointer(newOffset != null ? (int)newOffset : command.shopOffset);
+            }
         }
     }
 }

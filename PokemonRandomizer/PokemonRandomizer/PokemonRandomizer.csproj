@@ -88,6 +88,8 @@
     <Compile Include="Backend\DataStructures\Scripts\GivePokemonCommand.cs" />
     <Compile Include="Backend\DataStructures\Scripts\GotoCommand.cs" />
     <Compile Include="Backend\DataStructures\Scripts\GotoIfCommand.cs" />
+    <Compile Include="Backend\DataStructures\Scripts\ShopCommand.cs" />
+    <Compile Include="Backend\DataStructures\Shop.cs" />
     <Compile Include="Backend\EnumTypes\Generation.cs" />
     <Compile Include="Backend\EnumTypes\IDataTranslator.cs" />
     <Compile Include="Backend\GenIII\Constants\ElementNames\ElementNames.cs" />

@@ -149,7 +149,7 @@ namespace PokemonRandomizer.Backend.DataStructures
             int? blockOffset = ScanForFreeSpaceOffset(FreeSpaceByte, startOffset ?? SearchStartOffset, data.Length);
             if (blockOffset == null)
                 return null;
-            System.Array.Copy(data, 0, File, (int)blockOffset, data.Length);
+            Array.Copy(data, 0, File, (int)blockOffset, data.Length);
             return blockOffset;
         }
         /// <summary> Repoint all pointers to an offset to a target offset. 
@@ -257,6 +257,12 @@ namespace PokemonRandomizer.Backend.DataStructures
         public void SaveOffset()
         {
             SavedOffsets.Push(InternalOffset);
+        }
+        /// <summary>Pushes the Rom's internal offset to the SavedOffsets Stack (to be loaded later) and then seeks the given offset</summary>
+        public void SaveAndSeekOffset(int offset)
+        {
+            SavedOffsets.Push(InternalOffset);
+            Seek(offset);
         }
         /// <summary>Sets the Rom's internal offset from the SavedOffsets Stack</summary>
         public void LoadOffset()

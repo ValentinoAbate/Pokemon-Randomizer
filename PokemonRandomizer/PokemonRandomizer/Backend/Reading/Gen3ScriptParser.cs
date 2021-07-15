@@ -93,6 +93,11 @@ namespace PokemonRandomizer.Backend.Reading
                     // Add new give egg event
                     script.Add(new GiveEggCommand() { pokemon = (Pokemon)command.ArgData(0) });
                 }
+                else if(command.code == Gen3Command.pokemart || command.code == Gen3Command.pokemart2 || command.code == Gen3Command.pokemart3)
+                {
+                    // Add new poke mart event
+                    script.Add(ParseShopCommand(rom, command));
+                }
                 else // Not a special code, just push the command
                 {
                     script.Add(command);
@@ -137,6 +142,27 @@ namespace PokemonRandomizer.Backend.Reading
             }
             rom.DumpOffset();
             return true;
+        }
+
+        private ShopCommand ParseShopCommand(Rom rom, Gen3Command command)
+        {
+            var shopCommand = new ShopCommand()
+            {
+                code = command.code,
+                shopOffset = command.ArgData(0)
+            };
+            rom.SaveAndSeekOffset(shopCommand.shopOffset);
+            // Read items until we hit 0x00 0x00 (Item.None)
+            var item = (Item)rom.ReadUInt16();
+            while (item != Item.None)
+            {
+                shopCommand.shop.items.Add(item);
+                item = (Item)rom.ReadUInt16();
+            }
+            // Mark the original size of the shop so it can be repointed if necessary
+            shopCommand.shop.SetOriginalSize();
+            rom.LoadOffset();
+            return shopCommand;
         }
 
         /// <summary>
