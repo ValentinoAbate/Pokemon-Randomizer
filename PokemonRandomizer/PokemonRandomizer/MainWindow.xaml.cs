@@ -111,7 +111,7 @@ namespace PokemonRandomizer
                 if(data.level == Logger.Level.Error)
                 {
                     ++errorCount;
-                    lblInfoBoxErrorCount.Content = errorCount + " Errors";
+                    lblInfoBoxErrorCount.Content = errorCount + (errorCount == 1 ? " Error" : " Errors");
                 }
                 SetInfoBox(data.ToString());
             }

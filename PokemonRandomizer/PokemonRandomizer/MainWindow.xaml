@@ -219,11 +219,21 @@
         <!--Message Box-->
         
         <StatusBar Name="InfoBox" Grid.Row="2" Height="45">
+            <StatusBar.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                    </Grid>
+                </ItemsPanelTemplate>
+            </StatusBar.ItemsPanel>
             <StatusBarItem>
-                <Label Name="lblInfoBoxContent" Content="Please open a Rom! use file-&gt;Open Rom."/>
+                <Label Name="lblInfoBoxContent" Content="Please open a Rom! use file-&gt;Open Rom." MaxWidth="{Binding}"/>
             </StatusBarItem>
-            <StatusBarItem HorizontalAlignment="Right">
-                <Label Name="lblInfoBoxErrorCount" Content=""/>
+            <StatusBarItem HorizontalAlignment="Right" Grid.Column="2">
+                <Label Name="lblInfoBoxErrorCount" Content="" MinWidth="50"/>
             </StatusBarItem>
         </StatusBar>
     </Grid>
