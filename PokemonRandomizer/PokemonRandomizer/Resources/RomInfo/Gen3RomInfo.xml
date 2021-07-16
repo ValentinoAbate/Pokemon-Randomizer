@@ -44,7 +44,6 @@
     
     <pokemonBaseStats num="411" size="28" skip="25" skipAt="251"/>
     <tmHmCompat size="8"/>
-    <moveTutorCompat size="4"/>
     <eggMoves pokemonSigniture="0x4E20"/>
     <evolutions size="40" sizePerEvolution="8" evolutionsPerPokemon="5"/>
     <pokemonNames length ="11"/>
@@ -121,7 +120,7 @@
     <pokemonBaseStats offset="0x3203e8"/>
     <tmHmCompat offset="0x31E898" pointer="0x06E048"/>
     <!-- Move Tutor compat offset is determined from the move mappings offset. Default offset is given here (bulbasaur is actually +4 from here) -->
-    <moveTutorCompat offset="0x615048"/>
+    <moveTutorCompat size="4" offset="0x615048"/>
     <movesets offset="0x3230dc"/>
     <!-- pointer found in Hex Editor Advance's Table reference file. offset found from following pointer -->
     <eggMoves offset="0x32ADD8" pointer="0x0703F0" />
@@ -263,6 +262,7 @@
 
     <!-- TMs, HMs, and Move Tutors -->
     <moveTutorMoves num="15"/>
+    <moveTutorCompat size="2"/>
 
     <!-- Items -->
 

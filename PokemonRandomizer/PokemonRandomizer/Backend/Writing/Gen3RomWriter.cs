@@ -52,7 +52,7 @@ namespace PokemonRandomizer.Backend.Writing
             {
                 WriteCatchingTutOpponent(data, rom, info);
             }
-            WritePokemonBaseStats(data, rom, info, metadata, ref repoints);
+            WritePokemonBaseStats(data, rom, info, ref repoints);
             WriteTypeDefinitions(data, rom, info, ref repoints);
             WriteEncounters(data, rom, info);
             WriteTrainerBattles(data, rom, info);
@@ -312,7 +312,7 @@ namespace PokemonRandomizer.Backend.Writing
                 rom.WriteUInt32((int)t.pokemonWanted);
             }
         }
-        private void WritePokemonBaseStats(RomData romData, Rom rom, XmlManager info, RomMetadata metadata, ref RepointList repoints)
+        private void WritePokemonBaseStats(RomData romData, Rom rom, XmlManager info, ref RepointList repoints)
         {
             #region Setup Offsets
 
@@ -374,10 +374,7 @@ namespace PokemonRandomizer.Backend.Writing
                 // Write moveset
                 movesetIndex = WriteAttacks(moveData, stats.learnSet, movesetIndex);
                 WriteTMHMCompat(stats, tmHmCompatOffset + (i * tmHmSize), rom);
-                if (metadata.IsEmerald)
-                {
-                    WriteTutorCompat(stats, tutorCompatOffset + (i * tutorSize), rom);
-                }
+                WriteTutorCompat(stats, tutorCompatOffset + (i * tutorSize), rom);
                 WriteEvolutions(stats, evolutionOffset + (i * evolutionSize), rom);
             }
             // If we don't need to repoint move data, write it in it's original location

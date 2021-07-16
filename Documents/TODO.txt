@@ -135,7 +135,10 @@ CLEANUP:
 - Move Evolution Reading code out of the Evolution classes to make the model gen agnostic
 - Move Elt name constants into constants class(es)
 - Check to see if pkmn base stat offsets point to after the null pokemon
+- Make "Size" and other rom data shortcut methods safe to fail with warnings
 FIXES:
+- RUBY AND SAPPHIRE
+	- Both don't have move tutors, so these need to be optionally supported
 - Fire red: move tutor compatibility writing breaks the game
 	- this shows by not being able to open up the party menu, either the normal way or through items (softlocks the game)
 - Pokemon that evolve with stones have bad default movesets due to not learning stuff by level up.
