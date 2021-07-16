@@ -9,6 +9,7 @@ namespace PokemonRandomizer.Backend.Utilities.Debug
         {
             Info,
             Warning,
+            Unsupported,
             Error,
         }
 
@@ -39,6 +40,8 @@ namespace PokemonRandomizer.Backend.Utilities.Debug
         public void Warning(string message) => Log(message, Level.Warning);
 
         public void Error(string message) => Log(message, Level.Error);
+
+        public void Unsupported(string message) => Log(message, Level.Unsupported);
 
         public readonly struct LogData
         {
