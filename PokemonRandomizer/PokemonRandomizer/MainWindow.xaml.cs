@@ -17,6 +17,8 @@ namespace PokemonRandomizer
     using Backend.Writing;
     using Windows;
     using UI;
+    using PokemonRandomizer.AppSettings;
+
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
@@ -169,13 +171,13 @@ namespace PokemonRandomizer
         private Rom GetRandomizedRom()
         {
             var copyData = Parser.Parse(OriginalRom, Metadata, RomInfo);
-            var randomzier = new Backend.Randomization.Randomizer(copyData, new Settings(this));
+            var randomzier = new Backend.Randomization.Randomizer(copyData, new HardCodedSettings(this));
             var randomizedData = randomzier.Randomize();
             LastRandomizationInfo = randomizedData.ToStringArray();
             if(Metadata.Gen == Generation.III)
             {
                 var writer = new Gen3RomWriter();
-                return writer.Write(randomizedData, OriginalRom, Metadata, RomInfo, new Settings(this));
+                return writer.Write(randomizedData, OriginalRom, Metadata, RomInfo, new HardCodedSettings(this));
             }
             throw new Exception("Attempting to write to unsupported generation.");
         }
@@ -250,7 +252,7 @@ namespace PokemonRandomizer
             if (Metadata.Gen == Generation.III)
             {
                 var writer = new Gen3RomWriter();
-                WriteRom(() => writer.Write(OriginalData, OriginalRom, Metadata, RomInfo, new Settings(this)));
+                WriteRom(() => writer.Write(OriginalData, OriginalRom, Metadata, RomInfo, new HardCodedSettings(this)));
             }
         }
 

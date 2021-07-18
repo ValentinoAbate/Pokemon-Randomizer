@@ -6,22 +6,11 @@ using System.Collections.Generic;
 
 namespace PokemonRandomizer
 {
-    public class Settings
+    public abstract class Settings
     {
-        private readonly MainWindow window;
-
-        public Settings(MainWindow window)
-        {
-            this.window = window;
-        }
-
         #region Seeding
-        public string Seed { get => window.tbSeed.Text; }
-        public bool SetSeed { get => (bool)window.cbSeed.IsChecked; }
-        #endregion
-
-        #region Type Hacks (WIP, NOTHING YET)
-
+        public abstract string Seed { get; }
+        public abstract bool SetSeed { get; }
         #endregion
 
         #region Type Relation Definitions
@@ -29,20 +18,20 @@ namespace PokemonRandomizer
         /// <summary>
         /// Should the randomizer modify the type traits of the ??? type?
         /// </summary>
-        public bool ModifyUnknownType { get => false; } //(bool)window.cbModifyUnknownType.IsChecked; }
+        public abstract bool ModifyUnknownType { get; }
         /// <summary>
         /// Should the randomizer hack the ??? to make it usable with mooves (if possible)
         /// </summary>
-        public bool UseUnknownTypeForMoves { get => false; }
+        public abstract bool UseUnknownTypeForMoves { get; }
         /// <summary>
         /// Should the randomizer override UNKNOWN (the pokemon)'s type to the ??? type?
         /// </summary>
-        public bool OverrideUnknownType { get => false; }
+        public abstract bool OverrideUnknownType { get; }
         /// <summary>
         /// How often should the randomizer give UNKNOWN (the pokemon) a secondary type?
         /// 0.0 - 1.0
         /// </summary>
-        public double UnknownDualTypeChance { get => 0.0; }
+        public abstract double UnknownDualTypeChance { get; }
 
         #endregion
 
@@ -56,43 +45,37 @@ namespace PokemonRandomizer
             RandomKeepNumber,
             Intelligent
         }
-        public TmMtCompatOption TmMtCompatSetting => TmMtCompatOption.Intelligent;
-        public double TmMtTrueChance => 0.42;
-        public double TmMtNoise => 0.15;
-        public bool PreventHmMovesInTMsAndTutors => true;
-        public bool PreventDuplicateTMsAndTutors => true;
-        public bool KeepImportantTMsAndTutors => true;
-        public HashSet<Move> ImportantTMsAndTutors { get; } = new HashSet<Move>()
-        {
-            Move.HEADBUTT,
-            Move.FLASH,
-            Move.ROCK_SMASH,
-            Move.SECRET_POWER,
-        };
-        public double TMRandChance => 1;
-        public double MoveTutorRandChance => 1;
+        public abstract TmMtCompatOption TmMtCompatSetting { get; }
+        public abstract double TmMtTrueChance { get; }
+        public abstract double TmMtNoise { get; }
+        public abstract bool PreventHmMovesInTMsAndTutors {get; }
+        public abstract bool PreventDuplicateTMsAndTutors {get; }
+        public abstract bool KeepImportantTMsAndTutors { get; }
+        public abstract HashSet<Move> ImportantTMsAndTutors { get; }
+        public abstract double TMRandChance { get; }
+        public abstract double MoveTutorRandChance { get; }
 
         #endregion
 
         #region Pokemon Base Stats
 
         #region Typing
-        public double SingleTypeRandChance { get => 0.0; }
-        public double DualTypePrimaryRandChance { get => 0.0; }
-        public double DualTypeSecondaryRandChance { get => 0.0; }
+        public abstract double SingleTypeRandChance { get; }
+        public abstract double DualTypePrimaryRandChance { get; }
+        public abstract double DualTypeSecondaryRandChance { get; }
         #endregion
 
         #region Evolution
 
-        public bool FixImpossibleEvos => true;
-        public double ImpossibleEvoLevelStandardDev => 1;
+        public abstract bool FixImpossibleEvos { get; }
+        public abstract double ImpossibleEvoLevelStandardDev { get; }
         public enum TradeItemPokemonOption
         { 
             LevelUp,
             UseItem,
         }
-        public TradeItemPokemonOption TradeItemEvoSetting => TradeItemPokemonOption.LevelUp;
-        public double DunsparsePlaugeChance { get => 0.25; }
+        public abstract TradeItemPokemonOption TradeItemEvoSetting { get; }
+        public abstract double DunsparsePlaugeChance { get; }
 
         #endregion
 
@@ -108,52 +91,23 @@ namespace PokemonRandomizer
             IntelligentHard,
             AllEasiest,
         }
-        public CatchRateOption CatchRateSetting { get => CatchRateOption.CompletelyRandom; }
-        public bool KeepLegendaryCatchRates { get => true; }
-        public byte CatchRateConstant { get => 100; }
-        public byte IntelligentCatchRateBasicThreshold
-        {
-            get
-            {
-                if (intelligentCatchRateBasicThresholds.ContainsKey(CatchRateSetting))
-                    return intelligentCatchRateBasicThresholds[CatchRateSetting];
-                return 255;
-            }
-        }
-        public byte IntelligentCatchRateEvolvedThreshold
-        {
-            get
-            {
-                if (intelligentCatchRateEvolvedThresholds.ContainsKey(CatchRateSetting))
-                    return intelligentCatchRateEvolvedThresholds[CatchRateSetting];
-                return 100;
-            }
-        }
-
-        private readonly Dictionary<CatchRateOption, byte> intelligentCatchRateBasicThresholds = new Dictionary<CatchRateOption, byte>()
-        {
-            { CatchRateOption.IntelligentEasy, 190},
-            { CatchRateOption.IntelligentNormal, 150},
-            { CatchRateOption.IntelligentHard, 100},
-        };
-        private readonly Dictionary<CatchRateOption, byte> intelligentCatchRateEvolvedThresholds = new Dictionary<CatchRateOption, byte>()
-        {
-            { CatchRateOption.IntelligentEasy, 100},
-            { CatchRateOption.IntelligentNormal, 70},
-            { CatchRateOption.IntelligentHard, 45},
-        };
+        public abstract CatchRateOption CatchRateSetting { get; }
+        public abstract bool KeepLegendaryCatchRates { get; }
+        public abstract byte CatchRateConstant { get; }
+        public abstract byte IntelligentCatchRateBasicThreshold { get; }
+        public abstract byte IntelligentCatchRateEvolvedThreshold { get; }
 
         #endregion
 
         #region Learnsets
 
-        public bool BanSelfdestruct => false;
-        public bool AddMoves => true;
-        public bool DisableAddingHmMoves => false;
+        public abstract bool BanSelfdestruct { get; }
+        public abstract bool AddMoves { get; }
+        public abstract bool DisableAddingHmMoves { get; }
 
-        public double AddMovesChance => 1;
-        public double NumMovesStdDeviation => 2;
-        public double NumMovesMean => 1;
+        public abstract double AddMovesChance { get; }
+        public abstract double NumMovesStdDeviation { get; }
+        public abstract double NumMovesMean { get; }
 
         public enum AddMoveSource
         { 
@@ -166,18 +120,14 @@ namespace PokemonRandomizer
             EggMoves,
             CompatibleTms,
         }
-        public WeightedSet<AddMoveSource> AddMoveSourceWieghts { get; } = new WeightedSet<AddMoveSource>()
-        {
-            { AddMoveSource.Random, 0.01f },
-            { AddMoveSource.EggMoves, 0.99f },
-        };
+        public abstract WeightedSet<AddMoveSource> AddMoveSourceWieghts { get; }
 
         #endregion
 
         #endregion
 
         #region Power Scaling
-        public PowerScaling.Options TieringOptions => PowerScaling.Options.BaseStatsAggregate;
+        public abstract PowerScaling.Options TieringOptions { get; }
         #endregion
 
         #region Trainers
@@ -201,159 +151,38 @@ namespace PokemonRandomizer
 
         public TrainerSettings GetTrainerSettings(TrainerCategory trainerClass)
         {
-            return trainerSettings.ContainsKey(trainerClass) ? trainerSettings[trainerClass] : trainerSettings[TrainerCategory.Trainer];
+            return TrainerSettingsDict.ContainsKey(trainerClass) ? TrainerSettingsDict[trainerClass] : TrainerSettingsDict[TrainerCategory.Trainer];
         }
+        protected abstract Dictionary<TrainerCategory, TrainerSettings> TrainerSettingsDict { get; }
 
-        private readonly Dictionary<TrainerCategory, TrainerSettings> trainerSettings = new Dictionary<TrainerCategory, TrainerSettings>()
-        {
-            { TrainerCategory.Trainer, new TrainerSettings()
-                {
-                    PokemonSettings = new PokemonSettings()
-                    {
-                        BanLegendaries = false,
-                        ForceHighestLegalEvolution = true,
-                        Noise = 0.01f,
-                        Data = new MetricData[]
-                        {
-                            new MetricData(PokemonMetric.typeIndividual),
-                            new MetricData(PokemonMetric.powerIndividual, 2),
-                        }
-                    }
-                }
-            },
-            { TrainerCategory.AceTrainer, new TrainerSettings()
-                {
-                    PokemonSettings = new PokemonSettings()
-                    {
-                        BanLegendaries = false,
-                        ForceHighestLegalEvolution = true,
-                        Noise = 0.01f,
-                    }
-                }
-            },
-            { TrainerCategory.Rival, new TrainerSettings()
-                {
-                    PokemonSettings = new PokemonSettings()
-                    {
-                        BanLegendaries = false,
-                        ForceHighestLegalEvolution = true,
-                        Noise = 0.01f,
-                    }
-                }
-            },
-            { TrainerCategory.GymLeader, new TrainerSettings()
-                {
-                    PokemonSettings = new PokemonSettings()
-                    {
-                        BanLegendaries = false,
-                        ForceHighestLegalEvolution = true,
-                        Data = new MetricData[]
-                        {
-                            new MetricData(PokemonMetric.typeTrainerParty, 0, 10000, 0.2f),
-                            new MetricData(PokemonMetric.powerIndividual, 3),
-                            //new MetricData(PokemonMetric.typeIndividual, 1),
-                        }
-                    }
-                }
-            },
-            { TrainerCategory.EliteFour, new TrainerSettings()
-                {
-                    PokemonSettings = new PokemonSettings()
-                    {
-                        BanLegendaries = false,
-                        RestrictIllegalEvolutions = false,
-                        ForceHighestLegalEvolution = true,
-                        Data = new MetricData[]
-                        {
-                            new MetricData(PokemonMetric.typeTrainerParty, 0, 1000, 0.2f),
-                            //new MetricData(PokemonMetric.typeIndividual, 1),
-                        }
-                    }
-                }
-            },
-            { TrainerCategory.Champion, new TrainerSettings()
-                {
-                    PokemonSettings = new PokemonSettings()
-                    {
-                        BanLegendaries = false,
-                        RestrictIllegalEvolutions = false,
-                        ForceHighestLegalEvolution = true,
-                        Noise = 0.001f,
-                        Data = new MetricData[]
-                        {
-                            new MetricData(PokemonMetric.typeTrainerParty, 0, 1000, 0.2f),
-                            //new MetricData(PokemonMetric.typeIndividual, 1),
-                        }
-                    }
-                }
-            },
-        };
-        public bool RandomizeWallyAce => true;
-        public TrainerOption WallySetting => TrainerOption.Procedural;
+        public abstract bool RandomizeWallyAce { get; }
+        public abstract TrainerOption WallySetting { get; }
         #endregion
 
         #region Wild Pokemon
-        public WildEncounterRandomizer.Strategy EncounterStrategy => WildEncounterRandomizer.Strategy.AreaOneToOne;
-        public PokemonSettings EncounterSettings { get; } = new PokemonSettings()
-        {
-            BanLegendaries = true,
-            Noise = 0.001f,
-            Data = new MetricData[]
-            {
-                new MetricData(PokemonMetric.typeEncounterSet, 0),
-                new MetricData(PokemonMetric.typeEncounterBankType, 0, 3f, 0.1f)
-                {
-                    Flags = new List<string>
-                    {
-                        EncounterSet.Type.Surf.ToString(),
-                        EncounterSet.Type.Fish.ToString(),
-                        EncounterSet.Type.RockSmash.ToString(),
-                        EncounterSet.Type.Headbutt.ToString(),
-                    }
-                },
-                new MetricData(PokemonMetric.typeIndividual, 1),
-                new MetricData(PokemonMetric.powerIndividual, 1),
-            }
-        };
+        public abstract WildEncounterRandomizer.Strategy EncounterStrategy { get; }
+        public abstract PokemonSettings EncounterSettings { get; }
 
         #endregion
 
         #region Special Pokemon
 
         #region Gift Pokemon
-        public double GiftPokemonRandChance => 1;
-        public PokemonSettings GiftSpeciesSettings { get; } = new PokemonSettings()
-        {
-            BanLegendaries = true,
-        };
-        public bool EnsureFossilRevivesAreFossilPokemon => true;
-        public bool EnsureGiftEggsAreBabyPokemon => true;
+        public abstract double GiftPokemonRandChance { get; }
+        public abstract PokemonSettings GiftSpeciesSettings { get; }
+        public abstract bool EnsureFossilRevivesAreFossilPokemon { get; }
+        public abstract bool EnsureGiftEggsAreBabyPokemon { get; }
         #endregion
 
         #region Trade Pokemon
-        public double TradePokemonGiveRandChance => 1;
-        public double TradePokemonRecievedRandChance => 1;
-        public PokemonSettings TradeSpeciesSettingsGive { get; } = new PokemonSettings()
-        {
-            BanLegendaries = true,
-        };
-        public MetricData[] TradeSpeciesMetricsGive { get; } = new MetricData[]
-        {
-            new MetricData(PokemonMetric.powerIndividual)
-        };
-        public PokemonSettings TradeSpeciesSettingsReceive { get; } = new PokemonSettings()
-        {
-            BanLegendaries = true,
-        };
-        public MetricData[] TradeSpeciesMetricsRecieve { get; } = new MetricData[]
-        {
-            new MetricData(PokemonMetric.powerIndividual)
-        };
-        public double TradeHeldItemRandChance => 1;
-        public ItemRandomizer.Settings TradeHeldItemSettings { get; } = new ItemRandomizer.Settings()
-        {
-            SamePocketChance = 0.75,
-        };
+        public abstract double TradePokemonGiveRandChance { get; }
+        public abstract double TradePokemonRecievedRandChance { get; }
+        public abstract PokemonSettings TradeSpeciesSettingsGive { get; }
+        public abstract MetricData[] TradeSpeciesMetricsGive { get; }
+        public abstract PokemonSettings TradeSpeciesSettingsReceive { get; }
+        public abstract MetricData[] TradeSpeciesMetricsRecieve { get; }
+        public abstract double TradeHeldItemRandChance { get; }
+        public abstract ItemRandomizer.Settings TradeHeldItemSettings { get; }
 
         #endregion
 
@@ -365,24 +194,16 @@ namespace PokemonRandomizer
             RandomTypeTriangle,
             Custom,
         }
-        public StarterPokemonOption StarterSetting { get => StarterPokemonOption.RandomTypeTriangle; }
-        public bool StrongStarterTypeTriangle { get => false; }
-        public Pokemon[] CustomStarters { get; } = new Pokemon[3]
-        {
-            Pokemon.KECLEON,
-            Pokemon.KECLEON,
-            Pokemon.KECLEON,
-        };
-        public PokemonSettings StarterPokemonSettings { get; } = new PokemonSettings()
-        {
-            BanLegendaries = true,
-        };
-        public PokemonMetric[] StarterMetricData { get; } = new PokemonMetric[0];
+        public abstract StarterPokemonOption StarterSetting { get; }
+        public abstract bool StrongStarterTypeTriangle { get; }
+        public abstract Pokemon[] CustomStarters { get; }
+        public abstract PokemonSettings StarterPokemonSettings { get; }
+        public abstract PokemonMetric[] StarterMetricData { get; }
         /// <summary>
         /// Ensures that all starters have an attacking move at lvl1
         /// Currently just makes all starters additionally have tackle
         /// </summary>
-        public bool SafeStarterMovesets { get => true; }
+        public abstract bool SafeStarterMovesets { get; }
         #endregion
 
         #endregion
@@ -398,29 +219,29 @@ namespace PokemonRandomizer
             //Storms (Local Area Based) - Add later
         }
 
-        public WeatherOption WeatherSetting => WeatherOption.CustomWeighting;
+        public abstract WeatherOption WeatherSetting { get; }
         /// <summary>
         /// If true, ensures that underwater weather won't be put anywhere except for underwater maps
         /// </summary>
-        public bool SafeUnderwaterWeather => true;
+        public abstract bool SafeUnderwaterWeather { get; }
         /// <summary>
         /// If true, outside weather won't be put inside
         /// </summary>
-        public bool SafeInsideWeather => true;
+        public abstract bool SafeInsideWeather { get; }
         /// <summary>
         /// Allows gym maps to have weather even if inside maps aren't weather randomized
         /// Allows outside weather to be put in gyms
         /// Uses GymWeatherRandChance instead of the normal chance
         /// </summary>
-        public bool OverrideAllowGymWeather => true;
+        public abstract bool OverrideAllowGymWeather { get; }
         /// <summary>
         /// The chance that a gym will have weather if OverrideAllowGymWeather is true
         /// </summary>
-        public double GymWeatherRandChance => 0.5;
+        public abstract double GymWeatherRandChance { get; }
         /// <summary>
         /// If this is true, only maps that started with clear weather will be random (the desert will still have sandstorm, etc)
         /// </summary>
-        public bool OnlyChangeClearWeather => true;
+        public abstract bool OnlyChangeClearWeather { get; }
         [System.Flags]
         public enum HailHackOption
         { 
@@ -433,34 +254,14 @@ namespace PokemonRandomizer
         /// <summary>
         /// Controls which gen 3 snow weathers will affect battle
         /// </summary>
-        public HailHackOption HailHackSetting => HailHackOption.Snow;
+        public abstract HailHackOption HailHackSetting { get; }
         private const double defaultWeatherRandChance = 0.33;
         /// <summary>
         /// The chance any given map type will have its weather randomized. If the map type is not in this map, that type of map will not be randomized
         /// </summary>
-        public Dictionary<Map.Type, double> WeatherRandChance { get; } = new Dictionary<Map.Type, double>
-        {
-            { Map.Type.Route, defaultWeatherRandChance }
-        };
-        private readonly WeightedSet<Map.Weather> customWeights = new WeightedSet<Map.Weather>
-        {
-            { Map.Weather.Rain, 0.85f },
-            { Map.Weather.RainThunderstorm, 0.125f },
-            { Map.Weather.RainHeavyThunderstrorm, 0.025f },
-            { Map.Weather.Snow, 1f },
-            { Map.Weather.StrongSunlight, 1 },
-            { Map.Weather.Sandstorm, 0.8f },
-        };
-        private readonly WeightedSet<Map.Weather> battleWeatherBalancedWeights = new WeightedSet<Map.Weather>
-        {
-            { Map.Weather.Rain, 0.85f },
-            { Map.Weather.RainThunderstorm, 0.125f },
-            { Map.Weather.RainHeavyThunderstrorm, 0.025f },
-            { Map.Weather.Snow, 0.85f },
-            { Map.Weather.SnowSteady, 0.1f },
-            { Map.Weather.StrongSunlight, 0.9f },
-            { Map.Weather.Sandstorm, 0.6f },
-        };
+        public abstract Dictionary<Map.Type, double> WeatherRandChance { get; }
+        protected abstract WeightedSet<Map.Weather> CustomWeatherWeights { get; }
+        protected abstract WeightedSet<Map.Weather> BattleWeatherBalancedWeights { get; }
         /// <summary>
         /// Weighting for each weather type. Depenend on the current weather setting
         /// May split weather settings by map type
@@ -474,13 +275,13 @@ namespace PokemonRandomizer
                     case WeatherOption.InBattleWeather:
                         if(HailHackSetting != HailHackOption.None)
                         {
-                            var modWeights = new WeightedSet<Map.Weather>(battleWeatherBalancedWeights);
+                            var modWeights = new WeightedSet<Map.Weather>(BattleWeatherBalancedWeights);
                             modWeights.RemoveWhere((w) => Map.WeatherAffectsBattle(w, HailHackSetting));
                             return modWeights;
                         }
-                        return battleWeatherBalancedWeights;
+                        return BattleWeatherBalancedWeights;
                     case WeatherOption.CustomWeighting:
-                        return customWeights;
+                        return CustomWeatherWeights;
                     default:
                         return new WeightedSet<Map.Weather>(EnumUtils.GetValues<Map.Weather>());
                 }
@@ -491,7 +292,7 @@ namespace PokemonRandomizer
 
         #region Items
 
-        public bool DontRandomizeTms => false;
+        public abstract bool DontRandomizeTms { get; }
 
         public enum PcItemOption
         {
@@ -500,34 +301,25 @@ namespace PokemonRandomizer
             Custom,
         }
 
-        public PcItemOption PcPotionOption => PcItemOption.Custom;
-        public Item CustomPcItem => Item.Metal_Coat;
-        public ItemRandomizer.Settings PcItemSettings { get; } = new ItemRandomizer.Settings()
-        {
-            SamePocketChance = 0.75,
-        };  
+        public abstract PcItemOption PcPotionOption { get; }
+        public abstract Item CustomPcItem { get; }
+        public abstract ItemRandomizer.Settings PcItemSettings { get; }
 
-        public double FieldItemRandChance => 1;
-        public ItemRandomizer.Settings FieldItemSettings { get; } = new ItemRandomizer.Settings()
-        {
-            SamePocketChance = 0.75,
-        };
-        public bool UseSeperateHiddenItemSettings => true;
-        public double HiddenItemRandChance => 1;
-        public ItemRandomizer.Settings HiddenItemSettings { get; } = new ItemRandomizer.Settings()
-        {
-            SamePocketChance = 0.75,
-        };
+        public abstract double FieldItemRandChance { get; }
+        public abstract ItemRandomizer.Settings FieldItemSettings { get; }
+        public abstract bool UseSeperateHiddenItemSettings { get; }
+        public abstract double HiddenItemRandChance { get; }
+        public abstract ItemRandomizer.Settings HiddenItemSettings { get; }
 
         #endregion
 
         #region Misc
 
-        public bool RunIndoors => true;
+        public abstract bool RunIndoors { get; }
 
-        public bool EvolveWithoutNationalDex => true;
+        public abstract bool EvolveWithoutNationalDex { get; }
 
-        public bool CountRelicanthAsFossil => true;
+        public abstract bool CountRelicanthAsFossil { get; }
 
         #endregion
 
@@ -541,11 +333,11 @@ namespace PokemonRandomizer
             Random,
         }
 
-        public DreamTeamSetting DreamTeamOption => DreamTeamSetting.Random;
+        public abstract DreamTeamSetting DreamTeamOption { get; }
 
-        public Pokemon[] CustomDreamTeam = new Pokemon[6];
+        public abstract Pokemon[] CustomDreamTeam { get; }
 
-        public DreamTeamSettings DreamTeamOptions { get; } = new DreamTeamSettings();
+        public abstract DreamTeamSettings DreamTeamOptions { get; }
 
         public class DreamTeamSettings
         {

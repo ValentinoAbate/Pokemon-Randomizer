@@ -79,7 +79,6 @@ FEATURES:
 - FireRed v1.1, LeafGreen v1.0 + v1.1, Sapphire v1.0 + v1.11, and Ruby v1.0 + v1.11 compatibility
 - Enable for FireRed
 	- Starter Text replacement
-	- Map writing
 	- Catching tut writing (very low priority, may never add) (maybe add a skip)
 	- Snow weather hack
 - National Pokedex from game start hack
