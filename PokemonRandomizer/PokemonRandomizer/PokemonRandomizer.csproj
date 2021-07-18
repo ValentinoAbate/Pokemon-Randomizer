@@ -139,7 +139,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>RomInfo.resx</DependentUpon>
     </Compile>
-    <Compile Include="AppSettings\Settings.cs" />
+    <Compile Include="Settings.cs" />
     <Compile Include="Backend\DataStructures\Connection.cs" />
     <Compile Include="Backend\DataStructures\ConnectionData.cs" />
     <Compile Include="Backend\DataStructures\Encounter.cs" />
