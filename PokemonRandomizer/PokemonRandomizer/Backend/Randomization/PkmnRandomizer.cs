@@ -209,7 +209,6 @@ namespace PokemonRandomizer.Backend.Randomization
         /// </summary>
         private float TypeBalanceFunction(Pokemon p)
         {
-            var typeOccurence = romMetrics.TypeOccurenceAll;
             var pData = dataT.GetBaseStats(p);
             float type1 = TypeBalanceFunction(pData.types[0]);
             if (pData.IsSingleTyped)

@@ -8,11 +8,15 @@ using System.Windows.Data;
 
 namespace PokemonRandomizer.UI
 {
+    using CatchRateOption = Settings.CatchRateOption;
     public class PokemonTraitsModel : DataModel
     {
         // Type parameters
+        public bool RandomizeSingleType { get; set; }
         public double SingleTypeRandChance { get; set; }
+        public bool RandomizeDualTypePrimary { get; set; }
         public double DualTypePrimaryRandChance { get; set; }
+        public bool RandomizeDualTypeSecondary { get; set; }
         public double DualTypeSecondaryRandChance { get; set; }
 
         // Evolution parameters
@@ -39,7 +43,7 @@ namespace PokemonRandomizer.UI
             new ComboBoxItem() { Content="Intelligent (Hard)", ToolTip = intelligentCatchRateTooltip + " (Hard)"},
             new ComboBoxItem() { Content="All Easiest", ToolTip = "All pokemon are as easy to catch as possible"},
         };
-        public Settings.CatchRateOption CatchRateSetting { get; set; } = Settings.CatchRateOption.Unchanged;
+        public CatchRateOption CatchRateSetting { get; set; } = CatchRateOption.Unchanged;
         public bool KeepLegendaryCatchRates { get; set; } = true;
         public double CatchRateConstantDifficulty { get; set; } = 0.5;
     }

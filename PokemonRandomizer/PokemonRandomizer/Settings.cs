@@ -46,6 +46,7 @@ namespace PokemonRandomizer
             Intelligent
         }
         public abstract TmMtCompatOption TmMtCompatSetting { get; }
+        public abstract TmMtCompatOption HmCompatSetting { get; }
         public abstract double TmMtTrueChance { get; }
         public abstract double TmMtNoise { get; }
         public abstract bool PreventHmMovesInTMsAndTutors {get; }

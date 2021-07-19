@@ -33,6 +33,7 @@
                 <MenuItem Name="menuSaveROM" IsEnabled="{Binding IsROMLoaded}" Header="Save ROM" Click="SaveROM"/>
                 <MenuItem Name="menuGenerateInfoDoc" IsEnabled="{Binding IsROMLoaded}" Header="Generate Info" Click="GenerateInfoDoc"/>
                 <MenuItem Visibility="Visible" Header="Debug">
+                    <MenuItem Name="menuUseHardCodedSettings" Header="Use Hardcoded Settings" IsCheckable="True" IsChecked="{Binding UseHardCodedSettings}"/>
                     <MenuItem Name="menuDebugSaveLog" IsEnabled="{Binding LogNotEmpty}" Header="Save Log" Click="SaveLog"/>
                     <MenuItem Name="menuDebugClearLog" IsEnabled="{Binding LogNotEmpty}" Header="Clear Log" Click="ClearLog"/>
                     <MenuItem Name="menuDebugSaveCleanRom" IsEnabled="{Binding IsROMLoaded}" Header="Save Clean ROM" Click="SaveCleanROM"/>

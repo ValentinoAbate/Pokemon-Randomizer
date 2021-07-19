@@ -50,6 +50,7 @@ namespace PokemonRandomizer.AppSettings
         #region TMs, HMs, and Move Tutors
 
         public override TmMtCompatOption TmMtCompatSetting => TmMtCompatOption.Intelligent;
+        public override TmMtCompatOption HmCompatSetting => TmMtCompatOption.Unchanged;
         public override double TmMtTrueChance => 0.42;
         public override double TmMtNoise => 0.15;
         public override bool PreventHmMovesInTMsAndTutors => true;

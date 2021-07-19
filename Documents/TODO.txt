@@ -117,13 +117,13 @@ FEATURES:
 - Egg move writing
 - Ban selfdestruct works by move effect rather than explicit move number
 - Wally Text Fix ("RALTS" to current pokemon)
-- UI
-	- Output logger (for showing compatibility issues, etc)
 - HM Compat randomization
-	- Should probably have a separate settings block from the TM / MT setting
+	- Settings already there just need randomization
 - Game corner randomization????
 	- High stakes roulette
 - Money Scaling
+- UI Hookups
+	- Hookup custom starter UI (need a pokemon name to pokemon enum function)
 UNIT TESTS:
 - Clean rom hash compare (reading and writing an input rom skipping randomization should produce the same hash)
 CLEANUP:
@@ -140,8 +140,6 @@ FIXES:
 	- Both don't have move tutors, so these need to be optionally supported
 - Pokemon that evolve with stones have bad default movesets due to not learning stuff by level up.
 	- Still an issue, but fixed in smart moveset generation. Currently no fix for default movesets
-- Expanding the movesets (probably just repointing the pokemon data table) and expanding the move data table (probably just repointing the move data table) causes softlocks on battle start in the output ROM
-	- Pretty sure I fixed this by ensuring data written in free space always gets written at an address divisible by 4.
 - Snow looks weird in some areas
 - TM Compat and Learnset generation could be dependent on each other
 - Weird hiker man isn't becoming a double battle

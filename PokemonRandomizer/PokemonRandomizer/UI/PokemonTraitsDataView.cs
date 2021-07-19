@@ -8,6 +8,7 @@ using System.Windows.Controls;
 
 namespace PokemonRandomizer.UI
 {
+    using CatchRateOption = Settings.CatchRateOption;
     public class PokemonTraitsDataView : GroupDataView<PokemonTraitsModel>
     {
         public override PokemonTraitsModel CloneModel(PokemonTraitsModel model)
@@ -35,9 +36,9 @@ namespace PokemonRandomizer.UI
         {
             var tab = new TabItem() { Header = "Type" };
             var stack = new StackPanel() { Orientation = Orientation.Vertical };
-            stack.Add(new RandomChanceUI("Single Type", model.SingleTypeRandChance, (d) => model.SingleTypeRandChance = d, Orientation.Horizontal));
-            stack.Add(new RandomChanceUI("Dual Type (Primary)", model.DualTypePrimaryRandChance, (d) => model.DualTypePrimaryRandChance = d, Orientation.Horizontal));
-            stack.Add(new RandomChanceUI("Dual Type (Secondary)", model.DualTypeSecondaryRandChance, (d) => model.DualTypeSecondaryRandChance = d, Orientation.Horizontal));
+            stack.Add(new RandomChanceUI("Single Type", model.RandomizeSingleType, b => model.RandomizeSingleType = b, model.SingleTypeRandChance, (d) => model.SingleTypeRandChance = d, Orientation.Horizontal));
+            stack.Add(new RandomChanceUI("Dual Type (Primary)", model.RandomizeDualTypePrimary, b => model.RandomizeDualTypePrimary = b, model.DualTypePrimaryRandChance, (d) => model.DualTypePrimaryRandChance = d, Orientation.Horizontal));
+            stack.Add(new RandomChanceUI("Dual Type (Secondary)", model.RandomizeDualTypeSecondary, b => model.RandomizeDualTypeSecondary = b, model.DualTypeSecondaryRandChance, (d) => model.DualTypeSecondaryRandChance = d, Orientation.Horizontal));
             tab.Content = stack;
             return tab;
         }
@@ -69,11 +70,11 @@ namespace PokemonRandomizer.UI
             var tab = new TabItem() { Header = "Catch Rate" };
             var stack = new StackPanel() { Orientation = Orientation.Vertical };
             var constantRateSlider = new BoundSliderUI("Constant Difficulty", model.CatchRateConstantDifficulty, (d) => model.CatchRateConstantDifficulty = d, false);
-            constantRateSlider.SetVisibility(model.CatchRateSetting == Settings.CatchRateOption.Constant);
+            constantRateSlider.SetVisibility(model.CatchRateSetting == CatchRateOption.Constant);
             void OnOptionChange(int index)
             {
-                model.CatchRateSetting = (Settings.CatchRateOption)index;
-                constantRateSlider.SetVisibility(model.CatchRateSetting == Settings.CatchRateOption.Constant);
+                model.CatchRateSetting = (CatchRateOption)index;
+                constantRateSlider.SetVisibility(model.CatchRateSetting == CatchRateOption.Constant);
             }
             stack.Add(new BoundComboBoxUI("Catch Rate", PokemonTraitsModel.CatchRateOptionDropdown, (int)model.CatchRateSetting, OnOptionChange));
             stack.Add(constantRateSlider);

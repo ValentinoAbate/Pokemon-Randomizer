@@ -92,16 +92,30 @@ namespace PokemonRandomizer
 
         private readonly TmHmTutorModel tmHmData = new TmHmTutorModel();
         private readonly StartersDataModel starterData = new StartersDataModel();
+        private readonly PokemonTraitsModel pokemonData = new PokemonTraitsModel();
+
+        public Settings AppSettings => UseHardCodedSettings ? hardCodedSettings : appSettings;
+
+#if DEBUG
+        public bool UseHardCodedSettings { get; set; } = true;
+#else
+        public bool UseHardCodedSettings { get; set; } = false;
+#endif
+        private readonly HardCodedSettings hardCodedSettings;
+        private readonly AppSettings.AppSettings appSettings;
 
         private int errorCount = 0;
 
         public MainWindow()
         {
+            hardCodedSettings = new HardCodedSettings(this);
+            appSettings = new AppSettings.AppSettings(this, starterData, tmHmData, pokemonData);
+
             IsROMLoaded = false;
             InitializeComponent();
             this.DataContext = this;
             // Create pokemon traits UI
-            new GroupUI<PokemonTraitsDataView, PokemonTraitsModel>(TraitsGroupsPanel, TraitsViewPanel, new PokemonTraitsModel() { SingleTypeRandChance = 1 });
+            new GroupUI<PokemonTraitsDataView, PokemonTraitsModel>(TraitsGroupsPanel, TraitsViewPanel, pokemonData);
             TmHmTutorView.Content = new TmHmTutorDataView(tmHmData);
             Logger.main.OnLog += OnLog;
         }
@@ -171,13 +185,13 @@ namespace PokemonRandomizer
         private Rom GetRandomizedRom()
         {
             var copyData = Parser.Parse(OriginalRom, Metadata, RomInfo);
-            var randomzier = new Backend.Randomization.Randomizer(copyData, new HardCodedSettings(this));
+            var randomzier = new Backend.Randomization.Randomizer(copyData, AppSettings);
             var randomizedData = randomzier.Randomize();
             LastRandomizationInfo = randomizedData.ToStringArray();
             if(Metadata.Gen == Generation.III)
             {
                 var writer = new Gen3RomWriter();
-                return writer.Write(randomizedData, OriginalRom, Metadata, RomInfo, new HardCodedSettings(this));
+                return writer.Write(randomizedData, OriginalRom, Metadata, RomInfo, AppSettings);
             }
             throw new Exception("Attempting to write to unsupported generation.");
         }
@@ -187,7 +201,7 @@ namespace PokemonRandomizer
             GetRomData(File.ReadAllBytes(path));
         }
 
-        #region INotifyPropertyChanged Implementation
+#region INotifyPropertyChanged Implementation
 
         public event PropertyChangedEventHandler PropertyChanged;
         private void OnPropertyChanged(string prop)
@@ -195,9 +209,9 @@ namespace PokemonRandomizer
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
         }
 
-        #endregion
+#endregion
 
-        #region Menu Functions
+#region Menu Functions
 
         private void OpenROM(object sender, RoutedEventArgs e)
         {
@@ -252,7 +266,7 @@ namespace PokemonRandomizer
             if (Metadata.Gen == Generation.III)
             {
                 var writer = new Gen3RomWriter();
-                WriteRom(() => writer.Write(OriginalData, OriginalRom, Metadata, RomInfo, new HardCodedSettings(this)));
+                WriteRom(() => writer.Write(OriginalData, OriginalRom, Metadata, RomInfo, AppSettings));
             }
         }
 
@@ -377,7 +391,7 @@ namespace PokemonRandomizer
             aboutWindow.ShowDialog();
         }
 
-        #endregion
+#endregion
 
         private void SeedCheckBoxChanged(object sender, RoutedEventArgs e)
         {
