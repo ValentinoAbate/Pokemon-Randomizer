@@ -367,14 +367,6 @@ namespace PokemonRandomizer.Backend.Randomization
                     {
                         pokemon.TMCompat.SetAll(true);
                         pokemon.moveTutorCompat.SetAll(true);
-                        for (int i = 0; i < pokemon.TMCompat.Length; ++i)
-                        {
-                            pokemon.TMCompat[i] = true;
-                        }
-                        for (int i = 0; i < pokemon.moveTutorCompat.Length; ++i)
-                        {
-                            pokemon.moveTutorCompat[i] = true;
-                        }
                     }
                     else if (settings.TmMtCompatSetting == Settings.TmMtCompatOption.Random)
                     {
