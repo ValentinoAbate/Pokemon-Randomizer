@@ -49,8 +49,9 @@ namespace PokemonRandomizer.UI
             var stack = new StackPanel() { Orientation = Orientation.Vertical };
             var tradeEvoParams = new StackPanel() { Orientation = Orientation.Vertical };
             tradeEvoParams.SetVisibility(model.FixImpossibleEvos);
-            tradeEvoParams.Add(new BoundSliderUI("Trade evolution level variance", model.ImpossibleEvoLevelStandardDev, (d) => model.ImpossibleEvoLevelStandardDev = d, false, 0.01, 0, 3));
             tradeEvoParams.Add(new BoundComboBoxUI("Trade item evolution type", PokemonTraitsModel.CompatOptionDropdown, (int)model.TradeItemEvoSetting, (i) => model.TradeItemEvoSetting = (Settings.TradeItemPokemonOption)i));
+            tradeEvoParams.Add(new BoundCheckBoxUI(model.ConsiderEvolveByBeautyImpossible, b => model.ConsiderEvolveByBeautyImpossible = b, "Fix Beauty-Based Evolutions"));
+            tradeEvoParams.Add(new BoundSliderUI("Fixed evolution level variance", model.ImpossibleEvoLevelStandardDev, (d) => model.ImpossibleEvoLevelStandardDev = d, false, 0.01, 0, 3));
             
             void OnCheck(bool b)
             {

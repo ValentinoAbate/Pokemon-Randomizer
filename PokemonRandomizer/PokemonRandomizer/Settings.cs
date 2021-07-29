@@ -69,6 +69,7 @@ namespace PokemonRandomizer
         #region Evolution
 
         public abstract bool FixImpossibleEvos { get; }
+        public abstract bool ConsiderEvolveByBeautyImpossible { get; }
         public abstract double ImpossibleEvoLevelStandardDev { get; }
         public enum TradeItemPokemonOption
         { 

@@ -22,6 +22,7 @@ namespace PokemonRandomizer.UI
         // Evolution parameters
         public bool FixImpossibleEvos { get; set; } = true;
         public double ImpossibleEvoLevelStandardDev { get; set; } = 1;
+        public bool ConsiderEvolveByBeautyImpossible { get; set; } = true;
         public static CompositeCollection CompatOptionDropdown { get; } = new CompositeCollection()
         {
             new ComboBoxItem() { Content="Level Up", ToolTip = "Pokemon that normally evolve by trading with an item will evolve by level-up. Slowpoke and Clamperl will evolve with wurmple logic" },

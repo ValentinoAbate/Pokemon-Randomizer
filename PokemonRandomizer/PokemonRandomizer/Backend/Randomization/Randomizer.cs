@@ -198,6 +198,10 @@ namespace PokemonRandomizer.Backend.Randomization
                                 MakeEvolutionByLevelUp(evo);
                             }
                         }
+                        else if(evo.Type == EvolutionType.Beauty && settings.ConsiderEvolveByBeautyImpossible)
+                        {
+                            MakeEvolutionByLevelUp(evo);
+                        }
                     }
                 }
                 foreach (var evo in pokemon.evolvesTo)
