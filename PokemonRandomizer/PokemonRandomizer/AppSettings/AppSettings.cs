@@ -4,22 +4,24 @@ using System.Linq;
 
 namespace PokemonRandomizer.AppSettings
 {
-    using PokemonRandomizer.Backend.EnumTypes;
+    using PokemonRandomizer.Backend.Randomization;
     using UI;
     public class AppSettings : HardCodedSettings
     {
         private readonly TmHmTutorModel tmHmTutorData;
         private readonly PokemonTraitsModel pokemonData;
         private readonly StartersDataModel starterData;
+        private readonly WildEncounterDataModel wildEncounterData;
         public AppSettings(MainWindow window) : base(window)
         {
         }
 
-        public AppSettings(MainWindow window, StartersDataModel starterData, TmHmTutorModel tmHmTutorData, PokemonTraitsModel pokemonData) : base(window)
+        public AppSettings(MainWindow window, StartersDataModel starterData, TmHmTutorModel tmHmTutorData, PokemonTraitsModel pokemonData, WildEncounterDataModel wildEncounterData) : base(window)
         {
             this.starterData = starterData;
             this.tmHmTutorData = tmHmTutorData;
             this.pokemonData = pokemonData;
+            this.wildEncounterData = wildEncounterData;
         }
 
         private static double RandomChance(bool enabled, double chance) => enabled ? chance : 0;
@@ -100,6 +102,13 @@ namespace PokemonRandomizer.AppSettings
         };
         // public override PokemonMetric[] StarterMetricData { get; } = new PokemonMetric[0]; (No UI for metric data yet) 
         public override bool SafeStarterMovesets => starterData.SafeStarterMovesets;
+
+        #endregion
+
+        #region Wild Pokemon
+
+        public override WildEncounterRandomizer.Strategy EncounterStrategy => wildEncounterData.Strategy;
+        public override PokemonSettings EncounterSettings => wildEncounterData.PokemonSettings;
 
         #endregion
 

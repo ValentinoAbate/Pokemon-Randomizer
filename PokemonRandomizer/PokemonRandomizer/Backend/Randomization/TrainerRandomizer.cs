@@ -6,6 +6,7 @@ namespace PokemonRandomizer.Backend.Randomization
 {
     using DataStructures;
     using EnumTypes;
+    using static Settings;
     public class TrainerRandomizer
     {
         private readonly PkmnRandomizer pokeRand;
@@ -23,7 +24,7 @@ namespace PokemonRandomizer.Backend.Randomization
 
         #region Trainer Randomization
 
-        private void RandomizeTrainerPokemon(Trainer trainer, IEnumerable<Pokemon> pokemonSet, Settings.PokemonSettings settings)
+        private void RandomizeTrainerPokemon(Trainer trainer, IEnumerable<Pokemon> pokemonSet, PokemonSettings settings)
         {
             // Class based?
             // Local environment based
@@ -44,14 +45,14 @@ namespace PokemonRandomizer.Backend.Randomization
             }
         }
 
-        private IEnumerable<Metric<Pokemon>> CreatePokemonMetrics(IEnumerable<Pokemon> all, Pokemon pokemon, WeightedSet<PokemonType> partyTypeOccurence, Settings.MetricData[] data)
+        private IEnumerable<Metric<Pokemon>> CreatePokemonMetrics(IEnumerable<Pokemon> all, Pokemon pokemon, WeightedSet<PokemonType> partyTypeOccurence, IReadOnlyList<MetricData> data)
         {
-            var metrics = pokeRand.CreateBasicMetrics(all, pokemon, data, out List<Settings.MetricData> specialData);
+            var metrics = pokeRand.CreateBasicMetrics(all, pokemon, data, out List<MetricData> specialData);
             foreach (var d in specialData)
             {
                 WeightedSet<Pokemon> input = d.DataSource switch
                 {
-                    Settings.PokemonMetric.typeTrainerParty => pokeRand.TypeSimilarityGroup(all, pokemon, partyTypeOccurence, d.Sharpness),
+                    PokemonMetric.typeTrainerParty => pokeRand.TypeSimilarityGroup(all, partyTypeOccurence, d.Sharpness),
                     _ => null,
                 };
                 if (input != null)
@@ -63,7 +64,7 @@ namespace PokemonRandomizer.Backend.Randomization
         }
 
         /// <summary> Radnomize the given trainer encounter </summary>
-        public void Randomize(Trainer trainer, IEnumerable<Pokemon> pokemonSet, Settings.TrainerSettings settings, bool safe = true)
+        public void Randomize(Trainer trainer, IEnumerable<Pokemon> pokemonSet, TrainerSettings settings, bool safe = true)
         {
             // Set data type
             // Set AI flags
@@ -90,12 +91,12 @@ namespace PokemonRandomizer.Backend.Randomization
         /// Battles is assumed to be in chronological order, and that the first battle has been appropriately randomized.
         /// Use unsafe randomization for randomizing the first battle.
         /// </summary>
-        public void RandomizeReoccurring(Trainer firstBattle, List<Trainer> battles, IEnumerable<Pokemon> pokemonSet, Settings.TrainerSettings settings)
+        public void RandomizeReoccurring(Trainer firstBattle, List<Trainer> battles, IEnumerable<Pokemon> pokemonSet, TrainerSettings settings)
         {
             var pkmnSettings = settings.PokemonSettings;
 
             // Battle Type
-            if (settings.BattleTypeStrategy == Settings.TrainerSettings.BattleTypePcgStrategy.None)
+            if (settings.BattleTypeStrategy == TrainerSettings.BattleTypePcgStrategy.None)
             {
                 for (int i = 1; i < battles.Count; i++)
                 {
@@ -105,7 +106,7 @@ namespace PokemonRandomizer.Backend.Randomization
                     }
                 }
             }
-            else if (settings.BattleTypeStrategy == Settings.TrainerSettings.BattleTypePcgStrategy.KeepSameType)
+            else if (settings.BattleTypeStrategy == TrainerSettings.BattleTypePcgStrategy.KeepSameType)
             {
                 for (int i = 1; i < battles.Count; i++)
                 {
@@ -114,14 +115,14 @@ namespace PokemonRandomizer.Backend.Randomization
             }
 
             // Pokemon
-            if (settings.PokemonStrategy == Settings.TrainerSettings.PokemonPcgStrategy.None)
+            if (settings.PokemonStrategy == TrainerSettings.PokemonPcgStrategy.None)
             {
                 for (int i = 1; i < battles.Count; i++)
                 {
                     RandomizeTrainerPokemon(battles[i], pokemonSet, pkmnSettings);
                 }
             }
-            else if (settings.PokemonStrategy == Settings.TrainerSettings.PokemonPcgStrategy.KeepAce)
+            else if (settings.PokemonStrategy == TrainerSettings.PokemonPcgStrategy.KeepAce)
             {
                 var lastBattle = firstBattle;
                 foreach (var battle in battles)
@@ -138,7 +139,7 @@ namespace PokemonRandomizer.Backend.Randomization
                     lastBattle = battle;
                 };
             }
-            else if (settings.PokemonStrategy == Settings.TrainerSettings.PokemonPcgStrategy.KeepParty)
+            else if (settings.PokemonStrategy == TrainerSettings.PokemonPcgStrategy.KeepParty)
             {
                 var lastBattle = firstBattle;
                 foreach (var battle in battles)

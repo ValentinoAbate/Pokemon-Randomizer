@@ -93,6 +93,7 @@ namespace PokemonRandomizer
         private readonly TmHmTutorModel tmHmData = new TmHmTutorModel();
         private readonly StartersDataModel starterData = new StartersDataModel();
         private readonly PokemonTraitsModel pokemonData = new PokemonTraitsModel();
+        private readonly WildEncounterDataModel wildEncounterData = new WildEncounterDataModel();
 
         public Settings AppSettings => UseHardCodedSettings ? hardCodedSettings : appSettings;
 
@@ -109,7 +110,7 @@ namespace PokemonRandomizer
         public MainWindow()
         {
             hardCodedSettings = new HardCodedSettings(this);
-            appSettings = new AppSettings.AppSettings(this, starterData, tmHmData, pokemonData);
+            appSettings = new AppSettings.AppSettings(this, starterData, tmHmData, pokemonData, wildEncounterData);
 
             IsROMLoaded = false;
             InitializeComponent();
@@ -117,6 +118,7 @@ namespace PokemonRandomizer
             // Create pokemon traits UI
             new GroupUI<PokemonTraitsDataView, PokemonTraitsModel>(TraitsGroupsPanel, TraitsViewPanel, pokemonData);
             TmHmTutorView.Content = new TmHmTutorDataView(tmHmData);
+            WildPokemonView.Content = new WildEncounterDataView(wildEncounterData);
             Logger.main.OnLog += OnLog;
         }
 

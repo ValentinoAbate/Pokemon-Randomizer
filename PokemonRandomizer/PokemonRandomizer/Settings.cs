@@ -379,7 +379,7 @@ namespace PokemonRandomizer
 
         public class PokemonSettings
         {
-            public MetricData[] Data { get; set; } = new MetricData[0];
+            public List<MetricData> Data { get; set; } = new List<MetricData>();
             public bool RestrictIllegalEvolutions { get; set; } = true;
             public bool ForceHighestLegalEvolution { get; set; } = false;
             public bool BanLegendaries { get; set; } = false;
@@ -388,29 +388,39 @@ namespace PokemonRandomizer
 
         public class MetricData
         {
-            public float Filter { get; }
-            public float Sharpness { get; }
-            public int Priority { get; }
-            public string DataSource { get; }
+            public const float defaultSharpness = 1;
+            public const float defaultFilter = 0;
+            public const string emptyMetric = "none";
+            public float Filter { get; set; }
+            public float Sharpness { get; set; }
+            public int Priority { get; set;  }
+            public string DataSource { get; set; }
             public List<string> Flags { get; set; } = new List<string>();
 
-            public MetricData(string dataSource, int priority = 0, float sharpness = 1, float filter = 0)
+            public MetricData(string dataSource, int priority = 0, float sharpness = defaultSharpness, float filter = defaultFilter)
             {
                 DataSource = dataSource;
                 Priority = priority;
                 Filter = filter;
                 Sharpness = sharpness;
             }
+
+            public void Reset()
+            {
+                Flags.Clear();
+                Sharpness = defaultSharpness;
+                Filter = defaultFilter;
+            }
         }
 
         public abstract class PokemonMetric
         {
-            public const string typeIndividual = nameof(typeIndividual);
-            public const string typeEncounterSet = nameof(typeEncounterSet);
-            public const string typeEncounterBankType = nameof(typeEncounterBankType);
-            public const string typeTrainerParty = nameof(typeTrainerParty);
-            public const string typeTrainerClass = nameof(typeTrainerClass);
-            public const string powerIndividual = nameof(powerIndividual);
+            public const string typeIndividual = "Type (Individual)";
+            public const string typeEncounterSet = "Type (Encounter Set)";
+            public const string typeEncounterBankType = "Type (Encounter Bank Type)";
+            public const string typeTrainerParty = "Type (Trainer Party)";
+            public const string typeTrainerClass = "Type (Trainer Class)";
+            public const string powerIndividual = "Power (Individual)";
         }
         #endregion
     }

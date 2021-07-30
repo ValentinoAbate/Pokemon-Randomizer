@@ -6,6 +6,7 @@ namespace PokemonRandomizer.Backend.Randomization
 {
     using DataStructures;
     using EnumTypes;
+    using static Settings;
     public class WildEncounterRandomizer
     {
         public enum Strategy
@@ -28,7 +29,7 @@ namespace PokemonRandomizer.Backend.Randomization
             this.romMetrics = romMetrics;
         }
 
-        public void RandomizeEncounters(IEnumerable<Pokemon> pokemonSet, IEnumerable<EncounterSet> encounters, Settings.PokemonSettings settings, Strategy strategy)
+        public void RandomizeEncounters(IEnumerable<Pokemon> pokemonSet, IEnumerable<EncounterSet> encounters, PokemonSettings settings, Strategy strategy)
         {
             if (strategy == Strategy.Unchanged)
                 return;
@@ -106,15 +107,15 @@ namespace PokemonRandomizer.Backend.Randomization
             return PokemonMetrics.TypeOccurence(encounter.Select(e => dataT.GetBaseStats(e.pokemon)));
         }
 
-        private IEnumerable<Metric<Pokemon>> CreateMetrics(IEnumerable<Pokemon> all, Pokemon pokemon, EncounterSet.Type slotType, WeightedSet<PokemonType> typeOccurence, Settings.MetricData[] data)
+        private IEnumerable<Metric<Pokemon>> CreateMetrics(IEnumerable<Pokemon> all, Pokemon pokemon, EncounterSet.Type slotType, WeightedSet<PokemonType> typeOccurence, IReadOnlyList<MetricData> data)
         {
-            var metrics = pokeRand.CreateBasicMetrics(all, pokemon, data, out List<Settings.MetricData> specialData);
+            var metrics = pokeRand.CreateBasicMetrics(all, pokemon, data, out List<MetricData> specialData);
             foreach (var d in specialData)
             {
                 WeightedSet<Pokemon> input = d.DataSource switch
                 {
-                    Settings.PokemonMetric.typeEncounterSet      => pokeRand.TypeSimilarityGroup(all, pokemon, typeOccurence, d.Sharpness),
-                    Settings.PokemonMetric.typeEncounterBankType => GetEncounterBankType(all, pokemon, slotType, d),
+                    PokemonMetric.typeEncounterSet      => pokeRand.TypeSimilarityGroup(all, typeOccurence, d.Sharpness),
+                    PokemonMetric.typeEncounterBankType => GetEncounterBankType(all, slotType, d),
                     _ => null,
                 };
                 if(input != null)
@@ -125,11 +126,11 @@ namespace PokemonRandomizer.Backend.Randomization
             return metrics;
         }
 
-        private WeightedSet<Pokemon> GetEncounterBankType(IEnumerable<Pokemon> all, Pokemon pokemon, EncounterSet.Type slotType, Settings.MetricData data)
+        private WeightedSet<Pokemon> GetEncounterBankType(IEnumerable<Pokemon> all, EncounterSet.Type slotType, MetricData data)
         {
             if (!data.Flags.Contains(slotType.ToString()) || !romMetrics.EncounterSlotTypeOccurence.ContainsKey(slotType))
                 return null;
-            return pokeRand.TypeSimilarityGroup(all, pokemon, romMetrics.EncounterSlotTypeOccurence[slotType], data.Sharpness);
+            return pokeRand.TypeSimilarityGroup(all, romMetrics.EncounterSlotTypeOccurence[slotType], data.Sharpness);
         }
     }
 }

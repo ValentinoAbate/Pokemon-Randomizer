@@ -164,6 +164,7 @@
     <Compile Include="UI\GroupDataView.cs" />
     <Compile Include="UI\GroupUI.cs" />
     <Compile Include="UI\BoundSliderUI.cs" />
+    <Compile Include="UI\MetricDataUI.cs" />
     <Compile Include="UI\PokemonSettingsUI.cs" />
     <Compile Include="UI\PokemonTraitsModel.cs" />
     <Compile Include="UI\PokemonTraitsDataView.cs" />
@@ -173,6 +174,8 @@
     <Compile Include="UI\TmHmTutorModel.cs" />
     <Compile Include="UI\TmHmTutorDataView.cs" />
     <Compile Include="UI\UIExtensions.cs" />
+    <Compile Include="UI\WildEncounterDataModel.cs" />
+    <Compile Include="UI\WildEncounterDataView.cs" />
     <Compile Include="UserControls\MutationRateSlider.xaml.cs">
       <DependentUpon>MutationRateSlider.xaml</DependentUpon>
     </Compile>

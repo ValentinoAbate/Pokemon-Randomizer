@@ -7,6 +7,7 @@ namespace PokemonRandomizer.Backend.Randomization
     using DataStructures;
     using EnumTypes;
     using Utilities;
+    using static Settings;
     public class PkmnRandomizer
     {
         public const string powerDataSource = "power";
@@ -33,26 +34,26 @@ namespace PokemonRandomizer.Backend.Randomization
 
         // Safe methods (if there is no valid pokemon the original will be returned
 
-        public Pokemon RandomPokemon(IEnumerable<Pokemon> all, Pokemon pokemon, Settings.PokemonSettings settings, int level)
+        public Pokemon RandomPokemon(IEnumerable<Pokemon> all, Pokemon pokemon, PokemonSettings settings, int level)
         {
             return SafePokemon(pokemon, RandomPokemonUnsafe(all, CreateBasicMetrics(all, pokemon, settings.Data), settings, level));
         }
-        public Pokemon RandomPokemon(IEnumerable<Pokemon> all, Pokemon pokemon, Settings.PokemonSettings settings)
+        public Pokemon RandomPokemon(IEnumerable<Pokemon> all, Pokemon pokemon, PokemonSettings settings)
         {
             return SafePokemon(pokemon, RandomPokemonUnsafe(all, CreateBasicMetrics(all, pokemon, settings.Data), settings));
         }
-        public Pokemon RandomPokemon(IEnumerable<Pokemon> all, Pokemon pokemon, IEnumerable<Metric<Pokemon>> data, Settings.PokemonSettings settings, int level)
+        public Pokemon RandomPokemon(IEnumerable<Pokemon> all, Pokemon pokemon, IEnumerable<Metric<Pokemon>> data, PokemonSettings settings, int level)
         {
             return SafePokemon(pokemon, RandomPokemonUnsafe(all, data, settings, level));
         }
-        public Pokemon RandomPokemon(IEnumerable<Pokemon> all, Pokemon pokemon, IEnumerable<Metric<Pokemon>> data, Settings.PokemonSettings settings)
+        public Pokemon RandomPokemon(IEnumerable<Pokemon> all, Pokemon pokemon, IEnumerable<Metric<Pokemon>> data, PokemonSettings settings)
         {
             return SafePokemon(pokemon, RandomPokemonUnsafe(all, data, settings));
         }
 
         // Unsafe methods (if there is no valid pokemon, Pokemon.None will be returned)
 
-        private Pokemon RandomPokemonUnsafe(IEnumerable<Pokemon> all, IEnumerable<Metric<Pokemon>> data, Settings.PokemonSettings settings, int level)
+        private Pokemon RandomPokemonUnsafe(IEnumerable<Pokemon> all, IEnumerable<Metric<Pokemon>> data, PokemonSettings settings, int level)
         {
             // Get a random pokemon (could possibly prefilter for level later to even out evolution stage odds unbalance)
             var newPokemon = RandomPokemonUnsafe(all, data, settings);
@@ -66,7 +67,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 newPokemon = evoUtils.CorrectImpossibleEvo(newPokemon, level);
             return newPokemon;
         }
-        private Pokemon RandomPokemonUnsafe(IEnumerable<Pokemon> all, IEnumerable<Metric<Pokemon>> data, Settings.PokemonSettings settings)
+        private Pokemon RandomPokemonUnsafe(IEnumerable<Pokemon> all, IEnumerable<Metric<Pokemon>> data, PokemonSettings settings)
         {
             // If there is no metric data or if we roll on the noise
             if (data.Count() <= 0 || rand.RollSuccess(settings.Noise))
@@ -90,7 +91,7 @@ namespace PokemonRandomizer.Backend.Randomization
 
         /// <summary> Return 3 pokemon that form a valid type traingle, or null if none exist in the input set.
         /// Type triangles require one-way weakness, but allow neutral relations in reverse order (unless strong is true) </summary>
-        public List<Pokemon> RandomTypeTriangle(IEnumerable<Pokemon> possiblePokemon, IList<Pokemon> input, TypeEffectivenessChart typeDefinitions, Settings.PokemonSettings settings, bool strong = false)
+        public List<Pokemon> RandomTypeTriangle(IEnumerable<Pokemon> possiblePokemon, IList<Pokemon> input, TypeEffectivenessChart typeDefinitions, PokemonSettings settings, bool strong = false)
         {
             // invalid input
             if (input.Count < 3)
@@ -120,7 +121,7 @@ namespace PokemonRandomizer.Backend.Randomization
             return null; // No viable triangle with input spcifications TODO: Log
         }
         /// <summary> Helper method for the RandomTypeTriangle method </summary>
-        private List<Pokemon> FinishTriangle(HashSet<Pokemon> pool, HashSet<Pokemon> possibleSeconds, Pokemon first, List<Metric<Pokemon>>[] metrics, TypeEffectivenessChart typeDefinitions, Settings.PokemonSettings settings, bool strong)
+        private List<Pokemon> FinishTriangle(HashSet<Pokemon> pool, HashSet<Pokemon> possibleSeconds, Pokemon first, List<Metric<Pokemon>>[] metrics, TypeEffectivenessChart typeDefinitions, PokemonSettings settings, bool strong)
         {
             while (possibleSeconds.Count > 0)
             {
@@ -169,7 +170,7 @@ namespace PokemonRandomizer.Backend.Randomization
             return set;
         }
 
-        public WeightedSet<Pokemon> TypeSimilarityGroup(IEnumerable<Pokemon> all, Pokemon pokemon, WeightedSet<PokemonType> typeData)
+        public WeightedSet<Pokemon> TypeSimilarityGroup(IEnumerable<Pokemon> all, WeightedSet<PokemonType> typeData)
         {
             var set = new WeightedSet<Pokemon>(all);
             var modTypeData = new WeightedSet<PokemonType>(typeData);
@@ -191,11 +192,11 @@ namespace PokemonRandomizer.Backend.Randomization
             return set;
         }
 
-        public WeightedSet<Pokemon> TypeSimilarityGroup(IEnumerable<Pokemon> all, Pokemon pokemon, WeightedSet<PokemonType> typeData, float sharpness)
+        public WeightedSet<Pokemon> TypeSimilarityGroup(IEnumerable<Pokemon> all, WeightedSet<PokemonType> typeData, float sharpness)
         {
             var newTypeData = new WeightedSet<PokemonType>(typeData);
             newTypeData.Pow(sharpness);
-            return TypeSimilarityGroup(all, pokemon, typeData);
+            return TypeSimilarityGroup(all, typeData);
         }
 
         public WeightedSet<Pokemon> PowerSimilarityIndividual(IEnumerable<Pokemon> all, Pokemon pokemon)
@@ -225,28 +226,28 @@ namespace PokemonRandomizer.Backend.Randomization
             return typeOccurence.Contains(t) ? 1 / typeOccurence[t] : 0;
         }
 
-        public List<Metric<Pokemon>> CreateBasicMetrics(IEnumerable<Pokemon> all, Pokemon pokemon, Settings.MetricData[] data)
+        public List<Metric<Pokemon>> CreateBasicMetrics(IEnumerable<Pokemon> all, Pokemon pokemon, IReadOnlyList<MetricData> data)
         {
             return CreateBasicMetrics(all, pokemon, data, out var _); // Optimize later
         }
 
-        public List<Metric<Pokemon>> CreateBasicMetrics(IEnumerable<Pokemon> all, Pokemon pokemon, Settings.MetricData[] data, out List<Settings.MetricData> nonBasic)
+        public List<Metric<Pokemon>> CreateBasicMetrics(IEnumerable<Pokemon> all, Pokemon pokemon, IReadOnlyList<MetricData> data, out List<MetricData> nonBasic)
         {
-            var metrics = new List<Metric<Pokemon>>(data.Count());
-            nonBasic = new List<Settings.MetricData>(data.Count());
+            var metrics = new List<Metric<Pokemon>>(data.Count);
+            nonBasic = new List<MetricData>(data.Count);
             foreach (var d in data)
             {
                 WeightedSet<Pokemon> input = d.DataSource switch
                 {
-                    Settings.PokemonMetric.typeIndividual => TypeSimilarityIndividual(all, pokemon),
-                    Settings.PokemonMetric.powerIndividual => PowerSimilarityIndividual(all, pokemon),
+                    PokemonMetric.typeIndividual => TypeSimilarityIndividual(all, pokemon),
+                    PokemonMetric.powerIndividual => PowerSimilarityIndividual(all, pokemon),
                     _ => null,
                 };
                 if (input != null)
                 {
                     metrics.Add(new Metric<Pokemon>(input, d.Filter, d.Priority));
                 }
-                else
+                else if(d.DataSource != MetricData.emptyMetric)
                 {
                     nonBasic.Add(d);
                 }

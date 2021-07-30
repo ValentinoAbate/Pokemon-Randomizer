@@ -11,6 +11,7 @@ namespace PokemonRandomizer.UI
 {
     public class BoundComboBoxUI : StackPanel
     {
+        public ComboBox ComboBox { get; private set; }
         public BoundComboBoxUI(string label, System.Collections.IEnumerable items, int currentIndex, Action<int> onIndexChange, Orientation orientation = Orientation.Horizontal) : base()
         {
             Orientation = orientation;
@@ -18,9 +19,9 @@ namespace PokemonRandomizer.UI
             {
                 Children.Add(new Label() { Content = label });
             }
-            var cBox = new ComboBox() {  ItemsSource = items, SelectedIndex = currentIndex };
-            Children.Add(cBox);
-            cBox.SelectionChanged += (_, _2) => onIndexChange?.Invoke(cBox.SelectedIndex);
+            ComboBox = new ComboBox() {  ItemsSource = items, SelectedIndex = currentIndex };
+            Children.Add(ComboBox);
+            ComboBox.SelectionChanged += (_, _2) => onIndexChange?.Invoke(ComboBox.SelectedIndex);
             Margin = new System.Windows.Thickness(2);
         }
     }

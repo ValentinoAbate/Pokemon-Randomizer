@@ -160,7 +160,7 @@ namespace PokemonRandomizer.AppSettings
                         BanLegendaries = false,
                         ForceHighestLegalEvolution = true,
                         Noise = 0.01f,
-                        Data = new MetricData[]
+                        Data = new List<MetricData>()
                         {
                             new MetricData(PokemonMetric.typeIndividual),
                             new MetricData(PokemonMetric.powerIndividual, 2),
@@ -194,7 +194,7 @@ namespace PokemonRandomizer.AppSettings
                     {
                         BanLegendaries = false,
                         ForceHighestLegalEvolution = true,
-                        Data = new MetricData[]
+                        Data = new List<MetricData>()
                         {
                             new MetricData(PokemonMetric.typeTrainerParty, 0, 10000, 0.2f),
                             new MetricData(PokemonMetric.powerIndividual, 3),
@@ -210,7 +210,7 @@ namespace PokemonRandomizer.AppSettings
                         BanLegendaries = false,
                         RestrictIllegalEvolutions = false,
                         ForceHighestLegalEvolution = true,
-                        Data = new MetricData[]
+                        Data = new List<MetricData>()
                         {
                             new MetricData(PokemonMetric.typeTrainerParty, 0, 1000, 0.2f),
                             //new MetricData(PokemonMetric.typeIndividual, 1),
@@ -226,7 +226,7 @@ namespace PokemonRandomizer.AppSettings
                         RestrictIllegalEvolutions = false,
                         ForceHighestLegalEvolution = true,
                         Noise = 0.001f,
-                        Data = new MetricData[]
+                        Data = new List<MetricData>()
                         {
                             new MetricData(PokemonMetric.typeTrainerParty, 0, 1000, 0.2f),
                             //new MetricData(PokemonMetric.typeIndividual, 1),
@@ -246,7 +246,7 @@ namespace PokemonRandomizer.AppSettings
         {
             BanLegendaries = true,
             Noise = 0.001f,
-            Data = new MetricData[]
+            Data = new List<MetricData>()
             {
                 new MetricData(PokemonMetric.typeEncounterSet, 0),
                 new MetricData(PokemonMetric.typeEncounterBankType, 0, 3f, 0.1f)
