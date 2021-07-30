@@ -164,6 +164,7 @@
     <Compile Include="UI\GroupDataView.cs" />
     <Compile Include="UI\GroupUI.cs" />
     <Compile Include="UI\BoundSliderUI.cs" />
+    <Compile Include="UI\PokemonSettingsUI.cs" />
     <Compile Include="UI\PokemonTraitsModel.cs" />
     <Compile Include="UI\PokemonTraitsDataView.cs" />
     <Compile Include="UI\RandomChanceUI.cs" />

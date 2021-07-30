@@ -257,7 +257,6 @@ namespace PokemonRandomizer
         /// Controls which gen 3 snow weathers will affect battle
         /// </summary>
         public abstract HailHackOption HailHackSetting { get; }
-        private const double defaultWeatherRandChance = 0.33;
         /// <summary>
         /// The chance any given map type will have its weather randomized. If the map type is not in this map, that type of map will not be randomized
         /// </summary>
