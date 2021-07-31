@@ -13,30 +13,29 @@ namespace PokemonRandomizer.UI
     {
         private readonly TreeView groupSelectorTree;
         private readonly View dataView;
-        public GroupUI(Panel parent, Panel viewParent, Model initialModel)
+        private readonly Button addButton;
+        public GroupUI(Panel parent, Panel viewParent, params Model[] initialModels)
         {
             var verticalStack = new StackPanel() { Orientation = Orientation.Vertical };
 
             // Create and add the header GUI
             var headerStack = new StackPanel() { Orientation = Orientation.Horizontal };
             headerStack.Children.Add(new Label() { Content = "Groups" });
-            var addButton = new Button() { Content = "Add", Height = 17, Width = 50, Margin = new Thickness(0, 0, 0, 1), FontSize = 11 };
+            addButton = new Button() { Content = "Add", Height = 17, Width = 50, Margin = new Thickness(0, 0, 0, 1), FontSize = 11 };
             addButton.Click += AddButtonClick;
             headerStack.Children.Add(addButton);
             verticalStack.Children.Add(headerStack);
 
             // Create and add the tree view
             groupSelectorTree = new TreeView()
-            { 
+            {
                 Width = 100,
                 Margin = new Thickness(0, 5, 5, 5)
             };
-            var initialGroup = new Group(initialModel, OnClickGroup)
+            foreach(var model in initialModels)
             {
-                Header = "Group " + (groupSelectorTree.Items.Count + 1),
-            };
-            initialGroup.IsSelected = true;
-            groupSelectorTree.Items.Add(initialGroup);
+                AddGroup(model);
+            }
             verticalStack.Children.Add(groupSelectorTree);
 
             // Add these to the parent grid
@@ -44,7 +43,22 @@ namespace PokemonRandomizer.UI
 
             // Create view
             dataView = new View();
-            dataView.Initialize(viewParent, initialModel);
+            dataView.Initialize(viewParent, initialModels);
+        }
+
+        public void SetAddButtonVisibility(Visibility v)
+        {
+            addButton.Visibility = v;
+        }
+
+        private void AddGroup(Model model)
+        {
+            var add = new Group(model, OnClickGroup)
+            {
+                Header = model.Name,
+            };
+            add.IsSelected = true;
+            groupSelectorTree.Items.Add(add);
         }
 
         private void AddButtonClick(object sender, RoutedEventArgs e)

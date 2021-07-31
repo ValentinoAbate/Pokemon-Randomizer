@@ -10,6 +10,13 @@ namespace PokemonRandomizer.UI.Models
     using static Settings.TrainerSettings;
     public class TrainerDataModel : DataModel
     {
+        TrainerCategory Category { get; }
+        public TrainerDataModel(TrainerCategory category)
+        {
+            Category = category;
+        }
+        public bool OverrideSettings { get; set; }
+        public TrainerCategory OverrideCategory { get; set; }
         public bool RandomizePokemon { get; set; } = false;
         public double PokemonRandChance { get; set; } = 1;
         public PokemonPcgStrategy PokemonStrategy { get; set; } = PokemonPcgStrategy.KeepParty;

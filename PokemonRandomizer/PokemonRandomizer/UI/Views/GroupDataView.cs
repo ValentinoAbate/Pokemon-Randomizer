@@ -15,12 +15,21 @@ namespace PokemonRandomizer.UI
         private readonly Dictionary<T, Panel> modelViews = new Dictionary<T, Panel>();
         private Panel currView;
 
-        public virtual void Initialize(Panel parent, T initialModel)
+        public virtual void Initialize(Panel parent, params T[] initialModels)
         {
             this.parent = parent;
-            currView = CreateModelView(initialModel);
-            modelViews.Add(initialModel, currView);
-            parent.Children.Add(currView);
+            for(int i = 0; i < initialModels.Length; ++i)
+            {
+                var model = initialModels[i];
+                if (i == 0)
+                {
+                    SetModel(model);
+                }
+                else
+                {
+                    modelViews.Add(model, CreateModelView(model));
+                }
+            }
         }
 
         public void SetModel(T model)

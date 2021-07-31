@@ -8,6 +8,6 @@ namespace PokemonRandomizer.UI
 {
     public abstract class DataModel
     {
-
+        public virtual string Name => "Default";
     }
 }
