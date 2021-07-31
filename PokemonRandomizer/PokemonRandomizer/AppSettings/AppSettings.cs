@@ -105,6 +105,10 @@ namespace PokemonRandomizer.AppSettings
 
         #endregion
 
+        #region Trainers (WIP)
+
+        #endregion
+
         #region Wild Pokemon
 
         public override WildEncounterRandomizer.Strategy EncounterStrategy => wildEncounterData.Strategy;

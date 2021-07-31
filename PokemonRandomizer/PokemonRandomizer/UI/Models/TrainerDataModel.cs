@@ -11,9 +11,17 @@ namespace PokemonRandomizer.UI.Models
     public class TrainerDataModel : DataModel
     {
         TrainerCategory Category { get; }
-        public TrainerDataModel(TrainerCategory category)
+        public override string Name { get; }
+
+        public TrainerDataModel() : this(TrainerCategory.Trainer, defaultName)
+        {
+
+        }
+
+        public TrainerDataModel(TrainerCategory category, string name)
         {
             Category = category;
+            Name = name;
         }
         public bool OverrideSettings { get; set; }
         public TrainerCategory OverrideCategory { get; set; }

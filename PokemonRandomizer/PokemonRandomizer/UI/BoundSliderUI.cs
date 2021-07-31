@@ -11,7 +11,7 @@ namespace PokemonRandomizer.UI
         public BoundSliderUI(string name, double value, Action<double> onValueChange, bool percent = true, double freq = 0.01, double min = 0, double max = 1) : base()
         {
             Orientation = Orientation.Horizontal;
-            Children.Add(new Label() { Content = name, FontSize = 11 });
+            Children.Add(new Label() { Content = name });
             var textBox = new TextBox()
             {
                 Margin = new Thickness(3),

@@ -98,7 +98,16 @@ namespace PokemonRandomizer
         private readonly PokemonTraitsModel pokemonData = new PokemonTraitsModel();
         private readonly WildEncounterDataModel wildEncounterData = new WildEncounterDataModel();
         // Later have preset ones for special groups
-        private readonly TrainerDataModel trainerDataTest = new TrainerDataModel(TrainerCategory.Trainer);
+        private readonly TrainerDataModel[] trainerDataModels = new TrainerDataModel[]
+        {
+            new TrainerDataModel(TrainerCategory.Trainer, DataModel.defaultName),
+            new TrainerDataModel(TrainerCategory.AceTrainer, "Ace Trainers"),
+            new TrainerDataModel(TrainerCategory.Rival, "Rivals"),
+            new TrainerDataModel(TrainerCategory.GymLeader, "Gym Leaders"),
+            new TrainerDataModel(TrainerCategory.EliteFour, "Elite Four"),
+            new TrainerDataModel(TrainerCategory.Champion, "Champion"),
+        };
+
 
         public Settings AppSettings => UseHardCodedSettings ? hardCodedSettings : appSettings;
 
@@ -125,7 +134,9 @@ namespace PokemonRandomizer
             pokemonTraitsGroup.SetAddButtonVisibility(Visibility.Hidden);
             TmHmTutorView.Content = new TmHmTutorDataView(tmHmData);
             WildPokemonView.Content = new WildEncounterDataView(wildEncounterData);
-            TrainerView.Content = new TrainerDataView(trainerDataTest);
+            var trainerTraitsGroup = new GroupUI<TrainerDataView, TrainerDataModel>(TrainerGroups, TrainerView, trainerDataModels);
+            trainerTraitsGroup.SetAddButtonVisibility(Visibility.Hidden);
+            //TrainerView.Content = new TrainerDataView(trainerDataModels);
             Logger.main.OnLog += OnLog;
         }
 

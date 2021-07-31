@@ -83,8 +83,8 @@
             <TabItem Header="Pokemon Traits">
                 <Grid Name="PokemonTraitsGrid">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Name="Groups" Width="Auto" />
-                        <ColumnDefinition Name="Settings" Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
                     <DockPanel Name="TraitsGroupsPanel" Grid.Column="0" Width="105"/>
                     <DockPanel Name="TraitsViewPanel" Grid.Column="1"/>
@@ -102,9 +102,18 @@
             <TabItem Name="WildPokemonView" Header="Wild Pokemon">
 
             </TabItem>
-            <TabItem Name="TrainerView" Header="Trainers" Visibility="Collapsed">
-
+            
+            <TabItem Header="Trainers">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <DockPanel Name="TrainerGroups" Grid.Column="0" Width="105"/>
+                    <DockPanel Name="TrainerView" Grid.Column="1"/>
+                </Grid>
             </TabItem>
+            
             <TabItem Header="Items">
 
             </TabItem>
