@@ -147,7 +147,12 @@ namespace PokemonRandomizer.AppSettings
 
         #region Trainers
 
-        protected override Dictionary<TrainerCategory, TrainerSettings> TrainerSettingsDict { get; } = new Dictionary<TrainerCategory, TrainerSettings>()
+        public override TrainerSettings GetTrainerSettings(TrainerCategory trainerClass)
+        {
+            return TrainerSettingsDict.ContainsKey(trainerClass) ? TrainerSettingsDict[trainerClass] : TrainerSettingsDict[TrainerCategory.Trainer];
+        }
+
+        private Dictionary<TrainerCategory, TrainerSettings> TrainerSettingsDict { get; } = new Dictionary<TrainerCategory, TrainerSettings>()
         {
             { TrainerCategory.Trainer, new TrainerSettings()
                 {

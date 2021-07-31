@@ -6,22 +6,25 @@ namespace PokemonRandomizer.AppSettings
 {
     using PokemonRandomizer.Backend.Randomization;
     using UI;
+    using UI.Models;
     public class AppSettings : HardCodedSettings
     {
         private readonly TmHmTutorModel tmHmTutorData;
         private readonly PokemonTraitsModel pokemonData;
         private readonly StartersDataModel starterData;
         private readonly WildEncounterDataModel wildEncounterData;
+        private readonly Dictionary<TrainerCategory, TrainerDataModel> trainerData;
         public AppSettings(MainWindow window) : base(window)
         {
         }
 
-        public AppSettings(MainWindow window, StartersDataModel starterData, TmHmTutorModel tmHmTutorData, PokemonTraitsModel pokemonData, WildEncounterDataModel wildEncounterData) : base(window)
+        public AppSettings(MainWindow window, StartersDataModel starterData, TmHmTutorModel tmHmTutorData, PokemonTraitsModel pokemonData, WildEncounterDataModel wildEncounterData, IEnumerable<TrainerDataModel> trainerData) : base(window)
         {
             this.starterData = starterData;
             this.tmHmTutorData = tmHmTutorData;
             this.pokemonData = pokemonData;
             this.wildEncounterData = wildEncounterData;
+            this.trainerData = trainerData.ToDictionary((tData) => tData.Category);
         }
 
         private static double RandomChance(bool enabled, double chance) => enabled ? chance : 0;
@@ -105,7 +108,32 @@ namespace PokemonRandomizer.AppSettings
 
         #endregion
 
-        #region Trainers (WIP)
+        #region Trainers
+
+        public override TrainerSettings GetTrainerSettings(TrainerCategory trainerClass)
+        {
+            static TrainerSettings TrainerDataToSettings(TrainerDataModel model)
+            {
+                return new TrainerSettings()
+                {
+                    PokemonRandChance = RandomChance(model.RandomizePokemon, model.PokemonRandChance),
+                    PokemonStrategy = model.PokemonStrategy,
+                    PokemonSettings = model.PokemonSettings,
+                    BattleTypeRandChance = RandomChance(model.RandomizeBattleType, model.BattleTypeRandChance),
+                    BattleTypeStrategy = model.BattleTypeStrategy,
+                    DoubleBattleChance = model.DoubleBattleChance,
+                };
+            }
+            if (trainerData.ContainsKey(trainerClass))
+            {
+                return TrainerDataToSettings(trainerData[trainerClass]);
+            }
+            if(trainerData.ContainsKey(TrainerCategory.Trainer))
+            {
+                return TrainerDataToSettings(trainerData[TrainerCategory.Trainer]);
+            }
+            return base.GetTrainerSettings(trainerClass);
+        }
 
         #endregion
 

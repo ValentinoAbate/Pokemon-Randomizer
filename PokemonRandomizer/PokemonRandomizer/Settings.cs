@@ -151,11 +151,7 @@ namespace PokemonRandomizer
             Champion,
         }
 
-        public TrainerSettings GetTrainerSettings(TrainerCategory trainerClass)
-        {
-            return TrainerSettingsDict.ContainsKey(trainerClass) ? TrainerSettingsDict[trainerClass] : TrainerSettingsDict[TrainerCategory.Trainer];
-        }
-        protected abstract Dictionary<TrainerCategory, TrainerSettings> TrainerSettingsDict { get; }
+        public abstract TrainerSettings GetTrainerSettings(TrainerCategory trainerClass);
 
         public abstract bool RandomizeWallyAce { get; }
         #endregion

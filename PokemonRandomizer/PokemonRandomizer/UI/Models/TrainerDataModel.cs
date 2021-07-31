@@ -10,7 +10,9 @@ namespace PokemonRandomizer.UI.Models
     using static Settings.TrainerSettings;
     public class TrainerDataModel : DataModel
     {
-        TrainerCategory Category { get; }
+        public TrainerCategory Category { get; }
+        public bool OverrideSettings { get; set; }
+        public TrainerCategory OverrideCategory { get; set; }
         public override string Name { get; }
 
         public TrainerDataModel() : this(TrainerCategory.Trainer, defaultName)
@@ -67,8 +69,7 @@ namespace PokemonRandomizer.UI.Models
                 InitializeMetric(metric);
             }
         }
-        public bool OverrideSettings { get; set; }
-        public TrainerCategory OverrideCategory { get; set; }
+
         public bool RandomizePokemon { get; set; } = false;
         public double PokemonRandChance { get; set; } = 1;
         public PokemonPcgStrategy PokemonStrategy { get; set; } = PokemonPcgStrategy.KeepParty;

@@ -124,7 +124,7 @@ namespace PokemonRandomizer
         public MainWindow()
         {
             hardCodedSettings = new HardCodedSettings(this);
-            appSettings = new AppSettings.AppSettings(this, starterData, tmHmData, pokemonData, wildEncounterData);
+            appSettings = new AppSettings.AppSettings(this, starterData, tmHmData, pokemonData, wildEncounterData, trainerDataModels);
 
             IsROMLoaded = false;
             InitializeComponent();
