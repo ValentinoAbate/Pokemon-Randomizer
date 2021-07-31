@@ -158,24 +158,24 @@
     <Compile Include="Search\Kmp.cs" />
     <Compile Include="Statistics\Distribution.cs" />
     <Compile Include="UI\BoundCheckBoxUI.cs" />
-    <Compile Include="UI\DataModel.cs" />
-    <Compile Include="UI\DataView.cs" />
+    <Compile Include="UI\Models\DataModel.cs" />
+    <Compile Include="UI\Views\DataView.cs" />
     <Compile Include="UI\BoundComboBoxUI.cs" />
-    <Compile Include="UI\GroupDataView.cs" />
+    <Compile Include="UI\Views\GroupDataView.cs" />
     <Compile Include="UI\GroupUI.cs" />
     <Compile Include="UI\BoundSliderUI.cs" />
     <Compile Include="UI\MetricDataUI.cs" />
     <Compile Include="UI\PokemonSettingsUI.cs" />
-    <Compile Include="UI\PokemonTraitsModel.cs" />
-    <Compile Include="UI\PokemonTraitsDataView.cs" />
+    <Compile Include="UI\Models\PokemonTraitsModel.cs" />
+    <Compile Include="UI\Views\PokemonTraitsDataView.cs" />
     <Compile Include="UI\RandomChanceUI.cs" />
-    <Compile Include="UI\StartersDataModel.cs" />
-    <Compile Include="UI\StartersDataView.cs" />
-    <Compile Include="UI\TmHmTutorModel.cs" />
-    <Compile Include="UI\TmHmTutorDataView.cs" />
+    <Compile Include="UI\Models\StartersDataModel.cs" />
+    <Compile Include="UI\Views\StartersDataView.cs" />
+    <Compile Include="UI\Models\TmHmTutorModel.cs" />
+    <Compile Include="UI\Views\TmHmTutorDataView.cs" />
     <Compile Include="UI\UIExtensions.cs" />
-    <Compile Include="UI\WildEncounterDataModel.cs" />
-    <Compile Include="UI\WildEncounterDataView.cs" />
+    <Compile Include="UI\Models\WildEncounterDataModel.cs" />
+    <Compile Include="UI\Views\WildEncounterDataView.cs" />
     <Compile Include="UserControls\MutationRateSlider.xaml.cs">
       <DependentUpon>MutationRateSlider.xaml</DependentUpon>
     </Compile>

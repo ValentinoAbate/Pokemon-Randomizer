@@ -21,10 +21,6 @@ namespace PokemonRandomizer.AppSettings
         public override bool SetSeed => (bool)window.cbSeed.IsChecked;
         #endregion
 
-        #region Type Hacks (WIP, NOTHING YET)
-
-        #endregion
-
         #region Type Relation Definitions
 
         /// <summary>
