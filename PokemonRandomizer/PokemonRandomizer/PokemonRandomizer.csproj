@@ -159,6 +159,7 @@
     <Compile Include="Statistics\Distribution.cs" />
     <Compile Include="UI\BoundCheckBoxUI.cs" />
     <Compile Include="UI\Models\DataModel.cs" />
+    <Compile Include="UI\Models\TrainerDataModel.cs" />
     <Compile Include="UI\Views\DataView.cs" />
     <Compile Include="UI\BoundComboBoxUI.cs" />
     <Compile Include="UI\Views\GroupDataView.cs" />
@@ -175,6 +176,7 @@
     <Compile Include="UI\Views\TmHmTutorDataView.cs" />
     <Compile Include="UI\UIExtensions.cs" />
     <Compile Include="UI\Models\WildEncounterDataModel.cs" />
+    <Compile Include="UI\Views\TrainerDataView.cs" />
     <Compile Include="UI\Views\WildEncounterDataView.cs" />
     <Compile Include="UserControls\MutationRateSlider.xaml.cs">
       <DependentUpon>MutationRateSlider.xaml</DependentUpon>

@@ -232,7 +232,6 @@ namespace PokemonRandomizer.AppSettings
             },
         };
         public override bool RandomizeWallyAce => true;
-        public override TrainerOption WallySetting => TrainerOption.Procedural;
 
         #endregion
 

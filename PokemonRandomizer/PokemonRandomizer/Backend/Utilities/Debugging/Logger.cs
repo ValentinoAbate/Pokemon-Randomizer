@@ -8,6 +8,7 @@ namespace PokemonRandomizer.Backend.Utilities.Debug
         public enum Level
         {
             Info,
+            Todo,
             Warning,
             Unsupported,
             Error,
@@ -42,6 +43,8 @@ namespace PokemonRandomizer.Backend.Utilities.Debug
         public void Error(string message) => Log(message, Level.Error);
 
         public void Unsupported(string message) => Log(message, Level.Unsupported);
+
+        public void Todo(string message) => Log(message, Level.Todo);
 
         public readonly struct LogData
         {

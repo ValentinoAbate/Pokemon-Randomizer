@@ -18,7 +18,7 @@ namespace PokemonRandomizer.UI
             Content = stack;
             stack.Add(new Label() { Content = "Randomization" });
             stack.Add(new Separator());
-            stack.Add(new RandomChanceUI("Random Tm Moves", model.RandomizeTMs, b => model.RandomizeTMs = b, model.TMRandChance, d => model.TMRandChance = d, Orientation.Horizontal));
+            stack.Add(new RandomChanceUI("Random TM Moves", model.RandomizeTMs, b => model.RandomizeTMs = b, model.TMRandChance, d => model.TMRandChance = d, Orientation.Horizontal));
             stack.Add(new RandomChanceUI("Random Tutor Moves", model.RandomizeMoveTutors, b => model.RandomizeMoveTutors = b, model.MoveTutorRandChance, d => model.MoveTutorRandChance = d, Orientation.Horizontal));
             stack.Add(new BoundCheckBoxUI(model.NoHmMovesInTMsAndTutors, b => model.NoHmMovesInTMsAndTutors = b, "Prevent HM moves in TMs and Tutors"));
             stack.Add(new BoundCheckBoxUI(model.NoDuplicateTMsAndTutors, b => model.NoDuplicateTMsAndTutors = b, "Prevent duplicate moves in TMs and Tutors"));

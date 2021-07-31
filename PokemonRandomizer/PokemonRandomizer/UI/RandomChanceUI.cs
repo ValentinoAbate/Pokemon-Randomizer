@@ -13,12 +13,7 @@ namespace PokemonRandomizer.UI
     {
         private const string chanceText = "Chance";
 
-        public RandomChanceUI(string featureName, double chance, Action<double> onChanceChange, Orientation orientation, Control additionalContent = null) : this(featureName, chance > 0, null, chance, onChanceChange, orientation, additionalContent)
-        {
-
-        }
-
-        public RandomChanceUI(string featureName, bool enabled, Action<bool> onEnabledChange, double chance, Action<double> onChanceChange, Orientation orientation, Control additionalContent = null) : base()
+        public RandomChanceUI(string featureName, bool enabled, Action<bool> onEnabledChange, double chance, Action<double> onChanceChange, Orientation orientation, UIElement additionalContent = null) : base()
         {
             var mainStack = new StackPanel() { Orientation = orientation };
             double marginH = orientation == Orientation.Horizontal ? 0 : 1.5;
@@ -33,16 +28,17 @@ namespace PokemonRandomizer.UI
             var checkBox = new BoundCheckBoxUI(enabled, OnCheckBox, featureName) { VerticalAlignment = VerticalAlignment.Center};
             
             // Add content to main stack
-            mainStack.Children.Add(checkBox);
-            mainStack.Children.Add(new Separator());
-            mainStack.Children.Add(contentStack);
+            mainStack.Add(checkBox);
+            mainStack.Add(new Separator());
+            mainStack.Add(contentStack);
 
             // Add content to content stack
-            contentStack.Children.Add(new BoundSliderUI(chanceText, chance, onChanceChange));
+            contentStack.Add(new BoundSliderUI(chanceText, chance, onChanceChange));
             if(additionalContent != null)
-                contentStack.Children.Add(additionalContent);
+                contentStack.Add(additionalContent);
 
             Content = mainStack;
+            OnCheckBox(enabled);
         }
     }
 }

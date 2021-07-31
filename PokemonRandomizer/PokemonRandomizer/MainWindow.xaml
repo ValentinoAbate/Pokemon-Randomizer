@@ -102,7 +102,7 @@
             <TabItem Name="WildPokemonView" Header="Wild Pokemon">
 
             </TabItem>
-            <TabItem Header="Trainers">
+            <TabItem Name="TrainerView" Header="Trainers" Visibility="Collapsed">
 
             </TabItem>
             <TabItem Header="Items">

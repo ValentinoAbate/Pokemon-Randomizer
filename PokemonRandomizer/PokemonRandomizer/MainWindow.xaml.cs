@@ -17,6 +17,8 @@ namespace PokemonRandomizer
     using Backend.Writing;
     using Windows;
     using UI;
+    using UI.Models;
+    using UI.Views;
     using PokemonRandomizer.AppSettings;
 
     /// <summary>
@@ -94,6 +96,8 @@ namespace PokemonRandomizer
         private readonly StartersDataModel starterData = new StartersDataModel();
         private readonly PokemonTraitsModel pokemonData = new PokemonTraitsModel();
         private readonly WildEncounterDataModel wildEncounterData = new WildEncounterDataModel();
+        // Later have preset ones for special groups
+        private readonly TrainerDataModel trainerDataTest = new TrainerDataModel();
 
         public Settings AppSettings => UseHardCodedSettings ? hardCodedSettings : appSettings;
 
@@ -119,6 +123,7 @@ namespace PokemonRandomizer
             new GroupUI<PokemonTraitsDataView, PokemonTraitsModel>(TraitsGroupsPanel, TraitsViewPanel, pokemonData);
             TmHmTutorView.Content = new TmHmTutorDataView(tmHmData);
             WildPokemonView.Content = new WildEncounterDataView(wildEncounterData);
+            TrainerView.Content = new TrainerDataView(trainerDataTest);
             Logger.main.OnLog += OnLog;
         }
 

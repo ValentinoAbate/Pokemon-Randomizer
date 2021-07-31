@@ -158,7 +158,6 @@ namespace PokemonRandomizer
         protected abstract Dictionary<TrainerCategory, TrainerSettings> TrainerSettingsDict { get; }
 
         public abstract bool RandomizeWallyAce { get; }
-        public abstract TrainerOption WallySetting { get; }
         #endregion
 
         #region Wild Pokemon
