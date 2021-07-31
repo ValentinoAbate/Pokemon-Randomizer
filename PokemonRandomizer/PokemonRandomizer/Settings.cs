@@ -387,6 +387,7 @@ namespace PokemonRandomizer
 
         public class MetricData
         {
+            public static MetricData Empty => new MetricData(emptyMetric, 4);
             public const float defaultSharpness = 1;
             public const float defaultFilter = 0;
             public const string emptyMetric = "none";

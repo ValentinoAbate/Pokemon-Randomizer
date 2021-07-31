@@ -28,11 +28,11 @@ namespace PokemonRandomizer.UI.Views
             new ComboBoxItem() {Content="Keep Same Type", ToolTip="Recurring battles with a trainer in this group will keep the same battle type (if the last battle was a double battle, the next one will also be a double battle, etc)."},
         };
 
-        private void InitializeMetric(MetricData metric)
+        public static IEnumerable<string> MetricTypes { get; } = PokemonSettingsUI.BasicPokemonMetricTypes.Concat(new List<string>()
         {
-            Logger.main.Todo("Properly initialize trainer-specific metrics");
-            return;
-        }
+            PokemonMetric.typeTrainerParty,
+            //PokemonMetric.typeTrainerClass,
+        });
 
         public override Panel CreateModelView(TrainerDataModel model)
         {
@@ -55,7 +55,7 @@ namespace PokemonRandomizer.UI.Views
             var stack = new StackPanel() { Orientation = Orientation.Vertical };
             var pokemonStack = new StackPanel() { Orientation = Orientation.Vertical };
             pokemonStack.Add(new BoundComboBoxUI("Recurring Trainer Pokemon Randomization Strategy", PokemonStrategyDropdown, (int)model.PokemonStrategy, i => model.PokemonStrategy = (PokemonPcgStrategy)i));
-            pokemonStack.Add(new PokemonSettingsUI(model.PokemonSettings, InitializeMetric));
+            pokemonStack.Add(new PokemonSettingsUI(model.PokemonSettings, MetricTypes, model.InitializeMetric));
             void OnRandomizePokemonChange(bool enabled)
             {
                 model.RandomizePokemon = enabled;

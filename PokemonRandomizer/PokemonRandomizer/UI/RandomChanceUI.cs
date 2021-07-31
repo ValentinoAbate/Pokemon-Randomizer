@@ -26,10 +26,8 @@ namespace PokemonRandomizer.UI
                 contentStack.IsEnabled = value;
             }
             var checkBox = new BoundCheckBoxUI(enabled, OnCheckBox, featureName) { VerticalAlignment = VerticalAlignment.Center};
-            
             // Add content to main stack
             mainStack.Add(checkBox);
-            mainStack.Add(new Separator());
             mainStack.Add(contentStack);
 
             // Add content to content stack
