@@ -1,6 +1,7 @@
 This is not a complete list, and will be updated as I think of things and transcribe my notes from other places
 
-IDEAS:
+IDEAS ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 - Randomize unknown's base stats
 - Add some ??? type attack moves to the game
 	- Start by randomizing Hidden Power
@@ -74,8 +75,9 @@ IDEAS:
 	- Ensures all pokemon are obtainable in the game
 	- Hardcore:
 		- To obtain all pokemon, you must do all in-game trades, special events (like mew), obtain all gift pokemon, and baby pokemon must be obtained from breeding or gift eggs
-FEATURES:
-- Error text in the bottom right of the info bar that shows a number of how many errors have been logged
+
+FEATURES ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 - FireRed v1.1, LeafGreen v1.0 + v1.1, Sapphire v1.0 + v1.11, and Ruby v1.0 + v1.11 compatibility
 - Enable for FireRed
 	- Starter Text replacement
@@ -101,7 +103,6 @@ FEATURES:
 	- Maps
 	- Signs
 	- Triggers
-- In-Game Trade Randomization
 - Dream Team: A feature that allows you to set up a team from the beginning of the game
 	- Can choose 6 custom pokemon, or choose parameters to generate a team with
 		- So far includes type filters, legendary / illegal evo filters, and TotalBST upper and lower bounds
@@ -124,9 +125,9 @@ FEATURES:
 - Money Scaling
 - UI Hookups
 	- Hookup custom starter UI (need a pokemon name to pokemon enum function)
-UNIT TESTS:
-- Clean rom hash compare (reading and writing an input rom skipping randomization should produce the same hash)
-CLEANUP:
+
+CLEANUP /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 - Remove all unecessary manual pointer prefix searches and replace with find offset calls
 - Move encounter set reading code out of the encounter set classes to make the model gen-agnostic
 - Move movedata reading code out of the MoveData classes to make the model gen-agnostic
@@ -135,7 +136,10 @@ CLEANUP:
 - Move Elt name constants into constants class(es)
 - Check to see if pkmn base stat offsets point to after the null pokemon
 - Make "Size" and other rom data shortcut methods safe to fail with warnings
-FIXES:
+- Make seed settings into a data model / view
+
+FIXES ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 - RUBY AND SAPPHIRE
 	- Both don't have move tutors, so these need to be optionally supported
 - Pokemon that evolve with stones have bad default movesets due to not learning stuff by level up.
@@ -144,7 +148,9 @@ FIXES:
 - TM Compat and Learnset generation could be dependent on each other
 - Weird hiker man isn't becoming a double battle
 - Potentially: write catching tut on emerald has some differences from clean ROMs (see diff9)
-DUMB IDEA CORNER:
+
+DUMB IDEA CORNER ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 - Smeargle Hell: A certain percentage of moves have their effects replaced with sketch
 - Splash Zone: A certain percentage of moves have their effects replaced with but nothing happened
 	- Could also be moves in learnsets being replaced by splash
