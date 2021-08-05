@@ -34,11 +34,13 @@ namespace PokemonRandomizer.UI
             }
 
             OnMainOptionChange((int)model.StarterSetting);
-            var mainOptionBox = new BoundComboBoxUI("Starter Randomization", StartersDataModel.StarterOptionDropdown, (int)model.StarterSetting, OnMainOptionChange);
+            var mainOptionBox = new BoundComboBoxUI("Randomization Strategy", StartersDataModel.StarterOptionDropdown, (int)model.StarterSetting, OnMainOptionChange);
             // Create stack and add content
-            var contentStack = new StackPanel() { Orientation = Orientation.Vertical };
-            Content = contentStack;
-            contentStack.Add(mainOptionBox, customStarterStack, strongTriangleCb, legendCb, safeMovesetsCb);
+            var stack = new StackPanel() { Orientation = Orientation.Vertical };
+            Content = stack;
+            stack.Add(new Label() { Content = "Starter Randomization" });
+            stack.Add(new Separator());
+            stack.Add(mainOptionBox, customStarterStack, strongTriangleCb, legendCb, safeMovesetsCb);
         }
     }
 }

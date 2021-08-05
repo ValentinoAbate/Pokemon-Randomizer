@@ -12,6 +12,7 @@ namespace PokemonRandomizer.UI
     {
         public BoundCheckBoxUI(bool isChecked, Action<bool> onEnabledChange) : base()
         {
+            Margin = new Thickness(5, 2, 2, 2);
             IsChecked = isChecked;
             Checked += (_, _2) => onEnabledChange?.Invoke(true);
             Unchecked += (_, _2) => onEnabledChange?.Invoke(false);

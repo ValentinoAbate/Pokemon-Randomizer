@@ -1,11 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Controls;
-using System.Windows.Data;
-using PokemonRandomizer.Backend.Utilities;
 
 namespace PokemonRandomizer.UI
 {
@@ -22,7 +16,7 @@ namespace PokemonRandomizer.UI
             ComboBox = new ComboBox() {  ItemsSource = items, SelectedIndex = currentIndex };
             Children.Add(ComboBox);
             ComboBox.SelectionChanged += (_, _2) => onIndexChange?.Invoke(ComboBox.SelectedIndex);
-            Margin = new System.Windows.Thickness(2);
+            Margin = new System.Windows.Thickness(0,2,2,2);
         }
     }
 }

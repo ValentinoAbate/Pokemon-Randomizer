@@ -74,6 +74,8 @@ namespace PokemonRandomizer.UI
         {
             var tab = new TabItem() { Header = "Catch Rate" };
             var stack = new StackPanel() { Orientation = Orientation.Vertical };
+            stack.Add(new Label() { Content = "Catch Rate Randomization" });
+            stack.Add(new Separator());
             var constantRateSlider = new BoundSliderUI("Constant Difficulty", model.CatchRateConstantDifficulty, (d) => model.CatchRateConstantDifficulty = d, false);
             constantRateSlider.SetVisibility(model.CatchRateSetting == CatchRateOption.Constant);
             void OnOptionChange(int index)
@@ -81,9 +83,9 @@ namespace PokemonRandomizer.UI
                 model.CatchRateSetting = (CatchRateOption)index;
                 constantRateSlider.SetVisibility(model.CatchRateSetting == CatchRateOption.Constant);
             }
-            stack.Add(new BoundComboBoxUI("Catch Rate", PokemonTraitsModel.CatchRateOptionDropdown, (int)model.CatchRateSetting, OnOptionChange));
+            stack.Add(new BoundComboBoxUI("Randomization Strategy", PokemonTraitsModel.CatchRateOptionDropdown, (int)model.CatchRateSetting, OnOptionChange));
             stack.Add(constantRateSlider);
-            stack.Add(new BoundCheckBoxUI(model.KeepLegendaryCatchRates, (b) => model.KeepLegendaryCatchRates = b, "Keep Legendary Catch Rates", banSelfdestructTooltip));
+            stack.Add(new BoundCheckBoxUI(model.KeepLegendaryCatchRates, (b) => model.KeepLegendaryCatchRates = b, "Keep Legendary Catch Rates"));
             tab.Content = stack;
             return tab;
         }
@@ -107,12 +109,12 @@ namespace PokemonRandomizer.UI
                 model.AddMoves = enabled;
                 bonusMovesStack.IsEnabled = enabled;
             }
-            stack.Add(new RandomChanceUI("Bonus Move Chance", model.AddMoves, OnBonusMoveChanceEnabled, model.AddMovesChance, d => model.AddMovesChance = d));
+            stack.Add(new RandomChanceUI("Bonus Moves", model.AddMoves, OnBonusMoveChanceEnabled, model.AddMovesChance, d => model.AddMovesChance = d));
             stack.Add(bonusMovesStack);
             stack.Add(new Separator());
             stack.Add(new Label() { Content = UISkin.Current.HacksAndTweaksHeader });
             stack.Add(new Separator());
-            stack.Add(new BoundCheckBoxUI(model.BanSelfdestruct, b => model.BanSelfdestruct = b, "Ban Selfdestruct"));
+            stack.Add(new BoundCheckBoxUI(model.BanSelfdestruct, b => model.BanSelfdestruct = b, "Ban Selfdestruct", banSelfdestructTooltip));
             tab.Content = stack;
             return tab;
         }

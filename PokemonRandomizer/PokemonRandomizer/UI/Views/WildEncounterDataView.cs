@@ -24,8 +24,9 @@ namespace PokemonRandomizer.UI
         {
             var stack = new StackPanel() { Orientation = Orientation.Vertical };
             Content = stack;
-            stack.Add(new BoundComboBoxUI("Wild Encounter Randomization", StrategyDropdown, (int)model.Strategy, i => model.Strategy = (Strategy)i));
+            stack.Add(new Label() { Content = "Wild Encounter Randomization" });
             stack.Add(new Separator());
+            stack.Add(new BoundComboBoxUI("Randomization Strategy", StrategyDropdown, (int)model.Strategy, i => model.Strategy = (Strategy)i));
             stack.Add(new PokemonSettingsUI(model.PokemonSettings, MetricTypes, model.InitializeMetric));
         }
     }
