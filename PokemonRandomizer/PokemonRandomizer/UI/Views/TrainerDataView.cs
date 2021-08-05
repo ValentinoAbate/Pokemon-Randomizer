@@ -61,7 +61,7 @@ namespace PokemonRandomizer.UI.Views
                 model.RandomizePokemon = enabled;
                 pokemonStack.IsEnabled = enabled;
             }
-            stack.Add(new RandomChanceUI("Random Pokemon", model.RandomizePokemon, OnRandomizePokemonChange, model.PokemonRandChance, d => model.PokemonRandChance = d, Orientation.Horizontal));
+            stack.Add(new RandomChanceUI("Random Pokemon", model.RandomizePokemon, OnRandomizePokemonChange, model.PokemonRandChance, d => model.PokemonRandChance = d));
             stack.Add(pokemonStack);
             OnRandomizePokemonChange(model.RandomizePokemon);
             tab.Content = stack;
@@ -82,7 +82,7 @@ namespace PokemonRandomizer.UI.Views
                 battleTypeStack.IsEnabled = enabled;
             }
             OnRandomizeBattleTypeChange(model.RandomizeBattleType);
-            stack.Add(new RandomChanceUI("Random Battle Type", model.RandomizeBattleType, OnRandomizeBattleTypeChange, model.BattleTypeRandChance, d => model.BattleTypeRandChance = d, Orientation.Horizontal));
+            stack.Add(new RandomChanceUI("Random Battle Type", model.RandomizeBattleType, OnRandomizeBattleTypeChange, model.BattleTypeRandChance, d => model.BattleTypeRandChance = d));
             stack.Add(battleTypeStack);
             tab.Content = stack;
             return tab;

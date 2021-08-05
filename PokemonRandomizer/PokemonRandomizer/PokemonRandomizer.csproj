@@ -158,6 +158,7 @@
     <Compile Include="Search\Kmp.cs" />
     <Compile Include="Statistics\Distribution.cs" />
     <Compile Include="UI\BoundCheckBoxUI.cs" />
+    <Compile Include="UI\UISkin.cs" />
     <Compile Include="UI\Models\DataModel.cs" />
     <Compile Include="UI\Models\TrainerDataModel.cs" />
     <Compile Include="UI\Views\DataView.cs" />

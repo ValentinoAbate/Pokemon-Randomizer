@@ -18,8 +18,8 @@ namespace PokemonRandomizer.UI
             Content = stack;
             stack.Add(new Label() { Content = "Randomization" });
             stack.Add(new Separator());
-            stack.Add(new RandomChanceUI("Random TM Moves", model.RandomizeTMs, b => model.RandomizeTMs = b, model.TMRandChance, d => model.TMRandChance = d, Orientation.Horizontal));
-            stack.Add(new RandomChanceUI("Random Tutor Moves", model.RandomizeMoveTutors, b => model.RandomizeMoveTutors = b, model.MoveTutorRandChance, d => model.MoveTutorRandChance = d, Orientation.Horizontal));
+            stack.Add(new RandomChanceUI("Random TM Moves", model.RandomizeTMs, b => model.RandomizeTMs = b, model.TMRandChance, d => model.TMRandChance = d));
+            stack.Add(new RandomChanceUI("Random Tutor Moves", model.RandomizeMoveTutors, b => model.RandomizeMoveTutors = b, model.MoveTutorRandChance, d => model.MoveTutorRandChance = d));
             stack.Add(new BoundCheckBoxUI(model.NoHmMovesInTMsAndTutors, b => model.NoHmMovesInTMsAndTutors = b, "Prevent HM moves in TMs and Tutors"));
             stack.Add(new BoundCheckBoxUI(model.NoDuplicateTMsAndTutors, b => model.NoDuplicateTMsAndTutors = b, "Prevent duplicate moves in TMs and Tutors"));
             stack.Add(new BoundCheckBoxUI(model.KeepImportantTmsAndTutors, b => model.KeepImportantTmsAndTutors = b, "Keep important TMs and Tutors", "Ensures that important TMs and Tutors won't be randomized (Headbutt, Rock Smash, Secret Power, Flash, etc)"));

@@ -47,5 +47,15 @@ namespace PokemonRandomizer.UI
         public CatchRateOption CatchRateSetting { get; set; } = CatchRateOption.Unchanged;
         public bool KeepLegendaryCatchRates { get; set; } = true;
         public double CatchRateConstantDifficulty { get; set; } = 0.5;
+
+        // Learnset parameters
+
+        public bool BanSelfdestruct { get; set; }
+        public bool AddMoves { get; set; }
+        public double AddMovesChance { get; set; } = 1;
+        public bool DisableAddingHmMoves { get; set; } = true;
+        public double NumMovesStdDeviation { get; set; } = 1;
+        public double NumMovesMean { get; set; } = 1;
+        public double NumMovesMin { get; set; } = 0;
     }
 }

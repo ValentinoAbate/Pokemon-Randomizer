@@ -76,14 +76,14 @@ namespace PokemonRandomizer.AppSettings
 
         //#region Learnsets
 
-        //public override bool BanSelfdestruct => false;
-        //public override bool AddMoves => true;
-        //public override bool DisableAddingHmMoves => false;
+        public override bool BanSelfdestruct => pokemonData.BanSelfdestruct;
+        public override bool AddMoves => pokemonData.AddMoves;    
+        public override bool DisableAddingHmMoves => pokemonData.DisableAddingHmMoves;
+        public override double AddMovesChance => pokemonData.AddMovesChance;
+        public override double NumMovesStdDeviation => pokemonData.NumMovesStdDeviation;
+        public override double NumMovesMean => pokemonData.NumMovesMean;
 
-        //public override double AddMovesChance => 1;
-        //public override double NumMovesStdDeviation => 2;
-        //public override double NumMovesMean => 1;
-
+        // TODO:
         //public override WeightedSet<AddMoveSource> AddMoveSourceWieghts { get; } = new WeightedSet<AddMoveSource>()
         //{
         //    { AddMoveSource.Random, 0.01f },
@@ -97,12 +97,14 @@ namespace PokemonRandomizer.AppSettings
         #region Starter Pokemon
 
         public override StarterPokemonOption StarterSetting => starterData.StarterSetting;
+        // TODO:
         // public override Pokemon[] CustomStarters => starterData.CustomStarters; (Need string-to-pokemon translation)
         public override bool StrongStarterTypeTriangle => starterData.StrongStarterTypeTriangle;
         public override PokemonSettings StarterPokemonSettings => new PokemonSettings()
         {
             BanLegendaries = starterData.BanLegendaries,
         };
+        // TODO:
         // public override PokemonMetric[] StarterMetricData { get; } = new PokemonMetric[0]; (No UI for metric data yet) 
         public override bool SafeStarterMovesets => starterData.SafeStarterMovesets;
 

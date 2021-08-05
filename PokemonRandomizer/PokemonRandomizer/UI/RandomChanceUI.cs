@@ -13,7 +13,7 @@ namespace PokemonRandomizer.UI
     {
         private const string chanceText = "Chance";
 
-        public RandomChanceUI(string featureName, bool enabled, Action<bool> onEnabledChange, double chance, Action<double> onChanceChange, Orientation orientation, UIElement additionalContent = null) : base()
+        public RandomChanceUI(string featureName, bool enabled, Action<bool> onEnabledChange, double chance, Action<double> onChanceChange, Orientation orientation = Orientation.Horizontal, UIElement additionalContent = null) : base()
         {
             var mainStack = new StackPanel() { Orientation = orientation };
             double marginH = orientation == Orientation.Horizontal ? 0 : 1.5;
