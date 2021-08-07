@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PokemonRandomizer.UI.Views
 {
     using Models;
-    using PokemonRandomizer.Backend.Utilities.Debug;
     using System.Windows;
     using System.Windows.Controls;
     using System.Windows.Data;
@@ -56,14 +53,8 @@ namespace PokemonRandomizer.UI.Views
             var pokemonStack = new StackPanel() { Orientation = Orientation.Vertical };
             pokemonStack.Add(new BoundComboBoxUI("Recurring Trainer Pokemon Randomization Strategy", PokemonStrategyDropdown, (int)model.PokemonStrategy, i => model.PokemonStrategy = (PokemonPcgStrategy)i));
             pokemonStack.Add(new PokemonSettingsUI(model.PokemonSettings, MetricTypes, model.InitializeMetric));
-            void OnRandomizePokemonChange(bool enabled)
-            {
-                model.RandomizePokemon = enabled;
-                pokemonStack.IsEnabled = enabled;
-            }
-            stack.Add(new RandomChanceUI("Random Pokemon", model.RandomizePokemon, OnRandomizePokemonChange, model.PokemonRandChance, d => model.PokemonRandChance = d));
+            stack.Add(new RandomChanceUI("Random Pokemon", model.RandomizePokemon, b => model.RandomizePokemon = b, model.PokemonRandChance, d => model.PokemonRandChance = d, pokemonStack));
             stack.Add(pokemonStack);
-            OnRandomizePokemonChange(model.RandomizePokemon);
             tab.Content = stack;
             return tab;
         }
@@ -76,13 +67,7 @@ namespace PokemonRandomizer.UI.Views
 
             battleTypeStack.Add(new BoundComboBoxUI("Recurring Trainer Battle Type Strategy", BattleTypeStrategyDropdown, (int)model.BattleTypeStrategy, i => model.BattleTypeStrategy = (BattleTypePcgStrategy)i));
             battleTypeStack.Add(new BoundSliderUI("Double Battle Chance", model.DoubleBattleChance, d => model.DoubleBattleChance = d) { ToolTip = "The chance that the battle type will be a double battle when randomized" });
-            void OnRandomizeBattleTypeChange(bool enabled)
-            {
-                model.RandomizeBattleType = enabled;
-                battleTypeStack.IsEnabled = enabled;
-            }
-            OnRandomizeBattleTypeChange(model.RandomizeBattleType);
-            stack.Add(new RandomChanceUI("Random Battle Type", model.RandomizeBattleType, OnRandomizeBattleTypeChange, model.BattleTypeRandChance, d => model.BattleTypeRandChance = d));
+            stack.Add(new RandomChanceUI("Random Battle Type", model.RandomizeBattleType, b => model.RandomizeBattleType = b, model.BattleTypeRandChance, d => model.BattleTypeRandChance = d, battleTypeStack));
             stack.Add(battleTypeStack);
             tab.Content = stack;
             return tab;

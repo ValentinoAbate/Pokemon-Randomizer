@@ -179,6 +179,7 @@
     <Compile Include="UI\Models\WildEncounterDataModel.cs" />
     <Compile Include="UI\Views\TrainerDataView.cs" />
     <Compile Include="UI\Views\WildEncounterDataView.cs" />
+    <Compile Include="UI\WeightedSetUI.cs" />
     <Compile Include="UserControls\MutationRateSlider.xaml.cs">
       <DependentUpon>MutationRateSlider.xaml</DependentUpon>
     </Compile>

@@ -104,12 +104,7 @@ namespace PokemonRandomizer.UI
             bonusMovesStack.Add(new BoundSliderUI("Number of moves variance", model.NumMovesStdDeviation, d => model.NumMovesStdDeviation = d, false, 0.5, 0, 5));
             bonusMovesStack.Add(new BoundSliderUI("Minimum number of moves to add", model.NumMovesMin, d => model.NumMovesMin = d, false, 1, 0, 5));
             bonusMovesStack.Add(new BoundCheckBoxUI(model.DisableAddingHmMoves, b => model.DisableAddingHmMoves = b, "Ban adding HM moves"));
-            void OnBonusMoveChanceEnabled(bool enabled)
-            {
-                model.AddMoves = enabled;
-                bonusMovesStack.IsEnabled = enabled;
-            }
-            stack.Add(new RandomChanceUI("Bonus Moves", model.AddMoves, OnBonusMoveChanceEnabled, model.AddMovesChance, d => model.AddMovesChance = d));
+            stack.Add(new RandomChanceUI("Bonus Moves", model.AddMoves, b => model.AddMoves = b, model.AddMovesChance, d => model.AddMovesChance = d, bonusMovesStack));
             stack.Add(bonusMovesStack);
             stack.Add(new Separator());
             stack.Add(new Label() { Content = UISkin.Current.HacksAndTweaksHeader });

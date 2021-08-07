@@ -10,20 +10,36 @@ namespace PokemonRandomizer.UI
 {
     public class BoundCheckBoxUI : CheckBox
     {
-        public BoundCheckBoxUI(bool isChecked, Action<bool> onEnabledChange) : base()
+        public BoundCheckBoxUI(bool isChecked, Action<bool> onEnabledChange, UIElement enableOnChecked = null) : base()
         {
             Margin = new Thickness(5, 2, 2, 2);
             IsChecked = isChecked;
-            Checked += (_, _2) => onEnabledChange?.Invoke(true);
-            Unchecked += (_, _2) => onEnabledChange?.Invoke(false);
+            if(enableOnChecked != null)
+            {
+                enableOnChecked.IsEnabled = isChecked;
+            }
+            void OnChecked(object _, RoutedEventArgs _2)
+            {
+                onEnabledChange?.Invoke(true);
+                if(enableOnChecked != null)
+                    enableOnChecked.IsEnabled = true;
+            }
+            void OnUnchecked(object _, RoutedEventArgs _2)
+            {
+                onEnabledChange?.Invoke(false);
+                if (enableOnChecked != null)
+                    enableOnChecked.IsEnabled = false;
+            }
+            Checked += OnChecked;
+            Unchecked += OnUnchecked;
         }
 
-        public BoundCheckBoxUI(bool isChecked, Action<bool> onEnabledChange, string label) : this(isChecked, onEnabledChange)
+        public BoundCheckBoxUI(bool isChecked, Action<bool> onEnabledChange, string label, UIElement enableOnChecked = null) : this(isChecked, onEnabledChange, enableOnChecked)
         {
             Content = label;
         }
 
-        public BoundCheckBoxUI(bool isChecked, Action<bool> onEnabledChange, string label, string tooltip) : this(isChecked, onEnabledChange, label)
+        public BoundCheckBoxUI(bool isChecked, Action<bool> onEnabledChange, string label, string tooltip, UIElement enableOnChecked = null) : this(isChecked, onEnabledChange, label, enableOnChecked)
         {
             ToolTip = tooltip;
         }
