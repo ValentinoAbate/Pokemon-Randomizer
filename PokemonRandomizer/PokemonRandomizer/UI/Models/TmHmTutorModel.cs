@@ -1,20 +1,8 @@
-﻿using System.Windows.Data;
-using System.Windows.Controls;
-
-namespace PokemonRandomizer.UI
+﻿namespace PokemonRandomizer.UI
 {
     using CompatOption = Settings.TmMtCompatOption;
     public class TmHmTutorModel : DataModel
     {
-        public static CompositeCollection CompatOptionDropdown { get; } = new CompositeCollection()
-        {
-            new ComboBoxItem() {Content="Unchanged" },
-            new ComboBoxItem() {Content="All On" },
-            new ComboBoxItem() {Content="Random" },
-            new ComboBoxItem() {Content="Random (Keep Number)", ToolTip="Randomly select compatibility, but keep the same number the pokemon had in the base ROM"},
-            new ComboBoxItem() {Content="Intelligent", ToolTip=""},
-        };
-
         public CompatOption TmCompatOption { get; set; } = CompatOption.Intelligent;
         public CompatOption TutorCompatOption { get; set; } = CompatOption.Intelligent;
         public CompatOption HmCompatOption { get; set; } = CompatOption.Unchanged;

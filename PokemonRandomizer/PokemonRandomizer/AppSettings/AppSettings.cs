@@ -74,7 +74,7 @@ namespace PokemonRandomizer.AppSettings
 
         #endregion
 
-        //#region Learnsets
+        #region Learnsets
 
         public override bool BanSelfdestruct => pokemonData.BanSelfdestruct;
         public override bool AddMoves => pokemonData.AddMoves;    
@@ -82,15 +82,9 @@ namespace PokemonRandomizer.AppSettings
         public override double AddMovesChance => pokemonData.AddMovesChance;
         public override double NumMovesStdDeviation => pokemonData.NumMovesStdDeviation;
         public override double NumMovesMean => pokemonData.NumMovesMean;
+        public override WeightedSet<AddMoveSource> AddMoveSourceWeights => pokemonData.AddMoveSourceWeights;
 
-        // TODO:
-        //public override WeightedSet<AddMoveSource> AddMoveSourceWieghts { get; } = new WeightedSet<AddMoveSource>()
-        //{
-        //    { AddMoveSource.Random, 0.01f },
-        //    { AddMoveSource.EggMoves, 0.99f },
-        //};
-
-        //#endregion
+        #endregion
 
         #endregion
 

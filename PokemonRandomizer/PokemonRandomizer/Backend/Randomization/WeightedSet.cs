@@ -161,6 +161,10 @@ namespace PokemonRandomizer.Backend.Randomization
                 if (predicate(key))
                     items.Remove(key);
         }
+        public void Clear()
+        {
+            items.Clear();
+        }
 
         public bool Contains(T item)
         {

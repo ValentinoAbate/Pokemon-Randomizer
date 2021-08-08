@@ -131,7 +131,7 @@ namespace PokemonRandomizer.AppSettings
         public override double NumMovesStdDeviation => 2;
         public override double NumMovesMean => 1;
 
-        public override WeightedSet<AddMoveSource> AddMoveSourceWieghts { get; } = new WeightedSet<AddMoveSource>()
+        public override WeightedSet<AddMoveSource> AddMoveSourceWeights { get; } = new WeightedSet<AddMoveSource>()
         {
             { AddMoveSource.Random, 0.01f },
             { AddMoveSource.EggMoves, 0.99f },

@@ -282,7 +282,7 @@ namespace PokemonRandomizer.Backend.Randomization
                     for (int i = 0; i < numMoves; ++i)
                     {
                         Move move = Move.None;
-                        switch (rand.Choice(settings.AddMoveSourceWieghts))
+                        switch (rand.Choice(settings.AddMoveSourceWeights))
                         {
                             case Settings.AddMoveSource.Random:
                                 move = rand.Choice(availableMoves);

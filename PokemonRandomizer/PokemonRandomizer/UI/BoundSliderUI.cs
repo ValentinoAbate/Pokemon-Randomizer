@@ -8,6 +8,23 @@ namespace PokemonRandomizer.UI
 {
     public class BoundSliderUI : StackPanel
     {
+        public double Value
+        {
+            get => slider.Value;
+            set => slider.Value = value;
+        }
+        public double Min
+        {
+            get => slider.Minimum;
+            set => slider.Minimum = value;
+        }
+        public double Max
+        {
+            get => slider.Maximum;
+            set => slider.Maximum = value;
+        }
+
+        private readonly Slider slider;
         public BoundSliderUI(string name, double value, Action<double> onValueChange, bool percent = true, double freq = 0.01, double min = 0, double max = 1) : base()
         {
             Orientation = Orientation.Horizontal;
@@ -18,7 +35,7 @@ namespace PokemonRandomizer.UI
                 Width = 45,
                 Text = PercentConverter.ToPercentString(value)
             };
-            var slider = new Slider()
+            slider = new Slider()
             {
                 Value = value,
                 Margin = new Thickness(3,4,0,0),

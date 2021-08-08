@@ -13,13 +13,13 @@ namespace PokemonRandomizer.UI.Views
 
     public class TrainerDataView : GroupDataView<TrainerDataModel>
     {
-        public static CompositeCollection PokemonStrategyDropdown { get; } = new CompositeCollection()
+        public CompositeCollection PokemonStrategyDropdown => new CompositeCollection()
         {
             new ComboBoxItem() {Content="Random", ToolTip="Pokemon in recurring battles will be chosen completely randomly"},
             new ComboBoxItem() {Content="Keep Ace", ToolTip="Recurring battles with a trainer in this group will keep that trainers ace pokemon and evolve it if appropriate"},
             new ComboBoxItem() {Content="Keep Party", ToolTip="Recurring battles with a trainer in this group will keep the pokemon from the previous battle and evolve them if appropriate. New pokemon will be added if the next battle has a bigger party." },
         };
-        public static CompositeCollection BattleTypeStrategyDropdown { get; } = new CompositeCollection()
+        public CompositeCollection BattleTypeStrategyDropdown => new CompositeCollection()
         {
             new ComboBoxItem() {Content="Random", ToolTip="Recurring battles with a trainer in the group will have a random battle type"},
             new ComboBoxItem() {Content="Keep Same Type", ToolTip="Recurring battles with a trainer in this group will keep the same battle type (if the last battle was a double battle, the next one will also be a double battle, etc)."},

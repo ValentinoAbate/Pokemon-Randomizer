@@ -1,15 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using System.Windows.Controls;
-using System.Windows;
+using System.Windows.Data;
 
 namespace PokemonRandomizer.UI
 {
     public class StartersDataView : DataView<StartersDataModel>
     {
+        public CompositeCollection StarterOptionDropdown => new CompositeCollection()
+        {
+            new ComboBoxItem() {Content="Unchanged" },
+            new ComboBoxItem() {Content="Random" },
+            new ComboBoxItem() {Content="Random Type Triangle", ToolTip="Randomly select three starters where each is strong against the next"},
+            new ComboBoxItem() {Content="Custom", ToolTip="Set 1 or more custom starters"},
+        };
         public StartersDataView(StartersDataModel model, string[] pokemonNames)
         {
             var legendCb = new BoundCheckBoxUI(model.BanLegendaries, (b) => model.BanLegendaries = b, "Ban Legendaries");
@@ -34,7 +37,7 @@ namespace PokemonRandomizer.UI
             }
 
             OnMainOptionChange((int)model.StarterSetting);
-            var mainOptionBox = new BoundComboBoxUI("Randomization Strategy", StartersDataModel.StarterOptionDropdown, (int)model.StarterSetting, OnMainOptionChange);
+            var mainOptionBox = new BoundComboBoxUI("Randomization Strategy", StarterOptionDropdown, (int)model.StarterSetting, OnMainOptionChange);
             // Create stack and add content
             var stack = new StackPanel() { Orientation = Orientation.Vertical };
             Content = stack;

@@ -8,7 +8,7 @@ namespace PokemonRandomizer.UI
     using static Backend.Randomization.WildEncounterRandomizer;
     public class WildEncounterDataView : DataView<WildEncounterDataModel>
     {
-        public static CompositeCollection StrategyDropdown { get; } = new CompositeCollection()
+        public CompositeCollection StrategyDropdown => new CompositeCollection()
         {
             new ComboBoxItem() { Content="Unchanged" },
             new ComboBoxItem() { Content="Individual", ToolTip="Each encounter slot in each area becomes a new pokemon" },

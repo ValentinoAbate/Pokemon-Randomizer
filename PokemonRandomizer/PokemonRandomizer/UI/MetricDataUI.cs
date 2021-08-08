@@ -8,7 +8,7 @@ namespace PokemonRandomizer.UI
 {
     public class MetricDataUI : ContentControl
     {
-        public static CompositeCollection PriorityDropdown { get; } = new CompositeCollection()
+        public CompositeCollection PriorityDropdown => new CompositeCollection()
         {
             new ComboBoxItem() { Content="Highest" },
             new ComboBoxItem() { Content="High" },

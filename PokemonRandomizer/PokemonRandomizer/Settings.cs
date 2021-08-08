@@ -122,7 +122,7 @@ namespace PokemonRandomizer
             EggMoves,
             CompatibleTms,
         }
-        public abstract WeightedSet<AddMoveSource> AddMoveSourceWieghts { get; }
+        public abstract WeightedSet<AddMoveSource> AddMoveSourceWeights { get; }
 
         #endregion
 
