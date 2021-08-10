@@ -38,9 +38,9 @@ namespace PokemonRandomizer.UI
             var stack = new StackPanel() { Orientation = Orientation.Vertical };
             stack.Add(new Label() { Content = "Type Randomization" });
             stack.Add(new Separator());
-            stack.Add(new RandomChanceUI("Single Type", model.RandomizeSingleType, b => model.RandomizeSingleType = b, model.SingleTypeRandChance, (d) => model.SingleTypeRandChance = d));
-            stack.Add(new RandomChanceUI("Dual Type (Primary)", model.RandomizeDualTypePrimary, b => model.RandomizeDualTypePrimary = b, model.DualTypePrimaryRandChance, (d) => model.DualTypePrimaryRandChance = d));
-            stack.Add(new RandomChanceUI("Dual Type (Secondary)", model.RandomizeDualTypeSecondary, b => model.RandomizeDualTypeSecondary = b, model.DualTypeSecondaryRandChance, (d) => model.DualTypeSecondaryRandChance = d));
+            stack.Add(new RandomChanceUI("Single Type", model.RandomizeSingleType, model.SingleTypeRandChance));
+            stack.Add(new RandomChanceUI("Dual Type (Primary)", model.RandomizeDualTypePrimary, model.DualTypePrimaryRandChance));
+            stack.Add(new RandomChanceUI("Dual Type (Secondary)", model.RandomizeDualTypeSecondary, model.DualTypeSecondaryRandChance));
             tab.Content = stack;
             return tab;
         }
@@ -59,9 +59,9 @@ namespace PokemonRandomizer.UI
             stack.Add(new Separator());
             var tradeEvoParams = new StackPanel() { Orientation = Orientation.Vertical };
             tradeEvoParams.SetVisibility(model.FixImpossibleEvos);
-            tradeEvoParams.Add(new BoundComboBoxUI("Trade item evolution type", CompatOptionDropdown, (int)model.TradeItemEvoSetting, (i) => model.TradeItemEvoSetting = (Settings.TradeItemPokemonOption)i));
-            tradeEvoParams.Add(new BoundCheckBoxUI(model.ConsiderEvolveByBeautyImpossible, b => model.ConsiderEvolveByBeautyImpossible = b, "Fix Beauty-Based Evolutions"));
-            tradeEvoParams.Add(new BoundSliderUI("Fixed evolution level variance", model.ImpossibleEvoLevelStandardDev, (d) => model.ImpossibleEvoLevelStandardDev = d, false, 0.01, 0, 3));
+            tradeEvoParams.Add(new EnumComboBoxUI<TradeItemPokemonOption>("Trade item evolution type", CompatOptionDropdown, model.TradeItemEvoSetting));
+            tradeEvoParams.Add(new BoundCheckBoxUI(model.ConsiderEvolveByBeautyImpossible, "Fix Beauty-Based Evolutions"));
+            tradeEvoParams.Add(new BoundSliderUI("Fixed evolution level variance", model.ImpossibleEvoLevelStandardDev, false, 0.01, 0, 3));
             
             void OnCheck(bool b)
             {
@@ -70,7 +70,7 @@ namespace PokemonRandomizer.UI
             }
             var impossibleEvoCb = new BoundCheckBoxUI(model.FixImpossibleEvos, OnCheck, "Fix Trade Evolutions");
             stack.Add(impossibleEvoCb, tradeEvoParams);
-            stack.Add(new RandomChanceUI("Dunsparse Plague", model.DunsparsePlague, (b) => model.DunsparsePlague = b, model.DunsparsePlaugeChance, (d) => model.DunsparsePlaugeChance = d));
+            stack.Add(new RandomChanceUI("Dunsparse Plague", model.DunsparsePlague, model.DunsparsePlaugeChance));
             tab.Content = stack;
             return tab;
         }

@@ -8,8 +8,12 @@ using System.Windows.Controls;
 
 namespace PokemonRandomizer.UI
 {
+    using Utilities;
     public class BoundCheckBoxUI : CheckBox
     {
+        public BoundCheckBoxUI(Box<bool> box, UIElement enableOnChecked = null) : this(box, b => box.Value = b, enableOnChecked) { }
+        public BoundCheckBoxUI(Box<bool> box, string label, UIElement enableOnChecked = null) : this(box, b => box.Value = b, label, enableOnChecked) { }
+        public BoundCheckBoxUI(Box<bool> box, string label, string tooltip, UIElement enableOnChecked = null) : this(box, b => box.Value = b, label, tooltip, enableOnChecked) { }
         public BoundCheckBoxUI(bool isChecked, Action<bool> onEnabledChange, UIElement enableOnChecked = null) : base()
         {
             Margin = new Thickness(5, 2, 2, 2);

@@ -6,6 +6,7 @@ using System.Windows.Data;
 
 namespace PokemonRandomizer.UI
 {
+    using Utilities;
     public class BoundSliderUI : StackPanel
     {
         public double Value
@@ -25,6 +26,11 @@ namespace PokemonRandomizer.UI
         }
 
         private readonly Slider slider;
+        public BoundSliderUI(string name, Box<double> value, bool percent = true, double freq = 0.01, double min = 0, double max = 1) 
+            : this(name, value, d => value.Value = d, percent, freq, min, max)
+        { 
+        }
+
         public BoundSliderUI(string name, double value, Action<double> onValueChange, bool percent = true, double freq = 0.01, double min = 0, double max = 1) : base()
         {
             Orientation = Orientation.Horizontal;

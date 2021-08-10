@@ -1,17 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
 
 namespace PokemonRandomizer.UI
 {
+    using Utilities;
     public class RandomChanceUI : ContentControl
     {
         private const string chanceText = "Chance";
+
+        public RandomChanceUI(string featureName, Box<bool> enabled, Box<double> chance, UIElement enableOnCheck = null, Orientation orientation = Orientation.Horizontal)
+            : this(featureName, enabled, b => enabled.Value = b, chance, d => chance.Value = d, enableOnCheck, orientation) { }
 
         public RandomChanceUI(string featureName, bool enabled, Action<bool> onEnabledChange, double chance, Action<double> onChanceChange, UIElement enableOnCheck = null, Orientation orientation = Orientation.Horizontal) : base()
         {
