@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -46,6 +42,13 @@ namespace PokemonRandomizer.UI
         public BoundCheckBoxUI(bool isChecked, Action<bool> onEnabledChange, string label, string tooltip, UIElement enableOnChecked = null) : this(isChecked, onEnabledChange, label, enableOnChecked)
         {
             ToolTip = tooltip;
+        }
+
+        public void BindVisibility(UIElement bindElement)
+        {
+            Checked += (_, _2) => bindElement.SetVisibility(true);
+            Unchecked += (_, _2) => bindElement.SetVisibility(false);
+            bindElement.SetVisibility(IsChecked ?? false);
         }
     }
 }

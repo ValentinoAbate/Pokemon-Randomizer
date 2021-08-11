@@ -1,24 +1,23 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 
 namespace PokemonRandomizer.AppSettings
 {
     using Backend.DataStructures;
     using Backend.EnumTypes;
     using Backend.Randomization;
-    using Backend.Utilities;
+    using UI.Models;
     public class HardCodedSettings : Settings
     {
-        private readonly MainWindow window;
+        protected readonly  RandomizerDataModel randomizerData;
 
-        public HardCodedSettings(MainWindow window)
+        public HardCodedSettings(RandomizerDataModel randomizerData)
         {
-            this.window = window;
+            this.randomizerData = randomizerData;
         }
 
-        #region Seeding
-        public override string Seed => window.tbSeed.Text;
-        public override bool SetSeed => (bool)window.cbSeed.IsChecked;
+        #region Randomizer
+        public override string Seed => randomizerData.Seed;
+        public override bool SetSeed => randomizerData.UseSeed;
         #endregion
 
         #region Type Relation Definitions

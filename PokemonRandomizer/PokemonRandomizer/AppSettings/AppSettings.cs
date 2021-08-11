@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace PokemonRandomizer.AppSettings
 {
-    using PokemonRandomizer.Backend.Randomization;
+    using Backend.Randomization;
     using UI;
     using UI.Models;
     public class AppSettings : HardCodedSettings
@@ -15,11 +15,11 @@ namespace PokemonRandomizer.AppSettings
         private readonly WildEncounterDataModel wildEncounterData;
         private readonly Dictionary<TrainerCategory, TrainerDataModel> trainerData;
         private readonly MiscDataModel miscData;
-        public AppSettings(MainWindow window) : base(window)
+        public AppSettings(RandomizerDataModel randomizerData) : base(randomizerData)
         {
         }
 
-        public AppSettings(MainWindow window, StartersDataModel starterData, TmHmTutorModel tmHmTutorData, PokemonTraitsModel pokemonData, WildEncounterDataModel wildEncounterData, IEnumerable<TrainerDataModel> trainerData, MiscDataModel miscData) : base(window)
+        public AppSettings(RandomizerDataModel randomizerData, StartersDataModel starterData, TmHmTutorModel tmHmTutorData, PokemonTraitsModel pokemonData, WildEncounterDataModel wildEncounterData, IEnumerable<TrainerDataModel> trainerData, MiscDataModel miscData) : base(randomizerData)
         {
             this.starterData = starterData;
             this.tmHmTutorData = tmHmTutorData;

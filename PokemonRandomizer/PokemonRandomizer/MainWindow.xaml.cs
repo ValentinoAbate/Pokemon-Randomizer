@@ -61,6 +61,7 @@ namespace PokemonRandomizer
         private const string openRomPrompt = "Open Rom";
         private const string openRomError = "Failed to open rom: ";
 
+        private readonly RandomizerDataModel randomizerData = new RandomizerDataModel();
         private readonly TmHmTutorModel tmHmData = new TmHmTutorModel();
         private readonly StartersDataModel starterData = new StartersDataModel();
         private readonly PokemonTraitsModel pokemonData = new PokemonTraitsModel();
@@ -92,12 +93,13 @@ namespace PokemonRandomizer
 
         public MainWindow()
         {
-            hardCodedSettings = new HardCodedSettings(this);
-            appSettings = new AppSettings.AppSettings(this, starterData, tmHmData, pokemonData, wildEncounterData, trainerDataModels, miscData);
+            hardCodedSettings = new HardCodedSettings(randomizerData);
+            appSettings = new AppSettings.AppSettings(randomizerData, starterData, tmHmData, pokemonData, wildEncounterData, trainerDataModels, miscData);
 
             IsROMLoaded = false;
             InitializeComponent();
             this.DataContext = this;
+            RandomizerView.Content = new RandomizerDataView(randomizerData);
             // Create pokemon traits UI
             var pokemonTraitsGroup = new GroupUI<PokemonTraitsDataView, PokemonTraitsModel>(TraitsGroupsPanel, TraitsViewPanel, pokemonData);
             pokemonTraitsGroup.SetAddButtonVisibility(Visibility.Hidden);
@@ -381,10 +383,5 @@ namespace PokemonRandomizer
         }
 
 #endregion
-
-        private void SeedCheckBoxChanged(object sender, RoutedEventArgs e)
-        {
-            tbSeed.Visibility = (bool)cbSeed.IsChecked ? Visibility.Visible : Visibility.Collapsed;
-        }
     }
 }

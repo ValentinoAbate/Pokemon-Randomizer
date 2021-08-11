@@ -55,23 +55,8 @@
             
             <!--General Settings-->
             
-            <TabItem Header="General">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition  Width="10"></ColumnDefinition>
-                        <ColumnDefinition  Width="Auto"></ColumnDefinition>
-                        <ColumnDefinition Width="Auto"></ColumnDefinition>
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="10"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
-                    <StackPanel Grid.Column="1" Grid.Row="1" Orientation="Vertical">
-                        <CheckBox Name="cbSeed" Checked="SeedCheckBoxChanged" Unchecked="SeedCheckBoxChanged">Use Randomizer Seed</CheckBox>
-                        <TextBox Name="tbSeed" Visibility="Collapsed" Text="Enter a seed"/>
-                    </StackPanel>
-                </Grid>
+            <TabItem Name="RandomizerView" Header="Randomizer">
+
             </TabItem>
 
             <TabItem Name="TmHmTutorView" Header="Tm/Hm/Tutors">
