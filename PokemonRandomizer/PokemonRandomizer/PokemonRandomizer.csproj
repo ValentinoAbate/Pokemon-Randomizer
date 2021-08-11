@@ -158,6 +158,7 @@
     <Compile Include="Search\Kmp.cs" />
     <Compile Include="Statistics\Distribution.cs" />
     <Compile Include="UI\BoundCheckBoxUI.cs" />
+    <Compile Include="UI\Models\MiscDataModel.cs" />
     <Compile Include="UI\UISkin.cs" />
     <Compile Include="UI\Models\DataModel.cs" />
     <Compile Include="UI\Models\TrainerDataModel.cs" />
@@ -170,6 +171,7 @@
     <Compile Include="UI\MetricDataUI.cs" />
     <Compile Include="UI\PokemonSettingsUI.cs" />
     <Compile Include="UI\Models\PokemonTraitsModel.cs" />
+    <Compile Include="UI\Views\MiscDataView.cs" />
     <Compile Include="UI\Views\PokemonTraitsDataView.cs" />
     <Compile Include="UI\RandomChanceUI.cs" />
     <Compile Include="UI\Models\StartersDataModel.cs" />

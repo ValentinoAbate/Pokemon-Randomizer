@@ -118,7 +118,7 @@
 
             </TabItem>
 
-            <TabItem Header="Misc">
+            <TabItem Name="MiscView" Header="Misc">
 
             </TabItem>
         </TabControl>

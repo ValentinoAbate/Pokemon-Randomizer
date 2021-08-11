@@ -14,17 +14,19 @@ namespace PokemonRandomizer.AppSettings
         private readonly StartersDataModel starterData;
         private readonly WildEncounterDataModel wildEncounterData;
         private readonly Dictionary<TrainerCategory, TrainerDataModel> trainerData;
+        private readonly MiscDataModel miscData;
         public AppSettings(MainWindow window) : base(window)
         {
         }
 
-        public AppSettings(MainWindow window, StartersDataModel starterData, TmHmTutorModel tmHmTutorData, PokemonTraitsModel pokemonData, WildEncounterDataModel wildEncounterData, IEnumerable<TrainerDataModel> trainerData) : base(window)
+        public AppSettings(MainWindow window, StartersDataModel starterData, TmHmTutorModel tmHmTutorData, PokemonTraitsModel pokemonData, WildEncounterDataModel wildEncounterData, IEnumerable<TrainerDataModel> trainerData, MiscDataModel miscData) : base(window)
         {
             this.starterData = starterData;
             this.tmHmTutorData = tmHmTutorData;
             this.pokemonData = pokemonData;
             this.wildEncounterData = wildEncounterData;
             this.trainerData = trainerData.ToDictionary((tData) => tData.Category);
+            this.miscData = miscData;
         }
 
         private static double RandomChance(bool enabled, double chance) => enabled ? chance : 0;
@@ -42,6 +44,7 @@ namespace PokemonRandomizer.AppSettings
         public override bool PreventHmMovesInTMsAndTutors => tmHmTutorData.NoHmMovesInTMsAndTutors;
         public override bool PreventDuplicateTMsAndTutors => tmHmTutorData.NoDuplicateTMsAndTutors;
         public override bool KeepImportantTMsAndTutors => tmHmTutorData.KeepImportantTmsAndTutors;
+        // TODO:
         // public override HashSet<Move> ImportantTMsAndTutors => (No UI yet)
         public override double TMRandChance => RandomChance(tmHmTutorData.RandomizeTMs, tmHmTutorData.TMRandChance);
         public override double MoveTutorRandChance => RandomChance(tmHmTutorData.RandomizeMoveTutors, tmHmTutorData.MoveTutorRandChance);
@@ -137,6 +140,16 @@ namespace PokemonRandomizer.AppSettings
 
         public override WildEncounterRandomizer.Strategy EncounterStrategy => wildEncounterData.Strategy;
         public override PokemonSettings EncounterSettings => wildEncounterData.PokemonSettings;
+
+        #endregion
+
+        #region Misc
+
+        public override bool RunIndoors => miscData.RunIndoors;
+
+        public override bool EvolveWithoutNationalDex => miscData.EvolveWithoutNationalDex;
+
+        public override bool CountRelicanthAsFossil => miscData.CountRelicanthAsFossil;
 
         #endregion
 
