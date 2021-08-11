@@ -13,9 +13,13 @@
         </Grid.RowDefinitions>
         <StackPanel Grid.Row="0" Orientation="Vertical" Margin="5">
             <StackPanel Orientation="Horizontal">
-                <Label Content="Version: "/>
-                <Label Name="VersionText"/>
+                <Label Content="Version: " FontSize="13"/>
+                <Label Name="VersionText" FontSize="13"/>
             </StackPanel>
+            <Label Content="Support:" Margin="0,-5,0,5" FontSize="13"/>
+            <TextBlock TextWrapping="WrapWithOverflow" VerticalAlignment="Center" Margin="5,-5,5,5" FontSize="11">
+                Emerald (BPEE), FireRed v1.0 (BPRE-01)
+            </TextBlock>
         </StackPanel>
         <StackPanel Grid.Row="1" >
             <Button  Content="Ok" Click="CloseWindow" Width="80" Margin="0,0,0,5"/>
