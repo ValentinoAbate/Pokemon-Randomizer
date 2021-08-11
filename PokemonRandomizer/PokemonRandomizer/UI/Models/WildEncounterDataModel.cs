@@ -3,6 +3,7 @@
 namespace PokemonRandomizer.UI
 {
     using Backend.DataStructures;
+    using Utilities;
     using PokemonRandomizer.Backend.Randomization;
     using static Settings;
 
@@ -29,7 +30,7 @@ namespace PokemonRandomizer.UI
                 new MetricData(PokemonMetric.powerIndividual, 1),
             }
         };
-        public WildEncounterRandomizer.Strategy Strategy { get; set; } = WildEncounterRandomizer.Strategy.Unchanged;
+        public Box<WildEncounterRandomizer.Strategy> Strategy { get; set; } = new Box<WildEncounterRandomizer.Strategy>(WildEncounterRandomizer.Strategy.Unchanged);
 
         public WildEncounterDataModel()
         {

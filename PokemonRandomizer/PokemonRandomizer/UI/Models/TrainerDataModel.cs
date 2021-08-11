@@ -2,6 +2,7 @@
 
 namespace PokemonRandomizer.UI.Models
 {
+    using Utilities;
     using static Settings;
     using static Settings.TrainerSettings;
     public class TrainerDataModel : DataModel
@@ -66,18 +67,18 @@ namespace PokemonRandomizer.UI.Models
             }
         }
 
-        public bool RandomizePokemon { get; set; } = false;
-        public double PokemonRandChance { get; set; } = 1;
-        public PokemonPcgStrategy PokemonStrategy { get; set; } = PokemonPcgStrategy.KeepParty;
+        public Box<bool> RandomizePokemon { get; set; } = new Box<bool>(false);
+        public Box<double> PokemonRandChance { get; set; } = new Box<double>(1);
+        public Box<PokemonPcgStrategy> PokemonStrategy { get; set; } = new Box<PokemonPcgStrategy>(PokemonPcgStrategy.KeepParty);
         public PokemonSettings PokemonSettings { get; set; } = new PokemonSettings()
         {
             Noise = 0.01f,
             ForceHighestLegalEvolution = true,
         };
-        public bool RandomizeBattleType { get; set; } = false;
-        public double BattleTypeRandChance { get; set; } = 1;
-        public BattleTypePcgStrategy BattleTypeStrategy { get; set; } = BattleTypePcgStrategy.KeepSameType;
-        public double DoubleBattleChance { get; set; } = 1;
+        public Box<bool> RandomizeBattleType { get; set; } = new Box<bool>(false);
+        public Box<double> BattleTypeRandChance { get; set; } = new Box<double>(1);
+        public Box<BattleTypePcgStrategy> BattleTypeStrategy { get; set; } = new Box<BattleTypePcgStrategy>(BattleTypePcgStrategy.KeepSameType);
+        public Box<double> DoubleBattleChance { get; set; } = new Box<double>(1);
 
         public void InitializeMetric(MetricData metric)
         {

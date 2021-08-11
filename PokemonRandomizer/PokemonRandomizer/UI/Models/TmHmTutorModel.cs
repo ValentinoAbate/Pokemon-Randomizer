@@ -1,20 +1,21 @@
 ﻿namespace PokemonRandomizer.UI
 {
+    using Utilities;
     using CompatOption = Settings.TmMtCompatOption;
     public class TmHmTutorModel : DataModel
     {
-        public CompatOption TmCompatOption { get; set; } = CompatOption.Intelligent;
-        public CompatOption TutorCompatOption { get; set; } = CompatOption.Intelligent;
-        public CompatOption HmCompatOption { get; set; } = CompatOption.Unchanged;
-        public double RandomCompatTrueChance { get; set; } = 0.42;
-        public double IntelligentCompatNoise { get; set; } = 0.15;
-        public bool NoHmMovesInTMsAndTutors { get; set; } = true;
-        public bool NoDuplicateTMsAndTutors { get; set; } = true;
-        public bool KeepImportantTmsAndTutors { get; set; } = true;
+        public Box<CompatOption> TmCompatOption { get; set; } = new Box<CompatOption>(CompatOption.Intelligent);
+        public Box<CompatOption> TutorCompatOption { get; set; } = new Box<CompatOption>(CompatOption.Intelligent);
+        public Box<CompatOption> HmCompatOption { get; set; } = new Box<CompatOption>(CompatOption.Unchanged);
+        public Box<double> RandomCompatTrueChance { get; set; } = new Box<double>(0.42);
+        public Box<double> IntelligentCompatNoise { get; set; } = new Box<double>(0.15);
+        public Box<bool> NoHmMovesInTMsAndTutors { get; set; } = new Box<bool>(true);
+        public Box<bool> NoDuplicateTMsAndTutors { get; set; } = new Box<bool>(true);
+        public Box<bool> KeepImportantTmsAndTutors { get; set; } = new Box<bool>(true);
 
-        public bool RandomizeTMs { get; set; } = false;
-        public double TMRandChance { get; set; } = 1;
-        public bool RandomizeMoveTutors { get; set; } = false;
-        public double MoveTutorRandChance { get; set; } = 1;
+        public Box<bool> RandomizeTMs { get; set; } = new Box<bool>(false);
+        public Box<double> TMRandChance { get; set; } = new Box<double>(1);
+        public Box<bool> RandomizeMoveTutors { get; set; } = new Box<bool>(false);
+        public Box<double> MoveTutorRandChance { get; set; } = new Box<double>(1);
     }
 }

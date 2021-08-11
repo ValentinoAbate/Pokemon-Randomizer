@@ -51,9 +51,9 @@ namespace PokemonRandomizer.UI.Views
             var tab = new TabItem() { Header = "Pokemon" };
             var stack = new StackPanel() { Orientation = Orientation.Vertical };
             var pokemonStack = new StackPanel() { Orientation = Orientation.Vertical };
-            pokemonStack.Add(new BoundComboBoxUI("Recurring Trainer Pokemon Randomization Strategy", PokemonStrategyDropdown, (int)model.PokemonStrategy, i => model.PokemonStrategy = (PokemonPcgStrategy)i));
+            pokemonStack.Add(new EnumComboBoxUI<PokemonPcgStrategy>("Recurring Trainer Pokemon Randomization Strategy", PokemonStrategyDropdown, model.PokemonStrategy));
             pokemonStack.Add(new PokemonSettingsUI(model.PokemonSettings, MetricTypes, model.InitializeMetric));
-            stack.Add(new RandomChanceUI("Random Pokemon", model.RandomizePokemon, b => model.RandomizePokemon = b, model.PokemonRandChance, d => model.PokemonRandChance = d, pokemonStack));
+            stack.Add(new RandomChanceUI("Random Pokemon", model.RandomizePokemon, model.PokemonRandChance, pokemonStack));
             stack.Add(pokemonStack);
             tab.Content = stack;
             return tab;
@@ -63,12 +63,12 @@ namespace PokemonRandomizer.UI.Views
         {
             var tab = new TabItem() { Header = "Battle Type" };
             var stack = new StackPanel() { Orientation = Orientation.Vertical };
-            var battleTypeStack = new StackPanel { Orientation = Orientation.Vertical };
+            var typeStack = new StackPanel { Orientation = Orientation.Vertical };
 
-            battleTypeStack.Add(new BoundComboBoxUI("Recurring Trainer Battle Type Strategy", BattleTypeStrategyDropdown, (int)model.BattleTypeStrategy, i => model.BattleTypeStrategy = (BattleTypePcgStrategy)i));
-            battleTypeStack.Add(new BoundSliderUI("Double Battle Chance", model.DoubleBattleChance, d => model.DoubleBattleChance = d) { ToolTip = "The chance that the battle type will be a double battle when randomized" });
-            stack.Add(new RandomChanceUI("Random Battle Type", model.RandomizeBattleType, b => model.RandomizeBattleType = b, model.BattleTypeRandChance, d => model.BattleTypeRandChance = d, battleTypeStack));
-            stack.Add(battleTypeStack);
+            typeStack.Add(new EnumComboBoxUI<BattleTypePcgStrategy>("Recurring Trainer Battle Type Strategy", BattleTypeStrategyDropdown, model.BattleTypeStrategy));
+            typeStack.Add(new BoundSliderUI("Double Battle Chance", model.DoubleBattleChance) { ToolTip = "The chance that the battle type will be a double battle when randomized" });
+            stack.Add(new RandomChanceUI("Random Battle Type", model.RandomizeBattleType, model.BattleTypeRandChance, typeStack));
+            stack.Add(typeStack);
             tab.Content = stack;
             return tab;
         }

@@ -95,7 +95,7 @@ namespace PokemonRandomizer.UI
             var stack = new StackPanel() { Orientation = Orientation.Vertical };
             stack.Add(new Label() { Content = "Catch Rate Randomization" });
             stack.Add(new Separator());
-            var constantRateSlider = new BoundSliderUI("Constant Difficulty", model.CatchRateConstantDifficulty, (d) => model.CatchRateConstantDifficulty = d, false);
+            var constantRateSlider = new BoundSliderUI("Constant Difficulty", model.CatchRateConstantDifficulty, false);
             constantRateSlider.SetVisibility(model.CatchRateSetting == CatchRateOption.Constant);
             void OnOptionChange(int index)
             {
@@ -104,7 +104,7 @@ namespace PokemonRandomizer.UI
             }
             stack.Add(new BoundComboBoxUI("Randomization Strategy", CatchRateOptionDropdown, (int)model.CatchRateSetting, OnOptionChange));
             stack.Add(constantRateSlider);
-            stack.Add(new BoundCheckBoxUI(model.KeepLegendaryCatchRates, (b) => model.KeepLegendaryCatchRates = b, "Keep Legendary Catch Rates"));
+            stack.Add(new BoundCheckBoxUI(model.KeepLegendaryCatchRates, "Keep Legendary Catch Rates"));
             tab.Content = stack;
             return tab;
         }
@@ -126,16 +126,16 @@ namespace PokemonRandomizer.UI
             stack.Add(new Separator());
             var bonusMovesStack = new StackPanel() { Orientation = Orientation.Vertical };
             bonusMovesStack.Add(new WeightedSetUI<AddMoveSource>("Bonus Move Source", model.AddMoveSourceWeights, GetAddMoveWeightDropdown));
-            bonusMovesStack.Add(new BoundSliderUI("Average number of moves to add", model.NumMovesMean, d => model.NumMovesMean = d, false, 0.5, 0, maxAddMoves));
-            bonusMovesStack.Add(new BoundSliderUI("Number of moves variance", model.NumMovesStdDeviation, d => model.NumMovesStdDeviation = d, false, 0.5, 0, 5));
-            bonusMovesStack.Add(new BoundSliderUI("Minimum number of moves to add", model.NumMovesMin, d => model.NumMovesMin = d, false, 1, 0, 5));
-            bonusMovesStack.Add(new BoundCheckBoxUI(model.DisableAddingHmMoves, b => model.DisableAddingHmMoves = b, "Ban adding HM moves"));
-            stack.Add(new RandomChanceUI("Bonus Moves", model.AddMoves, b => model.AddMoves = b, model.AddMovesChance, d => model.AddMovesChance = d, bonusMovesStack));
+            bonusMovesStack.Add(new BoundSliderUI("Average number of moves to add", model.NumMovesMean, false, 0.5, 0, maxAddMoves));
+            bonusMovesStack.Add(new BoundSliderUI("Number of moves variance", model.NumMovesStdDeviation, false, 0.5, 0, 5));
+            bonusMovesStack.Add(new BoundSliderUI("Minimum number of moves to add", model.NumMovesMin, false, 1, 0, 5));
+            bonusMovesStack.Add(new BoundCheckBoxUI(model.DisableAddingHmMoves, "Ban adding HM moves"));
+            stack.Add(new RandomChanceUI("Bonus Moves", model.AddMoves, model.AddMovesChance, bonusMovesStack));
             stack.Add(bonusMovesStack);
             stack.Add(new Separator());
             stack.Add(new Label() { Content = UISkin.Current.HacksAndTweaksHeader });
             stack.Add(new Separator());
-            stack.Add(new BoundCheckBoxUI(model.BanSelfdestruct, b => model.BanSelfdestruct = b, "Ban Selfdestruct", banSelfdestructTooltip));
+            stack.Add(new BoundCheckBoxUI(model.BanSelfdestruct, "Ban Selfdestruct", banSelfdestructTooltip));
             tab.Content = stack;
             return tab;
         }

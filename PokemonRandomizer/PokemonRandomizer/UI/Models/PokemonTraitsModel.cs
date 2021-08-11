@@ -25,18 +25,18 @@ namespace PokemonRandomizer.UI
         public Box<double> DunsparsePlaugeChance { get; set; } = new Box<double>(0.1);
 
         public CatchRateOption CatchRateSetting { get; set; } = CatchRateOption.Unchanged;
-        public bool KeepLegendaryCatchRates { get; set; } = true;
-        public double CatchRateConstantDifficulty { get; set; } = 0.5;
+        public Box<bool> KeepLegendaryCatchRates { get; set; } = new Box<bool>(true);
+        public Box<double> CatchRateConstantDifficulty { get; set; } = new Box<double>(0.5);
 
         // Learnset parameters
 
-        public bool BanSelfdestruct { get; set; }
-        public bool AddMoves { get; set; }
-        public double AddMovesChance { get; set; } = 1;
-        public bool DisableAddingHmMoves { get; set; } = true;
-        public double NumMovesStdDeviation { get; set; } = 1;
-        public double NumMovesMean { get; set; } = 1;
-        public double NumMovesMin { get; set; } = 0;
+        public Box<bool> BanSelfdestruct { get; set; } = new Box<bool>();
+        public Box<bool> AddMoves { get; set; } = new Box<bool>();
+        public Box<double> AddMovesChance { get; set; } = new Box<double>(1);
+        public Box<bool> DisableAddingHmMoves { get; set; } = new Box<bool>(true);
+        public Box<double> NumMovesStdDeviation { get; set; } = new Box<double>(1);
+        public Box<double> NumMovesMean { get; set; } = new Box<double>(1);
+        public Box<double> NumMovesMin { get; set; } = new Box<double>(0);
         public WeightedSet<AddMoveSource> AddMoveSourceWeights {get; set;} = new WeightedSet<AddMoveSource>() { AddMoveSource.EggMoves };
     }
 }
