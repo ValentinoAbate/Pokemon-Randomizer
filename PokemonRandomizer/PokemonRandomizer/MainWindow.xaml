@@ -99,7 +99,7 @@
                 </Grid>
             </TabItem>
             
-            <TabItem Header="Items">
+            <TabItem Name="ItemsView" Header="Items">
 
             </TabItem>
 

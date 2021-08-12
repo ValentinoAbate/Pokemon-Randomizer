@@ -14,18 +14,20 @@ namespace PokemonRandomizer.AppSettings
         private readonly StartersDataModel starterData;
         private readonly WildEncounterDataModel wildEncounterData;
         private readonly Dictionary<TrainerCategory, TrainerDataModel> trainerData;
+        private readonly ItemDataModel itemData;
         private readonly MiscDataModel miscData;
         public AppSettings(RandomizerDataModel randomizerData) : base(randomizerData)
         {
         }
 
-        public AppSettings(RandomizerDataModel randomizerData, StartersDataModel starterData, TmHmTutorModel tmHmTutorData, PokemonTraitsModel pokemonData, WildEncounterDataModel wildEncounterData, IEnumerable<TrainerDataModel> trainerData, MiscDataModel miscData) : base(randomizerData)
+        public AppSettings(RandomizerDataModel randomizerData, StartersDataModel starterData, TmHmTutorModel tmHmTutorData, PokemonTraitsModel pokemonData, WildEncounterDataModel wildEncounterData, IEnumerable<TrainerDataModel> trainerData, ItemDataModel itemData, MiscDataModel miscData) : base(randomizerData)
         {
             this.starterData = starterData;
             this.tmHmTutorData = tmHmTutorData;
             this.pokemonData = pokemonData;
             this.wildEncounterData = wildEncounterData;
             this.trainerData = trainerData.ToDictionary((tData) => tData.Category);
+            this.itemData = itemData;
             this.miscData = miscData;
         }
 
@@ -140,6 +142,25 @@ namespace PokemonRandomizer.AppSettings
 
         public override WildEncounterRandomizer.Strategy EncounterStrategy => wildEncounterData.Strategy;
         public override PokemonSettings EncounterSettings => wildEncounterData.PokemonSettings;
+
+        #endregion
+
+        #region Items
+
+        //public override bool DontRandomizeTms => false;
+
+        //public override PcItemOption PcPotionOption => PcItemOption.Custom;
+        //public override Item CustomPcItem => Item.Metal_Coat;
+        //public override ItemRandomizer.Settings PcItemSettings { get; } = new ItemRandomizer.Settings()
+        //{
+        //    SamePocketChance = 0.75,
+        //};
+
+        public override double FieldItemRandChance => RandomChance(itemData.RandomizeFieldItems, itemData.FieldItemRandChance);
+        public override ItemRandomizer.Settings FieldItemSettings => itemData.FieldItemSettings;
+        public override bool UseSeperateHiddenItemSettings => itemData.UseSeperateHiddenItemSettings;
+        public override double HiddenItemRandChance => RandomChance(itemData.RandomizeHiddenItems, itemData.HiddenItemRandChance);
+        public override ItemRandomizer.Settings HiddenItemSettings => itemData.HiddenItemSettings;
 
         #endregion
 

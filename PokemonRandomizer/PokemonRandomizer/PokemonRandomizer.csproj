@@ -159,6 +159,8 @@
     <Compile Include="Statistics\Distribution.cs" />
     <Compile Include="UI\BoundCheckBoxUI.cs" />
     <Compile Include="UI\BoundTextBoxUI.cs" />
+    <Compile Include="UI\ItemSettingsUI.cs" />
+    <Compile Include="UI\Models\ItemDataModel.cs" />
     <Compile Include="UI\Models\MiscDataModel.cs" />
     <Compile Include="UI\Models\RandomizerDataModel.cs" />
     <Compile Include="UI\UISkin.cs" />
@@ -173,6 +175,7 @@
     <Compile Include="UI\MetricDataUI.cs" />
     <Compile Include="UI\PokemonSettingsUI.cs" />
     <Compile Include="UI\Models\PokemonTraitsModel.cs" />
+    <Compile Include="UI\Views\ItemDataView.cs" />
     <Compile Include="UI\Views\MiscDataView.cs" />
     <Compile Include="UI\Views\PokemonTraitsDataView.cs" />
     <Compile Include="UI\RandomChanceUI.cs" />

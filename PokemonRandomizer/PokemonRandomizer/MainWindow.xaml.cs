@@ -76,6 +76,7 @@ namespace PokemonRandomizer
             new TrainerDataModel(TrainerCategory.EliteFour, "Elite Four"),
             new TrainerDataModel(TrainerCategory.Champion, "Champion"),
         };
+        private readonly ItemDataModel itemData = new ItemDataModel();
         private readonly MiscDataModel miscData = new MiscDataModel();
 
 
@@ -94,7 +95,7 @@ namespace PokemonRandomizer
         public MainWindow()
         {
             hardCodedSettings = new HardCodedSettings(randomizerData);
-            appSettings = new AppSettings.AppSettings(randomizerData, starterData, tmHmData, pokemonData, wildEncounterData, trainerDataModels, miscData);
+            appSettings = new AppSettings.AppSettings(randomizerData, starterData, tmHmData, pokemonData, wildEncounterData, trainerDataModels, itemData, miscData);
 
             IsROMLoaded = false;
             InitializeComponent();
@@ -107,6 +108,7 @@ namespace PokemonRandomizer
             WildPokemonView.Content = new WildEncounterDataView(wildEncounterData);
             var trainerTraitsGroup = new GroupUI<TrainerDataView, TrainerDataModel>(TrainerGroups, TrainerView, trainerDataModels);
             trainerTraitsGroup.SetAddButtonVisibility(Visibility.Hidden);
+            ItemsView.Content = new ItemDataView(itemData);
             MiscView.Content = new MiscDataView(miscData);
             Logger.main.OnLog += OnLog;
         }
