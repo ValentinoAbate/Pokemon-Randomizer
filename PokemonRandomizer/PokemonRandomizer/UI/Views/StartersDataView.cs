@@ -4,6 +4,7 @@ using System.Windows.Data;
 
 namespace PokemonRandomizer.UI
 {
+    using static Settings;
     public class StartersDataView : DataView<StartersDataModel>
     {
         public CompositeCollection StarterOptionDropdown => new CompositeCollection()
@@ -13,11 +14,19 @@ namespace PokemonRandomizer.UI
             new ComboBoxItem() {Content="Random Type Triangle", ToolTip="Randomly select three starters where each is strong against the next"},
             new ComboBoxItem() {Content="Custom", ToolTip="Set 1 or more custom starters"},
         };
+        private const string strongTriTooltip = "Only generate type triangles where each pokemon is super effective against AND resistant to the next (as opposed to just super effective against)";
         public StartersDataView(StartersDataModel model, string[] pokemonNames)
         {
-            var legendCb = new BoundCheckBoxUI(model.BanLegendaries, "Ban Legendaries");
-            var safeMovesetsCb = new BoundCheckBoxUI(model.SafeStarterMovesets, "Safe Starter Movesets");
-            var strongTriangleCb = new BoundCheckBoxUI(model.StrongStarterTypeTriangle, "Force Strong Type Triangle");
+            // Create stack and add content
+            var stack = new StackPanel() { Orientation = Orientation.Vertical };
+            Content = stack;
+            stack.Add(new Label() { Content = "Starter Randomization" });
+            stack.Add(new Separator());
+
+            // Randomization Strategy CB
+            var optionCb = stack.Add(new EnumComboBoxUI<StarterPokemonOption>("Randomization Strategy", StarterOptionDropdown, model.StarterSetting));
+            // Type Triangle UI
+            optionCb.BindVisibility(stack.Add(new BoundCheckBoxUI(model.StrongStarterTypeTriangle, "Force Strong Type Triangle", strongTriTooltip)), (int)StarterPokemonOption.RandomTypeTriangle);
 
             // Custom Starter UI
             var pokemonOptions = new List<string>(pokemonNames.Length + 1) { "Random" };
@@ -26,24 +35,13 @@ namespace PokemonRandomizer.UI
             {
                 return new BoundComboBoxUI("", pokemonOptions, pokemonOptions.IndexOf(model.CustomStarters[index]), (i) => model.CustomStarters[index] = pokemonOptions[i]);
             }
-            var customStarterStack = new StackPanel() { Orientation = Orientation.Horizontal };
+            var customStarterStack = stack.Add(new StackPanel() { Orientation = Orientation.Horizontal });
             customStarterStack.Add(new Label() { Content = "Custom Starters:" }, CustomStarterCB(0), CustomStarterCB(1), CustomStarterCB(2));
+            optionCb.BindVisibility(customStarterStack, (int)StarterPokemonOption.Custom);
 
-            void OnMainOptionChange(int option)
-            {
-                model.StarterSetting = (Settings.StarterPokemonOption)option;
-                strongTriangleCb.SetVisibility(option == (int)Settings.StarterPokemonOption.RandomTypeTriangle);
-                customStarterStack.SetVisibility(option == (int)Settings.StarterPokemonOption.Custom);
-            }
-
-            OnMainOptionChange((int)model.StarterSetting);
-            var mainOptionBox = new BoundComboBoxUI("Randomization Strategy", StarterOptionDropdown, (int)model.StarterSetting, OnMainOptionChange);
-            // Create stack and add content
-            var stack = new StackPanel() { Orientation = Orientation.Vertical };
-            Content = stack;
-            stack.Add(new Label() { Content = "Starter Randomization" });
-            stack.Add(new Separator());
-            stack.Add(mainOptionBox, customStarterStack, strongTriangleCb, legendCb, safeMovesetsCb);
+            // Additional Settings
+            stack.Add(new BoundCheckBoxUI(model.BanLegendaries, "Ban Legendaries"));
+            stack.Add(new BoundCheckBoxUI(model.SafeStarterMovesets, "Safe Starter Movesets"));
         }
     }
 }

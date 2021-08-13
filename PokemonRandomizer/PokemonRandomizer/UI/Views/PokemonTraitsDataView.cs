@@ -57,19 +57,10 @@ namespace PokemonRandomizer.UI
             var stack = new StackPanel() { Orientation = Orientation.Vertical };
             stack.Add(new Label() { Content = UISkin.Current.HacksAndTweaksHeader });
             stack.Add(new Separator());
-            var tradeEvoParams = new StackPanel() { Orientation = Orientation.Vertical };
-            tradeEvoParams.SetVisibility(model.FixImpossibleEvos);
-            tradeEvoParams.Add(new EnumComboBoxUI<TradeItemPokemonOption>("Trade item evolution type", CompatOptionDropdown, model.TradeItemEvoSetting));
-            tradeEvoParams.Add(new BoundCheckBoxUI(model.ConsiderEvolveByBeautyImpossible, "Fix Beauty-Based Evolutions"));
-            tradeEvoParams.Add(new BoundSliderUI("Fixed evolution level variance", model.ImpossibleEvoLevelStandardDev, false, 0.01, 0, 3));
-            
-            void OnCheck(bool b)
-            {
-                model.FixImpossibleEvos = b;
-                tradeEvoParams.SetVisibility(b);
-            }
-            var impossibleEvoCb = new BoundCheckBoxUI(model.FixImpossibleEvos, OnCheck, "Fix Trade Evolutions");
-            stack.Add(impossibleEvoCb, tradeEvoParams);
+            var impossibleCb = stack.Add(new BoundCheckBoxUI(model.FixImpossibleEvos, "Fix Trade Evolutions"));
+            impossibleCb.BindVisibility(stack.Add(new EnumComboBoxUI<TradeItemPokemonOption>("Trade item evolution type", CompatOptionDropdown, model.TradeItemEvoSetting)));
+            stack.Add(new BoundCheckBoxUI(model.ConsiderEvolveByBeautyImpossible, "Fix Beauty-Based Evolutions"));
+            stack.Add(new BoundSliderUI("Fixed evolution level variance", model.ImpossibleEvoLevelStandardDev, false, 0.01, 0, 3));
             stack.Add(new RandomChanceUI("Dunsparse Plague", model.DunsparsePlague, model.DunsparsePlaugeChance));
             tab.Content = stack;
             return tab;
@@ -95,15 +86,8 @@ namespace PokemonRandomizer.UI
             var stack = new StackPanel() { Orientation = Orientation.Vertical };
             stack.Add(new Label() { Content = "Catch Rate Randomization" });
             stack.Add(new Separator());
-            var constantRateSlider = new BoundSliderUI("Constant Difficulty", model.CatchRateConstantDifficulty, false);
-            constantRateSlider.SetVisibility(model.CatchRateSetting == CatchRateOption.Constant);
-            void OnOptionChange(int index)
-            {
-                model.CatchRateSetting = (CatchRateOption)index;
-                constantRateSlider.SetVisibility(model.CatchRateSetting == CatchRateOption.Constant);
-            }
-            stack.Add(new BoundComboBoxUI("Randomization Strategy", CatchRateOptionDropdown, (int)model.CatchRateSetting, OnOptionChange));
-            stack.Add(constantRateSlider);
+            var optionCb = stack.Add(new EnumComboBoxUI<CatchRateOption>("Randomization Strategy", CatchRateOptionDropdown, model.CatchRateSetting));
+            optionCb.BindVisibility(stack.Add(new BoundSliderUI("Constant Difficulty", model.CatchRateConstantDifficulty, false)), (int)CatchRateOption.Constant);
             stack.Add(new BoundCheckBoxUI(model.KeepLegendaryCatchRates, "Keep Legendary Catch Rates"));
             tab.Content = stack;
             return tab;

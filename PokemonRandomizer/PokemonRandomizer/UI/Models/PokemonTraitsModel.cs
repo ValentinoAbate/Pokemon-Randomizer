@@ -17,14 +17,14 @@ namespace PokemonRandomizer.UI
         public Box<double> DualTypeSecondaryRandChance { get; set; } = new Box<double>(defaultTypeRandChance);
 
         // Evolution parameters
-        public bool FixImpossibleEvos { get; set; } = true;
+        public Box<bool> FixImpossibleEvos { get; set; } = new Box<bool>(true);
         public Box<double> ImpossibleEvoLevelStandardDev { get; set; } = new Box<double>(1);
         public Box<bool> ConsiderEvolveByBeautyImpossible { get; set; } = new Box<bool>(true);
         public Box<TradeItemPokemonOption> TradeItemEvoSetting { get; set; } = new Box<TradeItemPokemonOption>(TradeItemPokemonOption.LevelUp);
         public Box<bool> DunsparsePlague { get; set; } = new Box<bool>();
         public Box<double> DunsparsePlaugeChance { get; set; } = new Box<double>(0.1);
 
-        public CatchRateOption CatchRateSetting { get; set; } = CatchRateOption.Unchanged;
+        public Box<CatchRateOption> CatchRateSetting { get; set; } = new Box<CatchRateOption>(CatchRateOption.Unchanged);
         public Box<bool> KeepLegendaryCatchRates { get; set; } = new Box<bool>(true);
         public Box<double> CatchRateConstantDifficulty { get; set; } = new Box<double>(0.5);
 
