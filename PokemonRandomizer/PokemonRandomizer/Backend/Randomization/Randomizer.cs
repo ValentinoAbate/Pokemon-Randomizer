@@ -509,7 +509,19 @@ namespace PokemonRandomizer.Backend.Randomization
                 }
                 else if(settings.StarterSetting == Settings.StarterPokemonOption.Custom)
                 {
-                    data.Starters = new List<Pokemon>(settings.CustomStarters);
+                    int numStarters = Math.Min(data.Starters.Count, settings.CustomStarters.Length);
+                    for (int i = 0; i < numStarters; i++)
+                    {
+                        Pokemon starter = settings.CustomStarters[i];
+                        if(starter == Pokemon.None)
+                        {
+                            data.Starters[i] = pokeRand.RandomPokemon(pokemonSet, data.Starters[i], starterSettings, 5);
+                        }
+                        else
+                        {
+                            data.Starters[i] = starter;
+                        }
+                    }
                 }
                 // Make sure all starters have attack moves
                 if(settings.SafeStarterMovesets)

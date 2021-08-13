@@ -97,8 +97,7 @@ namespace PokemonRandomizer.AppSettings
         #region Starter Pokemon
 
         public override StarterPokemonOption StarterSetting => starterData.StarterSetting;
-        // TODO:
-        // public override Pokemon[] CustomStarters => starterData.CustomStarters; (Need string-to-pokemon translation)
+        public override Pokemon[] CustomStarters => starterData.CustomStarters;
         public override bool StrongStarterTypeTriangle => starterData.StrongStarterTypeTriangle;
         public override PokemonSettings StarterPokemonSettings => new PokemonSettings()
         {

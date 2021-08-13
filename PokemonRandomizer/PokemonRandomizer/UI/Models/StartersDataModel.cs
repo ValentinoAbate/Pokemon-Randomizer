@@ -1,16 +1,17 @@
 ﻿namespace PokemonRandomizer.UI
 {
     using Utilities;
+    using Backend.EnumTypes;
     using static Settings;
     public class StartersDataModel : DataModel
     {
         public Box<StarterPokemonOption> StarterSetting { get; } = new Box<StarterPokemonOption>(StarterPokemonOption.Unchanged);
         public Box<bool> StrongStarterTypeTriangle { get; } = new Box<bool>();
-        public string[] CustomStarters { get; } = new string[]
+        public Pokemon[] CustomStarters { get; } = new Pokemon[]
         {
-            "Random",
-            "Random",
-            "Random",
+            Pokemon.None,
+            Pokemon.None,
+            Pokemon.None,
         };
         public Box<bool> BanLegendaries { get; } = new Box<bool>(true);
 

@@ -21,6 +21,7 @@ namespace PokemonRandomizer
     using UI.Views;
     using PokemonRandomizer.AppSettings;
     using static Settings;
+    using System.Collections.Generic;
 
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -137,7 +138,10 @@ namespace PokemonRandomizer
 
         private void InitializeUI(RomData data)
         {
-            StarterView.Content = new StartersDataView(starterData, data.PokemonNames);
+            var pokemon = new List<Pokemon>(data.PokemonNationalDexOrder.Length + 1);
+            pokemon.Add(Pokemon.None);
+            pokemon.AddRange(data.PokemonNationalDexOrder.Select(p => p.species));
+            StarterView.Content = new StartersDataView(starterData, data.PokemonNames, pokemon);
         }
 
         private bool GetRomData(byte[] rawRom)

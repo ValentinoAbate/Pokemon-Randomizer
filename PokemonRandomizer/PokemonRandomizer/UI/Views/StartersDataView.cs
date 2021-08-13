@@ -5,6 +5,7 @@ using System.Windows.Data;
 namespace PokemonRandomizer.UI
 {
     using static Settings;
+    using Backend.EnumTypes;
     public class StartersDataView : DataView<StartersDataModel>
     {
         public CompositeCollection StarterOptionDropdown => new CompositeCollection()
@@ -15,7 +16,7 @@ namespace PokemonRandomizer.UI
             new ComboBoxItem() {Content="Custom", ToolTip="Set 1 or more custom starters"},
         };
         private const string strongTriTooltip = "Only generate type triangles where each pokemon is super effective against AND resistant to the next (as opposed to just super effective against)";
-        public StartersDataView(StartersDataModel model, string[] pokemonNames)
+        public StartersDataView(StartersDataModel model, string[] pokemonNames, List<Pokemon> pokemon)
         {
             // Create stack and add content
             var stack = new StackPanel() { Orientation = Orientation.Vertical };
@@ -33,7 +34,7 @@ namespace PokemonRandomizer.UI
             pokemonOptions.AddRange(pokemonNames);
             BoundComboBoxUI CustomStarterCB(int index)
             {
-                return new BoundComboBoxUI("", pokemonOptions, pokemonOptions.IndexOf(model.CustomStarters[index]), (i) => model.CustomStarters[index] = pokemonOptions[i]);
+                return new BoundComboBoxUI("", pokemonOptions, pokemon.IndexOf(model.CustomStarters[index]), i => model.CustomStarters[index] = pokemon[i]);
             }
             var customStarterStack = stack.Add(new StackPanel() { Orientation = Orientation.Horizontal });
             customStarterStack.Add(new Label() { Content = "Custom Starters:" }, CustomStarterCB(0), CustomStarterCB(1), CustomStarterCB(2));

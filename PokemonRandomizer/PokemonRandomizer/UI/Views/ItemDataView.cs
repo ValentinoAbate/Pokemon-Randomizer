@@ -6,6 +6,7 @@ namespace PokemonRandomizer.UI.Views
     using Backend.EnumTypes;
     using Models;
     using PokemonRandomizer.Backend.Utilities;
+    using System.Linq;
     using static Settings;
 
     public class ItemDataView : DataView<ItemDataModel>
@@ -36,7 +37,7 @@ namespace PokemonRandomizer.UI.Views
             stack.Add(new Separator());
             var strategyCb = stack.Add(new EnumComboBoxUI<PcItemOption>("Randomization Strategy", PCPotionStrategyDropdown, model.PcPotionOption));
             strategyCb.BindVisibility(stack.Add(new ItemSettingsUI(model.PcItemSettings, false)), (int)PcItemOption.Random);
-            strategyCb.BindVisibility(stack.Add(new EnumComboBoxUI<Item>("Custom PC Potion Item", EnumUtils.GetDisplayValues<Item>(), model.CustomPcItem)), (int)PcItemOption.Custom);
+            strategyCb.BindVisibility(stack.Add(new EnumComboBoxUI<Item>("Custom PC Potion Item", EnumUtils.GetDisplayValues<Item>(), model.CustomPcItem, EnumUtils.GetValues<Item>().ToList())), (int)PcItemOption.Custom);
             tab.Content = stack;
             return tab;
         }
