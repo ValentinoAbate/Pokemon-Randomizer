@@ -7,9 +7,10 @@ namespace PokemonRandomizer.UI
     public static class UIExtensions
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void Add(this Panel p, UIElement element)
+        public static T Add<T>(this Panel p, T element) where T : UIElement
         {
             p.Children.Add(element);
+            return element;
         }
         public static void Add(this Panel p, params UIElement[] elements)
         {

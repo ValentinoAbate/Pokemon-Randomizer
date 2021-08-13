@@ -18,5 +18,10 @@ namespace PokemonRandomizer.Backend.Utilities
         {
             return (T[])Enum.GetValues(typeof(T));
         }
+
+        public static IEnumerable<string> GetDisplayValues<T>() where T : Enum
+        {
+            return GetValues<T>().Select(e => e.ToDisplayString());
+        }
     }
 }

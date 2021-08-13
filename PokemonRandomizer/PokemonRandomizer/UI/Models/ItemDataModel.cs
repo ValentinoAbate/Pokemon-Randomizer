@@ -14,7 +14,7 @@ namespace PokemonRandomizer.UI.Models
         public Box<Item> CustomPcItem { get; } = new Box<Item>(Item.Potion);
         public ItemSettings PcItemSettings { get; } = new ItemSettings()
         {
-            SamePocketChance = 0.75,
+            SamePocketChance = 0,
         };
 
         public Box<bool> RandomizeFieldItems { get; } = new Box<bool>(true);

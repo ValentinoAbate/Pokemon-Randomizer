@@ -5,6 +5,7 @@ using System.Linq;
 namespace PokemonRandomizer.AppSettings
 {
     using Backend.Randomization;
+    using Backend.EnumTypes;
     using UI;
     using UI.Models;
     public class AppSettings : HardCodedSettings
@@ -147,14 +148,11 @@ namespace PokemonRandomizer.AppSettings
 
         #region Items
 
-        //public override bool DontRandomizeTms => false;
+        //public override bool DontRandomizeTms => false; // Not actually implemented seems like
 
-        //public override PcItemOption PcPotionOption => PcItemOption.Custom;
-        //public override Item CustomPcItem => Item.Metal_Coat;
-        //public override ItemRandomizer.Settings PcItemSettings { get; } = new ItemRandomizer.Settings()
-        //{
-        //    SamePocketChance = 0.75,
-        //};
+        public override PcItemOption PcPotionOption => itemData.PcPotionOption;
+        public override Item CustomPcItem => itemData.CustomPcItem;
+        public override ItemRandomizer.Settings PcItemSettings => itemData.PcItemSettings;
 
         public override double FieldItemRandChance => RandomChance(itemData.RandomizeFieldItems, itemData.FieldItemRandChance);
         public override ItemRandomizer.Settings FieldItemSettings => itemData.FieldItemSettings;

@@ -1,9 +1,12 @@
 ﻿using System.Windows.Controls;
+using System.Windows.Data;
 
 namespace PokemonRandomizer.UI.Views
 {
+    using Backend.EnumTypes;
     using Models;
-    using System.Windows.Data;
+    using PokemonRandomizer.Backend.Utilities;
+    using static Settings;
 
     public class ItemDataView : DataView<ItemDataModel>
     {
@@ -22,13 +25,19 @@ namespace PokemonRandomizer.UI.Views
         {
             new ComboBoxItem() {Content="Unchanged"},
             new ComboBoxItem() {Content="Random"},
+            new ComboBoxItem() {Content="Custom"},
         };
 
         private TabItem CreateMiscTab(ItemDataModel model)
         {
             var tab = new TabItem() { Header = "Misc" };
             var stack = new StackPanel() { Orientation = Orientation.Vertical };
-            tab.IsEnabled = false;
+            stack.Add(new Label() { Content = "PC Potion Randomization" });
+            stack.Add(new Separator());
+            var strategyCb = stack.Add(new EnumComboBoxUI<PcItemOption>("Randomization Strategy", PCPotionStrategyDropdown, model.PcPotionOption));
+            strategyCb.BindVisibility(stack.Add(new ItemSettingsUI(model.PcItemSettings, false)), (int)PcItemOption.Random);
+            strategyCb.BindVisibility(stack.Add(new EnumComboBoxUI<Item>("Custom PC Potion Item", EnumUtils.GetDisplayValues<Item>(), model.CustomPcItem)), (int)PcItemOption.Custom);
+            tab.Content = stack;
             return tab;
         }
 

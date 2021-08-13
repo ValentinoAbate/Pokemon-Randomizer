@@ -4,6 +4,7 @@ using System.Windows.Controls;
 
 namespace PokemonRandomizer.UI
 {
+    using System.Windows;
     using Utilities;
     public class BoundComboBoxUI : StackPanel
     {
@@ -22,6 +23,12 @@ namespace PokemonRandomizer.UI
             Children.Add(ComboBox);
             ComboBox.SelectionChanged += (_, _2) => onIndexChange?.Invoke(ComboBox.SelectedIndex);
             Margin = new System.Windows.Thickness(0,2,2,2);
+        }
+
+        public void BindVisibility(UIElement element, int index)
+        {
+            ComboBox.SelectionChanged += (_, _2) => element.SetVisibility(ComboBox.SelectedIndex == index);
+            element.SetVisibility(ComboBox.SelectedIndex == index);
         }
     }
 
