@@ -163,6 +163,7 @@
     <Compile Include="UI\Models\ItemDataModel.cs" />
     <Compile Include="UI\Models\MiscDataModel.cs" />
     <Compile Include="UI\Models\RandomizerDataModel.cs" />
+    <Compile Include="UI\Models\WeatherDataModel.cs" />
     <Compile Include="UI\UISkin.cs" />
     <Compile Include="UI\Models\DataModel.cs" />
     <Compile Include="UI\Models\TrainerDataModel.cs" />
@@ -187,6 +188,7 @@
     <Compile Include="UI\UIExtensions.cs" />
     <Compile Include="UI\Models\WildEncounterDataModel.cs" />
     <Compile Include="UI\Views\TrainerDataView.cs" />
+    <Compile Include="UI\Views\WeatherDataView.cs" />
     <Compile Include="UI\Views\WildEncounterDataView.cs" />
     <Compile Include="UI\WeightedSetUI.cs" />
     <Compile Include="UserControls\MutationRateSlider.xaml.cs">

@@ -45,9 +45,27 @@ namespace PokemonRandomizer
 
         #endregion
 
-        private RomData OriginalData { get; set; }
-        private Rom OriginalRom { get; set; }
-        private RomMetadata Metadata { get; set; }
+        private RomData RomData
+        {
+            get => romData;
+            set
+            {
+                romData = value;
+                InitializeUI(value);
+            }
+        }
+        private RomData romData;
+        private Rom Rom { get; set; }
+        private RomMetadata Metadata
+        {
+            get => metadata;
+            set
+            {
+                metadata = value;
+                appSettings.Metadata = value;
+            }
+        }
+        private RomMetadata metadata;
         private XmlManager RomInfo { get; set; }
         private RomParser Parser { get; set; }
 
@@ -78,6 +96,7 @@ namespace PokemonRandomizer
             new TrainerDataModel(TrainerCategory.Champion, "Champion"),
         };
         private readonly ItemDataModel itemData = new ItemDataModel();
+        private readonly WeatherDataModel weatherData = new WeatherDataModel();
         private readonly MiscDataModel miscData = new MiscDataModel();
 
 
@@ -96,7 +115,7 @@ namespace PokemonRandomizer
         public MainWindow()
         {
             hardCodedSettings = new HardCodedSettings(randomizerData);
-            appSettings = new AppSettings.AppSettings(randomizerData, starterData, tmHmData, pokemonData, wildEncounterData, trainerDataModels, itemData, miscData);
+            appSettings = new AppSettings.AppSettings(randomizerData, starterData, tmHmData, pokemonData, wildEncounterData, trainerDataModels, itemData, weatherData, miscData);
 
             IsROMLoaded = false;
             InitializeComponent();
@@ -110,6 +129,7 @@ namespace PokemonRandomizer
             var trainerTraitsGroup = new GroupUI<TrainerDataView, TrainerDataModel>(TrainerGroups, TrainerView, trainerDataModels);
             trainerTraitsGroup.SetAddButtonVisibility(Visibility.Hidden);
             ItemsView.Content = new ItemDataView(itemData);
+            WeatherView.Content = new WeatherDataView(weatherData);
             MiscView.Content = new MiscDataView(miscData);
             Logger.main.OnLog += OnLog;
         }
@@ -156,10 +176,10 @@ namespace PokemonRandomizer
                 //Initalize Rom file wrapper
                 var freeSpaceByte = (byte)RomInfo.HexAttr("freeSpace", "byte");
                 var searchStartOffset = RomInfo.HexAttr("freeSpace", "startAddy");
-                OriginalRom = new Rom(rawRom, freeSpaceByte, searchStartOffset);
+                Rom = new Rom(rawRom, freeSpaceByte, searchStartOffset);
                 // Parse the file
                 Parser = new Gen3RomParser();
-                OriginalData = Parser.Parse(OriginalRom, metadata, RomInfo);
+                RomData = Parser.Parse(Rom, metadata, RomInfo);
 
             }
             else
@@ -168,27 +188,26 @@ namespace PokemonRandomizer
                 return false;
             }
             IsROMLoaded = true;
-            InitializeUI(OriginalData);
             // Log open and set info box
             string msg = "Rom opened: " + metadata.Name + " (" + metadata.Code + ")";
             Logger.main.Info(msg);
             SetInfoBox(msg);
             // Cache metadata and last randomization info
-            LastRandomizationInfo = OriginalData.ToStringArray();
+            LastRandomizationInfo = RomData.ToStringArray();
             Metadata = metadata;
             return true;
         }
 
         private Rom GetRandomizedRom()
         {
-            var copyData = Parser.Parse(OriginalRom, Metadata, RomInfo);
+            var copyData = Parser.Parse(Rom, Metadata, RomInfo);
             var randomzier = new Backend.Randomization.Randomizer(copyData, AppSettings);
             var randomizedData = randomzier.Randomize();
             LastRandomizationInfo = randomizedData.ToStringArray();
             if(Metadata.Gen == Generation.III)
             {
                 var writer = new Gen3RomWriter();
-                return writer.Write(randomizedData, OriginalRom, Metadata, RomInfo, AppSettings);
+                return writer.Write(randomizedData, Rom, Metadata, RomInfo, AppSettings);
             }
             throw new Exception("Attempting to write to unsupported generation.");
         }
@@ -263,13 +282,13 @@ namespace PokemonRandomizer
             if (Metadata.Gen == Generation.III)
             {
                 var writer = new Gen3RomWriter();
-                WriteRom(() => writer.Write(OriginalData, OriginalRom, Metadata, RomInfo, AppSettings));
+                WriteRom(() => writer.Write(RomData, Rom, Metadata, RomInfo, AppSettings));
             }
         }
 
         private void DiffRoms(object sender, RoutedEventArgs e)
         {
-            if(OriginalRom == null)
+            if(Rom == null)
             {
                 Logger.main.Error("Diff Error: Diff cannot be run with no open rom");
                 return;
@@ -293,7 +312,7 @@ namespace PokemonRandomizer
                     }
                     var rom2 = new Rom(rawRom2, 0x00, 0x00); // No free space data, will do later
                     // Diff Roms
-                    var diffData = RomDiff.Diff(OriginalRom, rom2);
+                    var diffData = RomDiff.Diff(Rom, rom2);
                     // Save diff file
                     var saveFileDialog = new SaveFileDialog
                     {

@@ -103,6 +103,10 @@
 
             </TabItem>
 
+            <TabItem Name="WeatherView" Header="Weather">
+
+            </TabItem>
+
             <TabItem Name="MiscView" Header="Misc">
 
             </TabItem>

@@ -8,20 +8,24 @@ namespace PokemonRandomizer.AppSettings
     using Backend.EnumTypes;
     using UI;
     using UI.Models;
+    using PokemonRandomizer.Backend.DataStructures;
+
     public class AppSettings : HardCodedSettings
     {
+        public RomMetadata Metadata { get; set; }
         private readonly TmHmTutorModel tmHmTutorData;
         private readonly PokemonTraitsModel pokemonData;
         private readonly StartersDataModel starterData;
         private readonly WildEncounterDataModel wildEncounterData;
         private readonly Dictionary<TrainerCategory, TrainerDataModel> trainerData;
         private readonly ItemDataModel itemData;
+        private readonly WeatherDataModel weatherData;
         private readonly MiscDataModel miscData;
         public AppSettings(RandomizerDataModel randomizerData) : base(randomizerData)
         {
         }
 
-        public AppSettings(RandomizerDataModel randomizerData, StartersDataModel starterData, TmHmTutorModel tmHmTutorData, PokemonTraitsModel pokemonData, WildEncounterDataModel wildEncounterData, IEnumerable<TrainerDataModel> trainerData, ItemDataModel itemData, MiscDataModel miscData) : base(randomizerData)
+        public AppSettings(RandomizerDataModel randomizerData, StartersDataModel starterData, TmHmTutorModel tmHmTutorData, PokemonTraitsModel pokemonData, WildEncounterDataModel wildEncounterData, IEnumerable<TrainerDataModel> trainerData, ItemDataModel itemData, WeatherDataModel weatherData, MiscDataModel miscData) : base(randomizerData)
         {
             this.starterData = starterData;
             this.tmHmTutorData = tmHmTutorData;
@@ -29,6 +33,7 @@ namespace PokemonRandomizer.AppSettings
             this.wildEncounterData = wildEncounterData;
             this.trainerData = trainerData.ToDictionary((tData) => tData.Category);
             this.itemData = itemData;
+            this.weatherData = weatherData;
             this.miscData = miscData;
         }
 
@@ -142,6 +147,44 @@ namespace PokemonRandomizer.AppSettings
 
         public override WildEncounterRandomizer.Strategy EncounterStrategy => wildEncounterData.Strategy;
         public override PokemonSettings EncounterSettings => wildEncounterData.PokemonSettings;
+
+        #endregion
+
+        #region Maps
+
+        public override WeatherOption WeatherSetting => weatherData.WeatherSetting;
+        protected override WeightedSet<Map.Weather> CustomWeatherWeights => weatherData.CustomWeatherWeights;
+        public override bool OverrideAllowGymWeather => weatherData.RandomizeGymWeather;
+        public override double GymWeatherRandChance => weatherData.GymWeatherRandChance;
+        public override Dictionary<Map.Type, double> WeatherRandChance
+        {
+            get
+            {
+                var dict = new Dictionary<Map.Type, double>(3);
+                if (weatherData.RandomizeRouteWeather)
+                {
+                    dict.Add(Map.Type.Route, weatherData.RouteWeatherRandChance);
+                }
+                if (weatherData.RandomizeTownWeather)
+                {
+                    dict.Add(Map.Type.Village, weatherData.TownWeatherRandChance);
+                    dict.Add(Map.Type.City, weatherData.TownWeatherRandChance);
+                }
+                return dict;
+            }
+        }
+        public override bool OnlyChangeClearWeather => weatherData.KeepExistingWeather;
+        public override HailHackOption HailHackSetting
+        {
+            get
+            {
+                if (Metadata == null)
+                    return HailHackOption.None;
+                if (Metadata.IsEmerald)
+                    return HailHackOption.Snow;
+                return HailHackOption.None;
+            }
+        }
 
         #endregion
 
