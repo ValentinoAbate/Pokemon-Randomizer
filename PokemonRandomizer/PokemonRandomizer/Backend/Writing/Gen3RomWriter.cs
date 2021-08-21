@@ -84,7 +84,7 @@ namespace PokemonRandomizer.Backend.Writing
                 // Hack the ??? type to be a valid type (Uses SP.ATK and SP.DEF)
                 rom.WriteByte(0x069BCF, 0xD2);
             }
-            // Apply hail weather hack if applicable. Currently only supported for emerald
+            // Apply hail weather hack if applicable
             if (settings.HailHackSetting != Settings.HailHackOption.None)
             {
                 ApplyHailHack(settings.HailHackSetting, rom, info);
@@ -196,6 +196,10 @@ namespace PokemonRandomizer.Backend.Writing
                     rom.WriteBlock(info.HexAttr(ElementNames.hailHack, "snowMessageOffset"), hailMessageBlock);
                     // Fix Three snow flakes spawning issue
                     rom.WriteBlock(info.HexAttr(ElementNames.hailHack, "snowFixOffset"), new byte[] { 0x4B, 0xE0 });
+                    if(info.HasElementWithAttr(ElementNames.hailHack, "snowPostBattleFixOffset")) 
+                    {
+                        rom.WriteBlock(info.HexAttr(ElementNames.hailHack, "snowPostBattleFixOffset"), new byte[] { 0x04, 0x1C, 0xE1, 0xF7, 0x32, 0xF8, 0x0D, 0x4A, 0xD9, 0x21, 0xC9, 0x00, 0x88, 0x5C });
+                    }
                 }
                 if (option.HasFlag(Settings.HailHackOption.SteadySnow))
                 {
