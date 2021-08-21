@@ -1,4 +1,5 @@
 ﻿using PokemonRandomizer.Backend.DataStructures;
+using PokemonRandomizer.Backend.Utilities.Debug;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -91,6 +92,7 @@ namespace PokemonRandomizer.Backend.Utilities
         {
             return Convert.ToInt32(hex, 16);
         }
+        public static byte HexToByte(string hex) => Convert.ToByte(hex, 16);
         /// <summary>
         /// Finds the offset of the specified data using various methods.
         /// If no method successfully finds a valid offset, return Rom.nullPointer.
@@ -213,9 +215,14 @@ namespace PokemonRandomizer.Backend.Utilities
         {
             return Array.ConvertAll(((string)Attr(element, attribute)).Trim('[', ']').Split(','), HexToInt);
         }
+
+        public byte[] ByteArrayAttr(string element, string attribute)
+        {
+            return Array.ConvertAll(((string)Attr(element, attribute)).Trim('[', ']').Split(','), HexToByte);
+        }
         /// <summary>
         /// Safely gets an array attribute if it exists. else returns an empty array.
-        /// ArrayGetter should either be: ArrayAttr, IntArrayAttr, or HexArrayAttr
+        /// ArrayGetter should either be: ArrayAttr, IntArrayAttr, ByteArrayAttr, or HexArrayAttr
         /// </summary>
         public T[] SafeArrayAttr<T>(string element, string attribute, Func<string, string, T[]> arrayGetter)
         {

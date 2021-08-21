@@ -82,7 +82,6 @@ FEATURES ///////////////////////////////////////////////////////////////////////
 - Enable for FireRed
 	- Starter Text replacement
 	- Catching tut writing (very low priority, may never add) (maybe add a skip)
-	- Snow weather hack
 - National Pokedex from game start hack
 - Gen IV compatibility
 - Settings preset saving (possibly in JSON or XML)
