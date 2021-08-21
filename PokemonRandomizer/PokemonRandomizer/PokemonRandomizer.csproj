@@ -163,6 +163,7 @@
     <Compile Include="UI\Models\ItemDataModel.cs" />
     <Compile Include="UI\Models\MiscDataModel.cs" />
     <Compile Include="UI\Models\RandomizerDataModel.cs" />
+    <Compile Include="UI\Models\SpecialPokemonDataModel.cs" />
     <Compile Include="UI\Models\WeatherDataModel.cs" />
     <Compile Include="UI\UISkin.cs" />
     <Compile Include="UI\Models\DataModel.cs" />
@@ -176,12 +177,14 @@
     <Compile Include="UI\MetricDataUI.cs" />
     <Compile Include="UI\PokemonSettingsUI.cs" />
     <Compile Include="UI\Models\PokemonTraitsModel.cs" />
+    <Compile Include="UI\Models\InGameTradesDataModel.cs" />
     <Compile Include="UI\Views\ItemDataView.cs" />
     <Compile Include="UI\Views\MiscDataView.cs" />
     <Compile Include="UI\Views\PokemonTraitsDataView.cs" />
     <Compile Include="UI\RandomChanceUI.cs" />
     <Compile Include="UI\Models\StartersDataModel.cs" />
     <Compile Include="UI\Views\RandomizerDataView.cs" />
+    <Compile Include="UI\Views\SpecialPokemonDataView.cs" />
     <Compile Include="UI\Views\StartersDataView.cs" />
     <Compile Include="UI\Models\TmHmTutorModel.cs" />
     <Compile Include="UI\Views\TmHmTutorDataView.cs" />

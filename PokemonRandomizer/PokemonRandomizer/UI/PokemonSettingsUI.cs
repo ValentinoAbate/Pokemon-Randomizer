@@ -13,6 +13,8 @@ namespace PokemonRandomizer.UI
             PokemonMetric.typeIndividual,
         };
 
+        public PokemonSettingsUI(PokemonSettings settings) : this(settings, BasicPokemonMetricTypes, null) { }
+
         public PokemonSettingsUI(PokemonSettings settings, IEnumerable<string> metricTypeOptions, Action<MetricData> initialize)
         {
             var stack = new StackPanel()

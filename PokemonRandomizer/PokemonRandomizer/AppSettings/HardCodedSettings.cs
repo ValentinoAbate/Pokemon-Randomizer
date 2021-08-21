@@ -283,18 +283,18 @@ namespace PokemonRandomizer.AppSettings
         public override PokemonSettings TradeSpeciesSettingsGive { get; } = new PokemonSettings()
         {
             BanLegendaries = true,
-        };
-        public override MetricData[] TradeSpeciesMetricsGive { get; } = new MetricData[]
-        {
-            new MetricData(PokemonMetric.powerIndividual)
+            Data = new List<MetricData>()
+            {
+                new MetricData(PokemonMetric.powerIndividual)
+            }
         };
         public override PokemonSettings TradeSpeciesSettingsReceive { get; } = new PokemonSettings()
         {
             BanLegendaries = true,
-        };
-        public override MetricData[] TradeSpeciesMetricsRecieve { get; } = new MetricData[]
-        {
-            new MetricData(PokemonMetric.powerIndividual)
+            Data = new List<MetricData>()
+            {
+                new MetricData(PokemonMetric.powerIndividual)
+            }
         };
         public override double TradeHeldItemRandChance => 1;
         public override ItemRandomizer.Settings TradeHeldItemSettings { get; } = new ItemRandomizer.Settings()
@@ -356,23 +356,18 @@ namespace PokemonRandomizer.AppSettings
         /// <summary>
         /// Controls which gen 3 snow weathers will affect battle
         /// </summary>
-        public override HailHackOption HailHackSetting => HailHackOption.Snow;
-        private const double defaultWeatherRandChance = 0.33;
+        public override HailHackOption HailHackSetting => HailHackOption.Both;
+        private const double defaultWeatherRandChance = 1;
         /// <summary>
         /// The chance any given map type will have its weather randomized. If the map type is not in this map, that type of map will not be randomized
         /// </summary>
         public override Dictionary<Map.Type, double> WeatherRandChance { get; } = new Dictionary<Map.Type, double>
         {
-            { Map.Type.Route, defaultWeatherRandChance }
+            { Map.Type.Route, 1 }
         };
         protected override WeightedSet<Map.Weather> CustomWeatherWeights { get; } = new WeightedSet<Map.Weather>
         {
-            { Map.Weather.Rain, 0.85f },
-            { Map.Weather.RainThunderstorm, 0.125f },
-            { Map.Weather.RainHeavyThunderstrorm, 0.025f },
             { Map.Weather.Snow, 1f },
-            { Map.Weather.StrongSunlight, 1 },
-            { Map.Weather.Sandstorm, 0.8f },
         };
         protected override WeightedSet<Map.Weather> BattleWeatherBalancedWeights { get; } = new WeightedSet<Map.Weather>
         {

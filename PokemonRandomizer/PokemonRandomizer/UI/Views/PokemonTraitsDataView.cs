@@ -18,7 +18,6 @@ namespace PokemonRandomizer.UI
         public override Panel CreateModelView(PokemonTraitsModel model)
         {
             var grid = new Grid();
-            //grid.RowDefinitions.Add(new RowDefinition() { Height = GridLength.Auto });
             grid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(1, GridUnitType.Star) });
             var tabs = new TabControl();
             tabs.SetValue(Grid.RowProperty, 0);
@@ -34,15 +33,12 @@ namespace PokemonRandomizer.UI
 
         private TabItem CreateTypesTab(PokemonTraitsModel model)
         {
-            var tab = new TabItem() { Header = "Type" };
-            var stack = new StackPanel() { Orientation = Orientation.Vertical };
-            stack.Add(new Label() { Content = "Type Randomization" });
-            stack.Add(new Separator());
+            var stack = CreateStack();
+            Header("Type Randomization", stack);
             stack.Add(new RandomChanceUI("Single Type", model.RandomizeSingleType, model.SingleTypeRandChance));
             stack.Add(new RandomChanceUI("Dual Type (Primary)", model.RandomizeDualTypePrimary, model.DualTypePrimaryRandChance));
             stack.Add(new RandomChanceUI("Dual Type (Secondary)", model.RandomizeDualTypeSecondary, model.DualTypeSecondaryRandChance));
-            tab.Content = stack;
-            return tab;
+            return CreateTabItem("Type", stack);
         }
 
         private CompositeCollection CompatOptionDropdown => new CompositeCollection()
@@ -53,17 +49,14 @@ namespace PokemonRandomizer.UI
 
         private TabItem CreateEvolutionTab(PokemonTraitsModel model)
         {
-            var tab = new TabItem() { Header = "Evolution" };
-            var stack = new StackPanel() { Orientation = Orientation.Vertical };
-            stack.Add(new Label() { Content = UISkin.Current.HacksAndTweaksHeader });
-            stack.Add(new Separator());
+            var stack = CreateStack();
+            Header(UISkin.Current.HacksAndTweaksHeader, stack);
             var impossibleCb = stack.Add(new BoundCheckBoxUI(model.FixImpossibleEvos, "Fix Trade Evolutions"));
             impossibleCb.BindVisibility(stack.Add(new EnumComboBoxUI<TradeItemPokemonOption>("Trade item evolution type", CompatOptionDropdown, model.TradeItemEvoSetting)));
             stack.Add(new BoundCheckBoxUI(model.ConsiderEvolveByBeautyImpossible, "Fix Beauty-Based Evolutions"));
             stack.Add(new BoundSliderUI("Fixed evolution level variance", model.ImpossibleEvoLevelStandardDev, false, 0.01, 0, 3));
             stack.Add(new RandomChanceUI("Dunsparse Plague", model.DunsparsePlague, model.DunsparsePlaugeChance));
-            tab.Content = stack;
-            return tab;
+            return CreateTabItem("Evolution", stack);
         }
 
         // Catch rate parameters
@@ -82,15 +75,12 @@ namespace PokemonRandomizer.UI
 
         private TabItem CreateCatchRateTab(PokemonTraitsModel model)
         {
-            var tab = new TabItem() { Header = "Catch Rate" };
-            var stack = new StackPanel() { Orientation = Orientation.Vertical };
-            stack.Add(new Label() { Content = "Catch Rate Randomization" });
-            stack.Add(new Separator());
+            var stack = CreateStack();
+            Header("Catch Rate Randomization", stack);
             var optionCb = stack.Add(new EnumComboBoxUI<CatchRateOption>("Randomization Strategy", CatchRateOptionDropdown, model.CatchRateSetting));
             optionCb.BindVisibility(stack.Add(new BoundSliderUI("Constant Difficulty", model.CatchRateConstantDifficulty, false)), (int)CatchRateOption.Constant);
             stack.Add(new BoundCheckBoxUI(model.KeepLegendaryCatchRates, "Keep Legendary Catch Rates"));
-            tab.Content = stack;
-            return tab;
+            return CreateTabItem("Catch Rate", stack);
         }
 
         private const string banSelfdestructTooltip = "Removes selfdestruct and explosion from all learnsets. Other settings that modify learnsets will not add selfdestruct or explosion. Useful for more forgiving Nuzlockes!";
@@ -104,11 +94,9 @@ namespace PokemonRandomizer.UI
 
         private TabItem CreateLearnsetsTab(PokemonTraitsModel model)
         {
-            var tab = new TabItem() { Header = "Learnsets" };
-            var stack = new StackPanel() { Orientation = Orientation.Vertical };
-            stack.Add(new Label() { Content = "Bonus Moves" });
-            stack.Add(new Separator());
-            var bonusMovesStack = new StackPanel() { Orientation = Orientation.Vertical };
+            var stack = CreateStack();
+            Header("Bonus Moves", stack);
+            var bonusMovesStack = CreateStack();
             bonusMovesStack.Add(new WeightedSetUI<AddMoveSource>("Bonus Move Source", model.AddMoveSourceWeights, GetAddMoveWeightDropdown));
             bonusMovesStack.Add(new BoundSliderUI("Average number of moves to add", model.NumMovesMean, false, 0.5, 0, maxAddMoves));
             bonusMovesStack.Add(new BoundSliderUI("Number of moves variance", model.NumMovesStdDeviation, false, 0.5, 0, 5));
@@ -117,11 +105,9 @@ namespace PokemonRandomizer.UI
             stack.Add(new RandomChanceUI("Bonus Moves", model.AddMoves, model.AddMovesChance, bonusMovesStack));
             stack.Add(bonusMovesStack);
             stack.Add(new Separator());
-            stack.Add(new Label() { Content = UISkin.Current.HacksAndTweaksHeader });
-            stack.Add(new Separator());
+            Header(UISkin.Current.HacksAndTweaksHeader, stack);
             stack.Add(new BoundCheckBoxUI(model.BanSelfdestruct, "Ban Selfdestruct", banSelfdestructTooltip));
-            tab.Content = stack;
-            return tab;
+            return CreateTabItem("Learnsets", stack); ;
         }
     }
 }

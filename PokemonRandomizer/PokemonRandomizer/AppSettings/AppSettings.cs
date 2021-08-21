@@ -15,6 +15,7 @@ namespace PokemonRandomizer.AppSettings
         public RomMetadata Metadata { get; set; }
         private readonly TmHmTutorModel tmHmTutorData;
         private readonly PokemonTraitsModel pokemonData;
+        private readonly InGameTradesDataModel tradeData;
         private readonly StartersDataModel starterData;
         private readonly WildEncounterDataModel wildEncounterData;
         private readonly Dictionary<TrainerCategory, TrainerDataModel> trainerData;
@@ -25,9 +26,10 @@ namespace PokemonRandomizer.AppSettings
         {
         }
 
-        public AppSettings(RandomizerDataModel randomizerData, StartersDataModel starterData, TmHmTutorModel tmHmTutorData, PokemonTraitsModel pokemonData, WildEncounterDataModel wildEncounterData, IEnumerable<TrainerDataModel> trainerData, ItemDataModel itemData, WeatherDataModel weatherData, MiscDataModel miscData) : base(randomizerData)
+        public AppSettings(RandomizerDataModel randomizerData, SpecialPokemonDataModel specialPokemonData, TmHmTutorModel tmHmTutorData, PokemonTraitsModel pokemonData, WildEncounterDataModel wildEncounterData, IEnumerable<TrainerDataModel> trainerData, ItemDataModel itemData, WeatherDataModel weatherData, MiscDataModel miscData) : base(randomizerData)
         {
-            this.starterData = starterData;
+            starterData = specialPokemonData.StarterData;
+            tradeData = specialPokemonData.TradeData;
             this.tmHmTutorData = tmHmTutorData;
             this.pokemonData = pokemonData;
             this.wildEncounterData = wildEncounterData;
@@ -111,6 +113,17 @@ namespace PokemonRandomizer.AppSettings
         // TODO:
         // public override PokemonMetric[] StarterMetricData { get; } = new PokemonMetric[0]; (No UI for metric data yet) 
         public override bool SafeStarterMovesets => starterData.SafeStarterMovesets;
+
+        #endregion
+
+        #region Trade Pokemon
+
+        public override double TradePokemonGiveRandChance => RandomChance(tradeData.RandomizeTradeGive, tradeData.TradePokemonGiveRandChance);
+        public override double TradePokemonRecievedRandChance => RandomChance(tradeData.RandomizeTradeRecieve, tradeData.TradePokemonRecievedRandChance);
+        public override PokemonSettings TradeSpeciesSettingsGive => tradeData.TradeSpeciesSettingsGive;
+        public override PokemonSettings TradeSpeciesSettingsReceive => tradeData.TradeSpeciesSettingsRecieve;
+        public override double TradeHeldItemRandChance => RandomChance(tradeData.RandomizeHeldItems, tradeData.HeldItemRandChance);
+        public override ItemRandomizer.Settings TradeHeldItemSettings => tradeData.TradeHeldItemSettings;
 
         #endregion
 

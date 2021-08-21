@@ -9,11 +9,15 @@ namespace PokemonRandomizer.UI
     {
         private const string chanceText = "Chance";
 
+        private UIElement enableOnCheckElement;
+        private BoundCheckBoxUI checkBox;
+
         public RandomChanceUI(string featureName, Box<bool> enabled, Box<double> chance, UIElement enableOnCheck = null, Orientation orientation = Orientation.Horizontal)
             : this(featureName, enabled, b => enabled.Value = b, chance, d => chance.Value = d, enableOnCheck, orientation) { }
 
         public RandomChanceUI(string featureName, bool enabled, Action<bool> onEnabledChange, double chance, Action<double> onChanceChange, UIElement enableOnCheck = null, Orientation orientation = Orientation.Horizontal) : base()
         {
+            enableOnCheckElement = enableOnCheck;
             var mainStack = new StackPanel() { Orientation = orientation };
             double marginH = orientation == Orientation.Horizontal ? 0 : 1.5;
             double marginW = orientation == Orientation.Vertical ? 0 : 1.5;
@@ -23,12 +27,12 @@ namespace PokemonRandomizer.UI
             {
                 onEnabledChange?.Invoke(value);
                 contentStack.IsEnabled = value;
-                if(enableOnCheck != null)
+                if(enableOnCheckElement != null)
                 {
-                    enableOnCheck.IsEnabled = value;
+                    enableOnCheckElement.IsEnabled = value;
                 }
             }
-            var checkBox = new BoundCheckBoxUI(enabled, OnCheckBox, featureName) { VerticalAlignment = VerticalAlignment.Center};
+            checkBox = new BoundCheckBoxUI(enabled, OnCheckBox, featureName) { VerticalAlignment = VerticalAlignment.Center};
             // Add content to main stack
             mainStack.Add(checkBox);
             mainStack.Add(contentStack);
@@ -38,6 +42,12 @@ namespace PokemonRandomizer.UI
 
             Content = mainStack;
             OnCheckBox(enabled);
+        }
+
+        public void BindEnabled(UIElement element)
+        {
+            enableOnCheckElement = element;
+            element.IsEnabled = checkBox.IsChecked ?? false;
         }
     }
 }

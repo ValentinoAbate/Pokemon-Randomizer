@@ -175,9 +175,7 @@ namespace PokemonRandomizer
         public abstract double TradePokemonGiveRandChance { get; }
         public abstract double TradePokemonRecievedRandChance { get; }
         public abstract PokemonSettings TradeSpeciesSettingsGive { get; }
-        public abstract MetricData[] TradeSpeciesMetricsGive { get; }
         public abstract PokemonSettings TradeSpeciesSettingsReceive { get; }
-        public abstract MetricData[] TradeSpeciesMetricsRecieve { get; }
         public abstract double TradeHeldItemRandChance { get; }
         public abstract ItemRandomizer.Settings TradeHeldItemSettings { get; }
 

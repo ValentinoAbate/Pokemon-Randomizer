@@ -83,6 +83,7 @@ namespace PokemonRandomizer
         private readonly RandomizerDataModel randomizerData = new RandomizerDataModel();
         private readonly TmHmTutorModel tmHmData = new TmHmTutorModel();
         private readonly StartersDataModel starterData = new StartersDataModel();
+        private readonly SpecialPokemonDataModel specialPokemonData = new SpecialPokemonDataModel(new StartersDataModel(), new InGameTradesDataModel());
         private readonly PokemonTraitsModel pokemonData = new PokemonTraitsModel();
         private readonly WildEncounterDataModel wildEncounterData = new WildEncounterDataModel();
         // Later have preset ones for special groups
@@ -115,7 +116,7 @@ namespace PokemonRandomizer
         public MainWindow()
         {
             hardCodedSettings = new HardCodedSettings(randomizerData);
-            appSettings = new AppSettings.AppSettings(randomizerData, starterData, tmHmData, pokemonData, wildEncounterData, trainerDataModels, itemData, weatherData, miscData);
+            appSettings = new AppSettings.AppSettings(randomizerData, specialPokemonData, tmHmData, pokemonData, wildEncounterData, trainerDataModels, itemData, weatherData, miscData);
 
             IsROMLoaded = false;
             InitializeComponent();
@@ -161,7 +162,7 @@ namespace PokemonRandomizer
             var pokemon = new List<Pokemon>(data.PokemonNationalDexOrder.Length + 1);
             pokemon.Add(Pokemon.None);
             pokemon.AddRange(data.PokemonNationalDexOrder.Select(p => p.species));
-            StarterView.Content = new StartersDataView(starterData, data.PokemonNames, pokemon);
+            SpecialPokemonView.Content = new SpecialPokemonDataView(specialPokemonData, data.PokemonNames, pokemon);
         }
 
         private bool GetRomData(byte[] rawRom)

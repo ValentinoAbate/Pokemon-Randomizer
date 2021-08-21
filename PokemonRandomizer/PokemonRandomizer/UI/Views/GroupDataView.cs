@@ -9,7 +9,7 @@ using System.Windows.Input;
 
 namespace PokemonRandomizer.UI
 {
-    public abstract class GroupDataView<T> where T : DataModel
+    public abstract class GroupDataView<T> : DataView<T> where T : DataModel
     {
         private Panel parent;
         private readonly Dictionary<T, Panel> modelViews = new Dictionary<T, Panel>();

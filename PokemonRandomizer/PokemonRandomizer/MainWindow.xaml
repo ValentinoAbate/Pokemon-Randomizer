@@ -78,7 +78,7 @@
 
             <!--Starter Pokemon-->
 
-            <TabItem Name="StarterView" Header="Starter Pokemon">
+            <TabItem Name="SpecialPokemonView" Header="Special Pokemon">
 
             </TabItem>
             
