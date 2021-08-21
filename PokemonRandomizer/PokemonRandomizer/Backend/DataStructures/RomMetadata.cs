@@ -39,6 +39,7 @@ namespace PokemonRandomizer.Backend.DataStructures
         private const int ndsRomVersionSize = 1;
 
         public bool IsFireRedOrLeafGreen => Gen == Generation.III && (MatchCode(gameCodeFr) || MatchCode(gameCodeLg));
+        public bool IsFireRed => Gen == Generation.III && MatchCode(gameCodeFr);
         public bool IsRubySapphireOrEmerald => Gen == Generation.III && (MatchCode(gameCodeEm) || MatchCode(gameCodeRu) || MatchCode(gameCodeSp));
         public bool IsEmerald => Gen == Generation.III && MatchCode(gameCodeEm);
         public Generation Gen { get; private set; }

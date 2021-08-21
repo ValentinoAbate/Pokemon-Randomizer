@@ -178,10 +178,12 @@ namespace PokemonRandomizer.AppSettings
         {
             get
             {
-                if (Metadata == null)
+                if (Metadata == null || WeatherSetting == WeatherOption.Unchanged)
                     return HailHackOption.None;
                 if (Metadata.IsEmerald)
                     return HailHackOption.Snow;
+                if (Metadata.IsFireRed)
+                    return HailHackOption.Both;
                 return HailHackOption.None;
             }
         }
