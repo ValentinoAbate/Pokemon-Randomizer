@@ -14,11 +14,24 @@ namespace PokemonRandomizer.UI.Views
             var tabs = CreateMainTabControl();
 
             // Starters
-            tabs.Items.Add(CreateTabItem("Starters", new StartersDataView(model.StarterData, pokemonNames, pokemon)));
+            tabs.Add(CreateTabItem("Starter Pokemon", new StartersDataView(model.StarterData, pokemonNames, pokemon)));
             // Gift pokemon
+            tabs.Add(CreateGiftPokemonTab(model.GiftData));
             // Trade pokemon
-            tabs.Items.Add(CreateTradePokemonTab(model.TradeData));
+            tabs.Add(CreateTradePokemonTab(model.TradeData));
 
+        }
+
+        private TabItem CreateGiftPokemonTab(GiftPokemonDataModel model)
+        {
+            var stack = CreateStack();
+            stack.Header("Randomization");
+            stack.Add(new RandomChanceUI("Randomize Gift Pokemon", model.RandomizeGiftPokemon, model.GiftPokemonRandChance))
+                .BindEnabled(stack.Add(new PokemonSettingsUI(model.GiftSpeciesSettings)));
+            stack.Header("Restrictions");
+            stack.Add(new BoundCheckBoxUI(model.EnsureFossilRevivesAreFossilPokemon, "Ensure Fossil Revives are Fossil Pokemon"));
+            stack.Add(new BoundCheckBoxUI(model.EnsureGiftEggsAreBabyPokemon, "Ensure Gift Eggs are Baby Pokemon"));
+            return CreateTabItem("Gift Pokemon", stack);
         }
 
         private TabItem CreateTradePokemonTab(InGameTradesDataModel model)
@@ -26,22 +39,22 @@ namespace PokemonRandomizer.UI.Views
             var tabs = new TabControl();
             // Required Pokemon Tab
             var stack = CreateStack();
-            Header("Randomization", stack);
+            stack.Header("Randomization");
             stack.Add(new RandomChanceUI("Randomize Pokemon Required by Trade", model.RandomizeTradeGive, model.TradePokemonGiveRandChance))
                 .BindEnabled(stack.Add(new PokemonSettingsUI(model.TradeSpeciesSettingsGive)));
-            tabs.Items.Add(CreateTabItem("Required Pokemon", stack));
+            tabs.Add(CreateTabItem("Required Pokemon", stack));
             // Recieved Pokemon Tab
             stack = CreateStack();
-            Header("Randomization", stack);
+            stack.Header("Randomization");
             stack.Add(new RandomChanceUI("Randomize Pokemon Recieved by Trade", model.RandomizeTradeRecieve, model.TradePokemonRecievedRandChance))
                 .BindEnabled(stack.Add(new PokemonSettingsUI(model.TradeSpeciesSettingsRecieve)));
-            tabs.Items.Add(CreateTabItem("Recieved Pokemon", stack));
+            tabs.Add(CreateTabItem("Recieved Pokemon", stack));
             // Held Item Tab
             stack = CreateStack();
-            Header("Randomization", stack);
+            stack.Header("Randomization");
             stack.Add(new RandomChanceUI("Randomize Held Items", model.RandomizeHeldItems, model.HeldItemRandChance))
                 .BindEnabled(stack.Add(new ItemSettingsUI(model.TradeHeldItemSettings)));
-            tabs.Items.Add(CreateTabItem("Held Items", stack));
+            tabs.Add(CreateTabItem("Held Items", stack));
 
             return CreateTabItem("In-Game Trades", tabs);
         }

@@ -6,7 +6,6 @@ namespace PokemonRandomizer.AppSettings
 {
     using Backend.Randomization;
     using Backend.EnumTypes;
-    using UI;
     using UI.Models;
     using PokemonRandomizer.Backend.DataStructures;
 
@@ -17,6 +16,7 @@ namespace PokemonRandomizer.AppSettings
         private readonly PokemonTraitsModel pokemonData;
         private readonly InGameTradesDataModel tradeData;
         private readonly StartersDataModel starterData;
+        private readonly GiftPokemonDataModel giftData;
         private readonly WildEncounterDataModel wildEncounterData;
         private readonly Dictionary<TrainerCategory, TrainerDataModel> trainerData;
         private readonly ItemDataModel itemData;
@@ -30,6 +30,7 @@ namespace PokemonRandomizer.AppSettings
         {
             starterData = specialPokemonData.StarterData;
             tradeData = specialPokemonData.TradeData;
+            giftData = specialPokemonData.GiftData;
             this.tmHmTutorData = tmHmTutorData;
             this.pokemonData = pokemonData;
             this.wildEncounterData = wildEncounterData;
@@ -114,6 +115,13 @@ namespace PokemonRandomizer.AppSettings
         // public override PokemonMetric[] StarterMetricData { get; } = new PokemonMetric[0]; (No UI for metric data yet) 
         public override bool SafeStarterMovesets => starterData.SafeStarterMovesets;
 
+        #endregion
+
+        #region Gift Pokemon
+        public override double GiftPokemonRandChance => RandomChance(giftData.RandomizeGiftPokemon, giftData.GiftPokemonRandChance);
+        public override PokemonSettings GiftSpeciesSettings => giftData.GiftSpeciesSettings;
+        public override bool EnsureFossilRevivesAreFossilPokemon => giftData.EnsureFossilRevivesAreFossilPokemon;
+        public override bool EnsureGiftEggsAreBabyPokemon => giftData.EnsureGiftEggsAreBabyPokemon;
         #endregion
 
         #region Trade Pokemon

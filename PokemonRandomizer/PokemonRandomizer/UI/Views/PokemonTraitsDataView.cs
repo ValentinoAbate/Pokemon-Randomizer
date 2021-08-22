@@ -35,7 +35,7 @@ namespace PokemonRandomizer.UI.Views
         private TabItem CreateTypesTab(PokemonTraitsModel model)
         {
             var stack = CreateStack();
-            Header("Type Randomization", stack);
+            stack.Header("Type Randomization");
             stack.Add(new RandomChanceUI("Single Type", model.RandomizeSingleType, model.SingleTypeRandChance));
             stack.Add(new RandomChanceUI("Dual Type (Primary)", model.RandomizeDualTypePrimary, model.DualTypePrimaryRandChance));
             stack.Add(new RandomChanceUI("Dual Type (Secondary)", model.RandomizeDualTypeSecondary, model.DualTypeSecondaryRandChance));
@@ -51,7 +51,7 @@ namespace PokemonRandomizer.UI.Views
         private TabItem CreateEvolutionTab(PokemonTraitsModel model)
         {
             var stack = CreateStack();
-            Header(UISkin.Current.HacksAndTweaksHeader, stack);
+            stack.Header(UISkin.Current.HacksAndTweaksHeader);
             var impossibleCb = stack.Add(new BoundCheckBoxUI(model.FixImpossibleEvos, "Fix Trade Evolutions"));
             impossibleCb.BindVisibility(stack.Add(new EnumComboBoxUI<TradeItemPokemonOption>("Trade item evolution type", CompatOptionDropdown, model.TradeItemEvoSetting)));
             stack.Add(new BoundCheckBoxUI(model.ConsiderEvolveByBeautyImpossible, "Fix Beauty-Based Evolutions"));
@@ -77,7 +77,7 @@ namespace PokemonRandomizer.UI.Views
         private TabItem CreateCatchRateTab(PokemonTraitsModel model)
         {
             var stack = CreateStack();
-            Header("Catch Rate Randomization", stack);
+            stack.Header("Catch Rate Randomization");
             var optionCb = stack.Add(new EnumComboBoxUI<CatchRateOption>("Randomization Strategy", CatchRateOptionDropdown, model.CatchRateSetting));
             optionCb.BindVisibility(stack.Add(new BoundSliderUI("Constant Difficulty", model.CatchRateConstantDifficulty, false)), (int)CatchRateOption.Constant);
             stack.Add(new BoundCheckBoxUI(model.KeepLegendaryCatchRates, "Keep Legendary Catch Rates"));
@@ -96,7 +96,7 @@ namespace PokemonRandomizer.UI.Views
         private TabItem CreateLearnsetsTab(PokemonTraitsModel model)
         {
             var stack = CreateStack();
-            Header("Bonus Moves", stack);
+            stack.Header("Bonus Moves");
             var bonusMovesStack = CreateStack();
             bonusMovesStack.Add(new WeightedSetUI<AddMoveSource>("Bonus Move Source", model.AddMoveSourceWeights, GetAddMoveWeightDropdown));
             bonusMovesStack.Add(new BoundSliderUI("Average number of moves to add", model.NumMovesMean, false, 0.5, 0, maxAddMoves));
@@ -106,7 +106,7 @@ namespace PokemonRandomizer.UI.Views
             stack.Add(new RandomChanceUI("Bonus Moves", model.AddMoves, model.AddMovesChance, bonusMovesStack));
             stack.Add(bonusMovesStack);
             stack.Add(new Separator());
-            Header(UISkin.Current.HacksAndTweaksHeader, stack);
+            stack.Header(UISkin.Current.HacksAndTweaksHeader);
             stack.Add(new BoundCheckBoxUI(model.BanSelfdestruct, "Ban Selfdestruct", banSelfdestructTooltip));
             return CreateTabItem("Learnsets", stack); ;
         }

@@ -82,8 +82,7 @@ namespace PokemonRandomizer
 
         private readonly RandomizerDataModel randomizerData = new RandomizerDataModel();
         private readonly TmHmTutorModel tmHmData = new TmHmTutorModel();
-        private readonly StartersDataModel starterData = new StartersDataModel();
-        private readonly SpecialPokemonDataModel specialPokemonData = new SpecialPokemonDataModel(new StartersDataModel(), new InGameTradesDataModel());
+        private readonly SpecialPokemonDataModel specialPokemonData = new SpecialPokemonDataModel(new StartersDataModel(), new InGameTradesDataModel(), new GiftPokemonDataModel());
         private readonly PokemonTraitsModel pokemonData = new PokemonTraitsModel();
         private readonly WildEncounterDataModel wildEncounterData = new WildEncounterDataModel();
         // Later have preset ones for special groups

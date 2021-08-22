@@ -21,8 +21,11 @@ namespace PokemonRandomizer.UI
             {
                 Orientation = Orientation.Vertical
             };
-            stack.Add(new MetricDataUI(settings.Data, metricTypeOptions, initialize));
-            stack.Add(new Separator());
+            if(settings.Data.Count > 0)
+            {
+                stack.Add(new MetricDataUI(settings.Data, metricTypeOptions, initialize));
+                stack.Add(new Separator());
+            }
             stack.Add(new BoundCheckBoxUI(settings.BanLegendaries, b => settings.BanLegendaries = b, "Ban Legendaries"));
             stack.Add(new BoundCheckBoxUI(settings.RestrictIllegalEvolutions, b => settings.RestrictIllegalEvolutions = b, "Ban Illegal Evolutions"));
             stack.Add(new BoundCheckBoxUI(settings.ForceHighestLegalEvolution, b => settings.ForceHighestLegalEvolution = b, "Force Highest Legal Evolution"));

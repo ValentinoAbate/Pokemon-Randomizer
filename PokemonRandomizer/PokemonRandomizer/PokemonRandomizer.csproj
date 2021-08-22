@@ -160,6 +160,7 @@
     <Compile Include="UI\BoundCheckBoxUI.cs" />
     <Compile Include="UI\BoundTextBoxUI.cs" />
     <Compile Include="UI\ItemSettingsUI.cs" />
+    <Compile Include="UI\Models\GiftPokemonDataModel.cs" />
     <Compile Include="UI\Models\ItemDataModel.cs" />
     <Compile Include="UI\Models\MiscDataModel.cs" />
     <Compile Include="UI\Models\RandomizerDataModel.cs" />

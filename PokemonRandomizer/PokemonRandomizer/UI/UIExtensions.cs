@@ -19,6 +19,17 @@ namespace PokemonRandomizer.UI
                 p.Children.Add(element);
             }
         }
+        public static void Header(this Panel p, string content)
+        {
+            p.Add(new Label { Content = content }, new Separator());
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static T Add<T>(this ItemsControl control, T element) where T : UIElement
+        {
+            control.Items.Add(element);
+            return element;
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SetVisibility(this UIElement element, bool visible)

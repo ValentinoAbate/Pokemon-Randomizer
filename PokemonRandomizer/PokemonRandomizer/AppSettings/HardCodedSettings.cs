@@ -420,7 +420,7 @@ namespace PokemonRandomizer.AppSettings
         // This feature will generate 6 pokemon
         #region Dream Team
 
-        public override DreamTeamSetting DreamTeamOption => DreamTeamSetting.Random;
+        public override DreamTeamSetting DreamTeamOption => DreamTeamSetting.None;
 
         public override Pokemon[] CustomDreamTeam { get; } = new Pokemon[6];
 
