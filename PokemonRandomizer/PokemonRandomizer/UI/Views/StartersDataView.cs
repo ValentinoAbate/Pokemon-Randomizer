@@ -2,8 +2,9 @@
 using System.Windows.Controls;
 using System.Windows.Data;
 
-namespace PokemonRandomizer.UI
+namespace PokemonRandomizer.UI.Views
 {
+    using Models;
     using static Settings;
     using Backend.EnumTypes;
     public class StartersDataView : DataView<StartersDataModel>

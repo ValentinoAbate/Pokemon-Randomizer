@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace PokemonRandomizer.UI
+namespace PokemonRandomizer.UI.Models
 {
     using Backend.DataStructures;
     using Utilities;

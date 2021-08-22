@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace PokemonRandomizer.UI
 {
+    using Models;
+    using Views;
     public class GroupUI<View, Model> where View : GroupDataView<Model>, new() where Model : DataModel, new()
     {
         private readonly TreeView groupSelectorTree;

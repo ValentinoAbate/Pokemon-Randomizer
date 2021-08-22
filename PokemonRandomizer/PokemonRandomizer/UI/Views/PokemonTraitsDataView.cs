@@ -4,8 +4,9 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 
-namespace PokemonRandomizer.UI
+namespace PokemonRandomizer.UI.Views
 {
+    using Models;
     using static PokemonRandomizer.Settings;
     using CatchRateOption = Settings.CatchRateOption;
     public class PokemonTraitsDataView : GroupDataView<PokemonTraitsModel>

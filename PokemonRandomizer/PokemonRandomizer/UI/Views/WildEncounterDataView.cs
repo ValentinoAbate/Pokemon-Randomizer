@@ -3,8 +3,9 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Windows.Data;
 
-namespace PokemonRandomizer.UI
+namespace PokemonRandomizer.UI.Views
 {
+    using Models;
     using static Backend.Randomization.WildEncounterRandomizer;
     public class WildEncounterDataView : DataView<WildEncounterDataModel>
     {

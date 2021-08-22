@@ -1,4 +1,4 @@
-﻿namespace PokemonRandomizer.UI
+﻿namespace PokemonRandomizer.UI.Models
 {
     using Utilities;
     using CompatOption = Settings.TmMtCompatOption;

@@ -3,7 +3,6 @@
 namespace PokemonRandomizer.UI.Views
 {
     using Models;
-
     public class MiscDataView : DataView<MiscDataModel>
     {
         public MiscDataView(MiscDataModel model)

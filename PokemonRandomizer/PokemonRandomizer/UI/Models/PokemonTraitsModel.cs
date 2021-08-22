@@ -1,6 +1,6 @@
 ﻿using PokemonRandomizer.Backend.Randomization;
 
-namespace PokemonRandomizer.UI
+namespace PokemonRandomizer.UI.Models
 {
     using Utilities;
     using static PokemonRandomizer.Settings;

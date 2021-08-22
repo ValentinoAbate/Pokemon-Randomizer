@@ -1,8 +1,9 @@
 ﻿using System.Windows.Controls;
 using System.Windows.Data;
 
-namespace PokemonRandomizer.UI
+namespace PokemonRandomizer.UI.Views
 {
+    using Models;
     using CompatOption = Settings.TmMtCompatOption;
     public class TmHmTutorDataView : DataView<TmHmTutorModel>
     {
