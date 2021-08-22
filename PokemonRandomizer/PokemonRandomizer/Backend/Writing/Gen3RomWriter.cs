@@ -44,6 +44,14 @@ namespace PokemonRandomizer.Backend.Writing
             WriteMoveMappings(rom, info, ElementNames.tutorMoves, data.tutorMoves);
             // Write the move definitions
             WriteMoveData(data.MoveData, rom, info, ref repoints);
+            WritePokemonBaseStats(data, rom, info, ref repoints);
+            WriteTypeDefinitions(data, rom, info, ref repoints);
+            WriteEncounters(data, rom, info);
+            WriteTrainerBattles(data, rom, info);
+            mapWriter.WriteMapData(data, rom, info, metadata);
+            WriteItemData(data.ItemData, rom, info);
+            WritePickupData(data.PickupItems, rom, info, metadata);
+            // Special Pokemon
             // Write the starter pokemon
             WriteStarters(data, rom, info);
             // Write the in-game trades
@@ -53,13 +61,7 @@ namespace PokemonRandomizer.Backend.Writing
             {
                 WriteCatchingTutOpponent(data, rom, info);
             }
-            WritePokemonBaseStats(data, rom, info, ref repoints);
-            WriteTypeDefinitions(data, rom, info, ref repoints);
-            WriteEncounters(data, rom, info);
-            WriteTrainerBattles(data, rom, info);
-            mapWriter.WriteMapData(data, rom, info, metadata);
-            WriteItemData(data.ItemData, rom, info);
-            WritePickupData(data.PickupItems, rom, info, metadata);
+
             // Hacks and tweaks
 
             // Write the pc potion item
