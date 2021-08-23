@@ -235,6 +235,8 @@ namespace PokemonRandomizer.AppSettings
 
         public override bool CountRelicanthAsFossil => miscData.CountRelicanthAsFossil;
 
+        public override bool RandomizeWallyAce => miscData.RandomizeWallyAce;
+
         #endregion
 
     }

@@ -3,21 +3,26 @@
 namespace PokemonRandomizer.UI.Views
 {
     using Models;
+    using Backend.DataStructures;
+
     public class MiscDataView : DataView<MiscDataModel>
     {
-        public MiscDataView(MiscDataModel model)
+        public MiscDataView(MiscDataModel model, RomMetadata metadata)
         {
             // Create stack and add content
-            var stack = new StackPanel() { Orientation = Orientation.Vertical };
+            var stack = CreateStack();
             Content = stack;
 
-            stack.Add(new Label() { Content = UISkin.Current.HacksAndTweaksHeader });
-            stack.Add(new Separator());
+            stack.Header(UISkin.Current.HacksAndTweaksHeader);
             stack.Add(new BoundCheckBoxUI(model.RunIndoors, "Run Indoors"));
             stack.Add(new BoundCheckBoxUI(model.EvolveWithoutNationalDex, "Evolve Without National Dex"));
-            stack.Add(new Label() { Content = "Randomizer Options" });
-            stack.Add(new Separator());
+            stack.Header("Randomizer Options");
             stack.Add(new BoundCheckBoxUI(model.CountRelicanthAsFossil, "Count Relicanth as a Fossil Pokemon"));
+            if (metadata.IsEmerald)
+            {
+                stack.Header("Emerald Options");
+                stack.Add(new BoundCheckBoxUI(model.RandomizeWallyAce, "Randomize Catching Tutorial Pokemon / Wally Ace"));
+            }
         }
     }
 }

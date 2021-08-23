@@ -45,16 +45,7 @@ namespace PokemonRandomizer
 
         #endregion
 
-        private RomData RomData
-        {
-            get => romData;
-            set
-            {
-                romData = value;
-                InitializeUI(value);
-            }
-        }
-        private RomData romData;
+        private RomData RomData { get; set; }
         private Rom Rom { get; set; }
         private RomMetadata Metadata
         {
@@ -130,7 +121,6 @@ namespace PokemonRandomizer
             trainerTraitsGroup.SetAddButtonVisibility(Visibility.Hidden);
             ItemsView.Content = new ItemDataView(itemData);
             WeatherView.Content = new WeatherDataView(weatherData);
-            MiscView.Content = new MiscDataView(miscData);
             Logger.main.OnLog += OnLog;
         }
 
@@ -156,12 +146,13 @@ namespace PokemonRandomizer
             lblInfoBoxContent.Content = content;
         }
 
-        private void InitializeUI(RomData data)
+        private void InitializeUI(RomData data, RomMetadata metadata)
         {
             var pokemon = new List<Pokemon>(data.PokemonNationalDexOrder.Length + 1);
             pokemon.Add(Pokemon.None);
             pokemon.AddRange(data.PokemonNationalDexOrder.Select(p => p.species));
             SpecialPokemonView.Content = new SpecialPokemonDataView(specialPokemonData, data.PokemonNames, pokemon);
+            MiscView.Content = new MiscDataView(miscData, metadata);
         }
 
         private bool GetRomData(byte[] rawRom)
@@ -195,6 +186,7 @@ namespace PokemonRandomizer
             // Cache metadata and last randomization info
             LastRandomizationInfo = RomData.ToStringArray();
             Metadata = metadata;
+            InitializeUI(RomData, Metadata);
             return true;
         }
 
