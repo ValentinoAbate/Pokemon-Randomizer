@@ -201,7 +201,7 @@ namespace PokemonRandomizer
                 var writer = new Gen3RomWriter();
                 return writer.Write(randomizedData, Rom, Metadata, RomInfo, AppSettings);
             }
-            throw new Exception("Attempting to write to unsupported generation.");
+            throw new Exception("Attempting to write data to ROM of unsupported generation (" + Metadata.Gen.ToString() + ")");
         }
 
         private void OpenRomNoWindow(string path)
@@ -241,7 +241,23 @@ namespace PokemonRandomizer
             }
         }
 
-        private void WriteRom(Func<Rom> romFn)
+        private void SaveFile<T>(string path, T[] file, string name, Action<string, T[]> writeFn)
+        {
+            try
+            {
+                writeFn(path, file);
+                // Log open and set info box
+                string msg = name + " saved to " + path;
+                Logger.main.Info(msg);
+                SetInfoBox(msg);
+            }
+            catch (IOException exception)
+            {
+                Logger.main.Error("Failed to save " + name.ToLower() + ": " + exception.Message);
+            }
+        }
+
+        private void WriteRom(Func<Rom> romFn, string message = "")
         {
             string filter = gbaRomFileFilter;
             if (Metadata.Gen == Generation.IV)
@@ -255,12 +271,13 @@ namespace PokemonRandomizer
             {
                 try
                 {
-                    File.WriteAllBytes(saveFileDialog.FileName, romFn().File);
+                    var randomizedRom = romFn().File;
+                    SaveFile(saveFileDialog.FileName, randomizedRom, "Rom", File.WriteAllBytes);
                 }
-                catch (IOException exception)
+                catch (Exception e)
                 {
-                    Logger.main.Error("Failed to save rom: " + exception.Message);
-                }
+                    Logger.main.Error(e.Message);
+                }      
             }
         }
 
@@ -274,7 +291,7 @@ namespace PokemonRandomizer
             if (Metadata.Gen == Generation.III)
             {
                 var writer = new Gen3RomWriter();
-                WriteRom(() => writer.Write(RomData, Rom, Metadata, RomInfo, AppSettings));
+                WriteRom(() => writer.Write(RomData, Rom, Metadata, RomInfo, AppSettings), "Saving Clean Rom...");
             }
         }
 
@@ -314,14 +331,7 @@ namespace PokemonRandomizer
                     };
                     if (saveFileDialog.ShowDialog() == true)
                     {
-                        try
-                        {
-                            File.WriteAllLines(saveFileDialog.FileName, diffData.Readout().ToArray());
-                        }
-                        catch (IOException exception)
-                        {
-                            Logger.main.Error("Failed to save diff file: " + exception.Message);
-                        }
+                        SaveFile(saveFileDialog.FileName, diffData.Readout().ToArray(), "Diff", File.WriteAllLines);
                     }
                 }
                 catch (IOException exception)
@@ -344,14 +354,8 @@ namespace PokemonRandomizer
             };
             if (saveFileDialog.ShowDialog() == true)
             {
-                try
-                {
-                    File.WriteAllLines(saveFileDialog.FileName, Logger.main.FullLog.Select(d => d.ToString()));
-                }
-                catch (IOException exception)
-                {
-                    Logger.main.Error("Failed to save log file: " + exception.Message);
-                }
+                SaveFile(saveFileDialog.FileName, Logger.main.FullLog.Select(d => d.ToString()).ToArray(), "Log", File.WriteAllLines);
+
             }
         }
 
@@ -372,7 +376,7 @@ namespace PokemonRandomizer
             };
             if (saveFileDialog.ShowDialog() == true)
             {
-                File.WriteAllLines(saveFileDialog.FileName, LastRandomizationInfo);
+                SaveFile(saveFileDialog.FileName, LastRandomizationInfo, "Info file", File.WriteAllLines);
             }
         }
 
