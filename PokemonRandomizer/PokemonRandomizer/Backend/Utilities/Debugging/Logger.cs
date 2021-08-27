@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace PokemonRandomizer.Backend.Utilities.Debug
 {
@@ -20,7 +21,8 @@ namespace PokemonRandomizer.Backend.Utilities.Debug
         public event Action<LogData> OnLog;
 
         public int Count => log.Count;
-        public IEnumerable<LogData> FullLog => log;
+        public IReadOnlyList<LogData> FullLog => log;
+        public IEnumerable<string> FullLogText => log.Select(d => d.ToString());
         public LogData LastLog => log.Count > 0 ? log[log.Count - 1] : emptyData;
 
         private readonly List<LogData> log = new List<LogData>();

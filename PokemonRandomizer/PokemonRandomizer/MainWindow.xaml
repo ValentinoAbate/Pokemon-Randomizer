@@ -27,7 +27,7 @@
             <!--<ColumnDefinition  Name="TabSelectorCol" Width="Auto"></ColumnDefinition>
             <ColumnDefinition Name="RomButtons" Width="*"></ColumnDefinition>-->
         </Grid.ColumnDefinitions>
-        <Menu Grid.Row="0">
+        <Menu Name="MainMenu" Grid.Row="0">
             <MenuItem Header="File">
                 <MenuItem Header="Open ROM" Click="OpenROM"/>
                 <MenuItem Name="menuSaveROM" IsEnabled="{Binding IsROMLoaded}" Header="Save ROM" Click="SaveROM"/>
@@ -50,8 +50,8 @@
         </Menu>
         
         <!--Tabs-->
-        
-        <TabControl IsEnabled="{Binding IsROMLoaded}" Grid.Row="1">
+
+        <TabControl Name="MainTabControl" IsEnabled="{Binding IsROMLoaded}" Grid.Row="1">
             
             <!--General Settings-->
             

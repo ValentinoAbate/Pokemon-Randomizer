@@ -2,10 +2,9 @@
 using System;
 using System.ComponentModel;
 using System.IO;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
 using System.Linq;
+using System.Windows;
+using System.Collections.Generic;
 
 namespace PokemonRandomizer
 {
@@ -15,13 +14,12 @@ namespace PokemonRandomizer
     using Backend.Utilities;
     using Backend.Utilities.Debug;
     using Backend.Writing;
-    using Windows;
+    using PokemonRandomizer.AppSettings;
     using UI;
     using UI.Models;
     using UI.Views;
-    using PokemonRandomizer.AppSettings;
+    using Windows;
     using static Settings;
-    using System.Collections.Generic;
 
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -44,6 +42,8 @@ namespace PokemonRandomizer
         public bool LogNotEmpty => Logger.main.Count > 0;
 
         #endregion
+
+        private readonly BackgroundWorker backgroundWorker = new BackgroundWorker();
 
         private RomData RomData { get; set; }
         private Rom Rom { get; set; }
@@ -171,7 +171,6 @@ namespace PokemonRandomizer
                 // Parse the file
                 Parser = new Gen3RomParser();
                 RomData = Parser.Parse(Rom, metadata, RomInfo);
-
             }
             else
             {
@@ -190,7 +189,7 @@ namespace PokemonRandomizer
             return true;
         }
 
-        private Rom GetRandomizedRom()
+        private byte[] GetRandomizedRom()
         {
             var copyData = Parser.Parse(Rom, Metadata, RomInfo);
             var randomzier = new Backend.Randomization.Randomizer(copyData, AppSettings);
@@ -199,9 +198,9 @@ namespace PokemonRandomizer
             if(Metadata.Gen == Generation.III)
             {
                 var writer = new Gen3RomWriter();
-                return writer.Write(randomizedData, Rom, Metadata, RomInfo, AppSettings);
+                return writer.Write(randomizedData, Rom, Metadata, RomInfo, AppSettings).File;
             }
-            throw new Exception("Attempting to write data to ROM of unsupported generation (" + Metadata.Gen.ToString() + ")");
+            throw new Exception("Attempting to write randomized data to ROM of unsupported generation (" + Metadata.Gen.ToString() + ")");
         }
 
         private void OpenRomNoWindow(string path)
@@ -241,23 +240,37 @@ namespace PokemonRandomizer
             }
         }
 
-        private void SaveFile<T>(string path, T[] file, string name, Action<string, T[]> writeFn)
+        private void SaveFile<T>(string path, string name, T[] file, Action<string, T[]> writeFn, string writingMsg = null)
         {
-            try
+            SaveFile(path, name, () => file, writeFn, writingMsg);
+        }
+
+        private void SaveFile<T>(string path, string name, Func<T[]> fileFn, Action<string, T[]> writeFn, string writingMsg = null)
+        {
+            MainMenu.IsEnabled = false;
+            MainTabControl.IsEnabled = false;
+            SetInfoBox(writingMsg ?? "Saving " + name.ToLower() + "...");
+            backgroundWorker.DoWork += (_, _2) =>
             {
-                writeFn(path, file);
+                writeFn(path, fileFn());
+            };
+            backgroundWorker.RunWorkerCompleted += (_, error) =>
+            {
+                if (error.Error != null)
+                {
+                    Logger.main.Error("Failed to save " + name.ToLower() + ": " + error.Error.Message);
+                }
                 // Log open and set info box
                 string msg = name + " saved to " + path;
                 Logger.main.Info(msg);
                 SetInfoBox(msg);
-            }
-            catch (IOException exception)
-            {
-                Logger.main.Error("Failed to save " + name.ToLower() + ": " + exception.Message);
-            }
+                MainMenu.IsEnabled = true;
+                MainTabControl.IsEnabled = true;
+            };
+            backgroundWorker.RunWorkerAsync();
         }
 
-        private void WriteRom(Func<Rom> romFn, string message = "")
+        private void WriteRom(Func<byte[]> fileFn, string message)
         {
             string filter = gbaRomFileFilter;
             if (Metadata.Gen == Generation.IV)
@@ -269,21 +282,13 @@ namespace PokemonRandomizer
             };
             if (saveFileDialog.ShowDialog() == true)
             {
-                try
-                {
-                    var randomizedRom = romFn().File;
-                    SaveFile(saveFileDialog.FileName, randomizedRom, "Rom", File.WriteAllBytes);
-                }
-                catch (Exception e)
-                {
-                    Logger.main.Error(e.Message);
-                }      
+                SaveFile(saveFileDialog.FileName, "Rom", fileFn, File.WriteAllBytes, message);     
             }
         }
 
         private void SaveROM(object sender, RoutedEventArgs e)
         {
-            WriteRom(GetRandomizedRom);
+            WriteRom(GetRandomizedRom, "Randomizing...");
         }
 
         private void SaveCleanROM(object sender, RoutedEventArgs e)
@@ -291,7 +296,7 @@ namespace PokemonRandomizer
             if (Metadata.Gen == Generation.III)
             {
                 var writer = new Gen3RomWriter();
-                WriteRom(() => writer.Write(RomData, Rom, Metadata, RomInfo, AppSettings), "Saving Clean Rom...");
+                WriteRom(() => writer.Write(RomData, Rom, Metadata, RomInfo, AppSettings).File, "Saving Clean Rom...");
             }
         }
 
@@ -331,7 +336,7 @@ namespace PokemonRandomizer
                     };
                     if (saveFileDialog.ShowDialog() == true)
                     {
-                        SaveFile(saveFileDialog.FileName, diffData.Readout().ToArray(), "Diff", File.WriteAllLines);
+                        SaveFile(saveFileDialog.FileName, "Diff", diffData.Readout().ToArray(), File.WriteAllLines);
                     }
                 }
                 catch (IOException exception)
@@ -354,7 +359,7 @@ namespace PokemonRandomizer
             };
             if (saveFileDialog.ShowDialog() == true)
             {
-                SaveFile(saveFileDialog.FileName, Logger.main.FullLog.Select(d => d.ToString()).ToArray(), "Log", File.WriteAllLines);
+                SaveFile(saveFileDialog.FileName, "Log", Logger.main.FullLogText.ToArray(), File.WriteAllLines);
 
             }
         }
@@ -376,7 +381,7 @@ namespace PokemonRandomizer
             };
             if (saveFileDialog.ShowDialog() == true)
             {
-                SaveFile(saveFileDialog.FileName, LastRandomizationInfo, "Info file", File.WriteAllLines);
+                SaveFile(saveFileDialog.FileName, "Info file", LastRandomizationInfo, File.WriteAllLines);
             }
         }
 
