@@ -22,6 +22,7 @@ namespace PokemonRandomizer.Backend.Randomization
         private readonly ItemRandomizer itemRand;
         private readonly WildEncounterRandomizer encounterRand;
         private readonly TrainerRandomizer trainerRand;
+        private readonly MoveCompatibilityRandomizer compatRand;
         /// <summary>
         /// Create a new randomizer with given data and settings
         /// Input data will be mutated by randomizer calls
@@ -43,6 +44,7 @@ namespace PokemonRandomizer.Backend.Randomization
             encounterRand = new WildEncounterRandomizer(pokeRand, evoUtils, data.Metrics, data);
             // Initialize Trainer randomizer
             trainerRand = new TrainerRandomizer(rand, pokeRand, evoUtils, data);
+            compatRand = new MoveCompatibilityRandomizer(rand, data);
         }
         // Apply mutations based on program settings.
         public RomData Randomize()
@@ -54,12 +56,6 @@ namespace PokemonRandomizer.Backend.Randomization
             var babySet = pokemonSet.Where(PokemonUtils.IsBaby).ToHashSet();
             var types = DefinePokemonTypes();
             var items = DefineItemSet();
-
-            #region Combat Hacks (NOTHING YET)
-            // Combat Hacks
-            // Hack combat if applicable
-            // Possible Hacks: Upgrade combat AI, Special/Physical split
-            #endregion
 
             #region Type Definitions
             // Randomize type traits
@@ -365,76 +361,11 @@ namespace PokemonRandomizer.Backend.Randomization
                 #endregion
 
                 #region TM, HM, and Move tutor Compatibility
-                if (settings.TmMtCompatSetting != Settings.TmMtCompatOption.Unchanged)
-                {
-                    if (settings.TmMtCompatSetting == Settings.TmMtCompatOption.AllOn)
-                    {
-                        pokemon.TMCompat.SetAll(true);
-                        pokemon.moveTutorCompat.SetAll(true);
-                    }
-                    else if (settings.TmMtCompatSetting == Settings.TmMtCompatOption.Random)
-                    {
-                        for (int i = 0; i < pokemon.TMCompat.Length; ++i)
-                        {
-                            pokemon.TMCompat[i] = rand.RollSuccess(settings.TmMtTrueChance);
-                        }
-                        for (int i = 0; i < pokemon.moveTutorCompat.Length; ++i)
-                        {
-                            pokemon.moveTutorCompat[i] = rand.RollSuccess(settings.TmMtTrueChance);
-                        }
-                    }
-                    else if (settings.TmMtCompatSetting == Settings.TmMtCompatOption.RandomKeepNumber)
-                    {
-                        static void RandomKeepNumber(BitArray arr, Random rand)
-                        {
-                            int compatCount = 0;
-                            // Find the number of trues
-                            foreach (bool b in arr)
-                            {
-                                if (b)
-                                {
-                                    ++compatCount;
-                                }
-                            }
-                            // Wipe the compatibility array
-                            arr.SetAll(false);
-                            var choices = Enumerable.Range(0, arr.Length).ToList();
-                            for (int i = 0; i < compatCount; ++i)
-                            {
-                                int choice = rand.Choice(choices);
-                                arr.Set(choice, true);
-                                choices.Remove(choice);
-                            }
-                        }
-                        RandomKeepNumber(pokemon.TMCompat, rand);
-                        RandomKeepNumber(pokemon.moveTutorCompat, rand);
-                    }
-                    else if (settings.TmMtCompatSetting == Settings.TmMtCompatOption.Intelligent)
-                    {
-                        void SetCompatIntelligent(BitArray arr, int ind, Move[] moveList)
-                        {
-                            var moveData = data.GetMoveData(moveList[ind]);
-                            if (pokemon.types.Contains(moveData.type))
-                                arr[ind] = true;
-                            else if (pokemon.learnSet.Any((l) => l.move == moveData.move))
-                                arr[ind] = true;
-                            else if (pokemon.eggMoves.Contains(moveData.move))
-                                arr[ind] = true;
-                            else if (moveData.type == PokemonType.NRM)
-                                arr[ind] = rand.RollSuccess(settings.TmMtTrueChance);
-                            else
-                                arr[ind] = rand.RollSuccess(settings.TmMtNoise);
-                        }
-                        for (int i = 0; i < pokemon.TMCompat.Length; ++i)
-                        {
-                            SetCompatIntelligent(pokemon.TMCompat, i, data.TMMoves);
-                        }
-                        for (int i = 0; i < pokemon.moveTutorCompat.Length; ++i)
-                        {
-                            SetCompatIntelligent(pokemon.moveTutorCompat, i, data.tutorMoves);
-                        }
-                    }
-                }
+
+                compatRand.RandomizeCompatibility(pokemon.TMCompat, new MoveCompatibilityRandomizer.Data(settings.TmCompatSetting, settings.MoveCompatTrueChance, settings.MoveCompatNoise, pokemon, data.TMMoves));
+                compatRand.RandomizeCompatibility(pokemon.moveTutorCompat, new MoveCompatibilityRandomizer.Data(settings.MtCompatSetting, settings.MoveCompatTrueChance, settings.MoveCompatNoise, pokemon, data.tutorMoves));
+                compatRand.RandomizeCompatibility(pokemon.HMCompat, new MoveCompatibilityRandomizer.Data(settings.HmCompatSetting, settings.MoveCompatTrueChance, settings.MoveCompatNoise, pokemon, data.HMMoves));
+
                 #endregion
 
                 #region Catch Rates

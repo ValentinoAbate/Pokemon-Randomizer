@@ -98,6 +98,7 @@
     <Compile Include="Backend\Randomization\DreamTeamRandomizer.cs" />
     <Compile Include="Backend\Randomization\ItemRandomizer.cs" />
     <Compile Include="Backend\Randomization\Metric.cs" />
+    <Compile Include="Backend\Randomization\MoveCompatibilityRandomizer.cs" />
     <Compile Include="Backend\Randomization\PkmnRandomizer.cs" />
     <Compile Include="Backend\Randomization\TrainerRandomizer.cs" />
     <Compile Include="Backend\Randomization\WildEncounterRandomizer.cs" />

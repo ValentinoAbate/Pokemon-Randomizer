@@ -4,7 +4,7 @@ using System.Windows.Data;
 namespace PokemonRandomizer.UI.Views
 {
     using Models;
-    using CompatOption = Settings.TmMtCompatOption;
+    using CompatOption = Settings.MoveCompatOption;
     public class TmHmTutorDataView : DataView<TmHmTutorModel>
     {
         private CompositeCollection CompatOptionDropdown => new CompositeCollection()
@@ -14,6 +14,14 @@ namespace PokemonRandomizer.UI.Views
             new ComboBoxItem() {Content="Random" },
             new ComboBoxItem() {Content="Random (Keep Number)", ToolTip="Randomly select compatibility, but keep the same number the pokemon had in the base ROM"},
             new ComboBoxItem() {Content="Intelligent", ToolTip=""},
+        };
+
+        private CompositeCollection HmCompatOptionDropdown => new CompositeCollection()
+        {
+            new ComboBoxItem() {Content="Unchanged" },
+            new ComboBoxItem() {Content="All On" },
+            new ComboBoxItem() {Content="Random (WARNING: UNSAFE)", ToolTip="WARNING: Randomizing HM compatibility may create ROMs that cannot be completed" },
+            new ComboBoxItem() {Content="Random - Keep Number (WARNING: UNSAFE)", ToolTip="WARNING: Randomizing HM compatibility may create ROMs that cannot be completed. Randomly select compatibility, but keep the same number the pokemon had in the base ROM"},
         };
         public TmHmTutorDataView(TmHmTutorModel model)
         {
@@ -31,7 +39,7 @@ namespace PokemonRandomizer.UI.Views
             stack.Add(new Separator());
             stack.Add(new EnumComboBoxUI<CompatOption>("TM Compatibility", CompatOptionDropdown, model.TmCompatOption));
             stack.Add(new EnumComboBoxUI<CompatOption>("Tutor Compatibility", CompatOptionDropdown, model.TutorCompatOption));
-            stack.Add(new EnumComboBoxUI<CompatOption>("HM Compatibility", CompatOptionDropdown, model.HmCompatOption));
+            stack.Add(new EnumComboBoxUI<CompatOption>("HM Compatibility", HmCompatOptionDropdown, model.HmCompatOption));
             stack.Add(new BoundSliderUI("Random Compatibility On Chance", model.RandomCompatTrueChance));
             stack.Add(new BoundSliderUI("Intelligent Compatibiliy Noise", model.IntelligentCompatNoise, true, 0.01, 0, 0.33));
         }

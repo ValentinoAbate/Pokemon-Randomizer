@@ -1,7 +1,7 @@
 ﻿namespace PokemonRandomizer.UI.Models
 {
     using Utilities;
-    using CompatOption = Settings.TmMtCompatOption;
+    using CompatOption = Settings.MoveCompatOption;
     public class TmHmTutorModel : DataModel
     {
         public Box<CompatOption> TmCompatOption { get; set; } = new Box<CompatOption>(CompatOption.Intelligent);

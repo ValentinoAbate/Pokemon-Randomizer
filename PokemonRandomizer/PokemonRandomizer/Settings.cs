@@ -37,7 +37,7 @@ namespace PokemonRandomizer
 
         #region TMs, HMs, and Move Tutors
 
-        public enum TmMtCompatOption
+        public enum MoveCompatOption
         {
             Unchanged,
             AllOn,
@@ -45,10 +45,11 @@ namespace PokemonRandomizer
             RandomKeepNumber,
             Intelligent
         }
-        public abstract TmMtCompatOption TmMtCompatSetting { get; }
-        public abstract TmMtCompatOption HmCompatSetting { get; }
-        public abstract double TmMtTrueChance { get; }
-        public abstract double TmMtNoise { get; }
+        public abstract MoveCompatOption TmCompatSetting { get; }
+        public abstract MoveCompatOption MtCompatSetting { get; }
+        public abstract MoveCompatOption HmCompatSetting { get; }
+        public abstract double MoveCompatTrueChance { get; }
+        public abstract double MoveCompatNoise { get; }
         public abstract bool PreventHmMovesInTMsAndTutors {get; }
         public abstract bool PreventDuplicateTMsAndTutors {get; }
         public abstract bool KeepImportantTMsAndTutors { get; }
