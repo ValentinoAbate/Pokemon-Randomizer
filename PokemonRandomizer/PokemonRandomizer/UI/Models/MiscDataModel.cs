@@ -8,5 +8,6 @@
         public Box<bool> CountRelicanthAsFossil { get; set; } = new Box<bool>(true);
         // RSE Only
         public Box<bool> RandomizeWallyAce { get; set; } = new Box<bool>(true);
+        public Box<bool> EasyFirstRivalbattle { get; set; } = new Box<bool>(true);
     }
 }

@@ -307,7 +307,7 @@ namespace PokemonRandomizer.AppSettings
 
         #region Starter Pokemon
 
-        public override StarterPokemonOption StarterSetting { get => StarterPokemonOption.RandomTypeTriangle; }
+        public override StarterPokemonOption StarterSetting { get => StarterPokemonOption.Unchanged; }
         public override bool StrongStarterTypeTriangle { get => false; }
         public override Pokemon[] CustomStarters { get; } = new Pokemon[3]
         {
@@ -410,10 +410,16 @@ namespace PokemonRandomizer.AppSettings
 
         #region Misc
 
+        // Gen III Hacks and Tweaks
         public override bool RunIndoors => true;
 
+        // FRLG Hacks and Tweaks
         public override bool EvolveWithoutNationalDex => true;
 
+        // RSE Hacks and Tweaks
+        public override bool EasyFirstRivalBattle => true;
+
+        // Randomizer Settings
         public override bool CountRelicanthAsFossil => true;
 
         #endregion

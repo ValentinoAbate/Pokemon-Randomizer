@@ -12,5 +12,10 @@
         }
 
         public static implicit operator T(Box<T> b) => b.Value;
+
+        public override string ToString()
+        {
+            return Value.ToString();
+        }
     }
 }

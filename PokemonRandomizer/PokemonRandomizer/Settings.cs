@@ -310,10 +310,17 @@ namespace PokemonRandomizer
 
         #region Misc
 
+
+        // Gen III Hacks and Tweaks
         public abstract bool RunIndoors { get; }
 
+        // FRLG Hacks and Tweaks
         public abstract bool EvolveWithoutNationalDex { get; }
 
+        // RSE Hacks and Tweaks
+        public abstract bool EasyFirstRivalBattle { get; }
+
+        // Randomizer Settings
         public abstract bool CountRelicanthAsFossil { get; }
 
         #endregion

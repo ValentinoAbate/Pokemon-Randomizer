@@ -15,13 +15,18 @@ namespace PokemonRandomizer.UI.Views
 
             stack.Header(UISkin.Current.HacksAndTweaksHeader);
             stack.Add(new BoundCheckBoxUI(model.RunIndoors, "Run Indoors"));
-            stack.Add(new BoundCheckBoxUI(model.EvolveWithoutNationalDex, "Evolve Without National Dex"));
             stack.Header("Randomizer Options");
             stack.Add(new BoundCheckBoxUI(model.CountRelicanthAsFossil, "Count Relicanth as a Fossil Pokemon"));
             if (metadata.IsEmerald)
             {
                 stack.Header("Emerald Options");
                 stack.Add(new BoundCheckBoxUI(model.RandomizeWallyAce, "Randomize Catching Tutorial Pokemon / Wally Ace"));
+                stack.Add(new BoundCheckBoxUI(model.EasyFirstRivalbattle, "Easy First Rival Battle"));
+            }
+            else if (metadata.IsFireRed)
+            {
+                stack.Header("Fire Red Options");
+                stack.Add(new BoundCheckBoxUI(model.EvolveWithoutNationalDex, "Evolve Without National Dex"));
             }
         }
     }

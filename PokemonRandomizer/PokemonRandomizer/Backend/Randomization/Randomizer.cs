@@ -637,13 +637,14 @@ namespace PokemonRandomizer.Backend.Randomization
             #region Rivals
 
             var rivalSettings = settings.GetTrainerSettings(Settings.TrainerCategory.Rival);
+            bool originalStarters = settings.StarterSetting == Settings.StarterPokemonOption.Unchanged;
             foreach (var trainer in data.RivalNames)
             {
                 var allBattles = data.SpecialTrainers[trainer.ToLower()];
                 allBattles.Sort((a, b) => a.AvgLvl.CompareTo(b.AvgLvl));
                 // Split the rival battles into their three different options
                 var starters = new Pokemon[] { allBattles[0].pokemon[0].species, allBattles[1].pokemon[0].species, allBattles[2].pokemon[0].species };
-                var rivalBattles = starters.Select((s) => allBattles.Where(b => b.pokemon.Any(p => evoUtils.RelatedToOrSelf(p.species, s)))).ToArray();
+                var rivalBattles = starters.Select(s => allBattles.Where(b => b.pokemon.Any(p => evoUtils.RelatedToOrSelf(p.species, s))).ToList()).ToArray();
                 for (int i = 0; i < rivalBattles.Length; ++i)
                 {
                     var battles = new List<Trainer>(rivalBattles[i]);
@@ -652,9 +653,16 @@ namespace PokemonRandomizer.Backend.Randomization
                     // Randomize the first battle
                     trainerRand.Randomize(firstBattle, pokemonSet, rivalSettings, false);
                     // Set the appropriate starter as the ace
-                    firstBattle.pokemon[firstBattle.pokemon.Length - 1].species = data.Starters[data.RivalRemap[i]];
+                    firstBattle.pokemon[firstBattle.pokemon.Length - 1].species = data.Starters[originalStarters ? i: data.RivalRemap[i]];
                     // Procedurally generate the rest of the battles
                     trainerRand.RandomizeReoccurring(firstBattle, battles, pokemonSet, rivalSettings);
+                    if (settings.EasyFirstRivalBattle)
+                    {
+                        foreach(var pokemon in firstBattle.pokemon)
+                        {
+                            pokemon.level = 1;
+                        }
+                    }
                 }
             }
 

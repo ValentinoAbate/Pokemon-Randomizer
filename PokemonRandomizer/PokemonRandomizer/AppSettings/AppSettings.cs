@@ -230,13 +230,19 @@ namespace PokemonRandomizer.AppSettings
 
         #region Misc
 
+        // Gen III Hacks and Tweaks
         public override bool RunIndoors => miscData.RunIndoors;
 
+        // FRLG Hacks and Tweaks
         public override bool EvolveWithoutNationalDex => miscData.EvolveWithoutNationalDex;
 
-        public override bool CountRelicanthAsFossil => miscData.CountRelicanthAsFossil;
+        // RSE Hacks and Tweaks
+        public override bool EasyFirstRivalBattle => miscData.EasyFirstRivalbattle && Metadata.IsRubySapphireOrEmerald;
 
         public override bool RandomizeWallyAce => miscData.RandomizeWallyAce;
+
+        // Randomizer Settings
+        public override bool CountRelicanthAsFossil => miscData.CountRelicanthAsFossil;
 
         #endregion
 
