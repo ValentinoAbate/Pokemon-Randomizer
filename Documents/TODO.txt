@@ -117,13 +117,9 @@ FEATURES ///////////////////////////////////////////////////////////////////////
 - Egg move writing
 - Ban selfdestruct works by move effect rather than explicit move number
 - Wally Text Fix ("RALTS" to current pokemon)
-- HM Compat randomization
-	- Settings already there just need randomization
 - Game corner randomization????
 	- High stakes roulette
 - Money Scaling
-- UI Hookups
-	- Hookup custom starter UI (need a pokemon name to pokemon enum function)
 
 CLEANUP /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -135,7 +131,6 @@ CLEANUP ////////////////////////////////////////////////////////////////////////
 - Move Elt name constants into constants class(es)
 - Check to see if pkmn base stat offsets point to after the null pokemon
 - Make "Size" and other rom data shortcut methods safe to fail with warnings
-- Make seed settings into a data model / view
 
 FIXES ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -143,7 +138,7 @@ FIXES //////////////////////////////////////////////////////////////////////////
 	- Both don't have move tutors, so these need to be optionally supported
 - Pokemon that evolve with stones have bad default movesets due to not learning stuff by level up.
 	- Still an issue, but fixed in smart moveset generation. Currently no fix for default movesets
-- Snow looks weird in some areas
+- Emerald post-battle snow fix
 - TM Compat and Learnset generation could be dependent on each other
 - Weird hiker man isn't becoming a double battle
 - Potentially: write catching tut on emerald has some differences from clean ROMs (see diff9)
