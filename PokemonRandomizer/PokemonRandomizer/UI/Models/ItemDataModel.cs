@@ -8,25 +8,25 @@ namespace PokemonRandomizer.UI.Models
     public class ItemDataModel : DataModel
     {
 
-        public Box<bool> DontRandomizeTms { get; } = new Box<bool>(false);
+        public Box<bool> DontRandomizeTms { get; set; } = new Box<bool>(false);
 
-        public Box<PcItemOption> PcPotionOption { get; } = new Box<PcItemOption>(PcItemOption.Unchanged);
-        public Box<Item> CustomPcItem { get; } = new Box<Item>(Item.Potion);
-        public ItemSettings PcItemSettings { get; } = new ItemSettings()
+        public Box<PcItemOption> PcPotionOption { get; set; } = new Box<PcItemOption>(PcItemOption.Unchanged);
+        public Box<Item> CustomPcItem { get; set; } = new Box<Item>(Item.Potion);
+        public ItemSettings PcItemSettings { get; set; } = new ItemSettings()
         {
             SamePocketChance = 0,
         };
 
-        public Box<bool> RandomizeFieldItems { get; } = new Box<bool>(true);
-        public Box<double> FieldItemRandChance { get; } = new Box<double>(1);
-        public ItemSettings FieldItemSettings { get; } = new ItemSettings()
+        public Box<bool> RandomizeFieldItems { get; set; } = new Box<bool>(true);
+        public Box<double> FieldItemRandChance { get; set; } = new Box<double>(1);
+        public ItemSettings FieldItemSettings { get; set; } = new ItemSettings()
         {
             SamePocketChance = 0.75,
         };
-        public Box<bool> UseSeperateHiddenItemSettings { get; } = new Box<bool>(false);
-        public Box<bool> RandomizeHiddenItems { get; } = new Box<bool>(true);
-        public Box<double> HiddenItemRandChance { get; } = new Box<double>(1);
-        public  ItemSettings HiddenItemSettings { get; } = new ItemSettings()
+        public Box<bool> UseSeperateHiddenItemSettings { get; set; } = new Box<bool>(false);
+        public Box<bool> RandomizeHiddenItems { get; set; } = new Box<bool>(true);
+        public Box<double> HiddenItemRandChance { get; set; } = new Box<double>(1);
+        public  ItemSettings HiddenItemSettings { get; set; } = new ItemSettings()
         {
             SamePocketChance = 0.75,
         };

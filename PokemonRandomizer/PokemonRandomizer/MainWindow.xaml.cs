@@ -20,7 +20,6 @@ namespace PokemonRandomizer
     using UI.Models;
     using UI.Views;
     using Windows;
-    using static Settings;
 
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -45,6 +44,8 @@ namespace PokemonRandomizer
         #endregion
 
         private readonly BackgroundWorker backgroundWorker = new BackgroundWorker();
+        public bool HumanReadablePresets { get => serializerOptions.WriteIndented; set => serializerOptions.WriteIndented = value; }
+        private readonly JsonSerializerOptions serializerOptions = new JsonSerializerOptions();
 
         private RomData RomData { get; set; }
         private Rom Rom { get; set; }
@@ -67,6 +68,7 @@ namespace PokemonRandomizer
         private const string gbaRomFileFilter = "GBA Roms (*.gba)|*.gba";
         private const string ndsRomFileFilter = "NDS Roms (*.nds)|*.nds";
         private const string textFileFilter = "txt files (*.txt)|*.txt";
+        private const string jsonFileFilter = "JSON files (*.json)|*.json";
         private const string csvFileFilter = "csv files (*.csv)|*.csv";
         private const string saveRomPrompt = "Save Rom";
         private const string openRomPrompt = "Open Rom";
@@ -123,6 +125,24 @@ namespace PokemonRandomizer
             this.DataContext = this;
 
             AppData = new ApplicationDataModel();
+            //string data = JsonSerializer.Serialize(AppData.RandomizerData);
+            //AppData.RandomizerData = JsonSerializer.Deserialize<RandomizerDataModel>(data, serializerOptions);
+            //data = JsonSerializer.Serialize(AppData.TmHmTutorData);
+            //AppData.TmHmTutorData = JsonSerializer.Deserialize<TmHmTutorModel>(data, serializerOptions);
+            //data = JsonSerializer.Serialize(AppData.PokemonData);
+            //// AppData.PokemonData = JsonSerializer.Deserialize<PokemonTraitsModel>(data, serializerOptions); (ERROR: Need weighted set converter)
+            //data = JsonSerializer.Serialize(AppData.SpecialPokemonData);
+            //AppData.SpecialPokemonData = JsonSerializer.Deserialize<SpecialPokemonDataModel>(data, serializerOptions);
+            //data = JsonSerializer.Serialize(AppData.WildEncounterData);
+            //AppData.WildEncounterData = JsonSerializer.Deserialize<WildEncounterDataModel>(data, serializerOptions);
+            //data = JsonSerializer.Serialize(AppData.TrainerDataModels);
+            //AppData.TrainerDataModels = JsonSerializer.Deserialize<TrainerDataModel[]>(data, serializerOptions);
+            //data = JsonSerializer.Serialize(AppData.ItemData);
+            //AppData.ItemData = JsonSerializer.Deserialize<ItemDataModel>(data, serializerOptions);
+            //data = JsonSerializer.Serialize(AppData.WeatherData);
+            ////AppData.WeatherData = JsonSerializer.Deserialize<WeatherDataModel>(data, serializerOptions); (ERROR: Need weighted set converter)
+            //data = JsonSerializer.Serialize(AppData.MiscData);
+            //AppData.MiscData = JsonSerializer.Deserialize<MiscDataModel>(data, serializerOptions);
 
             Logger.main.OnLog += OnLog;
         }
@@ -377,7 +397,6 @@ namespace PokemonRandomizer
             if (saveFileDialog.ShowDialog() == true)
             {
                 SaveFile(saveFileDialog.FileName, "Log", Logger.main.FullLogText.ToArray(), File.WriteAllLines);
-
             }
         }
 
@@ -414,6 +433,46 @@ namespace PokemonRandomizer
                 TableReader.TableToDictFormat(openFileDialog.FileName, ',', 15);
             }
 
+        }
+
+        private void SavePreset(object sender, RoutedEventArgs e)
+        {
+            // Save Log File
+            var saveFileDialog = new SaveFileDialog
+            {
+                Filter = jsonFileFilter,
+                Title = "Save Randomizer Preset",
+                FileName = "preset",
+            };
+            if (saveFileDialog.ShowDialog() == true)
+            {
+                SaveFile(saveFileDialog.FileName, "Preset", new string[] { JsonSerializer.Serialize(AppData, serializerOptions) }, File.WriteAllLines);
+            }
+        }
+
+        private void LoadPreset(object sender, RoutedEventArgs e)
+        {
+            var openFileDialog = new OpenFileDialog
+            {
+                Filter = jsonFileFilter,
+                Title = "Load Randomizer Preset"
+            };
+            if (openFileDialog.ShowDialog() == true)
+            {
+                try
+                {
+                    var data = File.ReadAllLines(openFileDialog.FileName);
+                    if(data.Length <= 0)
+                    {
+                        throw new IOException("Empty preset file");
+                    }
+                    AppData = JsonSerializer.Deserialize<ApplicationDataModel>(data[0], serializerOptions);
+                }
+                catch (IOException exception)
+                {
+                    Logger.main.Error("Preset load error: " + exception.Message);
+                }
+            }
         }
 
         private void ShowAboutWindow(object sender, RoutedEventArgs e)

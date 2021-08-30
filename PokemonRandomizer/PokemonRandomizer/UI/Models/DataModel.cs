@@ -9,6 +9,6 @@ namespace PokemonRandomizer.UI.Models
     public abstract class DataModel
     {
         public const string defaultName = "Default";
-        public virtual string Name => defaultName;
+        public virtual string Name { get => defaultName; set { } }
     }
 }

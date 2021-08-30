@@ -7,10 +7,10 @@ namespace PokemonRandomizer.UI.Models
     using static Settings.TrainerSettings;
     public class TrainerDataModel : DataModel
     {
-        public TrainerCategory Category { get; }
+        public TrainerCategory Category { get; set; }
         public bool OverrideSettings { get; set; }
         public TrainerCategory OverrideCategory { get; set; }
-        public override string Name { get; }
+        public override string Name { get; set; }
 
         public TrainerDataModel() : this(TrainerCategory.Trainer, defaultName)
         {

@@ -2,9 +2,14 @@
 {
     public class SpecialPokemonDataModel : DataModel
     {
-        public StartersDataModel StarterData { get; }
-        public InGameTradesDataModel TradeData { get; }
-        public GiftPokemonDataModel GiftData { get; }
+        public StartersDataModel StarterData { get; set; }
+        public InGameTradesDataModel TradeData { get; set; }
+        public GiftPokemonDataModel GiftData { get; set; }
+
+        public SpecialPokemonDataModel()
+        {
+
+        }
 
         public SpecialPokemonDataModel(StartersDataModel starterData, InGameTradesDataModel tradesData, GiftPokemonDataModel giftData)
         {

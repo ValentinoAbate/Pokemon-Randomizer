@@ -8,7 +8,7 @@ using static PokemonRandomizer.Settings;
 
 namespace PokemonRandomizer.UI.Models
 {
-    public class ApplicationDataModel : INotifyPropertyChanged
+    public class ApplicationDataModel
     {
         public RandomizerDataModel RandomizerData { get; set; } = new RandomizerDataModel();
         public TmHmTutorModel TmHmTutorData { get; set; } = new TmHmTutorModel();
@@ -28,7 +28,5 @@ namespace PokemonRandomizer.UI.Models
         public ItemDataModel ItemData { get; set; } = new ItemDataModel();
         public WeatherDataModel WeatherData { get; set; } = new WeatherDataModel();
         public MiscDataModel MiscData { get; set; } = new MiscDataModel();
-
-        public event PropertyChangedEventHandler PropertyChanged;
     }
 }
