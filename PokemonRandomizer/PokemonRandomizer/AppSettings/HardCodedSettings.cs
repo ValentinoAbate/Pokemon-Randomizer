@@ -8,11 +8,16 @@ namespace PokemonRandomizer.AppSettings
     using UI.Models;
     public class HardCodedSettings : Settings
     {
-        protected readonly  RandomizerDataModel randomizerData;
+        protected RandomizerDataModel randomizerData;
 
-        public HardCodedSettings(RandomizerDataModel randomizerData)
+        public HardCodedSettings(ApplicationDataModel data)
         {
-            this.randomizerData = randomizerData;
+            UpdateData(data);
+        }
+
+        public virtual void UpdateData(ApplicationDataModel data)
+        {
+            randomizerData = data.RandomizerData;
         }
 
         #region Randomizer

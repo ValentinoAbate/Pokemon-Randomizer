@@ -12,32 +12,33 @@ namespace PokemonRandomizer.AppSettings
     public class AppSettings : HardCodedSettings
     {
         public RomMetadata Metadata { get; set; }
-        private readonly TmHmTutorModel tmHmTutorData;
-        private readonly PokemonTraitsModel pokemonData;
-        private readonly InGameTradesDataModel tradeData;
-        private readonly StartersDataModel starterData;
-        private readonly GiftPokemonDataModel giftData;
-        private readonly WildEncounterDataModel wildEncounterData;
-        private readonly Dictionary<TrainerCategory, TrainerDataModel> trainerData;
-        private readonly ItemDataModel itemData;
-        private readonly WeatherDataModel weatherData;
-        private readonly MiscDataModel miscData;
-        public AppSettings(RandomizerDataModel randomizerData) : base(randomizerData)
-        {
-        }
+        private TmHmTutorModel tmHmTutorData;
+        private PokemonTraitsModel pokemonData;
+        private InGameTradesDataModel tradeData;
+        private StartersDataModel starterData;
+        private GiftPokemonDataModel giftData;
+        private WildEncounterDataModel wildEncounterData;
+        private Dictionary<TrainerCategory, TrainerDataModel> trainerData;
+        private ItemDataModel itemData;
+        private WeatherDataModel weatherData;
+        private MiscDataModel miscData;
 
-        public AppSettings(RandomizerDataModel randomizerData, SpecialPokemonDataModel specialPokemonData, TmHmTutorModel tmHmTutorData, PokemonTraitsModel pokemonData, WildEncounterDataModel wildEncounterData, IEnumerable<TrainerDataModel> trainerData, ItemDataModel itemData, WeatherDataModel weatherData, MiscDataModel miscData) : base(randomizerData)
+        public AppSettings(ApplicationDataModel data) : base(data) { }
+
+        public override void UpdateData(ApplicationDataModel data)
         {
+            base.UpdateData(data);
+            var specialPokemonData = data.SpecialPokemonData;
             starterData = specialPokemonData.StarterData;
             tradeData = specialPokemonData.TradeData;
             giftData = specialPokemonData.GiftData;
-            this.tmHmTutorData = tmHmTutorData;
-            this.pokemonData = pokemonData;
-            this.wildEncounterData = wildEncounterData;
-            this.trainerData = trainerData.ToDictionary((tData) => tData.Category);
-            this.itemData = itemData;
-            this.weatherData = weatherData;
-            this.miscData = miscData;
+            tmHmTutorData = data.TmHmTutorData;
+            pokemonData = data.PokemonData;
+            wildEncounterData = data.WildEncounterData;
+            trainerData = data.TrainerDataModels.ToDictionary((tData) => tData.Category);
+            itemData = data.ItemData;
+            weatherData = data.WeatherData;
+            miscData = data.MiscData;
         }
 
         private static double RandomChance(bool enabled, double chance) => enabled ? chance : 0;

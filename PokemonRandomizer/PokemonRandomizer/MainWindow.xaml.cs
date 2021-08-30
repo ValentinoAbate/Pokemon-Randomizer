@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Collections.Generic;
+using System.Text.Json;
 
 namespace PokemonRandomizer
 {
@@ -71,25 +72,36 @@ namespace PokemonRandomizer
         private const string openRomPrompt = "Open Rom";
         private const string openRomError = "Failed to open rom: ";
 
-        private readonly RandomizerDataModel randomizerData = new RandomizerDataModel();
-        private readonly TmHmTutorModel tmHmData = new TmHmTutorModel();
-        private readonly SpecialPokemonDataModel specialPokemonData = new SpecialPokemonDataModel(new StartersDataModel(), new InGameTradesDataModel(), new GiftPokemonDataModel());
-        private readonly PokemonTraitsModel pokemonData = new PokemonTraitsModel();
-        private readonly WildEncounterDataModel wildEncounterData = new WildEncounterDataModel();
-        // Later have preset ones for special groups
-        private readonly TrainerDataModel[] trainerDataModels = new TrainerDataModel[]
-        {
-            new TrainerDataModel(TrainerCategory.Trainer, DataModel.defaultName),
-            new TrainerDataModel(TrainerCategory.AceTrainer, "Ace Trainers"),
-            new TrainerDataModel(TrainerCategory.Rival, "Rivals"),
-            new TrainerDataModel(TrainerCategory.GymLeader, "Gym Leaders"),
-            new TrainerDataModel(TrainerCategory.EliteFour, "Elite Four"),
-            new TrainerDataModel(TrainerCategory.Champion, "Champion"),
-        };
-        private readonly ItemDataModel itemData = new ItemDataModel();
-        private readonly WeatherDataModel weatherData = new WeatherDataModel();
-        private readonly MiscDataModel miscData = new MiscDataModel();
-
+        private ApplicationDataModel appData;
+        private ApplicationDataModel AppData 
+        { 
+            get => appData; 
+            set
+            {
+                appData = value;
+                if(hardCodedSettings == null)
+                {
+                    hardCodedSettings = new HardCodedSettings(value);
+                }
+                else
+                {
+                    hardCodedSettings.UpdateData(value);
+                }
+                if(appSettings == null)
+                {
+                    appSettings = new AppSettings.AppSettings(value);
+                }
+                else
+                {
+                    appSettings.UpdateData(value);
+                }
+                InitializeUI();
+                if (IsROMLoaded)
+                {
+                    InitializeRomDependentUI(RomData, Metadata);
+                }
+            }        
+        }
 
         public Settings AppSettings => UseHardCodedSettings ? hardCodedSettings : appSettings;
 
@@ -98,29 +110,20 @@ namespace PokemonRandomizer
 #else
         public bool UseHardCodedSettings { get; set; } = false;
 #endif
-        private readonly HardCodedSettings hardCodedSettings;
-        private readonly AppSettings.AppSettings appSettings;
+        private HardCodedSettings hardCodedSettings;
+        private AppSettings.AppSettings appSettings;
 
         private int errorCount = 0;
 
         public MainWindow()
         {
-            hardCodedSettings = new HardCodedSettings(randomizerData);
-            appSettings = new AppSettings.AppSettings(randomizerData, specialPokemonData, tmHmData, pokemonData, wildEncounterData, trainerDataModels, itemData, weatherData, miscData);
 
             IsROMLoaded = false;
             InitializeComponent();
             this.DataContext = this;
-            RandomizerView.Content = new RandomizerDataView(randomizerData);
-            // Create pokemon traits UI
-            var pokemonTraitsGroup = new GroupUI<PokemonTraitsDataView, PokemonTraitsModel>(TraitsGroupsPanel, TraitsViewPanel, pokemonData);
-            pokemonTraitsGroup.SetAddButtonVisibility(Visibility.Hidden);
-            TmHmTutorView.Content = new TmHmTutorDataView(tmHmData);
-            WildPokemonView.Content = new WildEncounterDataView(wildEncounterData);
-            var trainerTraitsGroup = new GroupUI<TrainerDataView, TrainerDataModel>(TrainerGroups, TrainerView, trainerDataModels);
-            trainerTraitsGroup.SetAddButtonVisibility(Visibility.Hidden);
-            ItemsView.Content = new ItemDataView(itemData);
-            WeatherView.Content = new WeatherDataView(weatherData);
+
+            AppData = new ApplicationDataModel();
+
             Logger.main.OnLog += OnLog;
         }
 
@@ -146,13 +149,27 @@ namespace PokemonRandomizer
             lblInfoBoxContent.Content = content;
         }
 
-        private void InitializeUI(RomData data, RomMetadata metadata)
+        private void InitializeUI()
+        {
+            RandomizerView.Content = new RandomizerDataView(AppData.RandomizerData);
+            // Create pokemon traits UI
+            var pokemonTraitsGroup = new GroupUI<PokemonTraitsDataView, PokemonTraitsModel>(TraitsGroupsPanel, TraitsViewPanel, AppData.PokemonData);
+            pokemonTraitsGroup.SetAddButtonVisibility(Visibility.Hidden);
+            TmHmTutorView.Content = new TmHmTutorDataView(AppData.TmHmTutorData);
+            WildPokemonView.Content = new WildEncounterDataView(AppData.WildEncounterData);
+            var trainerTraitsGroup = new GroupUI<TrainerDataView, TrainerDataModel>(TrainerGroups, TrainerView, AppData.TrainerDataModels);
+            trainerTraitsGroup.SetAddButtonVisibility(Visibility.Hidden);
+            ItemsView.Content = new ItemDataView(AppData.ItemData);
+            WeatherView.Content = new WeatherDataView(AppData.WeatherData);
+        }
+
+        private void InitializeRomDependentUI(RomData data, RomMetadata metadata)
         {
             var pokemon = new List<Pokemon>(data.PokemonNationalDexOrder.Length + 1);
             pokemon.Add(Pokemon.None);
             pokemon.AddRange(data.PokemonNationalDexOrder.Select(p => p.species));
-            SpecialPokemonView.Content = new SpecialPokemonDataView(specialPokemonData, data.PokemonNames, pokemon);
-            MiscView.Content = new MiscDataView(miscData, metadata);
+            SpecialPokemonView.Content = new SpecialPokemonDataView(AppData.SpecialPokemonData, data.PokemonNames, pokemon);
+            MiscView.Content = new MiscDataView(AppData.MiscData, metadata);
         }
 
         private bool GetRomData(byte[] rawRom)
@@ -185,7 +202,7 @@ namespace PokemonRandomizer
             // Cache metadata and last randomization info
             LastRandomizationInfo = RomData.ToStringArray();
             Metadata = metadata;
-            InitializeUI(RomData, Metadata);
+            InitializeRomDependentUI(RomData, Metadata);
             return true;
         }
 
