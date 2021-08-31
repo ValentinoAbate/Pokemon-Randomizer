@@ -189,7 +189,6 @@
     <Compile Include="UI\BoundCheckBoxUI.cs" />
     <Compile Include="UI\BoundTextBoxUI.cs" />
     <Compile Include="UI\ItemSettingsUI.cs" />
-    <Compile Include="UI\Json\BoxJsonConverter.cs" />
     <Compile Include="UI\Json\WeightedSetJsonConverter.cs" />
     <Compile Include="UI\Models\ApplicationDataModel.cs" />
     <Compile Include="UI\Models\GiftPokemonDataModel.cs" />
