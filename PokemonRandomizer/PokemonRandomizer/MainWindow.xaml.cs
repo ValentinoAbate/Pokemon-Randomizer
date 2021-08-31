@@ -19,6 +19,7 @@ namespace PokemonRandomizer
     using UI;
     using UI.Models;
     using UI.Views;
+    using UI.Json;
     using Windows;
 
     /// <summary>
@@ -123,14 +124,17 @@ namespace PokemonRandomizer
             IsROMLoaded = false;
             InitializeComponent();
             this.DataContext = this;
-
+            serializerOptions.Converters.Add(new WeightedSetJsonConverter());
+            //serializerOptions.Converters.Add(new BoxJsonConverter());
             AppData = new ApplicationDataModel();
+            //string data = JsonSerializer.Serialize(AppData);
+            //AppData = JsonSerializer.Deserialize<ApplicationDataModel>(data, serializerOptions);
             //string data = JsonSerializer.Serialize(AppData.RandomizerData);
             //AppData.RandomizerData = JsonSerializer.Deserialize<RandomizerDataModel>(data, serializerOptions);
             //data = JsonSerializer.Serialize(AppData.TmHmTutorData);
             //AppData.TmHmTutorData = JsonSerializer.Deserialize<TmHmTutorModel>(data, serializerOptions);
             //data = JsonSerializer.Serialize(AppData.PokemonData);
-            //// AppData.PokemonData = JsonSerializer.Deserialize<PokemonTraitsModel>(data, serializerOptions); (ERROR: Need weighted set converter)
+            //AppData.PokemonData = JsonSerializer.Deserialize<PokemonTraitsModel>(data, serializerOptions);// (ERROR: Need weighted set converter)
             //data = JsonSerializer.Serialize(AppData.SpecialPokemonData);
             //AppData.SpecialPokemonData = JsonSerializer.Deserialize<SpecialPokemonDataModel>(data, serializerOptions);
             //data = JsonSerializer.Serialize(AppData.WildEncounterData);
@@ -140,7 +144,7 @@ namespace PokemonRandomizer
             //data = JsonSerializer.Serialize(AppData.ItemData);
             //AppData.ItemData = JsonSerializer.Deserialize<ItemDataModel>(data, serializerOptions);
             //data = JsonSerializer.Serialize(AppData.WeatherData);
-            ////AppData.WeatherData = JsonSerializer.Deserialize<WeatherDataModel>(data, serializerOptions); (ERROR: Need weighted set converter)
+            //AppData.WeatherData = JsonSerializer.Deserialize<WeatherDataModel>(data, serializerOptions);// (ERROR: Need weighted set converter)
             //data = JsonSerializer.Serialize(AppData.MiscData);
             //AppData.MiscData = JsonSerializer.Deserialize<MiscDataModel>(data, serializerOptions);
 
