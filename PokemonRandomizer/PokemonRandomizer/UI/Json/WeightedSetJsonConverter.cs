@@ -8,6 +8,7 @@ namespace PokemonRandomizer.UI.Json
 {
     public class WeightedSetJsonConverter : JsonConverterFactory
     {
+        private const string itemsProperty = "Items";
         private const string itemProperty = "Item";
         private const string weightProperty = "Weight";
         public override bool CanConvert(Type typeToConvert)
@@ -38,14 +39,12 @@ namespace PokemonRandomizer.UI.Json
         private class WeightedSetConverter<T> : JsonConverter<WeightedSet<T>>
         {
             private readonly JsonConverter<T> _valueConverter;
-            private readonly JsonConverter<float> floatConverter;
             private readonly Type _valueType;
 
             public WeightedSetConverter(JsonSerializerOptions options)
             {
                 // For performance, use the existing converter if available.
                 _valueConverter = (JsonConverter<T>)options.GetConverter(typeof(T));
-                floatConverter = (JsonConverter<float>)options.GetConverter(typeof(float));
 
                 // Cache the value type.
                 _valueType = typeof(T);
@@ -53,64 +52,60 @@ namespace PokemonRandomizer.UI.Json
 
             public override WeightedSet<T> Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             {
-                if (reader.TokenType != JsonTokenType.StartArray)
-                {
-                    throw new JsonException();
-                }
-                // Get the value.
                 var set = new WeightedSet<T>();
-                while (reader.Read())
+                bool standAlone = reader.TokenType == JsonTokenType.StartObject;
+                if (standAlone)
                 {
-                    if (reader.TokenType == JsonTokenType.EndArray)
+                    AssertTokenType(ref reader, JsonTokenType.StartObject);
+                    AssertTokenType(ref reader, JsonTokenType.PropertyName);
+                }
+                AssertTokenType(ref reader, JsonTokenType.StartArray);
+                while (true)
+                {
+                    if (reader.TokenType == JsonTokenType.EndArray)// || reader.TokenType == JsonTokenType.EndObject)
                     {
+                        if (standAlone)
+                        {
+                            reader.Read();
+                        }
                         return set;
                     }
-                    if (reader.TokenType != JsonTokenType.StartObject)
-                    {
-                        throw new JsonException();
-                    }
-                    reader.Read();
-                    // Get the key.
-                    if (reader.TokenType != JsonTokenType.PropertyName)
-                    {
-                        throw new JsonException();
-                    }
-                    reader.Read();
-                    T item;
-                    if (_valueConverter != null)
-                    {
-                        item = _valueConverter.Read(ref reader, _valueType, options);
-                    }
-                    else
-                    {
-                        item = JsonSerializer.Deserialize<T>(ref reader, options);
-                    }
-                    reader.Read();
-                    // Get the key.
-                    if (reader.TokenType != JsonTokenType.PropertyName)
-                    {
-                        throw new JsonException();
-                    }
-                    reader.Read();
-
-                    set.Add(item, (float)reader.GetDouble());
-                    reader.Read();
-
-                    if (reader.TokenType != JsonTokenType.EndObject)
-                    {
-                        throw new JsonException();
-                    }
+                    ReadWeight(set, ref reader, options);
                 }
-
                 throw new JsonException();
+            }
+
+            private void ReadWeight(WeightedSet<T> set, ref Utf8JsonReader reader, JsonSerializerOptions options)
+            {
+                AssertTokenType(ref reader, JsonTokenType.StartObject);
+                AssertTokenType(ref reader, JsonTokenType.PropertyName);
+                T item;
+                if (_valueConverter != null)
+                {
+                    item = _valueConverter.Read(ref reader, _valueType, options);
+                }
+                else
+                {
+                    item = JsonSerializer.Deserialize<T>(ref reader, options);
+                }
+                reader.Read();
+                AssertTokenType(ref reader, JsonTokenType.PropertyName);
+
+                set.Add(item, (float)reader.GetDouble());
+                reader.Read();
+
+                AssertTokenType(ref reader, JsonTokenType.EndObject);
             }
 
             public override void Write(Utf8JsonWriter writer, WeightedSet<T> set, JsonSerializerOptions options)
             {
-
+                writer.WriteStartObject();
+                writer.WritePropertyName(PropertyText(itemsProperty, options));
+                writer.WriteStartArray();
                 foreach (var kvp in set)
                 {
                     writer.WriteStartObject();
+                    writer.WritePropertyName(PropertyText(itemProperty, options));
                     if (_valueConverter != null)
                     {
                         _valueConverter.Write(writer, kvp.Key, options);
@@ -123,11 +118,22 @@ namespace PokemonRandomizer.UI.Json
                     JsonSerializer.Serialize(writer, kvp.Value, options);
                     writer.WriteEndObject();
                 }
+                writer.WriteEndArray();
+                writer.WriteEndObject();
             }
 
             private static string PropertyText(string propertyName, JsonSerializerOptions options)
             {
                 return options.PropertyNamingPolicy?.ConvertName(propertyName) ?? propertyName;
+            }
+
+            private static void AssertTokenType(ref Utf8JsonReader reader, JsonTokenType type)
+            {
+                if(reader.TokenType != type)
+                {
+                    throw new JsonException();
+                }
+                reader.Read();
             }
         }
     }

@@ -35,9 +35,10 @@ namespace PokemonRandomizer.UI
             }
             verticalStack.Children.Add(groupSelectorTree);
 
+            parent.Children.Clear();
             // Add these to the parent grid
             parent.Children.Add(verticalStack);
-
+            viewParent.Children.Clear();
             // Create view
             dataView = new View();
             dataView.Initialize(viewParent, initialModels);
