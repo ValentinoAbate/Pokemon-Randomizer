@@ -18,7 +18,6 @@ namespace PokemonRandomizer.UI.Json
                 return false;
             }
             return typeToConvert.GetGenericTypeDefinition() == typeof(WeightedSet<>);
-            //return typeToConvert.GetGenericArguments()[0];
         }
 
         public override JsonConverter CreateConverter(Type type, JsonSerializerOptions options)
@@ -53,21 +52,14 @@ namespace PokemonRandomizer.UI.Json
             public override WeightedSet<T> Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             {
                 var set = new WeightedSet<T>();
-                bool standAlone = reader.TokenType == JsonTokenType.StartObject;
-                if (standAlone)
-                {
-                    AssertTokenType(ref reader, JsonTokenType.StartObject);
-                    AssertTokenType(ref reader, JsonTokenType.PropertyName);
-                }
+                AssertTokenType(ref reader, JsonTokenType.StartObject);
+                AssertTokenType(ref reader, JsonTokenType.PropertyName);
                 AssertTokenType(ref reader, JsonTokenType.StartArray);
                 while (true)
                 {
-                    if (reader.TokenType == JsonTokenType.EndArray)// || reader.TokenType == JsonTokenType.EndObject)
+                    if (reader.TokenType == JsonTokenType.EndArray)
                     {
-                        if (standAlone)
-                        {
-                            reader.Read();
-                        }
+                        reader.Read();
                         return set;
                     }
                     ReadWeight(set, ref reader, options);
@@ -131,7 +123,7 @@ namespace PokemonRandomizer.UI.Json
             {
                 if(reader.TokenType != type)
                 {
-                    throw new JsonException();
+                    throw new JsonException($"Expected {type} token, but found {reader.TokenType}");
                 }
                 reader.Read();
             }
