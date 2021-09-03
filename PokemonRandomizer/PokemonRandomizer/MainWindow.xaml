@@ -4,7 +4,6 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PokemonRandomizer"
-        xmlns:control="clr-namespace:PokemonRandomizer.UserControls"
         xmlns:converter="clr-namespace:PokemonRandomizer.Converters"
         mc:Ignorable="d"
         Title="Pokemon Randomizer" Height="480" Width="800">
