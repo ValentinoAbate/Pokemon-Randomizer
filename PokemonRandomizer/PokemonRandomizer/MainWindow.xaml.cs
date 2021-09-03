@@ -74,36 +74,7 @@ namespace PokemonRandomizer
         private const string openRomPrompt = "Open Rom";
         private const string openRomError = "Failed to open rom: ";
 
-        private ApplicationDataModel appData;
-        private ApplicationDataModel AppData 
-        { 
-            get => appData; 
-            set
-            {
-                appData = value;
-                if(hardCodedSettings == null)
-                {
-                    hardCodedSettings = new HardCodedSettings(value);
-                }
-                else
-                {
-                    hardCodedSettings.UpdateData(value);
-                }
-                if(appSettings == null)
-                {
-                    appSettings = new AppSettings.AppSettings(value);
-                }
-                else
-                {
-                    appSettings.UpdateData(value);
-                }
-                InitializeUI();
-                if (IsROMLoaded)
-                {
-                    InitializeRomDependentUI(RomData, Metadata);
-                }
-            }        
-        }
+        private ApplicationDataModel AppData { get; set; }
 
         public Settings AppSettings => UseHardCodedSettings ? hardCodedSettings : appSettings;
 
@@ -125,6 +96,7 @@ namespace PokemonRandomizer
             this.DataContext = this;
             serializerOptions.Converters.Add(new WeightedSetJsonConverter());
             AppData = new ApplicationDataModel();
+            InitializeAppData();
 
             Logger.main.OnLog += OnLog;
         }
@@ -149,6 +121,31 @@ namespace PokemonRandomizer
         private void SetInfoBox(string content)
         {
             lblInfoBoxContent.Content = content;
+        }
+
+        private void InitializeAppData()
+        {
+            if (hardCodedSettings == null)
+            {
+                hardCodedSettings = new HardCodedSettings(AppData);
+            }
+            else
+            {
+                hardCodedSettings.UpdateData(AppData);
+            }
+            if (appSettings == null)
+            {
+                appSettings = new AppSettings.AppSettings(AppData);
+            }
+            else
+            {
+                appSettings.UpdateData(AppData);
+            }
+            InitializeUI();
+            if (IsROMLoaded)
+            {
+                InitializeRomDependentUI(RomData, Metadata);
+            }
         }
 
         private void InitializeUI()
@@ -196,15 +193,10 @@ namespace PokemonRandomizer
                 Logger.main.Error("Failed to open rom - unsupported generation (" + metadata.Gen.ToString() + ")");
                 return false;
             }
-            IsROMLoaded = true;
-            // Log open and set info box
-            string msg = "Rom opened: " + metadata.Name + " (" + metadata.Code + ")";
-            Logger.main.Info(msg);
-            SetInfoBox(msg);
+
             // Cache metadata and last randomization info
             LastRandomizationInfo = RomData.ToStringArray();
             Metadata = metadata;
-            InitializeRomDependentUI(RomData, Metadata);
             return true;
         }
 
@@ -222,11 +214,6 @@ namespace PokemonRandomizer
             throw new Exception("Attempting to write randomized data to ROM of unsupported generation (" + Metadata.Gen.ToString() + ")");
         }
 
-        private void OpenRomNoWindow(string path)
-        {
-            GetRomData(File.ReadAllBytes(path));
-        }
-
 #region INotifyPropertyChanged Implementation
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -239,6 +226,35 @@ namespace PokemonRandomizer
 
 #region Menu Functions
 
+        private void PauseUIAndRunInBackground(string progressMsg, Action work, Action onSuccess, Action<Exception> onError)
+        {
+            MainMenu.IsEnabled = false;
+            MainTabControl.IsEnabled = false;
+            SetInfoBox(progressMsg);
+            void DoWork(object _, DoWorkEventArgs _2)
+            {
+                work?.Invoke();
+            }
+            void RunWorkerCompleted(object _, RunWorkerCompletedEventArgs args)
+            {
+                if (args.Error != null)
+                {
+                    onError?.Invoke(args.Error);
+                }
+                else
+                {
+                    onSuccess?.Invoke();
+                }
+                backgroundWorker.DoWork -= DoWork;
+                backgroundWorker.RunWorkerCompleted -= RunWorkerCompleted;
+                MainMenu.IsEnabled = true;
+                MainTabControl.IsEnabled = true;
+            }
+            backgroundWorker.DoWork += DoWork;
+            backgroundWorker.RunWorkerCompleted += RunWorkerCompleted;
+            backgroundWorker.RunWorkerAsync();
+        }
+
         private void OpenROM(object sender, RoutedEventArgs e)
         {
             var openFileDialog = new OpenFileDialog
@@ -248,14 +264,18 @@ namespace PokemonRandomizer
             };
             if (openFileDialog.ShowDialog() == true)
             {
-                try
+                void Open() => GetRomData(File.ReadAllBytes(openFileDialog.FileName));
+                static void Error(Exception e) => Logger.main.Error($"Failed to open rom: {e.Message}");
+                void Success()
                 {
-                    GetRomData(File.ReadAllBytes(openFileDialog.FileName));
+                    IsROMLoaded = true;
+                    // Log open and set info box
+                    string msg = $"Rom opened: {metadata.Name} ({metadata.Code})"; ;
+                    Logger.main.Info(msg);
+                    SetInfoBox(msg);
+                    InitializeRomDependentUI(RomData, Metadata);
                 }
-                catch(IOException exception)
-                {
-                    Logger.main.Error(openRomError + exception.Message);
-                }
+                PauseUIAndRunInBackground("Opening rom...", Open, Success, Error);
             }
         }
 
@@ -266,27 +286,16 @@ namespace PokemonRandomizer
 
         private void SaveFile<T>(string path, string name, Func<T[]> fileFn, Action<string, T[]> writeFn, string writingMsg = null)
         {
-            MainMenu.IsEnabled = false;
-            MainTabControl.IsEnabled = false;
-            SetInfoBox(writingMsg ?? "Saving " + name.ToLower() + "...");
-            backgroundWorker.DoWork += (_, _2) =>
+            void Save() => writeFn(path, fileFn());
+            void Error(Exception e) => Logger.main.Error($"Failed to save {name.ToLower()}: {e.Message}");
+            void Success()
             {
-                writeFn(path, fileFn());
-            };
-            backgroundWorker.RunWorkerCompleted += (_, error) =>
-            {
-                if (error.Error != null)
-                {
-                    Logger.main.Error("Failed to save " + name.ToLower() + ": " + error.Error.Message);
-                }
                 // Log open and set info box
-                string msg = name + " saved to " + path;
+                string msg = $"{name} saved to {path}";
                 Logger.main.Info(msg);
                 SetInfoBox(msg);
-                MainMenu.IsEnabled = true;
-                MainTabControl.IsEnabled = true;
-            };
-            backgroundWorker.RunWorkerAsync();
+            }
+            PauseUIAndRunInBackground(writingMsg ?? $"Saving {name.ToLower()}...", Save, Success, Error);
         }
 
         private void WriteRom(Func<byte[]> fileFn, string message)
@@ -378,7 +387,7 @@ namespace PokemonRandomizer
             };
             if (saveFileDialog.ShowDialog() == true)
             {
-                SaveFile(saveFileDialog.FileName, "Log", Logger.main.FullLogText.ToArray(), File.WriteAllLines);
+                SaveFile(saveFileDialog.FileName, "Log", Logger.main.FullLogText, File.WriteAllLines);
             }
         }
 
@@ -441,7 +450,7 @@ namespace PokemonRandomizer
             };
             if (openFileDialog.ShowDialog() == true)
             {
-                try
+                void Load()
                 {
                     var file = File.ReadAllLines(openFileDialog.FileName);
                     if (file.Length <= 0)
@@ -449,12 +458,18 @@ namespace PokemonRandomizer
                         throw new IOException("Empty preset file");
                     }
                     AppData = JsonSerializer.Deserialize<ApplicationDataModel>(file[0], serializerOptions);
-                    SetInfoBox($"Preset loaded: {openFileDialog.FileName}");
                 }
-                catch (Exception exception)
+                static void Error(Exception e) => Logger.main.Error($"Preset load error: {e.Message}");
+                void Success()
                 {
-                    Logger.main.Error("Preset load error: " + exception.Message);
+                    IsROMLoaded = true;
+                    // Log open and set info box
+                    string msg = $"Preset loaded: {openFileDialog.FileName}";
+                    Logger.main.Info(msg);
+                    SetInfoBox(msg);
+                    InitializeAppData();
                 }
+                PauseUIAndRunInBackground("Loading preset...", Load, Success, Error);
             }
         }
 
