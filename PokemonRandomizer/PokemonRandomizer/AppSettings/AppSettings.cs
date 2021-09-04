@@ -244,7 +244,7 @@ namespace PokemonRandomizer.AppSettings
             BstSetting = dreamTeamData.UseTotalBST,
             BstLimit = (float)(dreamTeamData.UseTotalBST == DreamTeamBstTotalOption.Max ? dreamTeamData.BstTotalUpperBound : dreamTeamData.BstTotalLowerBound),
             UseTypeFilter = dreamTeamData.UseTypeFilter,
-            TypeFilter = (new List<PokemonType>() { dreamTeamData.AllowedType1, dreamTeamData.AllowedType1, dreamTeamData.AllowedType1 }).Where(t => t != (PokemonType)19).ToArray()
+            TypeFilter = (new List<PokemonType>() { dreamTeamData.AllowedType1, dreamTeamData.AllowedType2, dreamTeamData.AllowedType3 }).Where(t => t != (PokemonType)19).ToArray()
         };
 
         #endregion
