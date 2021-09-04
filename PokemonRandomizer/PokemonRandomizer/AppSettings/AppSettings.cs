@@ -17,6 +17,7 @@ namespace PokemonRandomizer.AppSettings
         private InGameTradesDataModel tradeData;
         private StartersDataModel starterData;
         private GiftPokemonDataModel giftData;
+        private DreamTeamDataModel dreamTeamData;
         private WildEncounterDataModel wildEncounterData;
         private Dictionary<TrainerCategory, TrainerDataModel> trainerData;
         private ItemDataModel itemData;
@@ -32,6 +33,7 @@ namespace PokemonRandomizer.AppSettings
             starterData = specialPokemonData.StarterData;
             tradeData = specialPokemonData.TradeData;
             giftData = specialPokemonData.GiftData;
+            dreamTeamData = specialPokemonData.DreamTeamData;
             tmHmTutorData = data.TmHmTutorData;
             pokemonData = data.PokemonData;
             wildEncounterData = data.WildEncounterData;
@@ -226,6 +228,24 @@ namespace PokemonRandomizer.AppSettings
         public override bool UseSeperateHiddenItemSettings => itemData.UseSeperateHiddenItemSettings;
         public override double HiddenItemRandChance => RandomChance(itemData.RandomizeHiddenItems, itemData.HiddenItemRandChance);
         public override ItemRandomizer.Settings HiddenItemSettings => itemData.HiddenItemSettings;
+
+        #endregion
+
+        #region Dream Team
+
+        public override DreamTeamSetting DreamTeamOption => dreamTeamData.DreamTeamOption;
+
+        public override Pokemon[] CustomDreamTeam => dreamTeamData.CustomDreamTeam;
+
+        public override DreamTeamSettings DreamTeamOptions => new DreamTeamSettings()
+        {
+            BanLegendaries = dreamTeamData.BanLegendaries,
+            BanIllegalEvolutions = dreamTeamData.BanIllegalEvolutions,
+            BstSetting = dreamTeamData.UseTotalBST,
+            BstLimit = (float)(dreamTeamData.UseTotalBST == DreamTeamBstTotalOption.Max ? dreamTeamData.BstTotalUpperBound : dreamTeamData.BstTotalLowerBound),
+            UseTypeFilter = dreamTeamData.UseTypeFilter,
+            TypeFilter = (new List<PokemonType>() { dreamTeamData.AllowedType1, dreamTeamData.AllowedType1, dreamTeamData.AllowedType1 }).Where(t => t != (PokemonType)19).ToArray()
+        };
 
         #endregion
 

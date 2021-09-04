@@ -24,6 +24,8 @@ namespace PokemonRandomizer.UI.Models
         public Box<double> BstTotalUpperBound { get; set; } = new Box<double>(2200);
         public Box<double> BstTotalLowerBound { get; set; } = new Box<double>(2500);
         public Box<bool> UseTypeFilter { get; set; } = new Box<bool>(false);
-        public PokemonType[] TypeFilter { get; set; } = new PokemonType[0];
+        public Box<PokemonType> AllowedType1 { get; set; } = new Box<PokemonType>((PokemonType)(19));
+        public Box<PokemonType> AllowedType2 { get; set; } = new Box<PokemonType>((PokemonType)(19));
+        public Box<PokemonType> AllowedType3 { get; set; } = new Box<PokemonType>((PokemonType)(19));
     }
 }
