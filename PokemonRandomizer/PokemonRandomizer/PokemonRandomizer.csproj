@@ -191,6 +191,7 @@
     <Compile Include="UI\ItemSettingsUI.cs" />
     <Compile Include="UI\Json\WeightedSetJsonConverter.cs" />
     <Compile Include="UI\Models\ApplicationDataModel.cs" />
+    <Compile Include="UI\Models\DreamTeamDataModel.cs" />
     <Compile Include="UI\Models\GiftPokemonDataModel.cs" />
     <Compile Include="UI\Models\ItemDataModel.cs" />
     <Compile Include="UI\Models\MiscDataModel.cs" />
@@ -203,6 +204,7 @@
     <Compile Include="UI\Utilities\Box.cs" />
     <Compile Include="UI\Views\DataView.cs" />
     <Compile Include="UI\BoundComboBoxUI.cs" />
+    <Compile Include="UI\Views\DreamTeamDataView.cs" />
     <Compile Include="UI\Views\GroupDataView.cs" />
     <Compile Include="UI\GroupUI.cs" />
     <Compile Include="UI\BoundSliderUI.cs" />

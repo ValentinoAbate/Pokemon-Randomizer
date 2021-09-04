@@ -15,6 +15,8 @@ namespace PokemonRandomizer.UI.Views
 
             // Starters
             tabs.Add(CreateTabItem("Starter Pokemon", new StartersDataView(model.StarterData, pokemonNames, pokemon)));
+            // Dream Team
+            tabs.Add(CreateTabItem("Dream Team", new DreamTeamDataView(model.DreamTeamData, pokemonNames, pokemon)));
             // Gift pokemon
             tabs.Add(CreateGiftPokemonTab(model.GiftData));
             // Trade pokemon

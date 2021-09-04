@@ -48,28 +48,38 @@ namespace PokemonRandomizer.Backend.Randomization
                 party.Add((pokemon.species, bstDict[pokemon.species]));
                 if (party.Count < 6)
                     continue;
-                if (!settings.UseTotalBST)
+                if (settings.BstSetting == Settings.DreamTeamBstTotalOption.None)
                     break;
                 int bstTotal = party.Sum(t => t.maxBst);
-                if (bstTotal > settings.BstTotalUpperBound)
+                if(settings.BstSetting == Settings.DreamTeamBstTotalOption.Max)
                 {
-                    party.Sort((t1, t2) => t2.maxBst.CompareTo(t1.maxBst));
-                    choices.RemoveAll(p => bstDict[p.species] >= party[0].maxBst);
-                    if (choices.Count <= 0)
+                    if (bstTotal > settings.BstLimit)
+                    {
+                        party.Sort((t1, t2) => t2.maxBst.CompareTo(t1.maxBst));
+                        choices.RemoveAll(p => bstDict[p.species] >= party[0].maxBst);
+                        if (choices.Count <= 0)
+                            break;
+                        party.RemoveAt(0);
+                    }
+                    else
+                    {
                         break;
-                    party.RemoveAt(0);
+                    }
                 }
-                else if (bstTotal < settings.BstTotalLowerBound)
+                else if (settings.BstSetting == Settings.DreamTeamBstTotalOption.Min)
                 {
-                    party.Sort((t1, t2) => t1.maxBst.CompareTo(t2.maxBst));
-                    choices.RemoveAll(p => bstDict[p.species] <= party[0].maxBst);
-                    if (choices.Count <= 0)
+                    if (bstTotal < settings.BstLimit)
+                    {
+                        party.Sort((t1, t2) => t1.maxBst.CompareTo(t2.maxBst));
+                        choices.RemoveAll(p => bstDict[p.species] <= party[0].maxBst);
+                        if (choices.Count <= 0)
+                            break;
+                        party.RemoveAt(0);
+                    }
+                    else
+                    {
                         break;
-                    party.RemoveAt(0);
-                }
-                else
-                {
-                    break;
+                    }
                 }
             }
             return party.Select(t => t.pokemon).ToArray();

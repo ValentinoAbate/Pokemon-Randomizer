@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Windows.Controls;
+using System.Linq;
 
 namespace PokemonRandomizer.UI
 {
@@ -30,6 +31,12 @@ namespace PokemonRandomizer.UI
         {
             ComboBox.SelectionChanged += (_, _2) => element.SetVisibility(ComboBox.SelectedIndex == index);
             element.SetVisibility(ComboBox.SelectedIndex == index);
+        }
+
+        public void BindVisibility(UIElement element, params int[] indices)
+        {
+            ComboBox.SelectionChanged += (_, _2) => element.SetVisibility(indices.Contains(ComboBox.SelectedIndex));
+            element.SetVisibility(indices.Contains(ComboBox.SelectedIndex));
         }
     }
 

@@ -20,10 +20,8 @@ namespace PokemonRandomizer.UI.Views
         public StartersDataView(StartersDataModel model, string[] pokemonNames, List<Pokemon> pokemon)
         {
             // Create stack and add content
-            var stack = new StackPanel() { Orientation = Orientation.Vertical };
-            Content = stack;
-            stack.Add(new Label() { Content = "Starter Randomization" });
-            stack.Add(new Separator());
+            var stack = CreateMainStack();
+            stack.Header("Starter Randomization");
 
             // Randomization Strategy CB
             var optionCb = stack.Add(new EnumComboBoxUI<StarterPokemonOption>("Randomization Strategy", StarterOptionDropdown, model.StarterSetting));

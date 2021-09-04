@@ -12,7 +12,7 @@ namespace PokemonRandomizer.UI.Models
     {
         public RandomizerDataModel RandomizerData { get; set; } = new RandomizerDataModel();
         public TmHmTutorModel TmHmTutorData { get; set; } = new TmHmTutorModel();
-        public SpecialPokemonDataModel SpecialPokemonData { get; set; } = new SpecialPokemonDataModel(new StartersDataModel(), new InGameTradesDataModel(), new GiftPokemonDataModel());
+        public SpecialPokemonDataModel SpecialPokemonData { get; set; } = new SpecialPokemonDataModel(new StartersDataModel(), new InGameTradesDataModel(), new GiftPokemonDataModel(), new DreamTeamDataModel());
         public PokemonTraitsModel PokemonData { get; set; }  = new PokemonTraitsModel();
         public WildEncounterDataModel WildEncounterData { get; set; } = new WildEncounterDataModel();
         // Later have preset ones for special groups

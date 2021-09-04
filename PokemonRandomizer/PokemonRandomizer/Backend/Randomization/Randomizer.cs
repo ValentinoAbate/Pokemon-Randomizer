@@ -2,6 +2,7 @@
 using PokemonRandomizer.Backend.DataStructures.Scripts;
 using PokemonRandomizer.Backend.EnumTypes;
 using PokemonRandomizer.Backend.Utilities;
+using PokemonRandomizer.Backend.Utilities.Debug;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -609,11 +610,18 @@ namespace PokemonRandomizer.Backend.Randomization
                 var dreamTeamRandomizer = new DreamTeamRandomizer(rand, data);
                 var team = settings.DreamTeamOption switch
                 {
-                    Settings.DreamTeamSetting.Custom => settings.CustomDreamTeam,
+                    Settings.DreamTeamSetting.Custom => settings.CustomDreamTeam.Where(p => p != Pokemon.None).ToArray(),
                     Settings.DreamTeamSetting.Random => dreamTeamRandomizer.GenerateDreamTeam(pokemonSet, settings.DreamTeamOptions),
                     _ => new Pokemon[0],
                 };
-                dreamTeamRandomizer.ApplyDreamTeam(data.FirstEncounterSet, team);
+                if(team.Length > 0)
+                {
+                    dreamTeamRandomizer.ApplyDreamTeam(data.FirstEncounterSet, team);
+                }
+                else
+                {
+                    Logger.main.Warning($"Dream Team: Empty team detected with {settings.DreamTeamOption}. Dream Team will not be applied");
+                }
             }
 
             #endregion

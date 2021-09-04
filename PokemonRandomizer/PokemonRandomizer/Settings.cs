@@ -335,6 +335,13 @@ namespace PokemonRandomizer
             Random,
         }
 
+        public enum DreamTeamBstTotalOption
+        {
+            None,
+            Min,
+            Max
+        }
+
         public abstract DreamTeamSetting DreamTeamOption { get; }
 
         public abstract Pokemon[] CustomDreamTeam { get; }
@@ -343,13 +350,12 @@ namespace PokemonRandomizer
 
         public class DreamTeamSettings
         {
-            public bool BanLegendaries => true;
-            public bool BanIllegalEvolutions => true;
-            public bool UseTotalBST => true;
-            public float BstTotalUpperBound => 2200;
-            public float BstTotalLowerBound => 40;
-            public bool UseTypeFilter => TypeFilter.Length > 0;
-            public PokemonType[] TypeFilter => new PokemonType[0];
+            public bool BanLegendaries { get; set; } = true;
+            public bool BanIllegalEvolutions { get; set; } = true;
+            public DreamTeamBstTotalOption BstSetting { get; set; } = DreamTeamBstTotalOption.None;
+            public float BstLimit { get; set; } = 2200;
+            public bool UseTypeFilter { get; set; } = false;
+            public PokemonType[] TypeFilter { get; set; } = new PokemonType[0];
         }
 
         #endregion
