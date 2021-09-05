@@ -402,16 +402,26 @@ namespace PokemonRandomizer
             OnPropertyChanged("LogNotEmpty");
         }
 
+        private const string divider = "===============================================================================================================================================";
+        private const string randomSeedText = "[Random]";
         private void GenerateInfoDoc(object sender, RoutedEventArgs e)
         {
             var saveFileDialog = new SaveFileDialog
             {
                 Filter = textFileFilter,
-                Title = "Generate Info Docs"
+                Title = "Generate Info Docs",
+                FileName = "info",
             };
             if (saveFileDialog.ShowDialog() == true)
             {
-                SaveFile(saveFileDialog.FileName, "Info file", LastRandomizationInfo, File.WriteAllLines);
+                var info = new List<string>(LastRandomizationInfo.Length + 5);
+                info.Add(divider);
+                info.Add("   Randomizer Info");
+                info.Add(divider);
+                info.Add($"Randomizer Version: {version}");
+                info.Add($"Seed              : {(AppData.RandomizerData.UseSeed ? AppData.RandomizerData.Seed : randomSeedText)}");
+                info.AddRange(LastRandomizationInfo);
+                SaveFile(saveFileDialog.FileName, "Info file", info.ToArray(), File.WriteAllLines);
             }
         }
 

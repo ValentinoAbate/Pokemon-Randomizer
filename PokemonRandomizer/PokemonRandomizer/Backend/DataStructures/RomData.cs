@@ -129,8 +129,7 @@ namespace PokemonRandomizer.Backend.DataStructures
         // Create string array to write to info file
         public string[] ToStringArray()
         {
-            const string divider = "=======================================================================" +
-                                   "========================================================================";
+            const string divider = "===============================================================================================================================================";
             List<string> outLs = new List<string>();
 
             #region Print Pokemon Definitions
