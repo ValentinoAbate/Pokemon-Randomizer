@@ -151,7 +151,6 @@ namespace PokemonRandomizer.Backend.DataStructures
                 }
                 sb.Append(" | ");
             }
-            sb.Append("\n" + learnSet.ToString());
             return sb.ToString();
         }
     }

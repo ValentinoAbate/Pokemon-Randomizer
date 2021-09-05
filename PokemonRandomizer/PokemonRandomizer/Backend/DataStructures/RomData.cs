@@ -137,10 +137,8 @@ namespace PokemonRandomizer.Backend.DataStructures
             outLs.Add(divider);
             outLs.Add("   Pokémon Info List");
             outLs.Add(divider);
-            outLs.Add(("Pkmn Name      |  HP  AT  DF  SP  SA  SD   |    EV Yields   |" +
-                " Type(s) |  Ability 1     | Ability 2     | Held Item 1   | Held Item 2   | "));
-            outLs.Add(("---------------------------------------------------------" +
-                      "----------------------------------------------------------------------------"));
+            outLs.Add(("Pkmn Name      |  HP  AT  DF  SP  SA  SD   |    EV Yields   | Type(s) |  Ability 1     | Ability 2     | Held Item 1   | Held Item 2   | "));
+            outLs.Add(("-------------------------------------------------------------------------------------------------------------------------------------"));
             var pkmnSorted = PokemonNationalDexOrder;
             foreach (PokemonBaseStats pkmn in pkmnSorted)
             {
@@ -167,12 +165,16 @@ namespace PokemonRandomizer.Backend.DataStructures
                 //outLs.Add(compatStr);
                 #endregion
             }
-            #endregion
 
-            foreach(var move in MoveData)
+            outLs.Add(divider);
+            outLs.Add("   Pokémon Moveset List");
+            outLs.Add(divider);
+
+            foreach (PokemonBaseStats pkmn in pkmnSorted)
             {
-                outLs.Add(move.ToString() + " - effect: " + move.effect.ToString());
+                outLs.Add(pkmn.Name + new string(' ', 15 - pkmn.Name.Length) + "| " +  pkmn.learnSet.ToString());
             }
+            #endregion
 
             return outLs.ToArray();
         }

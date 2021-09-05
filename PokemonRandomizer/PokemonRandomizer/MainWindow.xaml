@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:PokemonRandomizer"
         xmlns:converter="clr-namespace:PokemonRandomizer.Converters"
         mc:Ignorable="d"
-        Title="Pokemon Randomizer" Height="480" Width="800">
+        Title="Procedural Pokemon Randomizer" Height="480" Width="800">
     
     <!--Main Window Resources-->
     
@@ -30,7 +30,7 @@
             <MenuItem Header="File">
                 <MenuItem Header="Open ROM" Click="OpenROM"/>
                 <MenuItem Name="menuSaveROM" IsEnabled="{Binding IsROMLoaded}" Header="Randomize (Save)" Click="SaveROM"/>
-                <MenuItem Name="menuGenerateInfoDoc" IsEnabled="{Binding IsROMLoaded}" Header="Generate Info" Click="GenerateInfoDoc"/>
+                <MenuItem Name="menuGenerateInfoDoc" IsEnabled="{Binding IsROMLoaded}" Header="Save Randomized ROM Info" Click="GenerateInfoDoc"/>
                 <MenuItem Visibility="Collapsed" Header="_Convert Table" Click="ConvertTable" />
             </MenuItem>
             <MenuItem Header="Settings" IsEnabled="{Binding IsROMLoaded}">
@@ -39,8 +39,8 @@
             </MenuItem>
             <MenuItem Visibility="Visible" Header="Debug">
                 <MenuItem Name="menuUseHardCodedSettings" Header="Use Hardcoded Settings" IsCheckable="True" IsChecked="{Binding UseHardCodedSettings}"/>
-                <MenuItem Name="menuDebugSaveLog" IsEnabled="{Binding LogNotEmpty}" Header="Save Log" Click="SaveLog"/>
-                <MenuItem Name="menuDebugClearLog" IsEnabled="{Binding LogNotEmpty}" Header="Clear Log" Click="ClearLog"/>
+                <MenuItem Name="menuDebugSaveLog" IsEnabled="{Binding LogNotEmpty}" Header="Save Debug Log" Click="SaveLog"/>
+                <MenuItem Name="menuDebugClearLog" IsEnabled="{Binding LogNotEmpty}" Header="Clear Debug Log" Click="ClearLog"/>
                 <MenuItem Name="menuDebugSaveCleanRom" IsEnabled="{Binding IsROMLoaded}" Header="Save Clean ROM" Click="SaveCleanROM"/>
                 <MenuItem Name="menuDebugDiffRoms" IsEnabled="{Binding IsROMLoaded}" Header="Diff Roms" Click="DiffRoms"/>
             </MenuItem>
