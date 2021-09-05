@@ -1,9 +1,21 @@
 # Description
 
-A Pokemon randomizer I'm creating as a fun side project!
+Procedural Pokemon Randomizer is a Pokemon randomizer I'm creating as a fun side project!
 
-- Currently focuses on Gen III, but I plan to support at least Gen IV and Gen II
-- Heavy focus on PCG and Vanilla+ options
+- This Randomizer focuses on using procedural generation and weighted random choices to create randomized ROMs that feel more natural
+- It also allows you to partially randomize most things. Want to randomize 5% of trainer's pokemon for an experience that is mostle the same but with some surprises? You got it.
+
+- Some of my favorite new features are:
+	- Intelligent trainer pokemon choices: Challenge runs are more fun when you can plan for a fisherman to usually have WATER pokemon!
+	- Intelligent wild pokemon choices: Find pokemon where they make sense (water pokemon when fishing, electric pokemon in the power plant, etc)!
+	- Reoccuring trainer generation: trainers that you see multiple times (like rivals, etc.) will raise a team that keeps members but grows and evolves over the course of the game
+	- Battle type randomization: randomize the battle type of trainers you encounter! I prefer all double battles.
+	- Trainer settings per trainer category: Use different randomization settings for Gym Leaders, Ace Trainers, Team Leaders, and more!
+	- The Dunsparse Plague: anything can evolve into Dunspare... half of the time. Affects NPCs too!
+	- Bonus Moves: add bonus moves to pokemon movesets at a level that makes sense. Can draw moves from the pokemon's egg moves or make a random choice!
+	- ...And much more!
+
+- Currently supports a small amount of Gen III ROMS (Emerald and Fire Red v1.0), but I plan to support at least Gen IV and Gen II in the future
 
 Originally based off of source code from Artemis251's Pokemon Emerald Randomizer (v.2.2 -- 13 April 2014) but I pivoted to C# so now its just a reference.
 Check out their website! http://artemis251.fobby.net/downloads/emerald/
@@ -11,27 +23,15 @@ Check out their website! http://artemis251.fobby.net/downloads/emerald/
 Another project that's been a great reference for writing this is dabomstew's Universal pokemon randomizer.
 Check out their project! https://github.com/Dabomstew/universal-pokemon-randomizer
 
-# Version (v0.2.5)
-
 ### Version Number Convention
 
-1st number: release         (0 - unreleased: UI may be incomplete. Features may need to be accessed by modifying source code. 1 - released: All present feature may be accessed from a built release)
+Major.Minor.Patch
 
-2nd number: major update    (this number will increment when a major update happens)
+Major: this number will increment when a major update happens
 
-3rd number: minor update    (this number will increment when a minor update happens)
+Minor: this number will increment when a minor update happens
 
-4th number: patch (optional)(this number will increment when a fix has been made to the code that WILL NOT change the randomizer's output except to fix a feature that wasn't working properly)
-
-### Notes
-
-If the first three numbers of the version number are the same, any ROM generated from the same base ROM, seed, and settings should be able to be swapped in the middle of a playthrough with no changes to any randomized values.
-
-Any code from before 10/3/2020 is considered to be unversioned.
-
-# Releases
-
-I don't have an executable release yet, but I'll link the latest one here when I do.
+Patch: this number will increment when a fix has been made to a released build. If the version has no patches, this number will be omitted (e.g 2.1 == unpatched, 2.1.8 == version 2.1 patch 8)
 
 # Liscense
 
