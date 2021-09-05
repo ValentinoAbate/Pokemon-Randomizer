@@ -29,13 +29,13 @@
         <Menu Name="MainMenu" Grid.Row="0">
             <MenuItem Header="File">
                 <MenuItem Header="Open ROM" Click="OpenROM"/>
-                <MenuItem Name="menuSaveROM" IsEnabled="{Binding IsROMLoaded}" Header="Save ROM" Click="SaveROM"/>
+                <MenuItem Name="menuSaveROM" IsEnabled="{Binding IsROMLoaded}" Header="Randomize (Save)" Click="SaveROM"/>
                 <MenuItem Name="menuGenerateInfoDoc" IsEnabled="{Binding IsROMLoaded}" Header="Generate Info" Click="GenerateInfoDoc"/>
                 <MenuItem Visibility="Collapsed" Header="_Convert Table" Click="ConvertTable" />
             </MenuItem>
-            <MenuItem Header="Presets" IsEnabled="{Binding IsROMLoaded}">
-                <MenuItem Name="menuLoadPreset" IsEnabled="{Binding IsROMLoaded}" Header="Load Preset" Click="LoadPreset"/>
-                <MenuItem Name="menuSavePreset" IsEnabled="{Binding IsROMLoaded}" Header="Save Preset" Click="SavePreset"/>
+            <MenuItem Header="Settings" IsEnabled="{Binding IsROMLoaded}">
+                <MenuItem Name="menuLoadPreset" IsEnabled="{Binding IsROMLoaded}" Header="Load Settings" Click="LoadPreset"/>
+                <MenuItem Name="menuSavePreset" IsEnabled="{Binding IsROMLoaded}" Header="Save Settings" Click="SavePreset"/>
             </MenuItem>
             <MenuItem Visibility="Visible" Header="Debug">
                 <MenuItem Name="menuUseHardCodedSettings" Header="Use Hardcoded Settings" IsCheckable="True" IsChecked="{Binding UseHardCodedSettings}"/>

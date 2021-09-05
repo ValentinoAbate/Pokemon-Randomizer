@@ -68,7 +68,7 @@ namespace PokemonRandomizer
         private const string gbaRomFileFilter = "GBA Roms (*.gba)|*.gba";
         private const string ndsRomFileFilter = "NDS Roms (*.nds)|*.nds";
         private const string textFileFilter = "txt files (*.txt)|*.txt";
-        private const string jsonFileFilter = "JSON files (*.json)|*.json";
+        private const string settingsFileFilter = "Randomizer Settings (*.pkrs)|*.pkrs";
         private const string csvFileFilter = "csv files (*.csv)|*.csv";
         private const string saveRomPrompt = "Save Rom";
         private const string openRomPrompt = "Open Rom";
@@ -434,13 +434,13 @@ namespace PokemonRandomizer
             // Save Log File
             var saveFileDialog = new SaveFileDialog
             {
-                Filter = jsonFileFilter,
-                Title = "Save Randomizer Preset",
-                FileName = "preset",
+                Filter = settingsFileFilter,
+                Title = "Save Randomizer Settings",
+                FileName = "settings",
             };
             if (saveFileDialog.ShowDialog() == true)
             {
-                SaveFile(saveFileDialog.FileName, "Preset", new string[] { JsonSerializer.Serialize(AppData, serializerOptions) }, File.WriteAllLines);
+                SaveFile(saveFileDialog.FileName, "Settings", new string[] { JsonSerializer.Serialize(AppData, serializerOptions) }, File.WriteAllLines);
             }
         }
 
@@ -448,7 +448,7 @@ namespace PokemonRandomizer
         {
             var openFileDialog = new OpenFileDialog
             {
-                Filter = jsonFileFilter,
+                Filter = settingsFileFilter,
                 Title = "Load Randomizer Preset"
             };
             if (openFileDialog.ShowDialog() == true)
