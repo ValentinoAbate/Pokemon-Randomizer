@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PokemonRandomizer.Windows"
         mc:Ignorable="d"
-        Title="About" Height="150" Width="250">
+        Title="About" Height="150" Width="250" WindowStartupLocation="CenterOwner" WindowStyle="SingleBorderWindow" ShowInTaskbar="False" ResizeMode="NoResize">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Name="ContentRow" Height="*" ></RowDefinition>

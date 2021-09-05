@@ -226,10 +226,14 @@ namespace PokemonRandomizer
 
 #region Menu Functions
 
+        private void SetUIEnabled(bool enabled)
+        {
+            MainMenu.IsEnabled = enabled;
+            MainTabControl.IsEnabled = enabled;
+        }
         private void PauseUIAndRunInBackground(string progressMsg, Action work, Action onSuccess, Action<Exception> onError)
         {
-            MainMenu.IsEnabled = false;
-            MainTabControl.IsEnabled = false;
+            SetUIEnabled(false);
             SetInfoBox(progressMsg);
             void DoWork(object _, DoWorkEventArgs _2)
             {
@@ -247,8 +251,7 @@ namespace PokemonRandomizer
                 }
                 backgroundWorker.DoWork -= DoWork;
                 backgroundWorker.RunWorkerCompleted -= RunWorkerCompleted;
-                MainMenu.IsEnabled = true;
-                MainTabControl.IsEnabled = true;
+                SetUIEnabled(true);
             }
             backgroundWorker.DoWork += DoWork;
             backgroundWorker.RunWorkerCompleted += RunWorkerCompleted;
@@ -479,7 +482,9 @@ namespace PokemonRandomizer
             {
                 Owner = this
             };
+            SetUIEnabled(false);
             aboutWindow.ShowDialog();
+            SetUIEnabled(true);
         }
 
 #endregion
