@@ -25,13 +25,13 @@ Check out their project! https://github.com/Dabomstew/universal-pokemon-randomiz
 
 # Releases
 
-See the GitHub releases tab
+See the [GitHub Releases](https://github.com/ValentinoAbate/Pokemon-Randomizer/releases) tab
 
-## OS Support
+### OS Support
 
 Windows
 
-## Version Number Convention
+### Version Number Convention
 
 Major.Minor.Patch
 
@@ -44,6 +44,7 @@ Patch: this number will increment when a fix has been made to a released build. 
 # Install Instructions
 
 1: Download the ProceduralPokemonRandomizer.[version].zip file from the releases tab, and extract its contents to whatever directory you'd like.
+
 2: Double click on the ProceduralPokemonRandomizer.exe file in the extracted folder to start the application
 
 
