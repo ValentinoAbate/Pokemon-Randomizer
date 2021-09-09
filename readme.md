@@ -23,7 +23,15 @@ Check out their website! http://artemis251.fobby.net/downloads/emerald/
 Another project that's been a great reference for writing this is dabomstew's Universal pokemon randomizer.
 Check out their project! https://github.com/Dabomstew/universal-pokemon-randomizer
 
-### Version Number Convention
+# Releases
+
+See the GitHub releases tab
+
+## OS Support
+
+Windows
+
+## Version Number Convention
 
 Major.Minor.Patch
 
@@ -32,6 +40,12 @@ Major: this number will increment when a major update happens
 Minor: this number will increment when a minor update happens
 
 Patch: this number will increment when a fix has been made to a released build. If the version has no patches, this number will be omitted (e.g 2.1 == unpatched, 2.1.8 == version 2.1 patch 8)
+
+# Install Instructions
+
+1: Download the ProceduralPokemonRandomizer.[version].zip file from the releases tab, and extract its contents to whatever directory you'd like.
+2: Double click on the ProceduralPokemonRandomizer.exe file in the extracted folder to start the application
+
 
 # Liscense
 
