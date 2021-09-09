@@ -20,13 +20,17 @@ namespace PokemonRandomizer.UI
             return -1;
         }
 
+        private float CbWidth { get; }
+
         private readonly Func<IReadOnlyList<ChoiceBoxItem>> getChoiceList;
         private readonly List<WeightUI> weights = new List<WeightUI>();
         private readonly StackPanel mainStack;
         private readonly WeightedSet<T> set;
 
-        public WeightedSetUI(string name, WeightedSet<T> set, Func<IReadOnlyList<ChoiceBoxItem>> getChoiceList)
+
+        public WeightedSetUI(string name, WeightedSet<T> set, Func<IReadOnlyList<ChoiceBoxItem>> getChoiceList, float cbWidth = 150)
         {
+            CbWidth = cbWidth;
             this.getChoiceList = getChoiceList;
             this.set = set;
             mainStack = new StackPanel() { Orientation = Orientation.Vertical };
@@ -111,7 +115,8 @@ namespace PokemonRandomizer.UI
             {
                 Orientation = Orientation.Horizontal;
                 Item = item;
-                this.Add(new BoundComboBoxUI("", choices, FindIndex(item, choices), i => Item = choices[i].Item));
+                var cb = this.Add(new BoundComboBoxUI("", choices, FindIndex(item, choices), i => Item = choices[i].Item));
+                cb.ComboBox.MinWidth = parent.CbWidth;
                 slider = new BoundSliderUI("Chance", weight, (_) => parent.OnValueChanged(this)) { IsEnabled = !isDefault };
                 this.Add(slider);
                 if (!isDefault)
