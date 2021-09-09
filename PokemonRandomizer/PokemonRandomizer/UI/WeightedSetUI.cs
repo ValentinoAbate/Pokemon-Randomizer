@@ -58,7 +58,7 @@ namespace PokemonRandomizer.UI
         }
 
         private bool changingValues = false;
-        private void OnValueChanged()
+        private void OnValueChanged(WeightUI changed = null)
         {
             if (changingValues || weights.Count <= 0)
                 return;
@@ -68,7 +68,15 @@ namespace PokemonRandomizer.UI
             {
                 sum += weights[i].Weight;
             }
-            weights[0].Weight = 1 - sum;
+            if(sum > 1 && changed != null)
+            {
+                changed.Weight -= sum - 1;
+                weights[0].Weight = 0;
+            }
+            else
+            {
+                weights[0].Weight = 1 - sum;
+            }
             set.Clear();
             foreach (var item in weights)
             {
@@ -104,7 +112,7 @@ namespace PokemonRandomizer.UI
                 Orientation = Orientation.Horizontal;
                 Item = item;
                 this.Add(new BoundComboBoxUI("", choices, FindIndex(item, choices), i => Item = choices[i].Item));
-                slider = new BoundSliderUI("Chance", weight, (_) => parent.OnValueChanged()) { IsEnabled = !isDefault };
+                slider = new BoundSliderUI("Chance", weight, (_) => parent.OnValueChanged(this)) { IsEnabled = !isDefault };
                 this.Add(slider);
                 if (!isDefault)
                 {
