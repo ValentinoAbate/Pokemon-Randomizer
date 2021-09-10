@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows.Controls;
+using System.Linq;
 
 namespace PokemonRandomizer.UI
 {
@@ -26,6 +27,8 @@ namespace PokemonRandomizer.UI
         private readonly List<WeightUI> weights = new List<WeightUI>();
         private readonly StackPanel mainStack;
         private readonly WeightedSet<T> set;
+        private readonly IReadOnlyList<ChoiceBoxItem> referenceList;
+        private readonly Button addButton;
 
 
         public WeightedSetUI(string name, WeightedSet<T> set, Func<IReadOnlyList<ChoiceBoxItem>> getChoiceList, float cbWidth = 150)
@@ -33,12 +36,12 @@ namespace PokemonRandomizer.UI
             CbWidth = cbWidth;
             this.getChoiceList = getChoiceList;
             this.set = set;
+            referenceList = getChoiceList();
             mainStack = new StackPanel() { Orientation = Orientation.Vertical };
             var controlStack = new StackPanel { Orientation = Orientation.Horizontal };
             controlStack.Add(new Label() { Content = name });
-            var addButton = new Button() { Content = "Add Weight", Height = 17, Width = 100, Margin = new Thickness(0, 0, 0, 1), FontSize = 11 };
+            addButton = controlStack.Add(new Button() { Content = "Add Weight", Height = 17, Width = 100, Margin = new Thickness(0, 0, 0, 1), FontSize = 11 });
             addButton.Click += AddButtonClick;
-            controlStack.Add(addButton);
             mainStack.Add(controlStack);
             mainStack.Add(new Separator());
             foreach(var item in set)
@@ -50,7 +53,10 @@ namespace PokemonRandomizer.UI
 
         private void AddButtonClick(object sender, RoutedEventArgs e)
         {
-            Add(default, 0);
+            if (referenceList.Count == 0)
+                return;
+            var item = referenceList.FirstOrDefault(c => !weights.Any(w => w.Item.Equals(c.Item))).Item;
+            Add(item, 0);
             OnValueChanged();
         }
 
@@ -58,7 +64,15 @@ namespace PokemonRandomizer.UI
         {
             var newWeight = new WeightUI(item, weight, getChoiceList(), this, weights.Count == 0);
             mainStack.Add(newWeight);
+            if(weights.Count > 0)
+            {
+                weights[weights.Count - 1].ComboBox.IsEnabled = false;
+            }
             weights.Add(newWeight);
+            if(weights.Count >= referenceList.Count)
+            {
+                addButton.IsEnabled = false;
+            }
         }
 
         private bool changingValues = false;
@@ -94,6 +108,11 @@ namespace PokemonRandomizer.UI
             weights.Remove(weight);
             mainStack.Children.Remove(weight);
             OnValueChanged();
+            if (weights.Count < referenceList.Count)
+            {
+                addButton.IsEnabled = true;
+            }
+            weights[weights.Count - 1].ComboBox.IsEnabled = true;
         }
 
         public class ChoiceBoxItem : ComboBoxItem
@@ -108,6 +127,7 @@ namespace PokemonRandomizer.UI
                 get => slider.Value;
                 set => slider.Value = value; 
             }
+            public ComboBox ComboBox { get; private set; }
 
             private readonly BoundSliderUI slider;
 
@@ -115,8 +135,8 @@ namespace PokemonRandomizer.UI
             {
                 Orientation = Orientation.Horizontal;
                 Item = item;
-                var cb = this.Add(new BoundComboBoxUI("", choices, FindIndex(item, choices), i => Item = choices[i].Item));
-                cb.ComboBox.MinWidth = parent.CbWidth;
+                ComboBox = this.Add(new BoundComboBoxUI("", choices, FindIndex(item, choices), i => Item = choices[i].Item)).ComboBox;
+                ComboBox.MinWidth = parent.CbWidth;
                 slider = new BoundSliderUI("Chance", weight, (_) => parent.OnValueChanged(this)) { IsEnabled = !isDefault };
                 this.Add(slider);
                 if (!isDefault)
