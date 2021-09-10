@@ -35,14 +35,14 @@ namespace PokemonRandomizer.UI.Views
             Content = stack;
         }
 
-        private List<WeightedSetUI<Weather>.ChoiceBoxItem> GetWeatherWeightDropdown() => new List<WeightedSetUI<Weather>.ChoiceBoxItem>
+        private List<WeightedSetUI<Weather>.MenuBoxItem> GetWeatherWeightDropdown() => new List<WeightedSetUI<Weather>.MenuBoxItem>
         {
-            new WeightedSetUI<Weather>.ChoiceBoxItem { Item = Weather.Rain, Content="Rain"},
-            new WeightedSetUI<Weather>.ChoiceBoxItem { Item = Weather.RainThunderstorm, Content="Thunderstorm"},
-            new WeightedSetUI<Weather>.ChoiceBoxItem { Item = Weather.RainHeavyThunderstrorm, Content="Heavy Thunderstorm"},
-            new WeightedSetUI<Weather>.ChoiceBoxItem { Item = Weather.StrongSunlight, Content="Strong Sunlight"},
-            new WeightedSetUI<Weather>.ChoiceBoxItem { Item = Weather.Sandstorm, Content="Sandstorm"},
-            new WeightedSetUI<Weather>.ChoiceBoxItem { Item = Weather.Snow, Content="Snow", ToolTip = "For supported games (Emerald), will look nicer and affect in-battle weather"},
+            new WeightedSetUI<Weather>.MenuBoxItem { Item = Weather.Rain, Header="Rain"},
+            new WeightedSetUI<Weather>.MenuBoxItem { Item = Weather.RainThunderstorm, Header="Thunderstorm"},
+            new WeightedSetUI<Weather>.MenuBoxItem { Item = Weather.RainHeavyThunderstrorm, Header="Heavy Thunderstorm"},
+            new WeightedSetUI<Weather>.MenuBoxItem { Item = Weather.StrongSunlight, Header="Strong Sunlight"},
+            new WeightedSetUI<Weather>.MenuBoxItem { Item = Weather.Sandstorm, Header="Sandstorm"},
+            new WeightedSetUI<Weather>.MenuBoxItem { Item = Weather.Snow, Header="Snow", ToolTip = "For supported games (Emerald), will look nicer and affect in-battle weather"},
         };
     }
 }

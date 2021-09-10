@@ -27,28 +27,28 @@ namespace PokemonRandomizer.UI.Views
             new ComboBoxItem() {Content="Fully Evolved Base Stat Total Must be Less Than Limit" },
         };
 
-        private static List<WeightedSetUI<PokemonType>.ChoiceBoxItem> GetTypeDropdown() => new List<WeightedSetUI<PokemonType>.ChoiceBoxItem>
+        private static List<TypedComboBoxItem<PokemonType>> GetTypeDropdown() => new List<TypedComboBoxItem<PokemonType>>
         {
-            new WeightedSetUI<PokemonType>.ChoiceBoxItem { Item = (PokemonType)19, Content="None"},
-            new WeightedSetUI<PokemonType>.ChoiceBoxItem { Item = PokemonType.NRM, Content="Normal"},
-            new WeightedSetUI<PokemonType>.ChoiceBoxItem { Item = PokemonType.FTG, Content="Fighting"},
-            new WeightedSetUI<PokemonType>.ChoiceBoxItem { Item = PokemonType.FLY, Content="Flying"},
-            new WeightedSetUI<PokemonType>.ChoiceBoxItem { Item = PokemonType.PSN, Content="Poison"},
-            new WeightedSetUI<PokemonType>.ChoiceBoxItem { Item = PokemonType.GRD, Content="Ground"},
-            new WeightedSetUI<PokemonType>.ChoiceBoxItem { Item = PokemonType.RCK, Content="Rock"},
-            new WeightedSetUI<PokemonType>.ChoiceBoxItem { Item = PokemonType.BUG, Content="Bug"},
-            new WeightedSetUI<PokemonType>.ChoiceBoxItem { Item = PokemonType.GHO, Content="Ghost"},
-            new WeightedSetUI<PokemonType>.ChoiceBoxItem { Item = PokemonType.STL, Content="Steel"},
-            new WeightedSetUI<PokemonType>.ChoiceBoxItem { Item = PokemonType.FIR, Content="Fire"},
-            new WeightedSetUI<PokemonType>.ChoiceBoxItem { Item = PokemonType.WAT, Content="Water"},
-            new WeightedSetUI<PokemonType>.ChoiceBoxItem { Item = PokemonType.GRS, Content="Grass"},
-            new WeightedSetUI<PokemonType>.ChoiceBoxItem { Item = PokemonType.ELE, Content="Electric"},
-            new WeightedSetUI<PokemonType>.ChoiceBoxItem { Item = PokemonType.PSY, Content="Psychic"},
-            new WeightedSetUI<PokemonType>.ChoiceBoxItem { Item = PokemonType.ICE, Content="Ice"},
-            new WeightedSetUI<PokemonType>.ChoiceBoxItem { Item = PokemonType.DRG, Content="Dragon"},
-            new WeightedSetUI<PokemonType>.ChoiceBoxItem { Item = PokemonType.DRK, Content="Dark"},
+            new TypedComboBoxItem<PokemonType> { Item = (PokemonType)19, Content="None"},
+            new TypedComboBoxItem<PokemonType> { Item = PokemonType.NRM, Content="Normal"},
+            new TypedComboBoxItem<PokemonType> { Item = PokemonType.FTG, Content="Fighting"},
+            new TypedComboBoxItem<PokemonType> { Item = PokemonType.FLY, Content="Flying"},
+            new TypedComboBoxItem<PokemonType> { Item = PokemonType.PSN, Content="Poison"},
+            new TypedComboBoxItem<PokemonType> { Item = PokemonType.GRD, Content="Ground"},
+            new TypedComboBoxItem<PokemonType> { Item = PokemonType.RCK, Content="Rock"},
+            new TypedComboBoxItem<PokemonType> { Item = PokemonType.BUG, Content="Bug"},
+            new TypedComboBoxItem<PokemonType> { Item = PokemonType.GHO, Content="Ghost"},
+            new TypedComboBoxItem<PokemonType> { Item = PokemonType.STL, Content="Steel"},
+            new TypedComboBoxItem<PokemonType> { Item = PokemonType.FIR, Content="Fire"},
+            new TypedComboBoxItem<PokemonType> { Item = PokemonType.WAT, Content="Water"},
+            new TypedComboBoxItem<PokemonType> { Item = PokemonType.GRS, Content="Grass"},
+            new TypedComboBoxItem<PokemonType> { Item = PokemonType.ELE, Content="Electric"},
+            new TypedComboBoxItem<PokemonType> { Item = PokemonType.PSY, Content="Psychic"},
+            new TypedComboBoxItem<PokemonType> { Item = PokemonType.ICE, Content="Ice"},
+            new TypedComboBoxItem<PokemonType> { Item = PokemonType.DRG, Content="Dragon"},
+            new TypedComboBoxItem<PokemonType> { Item = PokemonType.DRK, Content="Dark"},
         };
-        private static List<WeightedSetUI<PokemonType>.ChoiceBoxItem> ReferenceDropdown {get; set;} = GetTypeDropdown();
+        private static List<TypedComboBoxItem<PokemonType>> ReferenceDropdown {get; set;} = GetTypeDropdown();
                                                                               
         public DreamTeamDataView(DreamTeamDataModel model, string[] pokemonNames, List<Pokemon> pokemon)
         { 

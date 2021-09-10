@@ -87,10 +87,10 @@ namespace PokemonRandomizer.UI.Views
         private const string banSelfdestructTooltip = "Removes selfdestruct and explosion from all learnsets. Other settings that modify learnsets will not add selfdestruct or explosion. Useful for more forgiving Nuzlockes!";
         private const int maxAddMoves = 10;
 
-        private List<WeightedSetUI<AddMoveSource>.ChoiceBoxItem> GetAddMoveWeightDropdown() => new List<WeightedSetUI<AddMoveSource>.ChoiceBoxItem>
+        private List<WeightedSetUI<AddMoveSource>.MenuBoxItem> GetAddMoveWeightDropdown() => new List<WeightedSetUI<AddMoveSource>.MenuBoxItem>
         {
-            new WeightedSetUI<AddMoveSource>.ChoiceBoxItem { Item = AddMoveSource.Random, Content="Random"},
-            new WeightedSetUI<AddMoveSource>.ChoiceBoxItem { Item = AddMoveSource.EggMoves, Content="Egg Moves"},
+            new WeightedSetUI<AddMoveSource>.MenuBoxItem { Item = AddMoveSource.Random, Header="Random"},
+            new WeightedSetUI<AddMoveSource>.MenuBoxItem { Item = AddMoveSource.EggMoves, Header="Egg Moves"},
         };
 
         private TabItem CreateLearnsetsTab(PokemonTraitsModel model)

@@ -198,6 +198,7 @@
     <Compile Include="UI\Models\RandomizerDataModel.cs" />
     <Compile Include="UI\Models\SpecialPokemonDataModel.cs" />
     <Compile Include="UI\Models\WeatherDataModel.cs" />
+    <Compile Include="UI\TypedComboBoxItem.cs" />
     <Compile Include="UI\UISkin.cs" />
     <Compile Include="UI\Models\DataModel.cs" />
     <Compile Include="UI\Models\TrainerDataModel.cs" />
