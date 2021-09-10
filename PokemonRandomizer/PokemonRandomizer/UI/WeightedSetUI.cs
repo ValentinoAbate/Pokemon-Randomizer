@@ -69,7 +69,11 @@ namespace PokemonRandomizer.UI
                 weights[weights.Count - 1].ComboBox.IsEnabled = false;
             }
             weights.Add(newWeight);
-            if(weights.Count >= referenceList.Count)
+            if (weights.Count > 1)
+            {
+                weights[0].RemoveButton.Visibility = Visibility.Visible;
+            }
+            if (weights.Count >= referenceList.Count)
             {
                 addButton.IsEnabled = false;
             }
@@ -112,6 +116,11 @@ namespace PokemonRandomizer.UI
             {
                 addButton.IsEnabled = true;
             }
+            if (weights.Count == 1)
+            {
+                weights[0].RemoveButton.Visibility = Visibility.Collapsed;
+            }
+            weights[0].Slider.IsEnabled = false;
             weights[weights.Count - 1].ComboBox.IsEnabled = true;
         }
 
@@ -124,12 +133,12 @@ namespace PokemonRandomizer.UI
             public T Item { get; set; }
             public double Weight 
             {
-                get => slider.Value;
-                set => slider.Value = value; 
+                get => Slider.Value;
+                set => Slider.Value = value; 
             }
-            public ComboBox ComboBox { get; private set; }
-
-            private readonly BoundSliderUI slider;
+            public ComboBox ComboBox { get; }
+            public Button RemoveButton { get; }
+            public BoundSliderUI Slider { get; }
 
             public WeightUI(T item, float weight, IReadOnlyList<ChoiceBoxItem> choices, WeightedSetUI<T> parent, bool isDefault)
             {
@@ -137,15 +146,12 @@ namespace PokemonRandomizer.UI
                 Item = item;
                 ComboBox = this.Add(new BoundComboBoxUI("", choices, FindIndex(item, choices), i => Item = choices[i].Item)).ComboBox;
                 ComboBox.MinWidth = parent.CbWidth;
-                slider = new BoundSliderUI("Chance", weight, (_) => parent.OnValueChanged(this)) { IsEnabled = !isDefault };
-                this.Add(slider);
-                if (!isDefault)
-                {
-                    // Remove Button
-                    var removeButton = new Button() { Content = "-" };
-                    removeButton.Click += (_, _2) => parent.Remove(this);
-                    this.Add(removeButton);
-                }
+                Slider = new BoundSliderUI("Chance", weight, (_) => parent.OnValueChanged(this)) { IsEnabled = !isDefault };
+                this.Add(Slider);
+                // Remove Button
+                RemoveButton = new Button() { Content = "-" };
+                RemoveButton.Click += (_, _2) => parent.Remove(this);
+                this.Add(RemoveButton);
             }
         }
     }
