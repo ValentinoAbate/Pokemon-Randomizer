@@ -12,6 +12,8 @@ namespace PokemonRandomizer.Backend.Utilities
         public const string offsetAttr = "offset";
         public const string pointerAttr = "pointer";
         public const string pointerPrefixAttr = "pointerPrefix";
+        public const string prefixAttr = "prefix";
+        public const string signatureAttr = "signature";
         public const string numAttr = "num";
         public const string sizeAttr = "size";
         public const string lengthAttr = "length";
@@ -115,6 +117,32 @@ namespace PokemonRandomizer.Backend.Utilities
                 }
                 catch { }
             }
+            if (HasPrefix(element))
+            {
+                try
+                {
+                    int offset = rom.FindFromPrefix(Attr(element, prefixAttr).Value);
+                    if (rom.IsValidOffset(offset))
+                    {
+                        if (isValidOffset == null || isValidOffset(rom, offset))
+                            return offset;
+                    }
+                }
+                catch { }
+            }
+            if (HasSignature(element))
+            {
+                try
+                {
+                    int offset = rom.FindFirst(Attr(element, signatureAttr).Value);
+                    if (rom.IsValidOffset(offset))
+                    {
+                        if (isValidOffset == null || isValidOffset(rom, offset))
+                            return offset;
+                    }
+                }
+                catch { }
+            }
             if (HasPointer(element))
             {
                 int offset = rom.ReadPointer(Pointer(element));
@@ -188,6 +216,16 @@ namespace PokemonRandomizer.Backend.Utilities
         public bool HasPointerPrefix(string element)
         {
             return HasElementWithAttr(element, pointerPrefixAttr);
+        }
+        /// <summary> returns true if the element has a "pointerPrefix" (pointer prefix) attribute </summary>
+        public bool HasPrefix(string element)
+        {
+            return HasElementWithAttr(element, prefixAttr);
+        }
+        /// <summary> returns true if the element has a "pointerPrefix" (pointer prefix) attribute </summary>
+        public bool HasSignature(string element)
+        {
+            return HasElementWithAttr(element, signatureAttr);
         }
 
         /// <summary> returns the given attribute of the element converted from hex string to int </summary> 

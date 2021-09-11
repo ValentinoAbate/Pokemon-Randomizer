@@ -44,6 +44,7 @@ namespace PokemonRandomizer.Backend.GenIII.Constants.ElementNames
         public const string runIndoors = "runIndoors";
         public const string textSpeed = "textSpeed";
         public const string evolveWithoutNatDex = "evolveWithoutNationalDex";
+        public const string stoneEvolveWithoutNatDex = "stoneEvolveWithoutNationalDex";
         public const string firstEncounter = "firstRoute";
         public const string hailHack = "hailHack";
     }

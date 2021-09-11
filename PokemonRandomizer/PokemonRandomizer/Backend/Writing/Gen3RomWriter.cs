@@ -93,13 +93,20 @@ namespace PokemonRandomizer.Backend.Writing
             }
             // Apply evolve without national dex hack if supported
             // Right now, only supports level-up evolves (not evo stones)
-            if(settings.EvolveWithoutNationalDex)
+            if(settings.EvolveWithoutNationalDex && metadata.IsFireRedOrLeafGreen)
             {
                 int offset = info.FindOffset(ElementNames.evolveWithoutNatDex, rom);
                 if(offset != Rom.nullPointer)
                 {
                     // Get the data from the attribute
-                    var byteData = info.HexArrayAttr(ElementNames.evolveWithoutNatDex, "data").Select((b) => (byte)b).ToArray();
+                    var byteData = info.ByteArrayAttr(ElementNames.evolveWithoutNatDex, "data");
+                    rom.WriteBlock(offset, byteData);
+                }
+                offset = info.FindOffset(ElementNames.stoneEvolveWithoutNatDex, rom);
+                if(offset != Rom.nullPointer)
+                {
+                    // Get the data from the attribute
+                    var byteData = info.ByteArrayAttr(ElementNames.stoneEvolveWithoutNatDex, "data");
                     rom.WriteBlock(offset, byteData);
                 }
             }
