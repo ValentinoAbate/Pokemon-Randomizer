@@ -67,6 +67,8 @@ namespace PokemonRandomizer.Backend.Randomization
         {
             var moveData = dataT.GetMoveData(move);
             var pokemon = data.pokemon;
+            if (pokemon.originalTmHmMtMoves.Contains(move))
+                return true;
             if (pokemon.types.Contains(moveData.type))
                 return true;
             if (pokemon.learnSet.Any((l) => l.move == moveData.move))

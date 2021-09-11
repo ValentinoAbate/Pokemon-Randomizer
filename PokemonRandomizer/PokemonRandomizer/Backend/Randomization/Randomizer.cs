@@ -100,11 +100,17 @@ namespace PokemonRandomizer.Backend.Randomization
                 foreach (var move in data.HMMoves)
                     moves.Remove(move);
             }
+            // Remove important TMs that will be kept if applicable if no duplicates is on
+            if (settings.KeepImportantTMsAndTutors && settings.PreventDuplicateTMsAndTutors)
+            {
+                moves.RemoveWhere(m => settings.ImportantTMsAndTutors.Contains(m) && data.TMMoves.Contains(m));
+            }
             // Randomize TM mappings
             for(int i = 0; i < data.TMMoves.Length; ++i)
             {
-                bool skipImportant = settings.KeepImportantTMsAndTutors && settings.ImportantTMsAndTutors.Contains(data.TMMoves[i]);
-                if (!skipImportant && rand.RollSuccess(settings.TMRandChance))
+                if (settings.KeepImportantTMsAndTutors && settings.ImportantTMsAndTutors.Contains(data.TMMoves[i]))
+                    continue; // Important TM moves have already been removed from the move pool, so this will not cause duplicates
+                if (rand.RollSuccess(settings.TMRandChance))
                     data.TMMoves[i] = rand.Choice(moves);
                 if (settings.PreventDuplicateTMsAndTutors)
                     moves.Remove(data.TMMoves[i]);
@@ -112,8 +118,9 @@ namespace PokemonRandomizer.Backend.Randomization
             // Randomize Move Tutor mappings
             for (int i = 0; i < data.tutorMoves.Length; ++i)
             {
-                bool skipImportant = settings.KeepImportantTMsAndTutors && settings.ImportantTMsAndTutors.Contains(data.tutorMoves[i]);
-                if (!skipImportant && rand.RollSuccess(settings.MoveTutorRandChance))
+                if (settings.KeepImportantTMsAndTutors && settings.ImportantTMsAndTutors.Contains(data.tutorMoves[i]))
+                    continue; // Important Tutor moves have already been removed from the move pool, so this will not cause duplicates
+                if (rand.RollSuccess(settings.MoveTutorRandChance))
                     data.tutorMoves[i] = rand.Choice(moves);
                 if (settings.PreventDuplicateTMsAndTutors)
                     moves.Remove(data.tutorMoves[i]);

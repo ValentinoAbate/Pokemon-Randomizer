@@ -1,5 +1,6 @@
 ﻿using PokemonRandomizer.Backend.EnumTypes;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -32,6 +33,7 @@ namespace PokemonRandomizer.Backend.DataStructures
                 // Link the evolutions and egg moves
                 LinkEvolutions();
                 LinkEggMoves();
+                LinkOriginalMoveLearns();
                 // Set up the names
                 PokemonNames = PokemonNationalDexOrder.Select((p) => p.Name).ToArray();
             }
@@ -99,9 +101,15 @@ namespace PokemonRandomizer.Backend.DataStructures
             foreach (var pokemon in Pokemon)
                 pokemon.evolvesFrom.Clear();
             foreach (var pokemon in Pokemon)
+            {
                 foreach (var evo in pokemon.evolvesTo)
+                {
                     if (evo.Type != EvolutionType.None)
+                    {
                         PokemonLookup[evo.Pokemon].evolvesFrom.Add(new Evolution(evo.Type, pokemon.species, evo.parameter));
+                    }
+                }
+            }
         }
         /// <summary>
         /// updates the "eggMoves" fields of all pokemon from their "evolvesFrom" field 
@@ -123,6 +131,27 @@ namespace PokemonRandomizer.Backend.DataStructures
                 {
                     pokemon.eggMoves = GetEggMoves(GetBaseStats(pokemon.evolvesFrom[0].Pokemon));
                 }
+            }
+        }
+
+        private void LinkOriginalMoveLearns()
+        {
+            static void LinkMoves(BitArray arr, Move[] moves, HashSet<Move> moveOutput)
+            {
+                for (int i = 0; i < arr.Count; ++i)
+                {
+                    if (arr[i])
+                    {
+                        moveOutput.Add(moves[i]);
+                    }
+                }
+            }
+            foreach(var pokemon in Pokemon)
+            { 
+                pokemon.originalTmHmMtMoves.Clear();
+                LinkMoves(pokemon.TMCompat, TMMoves, pokemon.originalTmHmMtMoves);
+                LinkMoves(pokemon.HMCompat, HMMoves, pokemon.originalTmHmMtMoves);
+                LinkMoves(pokemon.moveTutorCompat, tutorMoves, pokemon.originalTmHmMtMoves);
             }
         }
 
