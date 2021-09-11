@@ -25,7 +25,7 @@ namespace PokemonRandomizer.Backend.DataStructures.Scripts
 
         public override string ToString()
         {
-            return "give " + amount + " " + item.ToDisplayString() + " (" + messageType.ToDisplayString() + ")";
+            return $"give {amount} {item.ToDisplayString()} ({messageType.ToDisplayString()})";
         }
     }
 }

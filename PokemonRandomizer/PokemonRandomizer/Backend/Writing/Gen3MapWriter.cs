@@ -73,7 +73,7 @@ namespace PokemonRandomizer.Backend.Writing
 
             // Event Data
             if (map.eventData != null)
-                WriteMapEventData(rom, map.eventData, map.eventDataOffset);
+                WriteMapEventData(rom, map.eventData, map.eventDataOffset, metadata);
             // Connections
             if (map.connections != null)
                 WriteMapConnectionData(rom, map.connections, map.connectionOffset);
@@ -81,7 +81,7 @@ namespace PokemonRandomizer.Backend.Writing
             #endregion
         }
 
-        private void WriteMapEventData(Rom rom, MapEventData eventData, int offset)
+        private void WriteMapEventData(Rom rom, MapEventData eventData, int offset, RomMetadata metadata)
         {
             rom.Seek(offset);
             // TODO: Allow expansion for this data
@@ -120,7 +120,7 @@ namespace PokemonRandomizer.Backend.Writing
                     rom.WriteByte(npc.unknown6);
                     if (npc.script != null)
                     {
-                        scriptWriter.Write(npc.script, rom, npc.scriptOffset);
+                        scriptWriter.Write(npc.script, rom, npc.scriptOffset, metadata);
                     }
                 }
             }

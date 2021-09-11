@@ -11,14 +11,14 @@ namespace PokemonRandomizer.Backend.Reading
 
     public class Gen3ScriptParser
     {
-        public Script Parse(Rom rom, int offset)
+        public Script Parse(Rom rom, int offset, RomMetadata metadata)
         {
             var visited = new HashSet<int>();
-            var script = Parse(rom, offset, ref visited);
+            var script = Parse(rom, offset, metadata, ref visited);
             return script;
         }
 
-        private Script Parse(Rom rom, int offset, ref HashSet<int> visited)
+        private Script Parse(Rom rom, int offset, RomMetadata metadata, ref HashSet<int> visited)
         {
             rom.SaveOffset();
             rom.Seek(offset);
@@ -42,7 +42,7 @@ namespace PokemonRandomizer.Backend.Reading
                     // If we haven't encountered this offset, then parse the script at the goto location
                     if (!visited.Contains(gotoCommand.offset))
                     {
-                        gotoCommand.script = Parse(rom, gotoCommand.offset, ref visited);
+                        gotoCommand.script = Parse(rom, gotoCommand.offset, metadata, ref visited);
                     }
                     break;
                 }
@@ -57,8 +57,12 @@ namespace PokemonRandomizer.Backend.Reading
                     // If we haven't encountered this offset, then parse the branch
                     if (!visited.Contains(gotoCommand.offset))
                     {
-                        gotoCommand.script = Parse(rom, gotoCommand.offset, ref visited);
+                        gotoCommand.script = Parse(rom, gotoCommand.offset, metadata, ref visited);
                     }
+                }
+                else if(command.code == Gen3Command.special)
+                {
+                    script.Add(ParseSpecialCommand(command, metadata));
                 }
                 else if(command.code == Gen3Command.copyvarifnotzero)
                 {
@@ -163,6 +167,30 @@ namespace PokemonRandomizer.Backend.Reading
             shopCommand.shop.SetOriginalSize();
             rom.LoadOffset();
             return shopCommand;
+        }
+
+        private Command ParseSpecialCommand(Gen3Command command, RomMetadata metadata)
+        {
+            int specialCode = command.ArgData(0);
+            if (metadata.IsFireRedOrLeafGreen)
+            {
+                return specialCode switch
+                {
+                    Gen3Command.specialGiveNationalDexFrlg => new GivePokedexCommand { Type = GivePokedexCommand.PokedexType.National },
+                    Gen3Command.specialGiveRegionalDexFrlg => new GivePokedexCommand { Type = GivePokedexCommand.PokedexType.Regional },
+                    _ => command,
+                };
+            }
+            else if(metadata.IsEmerald)
+            {
+                return specialCode switch
+                {
+                    Gen3Command.specialGiveNationalDexEmerald => new GivePokedexCommand { Type = GivePokedexCommand.PokedexType.National },
+                    //Gen3Command.specialGiveRegionalDexFrlg => new GivePokedexCommand { Type = GivePokedexCommand.PokedexType.Regional },
+                    _ => command,
+                };
+            }
+            return command;
         }
 
         /// <summary>

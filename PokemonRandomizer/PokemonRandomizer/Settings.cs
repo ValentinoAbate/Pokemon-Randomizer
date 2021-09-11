@@ -310,9 +310,9 @@ namespace PokemonRandomizer
 
         #region Misc
 
-
         // Gen III Hacks and Tweaks
         public abstract bool RunIndoors { get; }
+        public abstract bool StartWithNationalDex { get; }
 
         // FRLG Hacks and Tweaks
         public abstract bool EvolveWithoutNationalDex { get; }

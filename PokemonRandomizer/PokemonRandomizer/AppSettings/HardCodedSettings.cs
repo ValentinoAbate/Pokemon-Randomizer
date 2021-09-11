@@ -418,6 +418,8 @@ namespace PokemonRandomizer.AppSettings
         // Gen III Hacks and Tweaks
         public override bool RunIndoors => true;
 
+        public override bool StartWithNationalDex => false;
+
         // FRLG Hacks and Tweaks
         public override bool EvolveWithoutNationalDex => true;
 

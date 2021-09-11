@@ -526,6 +526,12 @@ namespace PokemonRandomizer.Backend.Randomization
                         case GotoCommand @goto:
                             RandomizeScript(@goto.script);
                             break;
+                        case GivePokedexCommand givePokedex:
+                            if (settings.StartWithNationalDex)
+                            {
+                                givePokedex.Type = GivePokedexCommand.PokedexType.National;
+                            }
+                            break;
                         case GiveItemCommand giveItem:
                             if (giveItem.type == GiveItemCommand.Type.Normal && rand.RollSuccess(settings.FieldItemRandChance))
                             {

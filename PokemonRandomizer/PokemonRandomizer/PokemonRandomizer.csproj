@@ -115,6 +115,7 @@
     <Compile Include="Backend\DataStructures\PickupData.cs" />
     <Compile Include="Backend\DataStructures\RomMetadata.cs" />
     <Compile Include="Backend\DataStructures\Scripts\GiveEggCommand.cs" />
+    <Compile Include="Backend\DataStructures\Scripts\GivePokedexCommand.cs" />
     <Compile Include="Backend\DataStructures\Scripts\GivePokemonCommand.cs" />
     <Compile Include="Backend\DataStructures\Scripts\GotoCommand.cs" />
     <Compile Include="Backend\DataStructures\Scripts\GotoIfCommand.cs" />

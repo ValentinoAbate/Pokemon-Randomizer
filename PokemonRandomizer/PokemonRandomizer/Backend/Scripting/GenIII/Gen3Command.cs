@@ -286,6 +286,14 @@ namespace PokemonRandomizer.Backend.Scripting.GenIII
 
         #endregion
 
+        #region Special Code Constants
+
+        public const int specialGiveNationalDexFrlg = 0x16F;
+        public const int specialGiveRegionalDexFrlg = 0x181;
+        public const int specialGiveNationalDexEmerald = 0x1F3;
+
+        #endregion
+
         public static readonly Dictionary<byte, Arg[]> commandMap = new Dictionary<byte, Arg[]>()
         {
             {nop                 , noArgs            },
@@ -325,7 +333,7 @@ namespace PokemonRandomizer.Backend.Scripting.GenIII
             {comparevars         , word2             },
             {callasm             , pointer           },
             {setcode             , pointer           },
-            {special             , word              },
+            {special             , word              }, // Special Fire Red Doc: https://www.pokecommunity.com/showthread.php?t=184273
             {special2            , word2             },
             {waitstate           , noArgs            },
             {pause               , word              },

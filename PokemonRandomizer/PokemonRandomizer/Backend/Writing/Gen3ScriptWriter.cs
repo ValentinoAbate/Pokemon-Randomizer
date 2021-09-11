@@ -17,7 +17,7 @@ namespace PokemonRandomizer.Backend.Writing
         {
             this.itemRemap = itemRemap;
         }
-        public void Write(Script script, Rom rom, int offset)
+        public void Write(Script script, Rom rom, int offset, RomMetadata metadata)
         {
             rom.SaveOffset();
             rom.Seek(offset);
@@ -29,12 +29,15 @@ namespace PokemonRandomizer.Backend.Writing
                         rom.WriteByte(Gen3Command.gotoif);
                         rom.WriteByte(gotoIf.condition);
                         rom.WritePointer(gotoIf.offset);
-                        Write(gotoIf.script, rom, gotoIf.offset);
+                        Write(gotoIf.script, rom, gotoIf.offset, metadata);
                         break;
                     case GotoCommand @goto:
                         rom.WriteByte(Gen3Command.@goto);
                         rom.WritePointer(@goto.offset);
-                        Write(@goto.script, rom, @goto.offset);
+                        Write(@goto.script, rom, @goto.offset, metadata);
+                        break;
+                    case GivePokedexCommand givePokedex:
+                        WriteGivePokedexCommand(rom, givePokedex, metadata);
                         break;
                     case GiveItemCommand giveItem:
                         rom.WriteByte(Gen3Command.copyvarifnotzero);
@@ -115,6 +118,21 @@ namespace PokemonRandomizer.Backend.Writing
                 // If successful, write the new offset, else write the old one
                 rom.WritePointer(newOffset != null ? (int)newOffset : command.shopOffset);
             }
+        }
+
+        private void WriteGivePokedexCommand(Rom rom, GivePokedexCommand command, RomMetadata metadata)
+        {
+            rom.WriteByte(Gen3Command.special);
+            if (metadata.IsFireRedOrLeafGreen)
+            {
+                rom.WriteUInt16(command.Type == GivePokedexCommand.PokedexType.National ? Gen3Command.specialGiveNationalDexFrlg : Gen3Command.specialGiveRegionalDexFrlg);
+            }
+            else if (metadata.IsEmerald)
+            {
+                // TODO: properly write emerald regional dex
+                rom.WriteUInt16(command.Type == GivePokedexCommand.PokedexType.National ? Gen3Command.specialGiveNationalDexEmerald : Gen3Command.specialGiveRegionalDexFrlg);
+            }
+
         }
     }
 }

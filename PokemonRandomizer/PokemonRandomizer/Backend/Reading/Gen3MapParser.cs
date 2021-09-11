@@ -96,7 +96,7 @@ namespace PokemonRandomizer.Backend.Reading
                 map.mapData = ReadMapData(rom, metadata, map.mapDataOffset);
             // Event Data
             if (map.eventDataOffset != Rom.nullPointer)
-                map.eventData = ReadMapEventData(rom, map.eventDataOffset);
+                map.eventData = ReadMapEventData(rom, map.eventDataOffset, metadata);
             // Connections
             if (map.connectionOffset != Rom.nullPointer)
                 map.connections = ReadMapConnectionData(rom, map.connectionOffset);
@@ -129,7 +129,7 @@ namespace PokemonRandomizer.Backend.Reading
             }
             return mapData;
         }
-        private MapEventData ReadMapEventData(Rom rom, int offset)
+        private MapEventData ReadMapEventData(Rom rom, int offset, RomMetadata metadata)
         {
             var eventData = new MapEventData();
             rom.Seek(offset);
@@ -170,7 +170,7 @@ namespace PokemonRandomizer.Backend.Reading
                     };
                     if (npc.scriptOffset != Rom.nullPointer)
                     {
-                        npc.script = scriptParser.Parse(rom, npc.scriptOffset);
+                        npc.script = scriptParser.Parse(rom, npc.scriptOffset, metadata);
                     }
                     eventData.npcEvents.Add(npc);
                 }
