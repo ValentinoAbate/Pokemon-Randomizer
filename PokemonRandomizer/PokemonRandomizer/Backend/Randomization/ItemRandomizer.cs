@@ -5,6 +5,8 @@ namespace PokemonRandomizer.Backend.Randomization
 {
     using DataStructures;
     using EnumTypes;
+    using PokemonRandomizer.Backend.Utilities;
+
     public class ItemRandomizer
     {
         private readonly Random rand;
@@ -36,7 +38,7 @@ namespace PokemonRandomizer.Backend.Randomization
             }
             if (settings.BanMail)
             {
-                itemWeights.RemoveWhere(i => ItemData.IsMail(i.Item));
+                itemWeights.RemoveWhere(ItemUtils.IsMail);
             }
             return itemWeights.Count <= 0 ? input : rand.Choice(itemWeights).Item;
         }

@@ -58,6 +58,26 @@ namespace PokemonRandomizer.Backend.Randomization
             var types = DefinePokemonTypes();
             var items = DefineItemSet();
 
+            // Get original palettes
+            var tmTypePalettes = new Dictionary<PokemonType, int>();
+            int tmInd = 0;
+            foreach (var item in data.ItemData)
+            {
+                // Remap TM Pallets
+                if (item.IsTM())
+                {
+                    var moveData = data.GetMoveData(data.TMMoves[tmInd++]);
+                    if (!tmTypePalettes.ContainsKey(moveData.type))
+                    {
+                        tmTypePalettes.Add(moveData.type, item.paletteOffset);
+                    }
+                }
+            }
+            if(!tmTypePalettes.ContainsKey(PokemonType.BUG) && tmTypePalettes.ContainsKey(PokemonType.GRS))
+            {
+                tmTypePalettes.Add(PokemonType.BUG, tmTypePalettes[PokemonType.GRS]);
+            }
+
             #region Type Definitions
             // Randomize type traits
             // Generate ??? type traits (INCOMPLETE)
@@ -127,9 +147,22 @@ namespace PokemonRandomizer.Backend.Randomization
             }
             #endregion
 
-            #region Item Definitions (Nothing Yet)
+            #region Item Definitions
 
             // Prepare Item Remap Dictionary
+            tmInd = 0;
+            foreach (var item in data.ItemData)
+            {
+                // Remap TM Pallets
+                if (item.IsTM())
+                {
+                    var moveData = data.GetMoveData(data.TMMoves[tmInd++]);
+                    if(tmTypePalettes.TryGetValue(moveData.type, out int paletteOffset))
+                    {
+                        item.paletteOffset = paletteOffset;
+                    }
+                }
+            }
             // Find blank item entries with effect
             // Define Item Definitions
             // Hack in new items if applicable
@@ -500,7 +533,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 if (rand.RollSuccess(settings.TradeHeldItemRandChance))
                 {
                     trade.heldItem = itemRand.RandomItem(items, trade.heldItem, settings.TradeHeldItemSettings);
-                    if (ItemData.IsMail(trade.heldItem))
+                    if (trade.heldItem.IsMail())
                     {
                         if (trade.mailNum == 0xFF)
                             trade.mailNum = 0;
