@@ -5,6 +5,8 @@ using PokemonRandomizer.Backend.GenIII.Constants.ElementNames;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System;
+using static PokemonRandomizer.Backend.DataStructures.MoveData;
 
 namespace PokemonRandomizer.Backend.Reading
 {
@@ -91,18 +93,36 @@ namespace PokemonRandomizer.Backend.Reading
         // Read the move definitions
         private List<MoveData> ReadMoves(Rom rom, XmlManager info)
         {
-            List<MoveData> moveData = new List<MoveData>();
             // Exit early if the offset doesn't exist (feature unsupported)
             if (!info.FindAndSeekOffset(ElementNames.moveData, rom))
-                return moveData;
+                return new List<MoveData>();
             int moveCount = info.Num(ElementNames.moveData);
-            for (int i = 0; i <= moveCount; i++)
+            var moveData = new List<MoveData>(moveCount);
+            for (int i = 0; i <= moveCount; ++i)
             {
-                var move = new MoveData(rom)
+                var move = new MoveData()
                 {
-                    move = (Move)i
+                    move = (Move)i,
+                    effect = (MoveEffect)rom.ReadByte(),
+                    power = rom.ReadByte(),
+                    type = (PokemonType)rom.ReadByte(),
+                    accuracy = rom.ReadByte(),
+                    pp = rom.ReadByte(),
+                    effectChance = rom.ReadByte(),
+                    targets = (Targets)rom.ReadByte(),
+                    priority = rom.ReadByte(),
+                    flags = new BitArray(new byte[] { rom.ReadByte() }),
                 };
+                rom.Skip(3); // three bytes of 0x00
                 moveData.Add(move);
+            }
+            if (!info.FindAndSeekOffset(ElementNames.moveDescriptions, rom))
+                return moveData;
+            for (int i = 1; i <= moveCount; ++i)
+            {
+                var move = moveData[i];
+                move.Description = rom.ReadString(rom.ReadPointer());
+                move.OrigininalDescriptionLength = move.Description.Length;
             }
             return moveData;
         }
@@ -110,7 +130,7 @@ namespace PokemonRandomizer.Backend.Reading
         private Move[] ReadMoveMappings(string element, Rom rom, XmlManager info)
         {
             if (!info.FindAndSeekOffset(element, rom))
-                return new Move[0];
+                return Array.Empty<Move>();
             int numToRead = info.Num(element);
             Move[] moves = new Move[numToRead];
             for (int i = 0; i < numToRead; i++)
@@ -640,6 +660,7 @@ namespace PokemonRandomizer.Backend.Reading
                     extraData = rom.ReadUInt32(),
                 });
                 itemData[i].Description = rom.ReadString(itemData[i].descriptionOffset);
+                itemData[i].OriginalDescriptionLength = itemData[i].Description.Length;
             }
             // If we have the offset for the item sprites, read the item sprite data
             if (!info.FindAndSeekOffset(ElementNames.itemSprites, rom))

@@ -16,6 +16,7 @@ namespace PokemonRandomizer.Backend.DataStructures
         public byte holdEffect;
         public byte param;
         public string Description { get; set; }
+        public int OriginalDescriptionLength { get; set; }
         public int descriptionOffset;
         public bool IsKeyItem => keyItemValue > 0;
         // In RSE:
@@ -58,6 +59,7 @@ namespace PokemonRandomizer.Backend.DataStructures
             other.param = param;
             other.Description = Description;
             other.descriptionOffset = descriptionOffset;
+            other.OriginalDescriptionLength = OriginalDescriptionLength;
             other.keyItemValue = keyItemValue;
             other.RegisterableKeyItem = RegisterableKeyItem;
             other.pocket = pocket;

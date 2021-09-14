@@ -4,13 +4,16 @@
 <!-- Standard attribute definitionss -->
 <!-- size: the number of bytes in the data if singular or in a single item if a collection of data (int) -->
 <!-- num:  the number of items in the collection (only applies to collections) (int) -->
+<!-- length:  the number of characters in a relevant string (int) -->
 <!-- offset: the ROM offset of the data/collection of data (hex string) -->
 <!-- pointer: an offset where a pointer to the offset is usually stored. useful for dealing with hacked roms (hex string) -->
 <!-- pointerPrefix: a hex string that is a prefix to where a pointer to the offset is usually stored. useful for dealing with hacked roms (hex string) -->
+<!-- prefix: a hex string that is a prefix to the data. useful for dealing with hacked roms (hex string) -->
+<!-- signature: a hex string that is the start of the data being searched for. useful for dealing with hacked roms (hex string) -->
 
 <gen3RomInfo>
   <!-- Gen III Constants -->
-  <!-- Things in here should be assumed to be constant for all of gen III, or contant to FRLG+E, in which case they will be overridden in rsConstants -->
+  <!-- Data in here should be assumed to be constant for all of gen III, or constant to FRLG+E, in which case they will be overridden in rsConstants -->
   <constants>
     <!-- from dabomstew's UP randomizer source https://github.com/Dabomstew/universal-pokemon-randomizer -->
     <wildPokemon pointerPrefix="0x0348048009E00000FFFF0000" grassSlots="12" surfSlots="5" rockSmashSlots="5" fishSlots="10"/>
@@ -24,7 +27,7 @@
     <!-- Move Data -->
 
     <moveData pointer="0x1CC" num="354" size="12"/>
-    <moveNames pointer="0x148" />
+    <moveNames pointer="0x148" />  
 
     <!-- TMs, HMs, and Move Tutors -->
 
@@ -105,6 +108,10 @@
     <!-- Type Data -->
 
     <typeEffectiveness offset="0x31ace8"/>
+    
+    <!-- Move Data -->
+
+    <moveDescriptions pointer="0x1C3EFC"/>
 
     <!-- TMs, HMs, and Move Tutors -->
 
@@ -189,6 +196,7 @@
 
     <moveData pointer="0x00CA54"/>
     <moveNames pointer="0x02E18C"/>
+    <moveDescriptions pointer="0x09FE68"/>
 
     <!-- Pokemon Definitions -->
 
@@ -213,6 +221,10 @@
   <AXVE0>
     <!-- Metadata -->
     <inheritFrom>rsConstants</inheritFrom>
+    
+    <!-- Move Data -->
+
+    <moveDescriptions pointer="0x0A0494"/>
 
     <!-- Static Pokemon -->
 
@@ -229,6 +241,10 @@
   <AXVE1>
     <!-- Metadata -->
     <inheritFrom>AXVE0</inheritFrom>
+    
+    <!-- Move Data -->
+
+    <moveDescriptions pointer="0x0A04B4"/>
 
     <!-- Static Pokemon -->
 
@@ -303,6 +319,10 @@
     <!-- The address where the type effectiveness definitions start -->
     <typeEffectiveness offset="0x24F050"/>
 
+    <!-- Move Data -->
+
+    <moveDescriptions pointer="0x0E5440"/>
+
     <!-- TMs, HMs, and Move Tutors -->
 
     <!-- TM Move mappings -->
@@ -360,6 +380,9 @@
 
     <inheritFrom>BPRE0</inheritFrom>
 
+    <!-- Move Data -->
+
+    <moveDescriptions pointer="0x0E5418"/>
 
     <!-- Items -->
 
@@ -371,6 +394,10 @@
     <!-- Metadata -->
 
     <inheritFrom>BPRE0</inheritFrom>
+
+    <!-- Move Data -->
+
+    <moveDescriptions pointer="0x0E5454"/>
 
     <!-- Items -->
 
@@ -385,9 +412,12 @@
     <!-- Metadata -->
     
     <inheritFrom>BPRE1</inheritFrom>
+
+    <!-- Move Data -->
+
+    <moveDescriptions pointer="0x0E542C"/>
     
     <!-- Items -->
-
     
   </BPGE1>
 

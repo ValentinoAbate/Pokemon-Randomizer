@@ -290,21 +290,11 @@ namespace PokemonRandomizer.Backend.DataStructures
 
             }
         }
-        
-        // Reads a MoveData from the rom's internal offset
-        public MoveData(Rom rom)
-        {
-            effect = (MoveEffect)rom.ReadByte();
-            power = rom.ReadByte();
-            type = (PokemonType)rom.ReadByte();
-            accuracy = rom.ReadByte();
-            pp = rom.ReadByte();
-            effectChance = rom.ReadByte();
-            targets = (Targets)rom.ReadByte();
-            priority = rom.ReadByte();
-            flags = new BitArray(new byte[]{ rom.ReadByte() });
-            rom.Skip(3); // three bytes of 0x00
-        }
+
+        public string Description { get; set; }
+        public int OrigininalDescriptionLength { get; set; }
+
+        public MoveData() { }
 
         public MoveData(MoveData toCopy)
         {
@@ -317,6 +307,8 @@ namespace PokemonRandomizer.Backend.DataStructures
             targets = toCopy.targets;
             priority = toCopy.priority;
             flags = new BitArray(toCopy.flags);
+            Description = toCopy.Description;
+            OrigininalDescriptionLength = toCopy.OrigininalDescriptionLength;
         }
 
         public override string ToString()
