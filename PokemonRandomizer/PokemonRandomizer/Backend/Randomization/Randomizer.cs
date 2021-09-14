@@ -58,26 +58,6 @@ namespace PokemonRandomizer.Backend.Randomization
             var types = DefinePokemonTypes();
             var items = DefineItemSet();
 
-            // Get original palettes
-            var tmTypePalettes = new Dictionary<PokemonType, int>();
-            int tmInd = 0;
-            foreach (var item in data.ItemData)
-            {
-                // Remap TM Pallets
-                if (item.IsTM())
-                {
-                    var moveData = data.GetMoveData(data.TMMoves[tmInd++]);
-                    if (!tmTypePalettes.ContainsKey(moveData.type))
-                    {
-                        tmTypePalettes.Add(moveData.type, item.paletteOffset);
-                    }
-                }
-            }
-            if(!tmTypePalettes.ContainsKey(PokemonType.BUG) && tmTypePalettes.ContainsKey(PokemonType.GRS))
-            {
-                tmTypePalettes.Add(PokemonType.BUG, tmTypePalettes[PokemonType.GRS]);
-            }
-
             #region Type Definitions
             // Randomize type traits
             // Generate ??? type traits (INCOMPLETE)
@@ -112,6 +92,27 @@ namespace PokemonRandomizer.Backend.Randomization
             #endregion
 
             #region TMs, HMs, and Move Tutor Move Mappings
+
+            // Get original TM palettes
+            var tmTypePalettes = new Dictionary<PokemonType, int>();
+            int tmInd = 0;
+            foreach (var item in data.ItemData)
+            {
+                // Remap TM Pallets
+                if (item.IsTM())
+                {
+                    var moveData = data.GetMoveData(data.TMMoves[tmInd++]);
+                    if (!tmTypePalettes.ContainsKey(moveData.type))
+                    {
+                        tmTypePalettes.Add(moveData.type, item.paletteOffset);
+                    }
+                }
+            }
+            if (!tmTypePalettes.ContainsKey(PokemonType.BUG) && tmTypePalettes.ContainsKey(PokemonType.GRS))
+            {
+                tmTypePalettes.Add(PokemonType.BUG, tmTypePalettes[PokemonType.GRS]);
+            }
+            // Get Potential Move Choices
             var moves = EnumUtils.GetValues<Move>().ToHashSet();
             moves.Remove(Move.None); // Remove none as a possible choice
             // Remove HM moves if applicable
@@ -145,24 +146,25 @@ namespace PokemonRandomizer.Backend.Randomization
                 if (settings.PreventDuplicateTMsAndTutors)
                     moves.Remove(data.tutorMoves[i]);
             }
-            #endregion
-
-            #region Item Definitions
-
-            // Prepare Item Remap Dictionary
+            // Remap TM Pallets
             tmInd = 0;
             foreach (var item in data.ItemData)
             {
-                // Remap TM Pallets
                 if (item.IsTM())
                 {
                     var moveData = data.GetMoveData(data.TMMoves[tmInd++]);
-                    if(tmTypePalettes.TryGetValue(moveData.type, out int paletteOffset))
+                    if (tmTypePalettes.TryGetValue(moveData.type, out int paletteOffset))
                     {
                         item.paletteOffset = paletteOffset;
                     }
                 }
             }
+            #endregion
+
+            #region Item Definitions
+
+            // Prepare Item Remap Dictionary
+
             // Find blank item entries with effect
             // Define Item Definitions
             // Hack in new items if applicable
