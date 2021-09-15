@@ -51,7 +51,6 @@ IDEAS //////////////////////////////////////////////////////////////////////////
 	- Encounter Bank habitat theming (FRLG have a habitat attribute in the pokedex. an encounter bank's base habitat can be taken from the majorite habitat of pokemon that are encountered there) (FRLG or Aggregate mode only)
 	- Encounter Bank ratio weighting (number of times that pokemon appears in that encounter slot in the input ROM)
 - TM Compat Randomization
-	- Intelligent - record original TM / MT learns and turn those moves on if present
 	- Intelligent - use original TM / MT learn type ratios to guide new move choices
 	- Use a move similarity factor to guide new move choices (I.E if could learn bite, consider crunch, fire fang, etc to be learnable)
 	- Intelligent - potentially keep number to a certain degree (pmkn with no compat stay that way - Magikarp, Wobbufett etc.). Maybe a new setting - IntelligentKeepNumber / NumberAware
@@ -75,6 +74,13 @@ IDEAS //////////////////////////////////////////////////////////////////////////
 	- Ensures all pokemon are obtainable in the game
 	- Hardcore:
 		- To obtain all pokemon, you must do all in-game trades, special events (like mew), obtain all gift pokemon, and baby pokemon must be obtained from breeding or gift eggs
+- TM Text Fix+:
+	- For text that is more than maximum allowed lines after reformatting, abbreviate text and try the reformat again
+		- Example: remove "the foe" and "the foe's" and "that is"
+- Dream Team:
+	- Pokemon are given to the player in poke balls in the starting town
+	- Pokemon are optionally given to the player as in-game trades in the first town (allowing the player to give custom IV values and nicknames, etc)?
+		- May cause boosted exp which could be undesirable (may be some way to reset OT)
 
 FEATURES ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -101,25 +107,24 @@ FEATURES ///////////////////////////////////////////////////////////////////////
 	- Maps
 	- Signs
 	- Triggers
-- Dream Team: A feature that allows you to set up a team from the beginning of the game
-	- Can choose 6 custom pokemon, or choose parameters to generate a team with
-		- So far includes type filters, legendary / illegal evo filters, and TotalBST upper and lower bounds
-	- Pokemon are given to the player
-		- V1: in the first area
-		- V2: in poke balls in the starting town
-		- V3: as in-game trades in the first town (allowing the player to give custom IV values and nicknames, etc)?
-			- May cause boosted exp which could be undesirable
-- TM Text setting
 - Multi-Rom Data aggregation
 	- For instance, use emerald as a base but pull additional classes and moveset updates from FireRed
 - Berry Tree Randomization
 - Egg move writing
+- Move description writing
+- Move tutor NPC text fix
 - Ban selfdestruct works by move effect rather than explicit move number
 - Wally Text Fix ("RALTS" to current pokemon)
 - Game corner randomization????
 	- High stakes roulette
 - Money Scaling
 - Min moves added randomization support
+- UI:
+	- ROM / Randomizer info readout. Add to the randomizer tab and make the top part "settings"
+	- Name / Code of opened rom
+	- Current version
+	- Is update availible?
+	- Downloads link
 
 CLEANUP /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

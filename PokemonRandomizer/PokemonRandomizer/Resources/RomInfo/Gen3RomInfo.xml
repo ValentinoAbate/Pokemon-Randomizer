@@ -55,6 +55,10 @@
     
     <mapBanks pointerPrefix="0x80180068890B091808687047"/>
     
+    <!-- UI -->
+
+    <textBox lineLength="36"/>
+    
   </constants>
 
   <!-- RSE Constants -->
@@ -63,6 +67,10 @@
     <!-- Metadata -->
 
     <inheritFrom>constants</inheritFrom>
+
+    <!-- Items -->
+
+    <itemDefinitions descriptionLineLength="18"/>
     
     <!-- Special Trainer Battles -->
 
@@ -285,6 +293,7 @@
 
     <!-- Items -->
 
+    <itemDefinitions descriptionLineLength="24"/>
     <pickupItems num="16"/>
 
     <!-- Static Pokemon -->

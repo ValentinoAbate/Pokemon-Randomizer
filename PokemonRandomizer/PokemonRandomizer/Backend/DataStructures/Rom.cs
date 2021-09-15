@@ -399,17 +399,17 @@ namespace PokemonRandomizer.Backend.DataStructures
         /// A pointer on gen 3 ROMs is stored as a 32-bit number which points to a location in RAM where the game would be running
         /// <para> However, the actual address in the ROM is the first 24 bits, because the ROM is loaded into RAM at ramOffset </para>
         /// This method returns the 24-bit ROM address unless readRamAddy is set to true. To get the RAM adress, simply add ramOffset</summary>
-        public int ReadPointer(int offset, bool readRamAddy = false)
+        public int ReadPointer(int offset, bool readRamOffset = false)
         {
-            return readRamAddy ? ReadUInt(offset, pointerSize) : ReadUInt(offset, pointerSize - 1);
+            return readRamOffset ? ReadUInt(offset, pointerSize) : ReadUInt(offset, pointerSize - 1);
         }
         /// <summary> Reads a pointer from the File at the internal offset.
         /// A pointer on gen 3 ROMs is stored as a 32-bit number which points to a location in RAM where the game would be running
         /// <para> However, the actual address in the ROM is the first 24 bits, because the ROM is loaded into RAM at ramOffset </para>
         /// This method returns the 24-bit ROM address unless readRamAddy is set to true. To get the RAM adress, simply add ramOffset</summary>
-        public int ReadPointer(bool readRamAddy = false)
+        public int ReadPointer(bool readRamOffset = false)
         {
-            return readRamAddy ? ReadUInt(pointerSize) : ReadUInt(pointerSize) - ramOffset;
+            return readRamOffset ? ReadUInt(pointerSize) : ReadUInt(pointerSize) - ramOffset;
         }
         /// <summary>Writes a UInt of specified number of bytes to the internalOffset </summary>
         private void WriteUInt(int value, int numBytes)
@@ -437,15 +437,15 @@ namespace PokemonRandomizer.Backend.DataStructures
         public void WriteUInt16(int offset, int value) => WriteUInt(offset, value, 2);
         /// <summary>Writes a pointer to the File (a 32-bit number).
         /// If the number given is a 24-bit ROM address, it is converted to a 32-bit RAM adress by adding ramOffset </summary>
-        public void WritePointer(int value, bool isRomAddy = true)
+        public void WritePointer(int value, bool isRomOffset = true)
         {
-            WriteUInt(isRomAddy ? ramOffset + value : value, pointerSize);
+            WriteUInt(isRomOffset ? ramOffset + value : value, pointerSize);
         }
         /// <summary>Writes a pointer to the File (a 32-bit number).
         /// If the number given is a 24-bit ROM address, it is converted to a 32-bit RAM adress by adding ramOffset </summary>
-        public void WritePointer(int offset, int value, bool isRomAddy = true)
+        public void WritePointer(int offset, int value, bool isRomOffset = true)
         {
-            WriteUInt(offset, isRomAddy ? ramOffset + value : value, pointerSize);
+            WriteUInt(offset, isRomOffset ? ramOffset + value : value, pointerSize);
         }
         #endregion
 
@@ -534,10 +534,10 @@ namespace PokemonRandomizer.Backend.DataStructures
             return text;
         }
 
-        private byte[] TranslateString(string text)
+        public byte[] TranslateString(string text, bool includeTerminator = false)
         {
-            // text is strictly longer than the tranlated byte list due to groups and escape chars
-            var bytes = new List<byte>(text.Length);
+            // text (+1 if adding a terminator) is strictly longer than the tranlated byte list due to groups and escape chars
+            var bytes = new List<byte>(includeTerminator ? text.Length + 1 : text.Length);
             for(int i = 0; i < text.Length; ++i)
             {
                 char currChar = text[i];
@@ -582,6 +582,11 @@ namespace PokemonRandomizer.Backend.DataStructures
                     Logger.main.Error("Unrecognized text symbol: " + currSym);
                 }
             }
+            // Add a terminator if desired
+            if (includeTerminator)
+            {
+                bytes.Add(textTerminatorSym);
+            }
             return bytes.ToArray();
         }
 
@@ -609,23 +614,19 @@ namespace PokemonRandomizer.Backend.DataStructures
                 int lengthUsed = translated.Length + 1;
                 if(lengthUsed < length)
                 {
-                    SetBlock(offset + lengthUsed, length - lengthUsed, 0x00);
+                    WipeBlock(offset + lengthUsed, length - lengthUsed);
                 }
             }
         }
 
         public void WriteVariableLengthString(string text)
         {
-            var translated = TranslateString(text);
-            WriteBlock(translated);
-            WriteByte(textTerminatorSym);
+            WriteBlock(TranslateString(text, true));
         }
 
         public void WriteVariableLengthString(int offset, string text)
         {
-            var translated = TranslateString(text);
-            WriteBlock(offset, translated);
-            WriteByte(offset + translated.Length, textTerminatorSym);
+            WriteBlock(offset, TranslateString(text, true));
         }
 
         #endregion

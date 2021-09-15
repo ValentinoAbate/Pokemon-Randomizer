@@ -670,6 +670,7 @@ namespace PokemonRandomizer.Backend.Writing
         {
             if (!info.FindAndSeekOffset(ElementNames.itemData, rom))
                 return;
+            int descriptionLineLength = info.IntAttr(ElementNames.itemData, "descriptionLineLength");
             foreach (var item in itemData)
             {
                 rom.WriteFixedLengthString(item.Name, ItemData.nameLength);
@@ -677,7 +678,18 @@ namespace PokemonRandomizer.Backend.Writing
                 rom.WriteUInt16(item.Price);
                 rom.WriteByte(item.holdEffect);
                 rom.WriteByte(item.param);
-                rom.WritePointer(item.descriptionOffset);
+                item.Description = TextUtils.Reformat(item.Description, '\n', descriptionLineLength);
+                if(item.Description.Length == item.OriginalDescriptionLength)
+                {
+                    rom.WritePointer(item.descriptionOffset);
+                    // Description may have changed even if length didn't
+                    rom.WriteVariableLengthString(item.descriptionOffset, item.Description);
+                }
+                else
+                {
+                    // Description has changed
+                    rom.WritePointer(rom.WriteInFreeSpace(rom.TranslateString(item.Description, true)) ?? item.descriptionOffset);
+                }
                 rom.WriteByte(item.keyItemValue);
                 rom.WriteByte(Convert.ToByte(item.RegisterableKeyItem));
                 rom.WriteByte(item.pocket);

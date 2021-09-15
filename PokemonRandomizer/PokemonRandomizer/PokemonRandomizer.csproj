@@ -158,6 +158,7 @@
     <Compile Include="Backend\Utilities\ItemUtils.cs" />
     <Compile Include="Backend\Utilities\PokemonUtils.cs" />
     <Compile Include="Backend\Utilities\RomDiff.cs" />
+    <Compile Include="Backend\Utilities\TextUtils.cs" />
     <Compile Include="Backend\Writing\Gen3MapWriter.cs" />
     <Compile Include="Backend\Writing\Gen3ScriptWriter.cs" />
     <Compile Include="Backend\Writing\RomWriter.cs" />

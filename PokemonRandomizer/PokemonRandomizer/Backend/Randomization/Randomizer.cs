@@ -157,6 +157,7 @@ namespace PokemonRandomizer.Backend.Randomization
                     {
                         item.paletteOffset = paletteOffset;
                     }
+                    item.Description = moveData.Description;
                 }
             }
             #endregion
