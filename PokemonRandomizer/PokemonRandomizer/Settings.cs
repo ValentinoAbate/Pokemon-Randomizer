@@ -271,7 +271,7 @@ namespace PokemonRandomizer
                         if(HailHackSetting != HailHackOption.None)
                         {
                             var modWeights = new WeightedSet<Map.Weather>(BattleWeatherBalancedWeights);
-                            modWeights.RemoveWhere((w) => Map.WeatherAffectsBattle(w, HailHackSetting));
+                            modWeights.RemoveWhere((w) => !Map.WeatherAffectsBattle(w, HailHackSetting));
                             return modWeights;
                         }
                         return BattleWeatherBalancedWeights;
