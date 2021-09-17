@@ -2,23 +2,9 @@
 {
     public class SpecialPokemonDataModel : DataModel
     {
-        public StartersDataModel StarterData { get; set; }
-        public InGameTradesDataModel TradeData { get; set; }
-        public GiftPokemonDataModel GiftData { get; set; }
-
-        public DreamTeamDataModel DreamTeamData { get; set; }
-
-        public SpecialPokemonDataModel()
-        {
-
-        }
-
-        public SpecialPokemonDataModel(StartersDataModel starterData, InGameTradesDataModel tradesData, GiftPokemonDataModel giftData, DreamTeamDataModel dreamTeamData)
-        {
-            TradeData = tradesData;
-            StarterData = starterData;
-            GiftData = giftData;
-            DreamTeamData = dreamTeamData;
-        }
+        public StartersDataModel StarterData { get; set; } = new StartersDataModel();
+        public InGameTradesDataModel TradeData { get; set; } = new InGameTradesDataModel();
+        public GiftPokemonDataModel GiftData { get; set; } = new GiftPokemonDataModel();
+        public DreamTeamDataModel DreamTeamData { get; set; } = new DreamTeamDataModel();
     }
 }
