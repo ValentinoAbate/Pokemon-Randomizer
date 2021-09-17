@@ -162,7 +162,7 @@ namespace PokemonRandomizer.Backend.Randomization
             }
             #endregion
 
-            #region Item Definitions
+            #region Item Definitions (NOTHING YET)
 
             // Prepare Item Remap Dictionary
 
@@ -352,12 +352,26 @@ namespace PokemonRandomizer.Backend.Randomization
                             void AddMoveToEvoTreeMoveSet(PokemonBaseStats p, Move m, int level, int creep = 0)
                             {
                                 p.learnSet.Add(m, level);
-                                foreach(var evo in p.evolvesTo)
+                                for (int i = 0; i < p.evolvesTo.Length; ++i)
                                 {
+                                    var evo = p.evolvesTo[i];
                                     if (!evo.IsRealEvolution)
                                         return;
                                     // Make this stable with the Dunsparse Plague
                                     if (evo.Pokemon == Pokemon.DUNSPARCE && settings.DunsparsePlaugeChance > 0)
+                                        continue;
+                                    // Don't add the move twice to pokemon that appear twice in the same evoltion tree
+                                    // Occurs with fixed evolutions where the original trade evolution is left
+                                    bool duplicate = false;
+                                    for(int j = 0; j < i; ++j)
+                                    {
+                                        if(p.evolvesTo[j].Pokemon == evo.Pokemon)
+                                        {
+                                            duplicate = true;
+                                            break;
+                                        }
+                                    }
+                                    if (duplicate)
                                         continue;
                                     AddMoveToEvoTreeMoveSet(data.GetBaseStats(evo.Pokemon), m, level + creep, creep);
                                 }
