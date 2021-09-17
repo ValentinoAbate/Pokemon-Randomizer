@@ -46,6 +46,7 @@
             </MenuItem>
             <MenuItem Header="Help">
                 <MenuItem Header="About" Click="ShowAboutWindow"/>
+                <MenuItem Header="Open Download Page in Browser" Click="GoToDownloadPage"/>
             </MenuItem>
         </Menu>
         

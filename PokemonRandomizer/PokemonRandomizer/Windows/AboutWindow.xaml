@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PokemonRandomizer.Windows"
         mc:Ignorable="d"
-        Title="About" Height="150" Width="250" WindowStartupLocation="CenterOwner" WindowStyle="SingleBorderWindow" ShowInTaskbar="False" ResizeMode="NoResize">
+        Title="About" Height="165" Width="250" WindowStartupLocation="CenterOwner" WindowStyle="SingleBorderWindow" ShowInTaskbar="False" ResizeMode="NoResize">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Name="ContentRow" Height="*" ></RowDefinition>
@@ -19,6 +19,11 @@
             <Label Content="Support:" Margin="0,-5,0,5" FontSize="13"/>
             <TextBlock TextWrapping="WrapWithOverflow" VerticalAlignment="Center" Margin="5,-5,5,5" FontSize="11">
                 Emerald (BPEE), FireRed v1.0 (BPRE-01)
+            </TextBlock>
+            <TextBlock Margin="5,2,0,5" FontSize="10">           
+                <Hyperlink NavigateUri="https://github.com/ValentinoAbate/Pokemon-Randomizer/releases" RequestNavigate="GoToDownloadPage">
+                    Download page (check for updates)
+                </Hyperlink>
             </TextBlock>
         </StackPanel>
         <StackPanel Grid.Row="1" >

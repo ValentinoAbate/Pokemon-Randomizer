@@ -16,6 +16,7 @@ namespace PokemonRandomizer
     using Backend.Utilities.Debug;
     using Backend.Writing;
     using PokemonRandomizer.AppSettings;
+    using System.Diagnostics;
     using UI;
     using UI.Json;
     using UI.Models;
@@ -497,6 +498,15 @@ namespace PokemonRandomizer
             SetUIEnabled(true);
         }
 
-#endregion
+        private void GoToDownloadPage(object sender, RoutedEventArgs e)
+        {
+            string url = "https://github.com/ValentinoAbate/Pokemon-Randomizer/releases";
+            Process.Start(new ProcessStartInfo(url));
+            e.Handled = true;
+        }
+
+        #endregion
+
+
     }
 }
