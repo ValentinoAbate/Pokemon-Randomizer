@@ -678,8 +678,11 @@ namespace PokemonRandomizer.Backend.Writing
                 rom.WriteUInt16(item.Price);
                 rom.WriteByte(item.holdEffect);
                 rom.WriteByte(item.param);
-                item.Description = TextUtils.Reformat(item.Description, '\n', descriptionLineLength);
-                if(item.Description.Length == item.OriginalDescriptionLength)
+                if (item.ReformatDescription)
+                {
+                    item.Description = TextUtils.Reformat(item.Description, '\n', descriptionLineLength);
+                }
+                if(item.Description.Length == item.OriginalDescription.Length)
                 {
                     rom.WritePointer(item.descriptionOffset);
                     // Description may have changed even if length didn't

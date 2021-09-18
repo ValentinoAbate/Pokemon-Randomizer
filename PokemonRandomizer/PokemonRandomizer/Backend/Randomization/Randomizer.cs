@@ -158,6 +158,7 @@ namespace PokemonRandomizer.Backend.Randomization
                         item.paletteOffset = paletteOffset;
                     }
                     item.Description = moveData.Description;
+                    item.ReformatDescription = true;
                 }
             }
             #endregion
@@ -806,18 +807,7 @@ namespace PokemonRandomizer.Backend.Randomization
             #endregion
 
             #region Debugging / Testing
-            var tmLearns = new Dictionary<Pokemon, List<Move>>();
-            foreach(var pkmn in data.Pokemon)
-            {
-                var moveList = new List<Move>();
-                for (int i = 0; i < pkmn.TMCompat.Length; ++i)
-                    if (pkmn.TMCompat[i])
-                        moveList.Add(data.TMMoves[i]);
-                tmLearns.Add(pkmn.species, moveList);
-            }
 
-            //data.UseUnknownTypeForMoves = true;
-            //data.MoveData[(int)Move.TACKLE].type = PokemonType.Unknown;
             #endregion
 
             data.CalculateMetrics();

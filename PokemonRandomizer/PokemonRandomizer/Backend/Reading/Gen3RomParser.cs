@@ -660,7 +660,7 @@ namespace PokemonRandomizer.Backend.Reading
                     extraData = rom.ReadUInt32(),
                 });
                 itemData[i].Description = rom.ReadString(itemData[i].descriptionOffset);
-                itemData[i].OriginalDescriptionLength = itemData[i].Description.Length;
+                itemData[i].SetOriginalValues();
             }
             // If we have the offset for the item sprites, read the item sprite data
             if (!info.FindAndSeekOffset(ElementNames.itemSprites, rom))
