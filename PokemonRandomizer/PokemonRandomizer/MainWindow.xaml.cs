@@ -102,21 +102,43 @@ namespace PokemonRandomizer
             Logger.main.OnLog += OnLog;
         }
 
+        private List<Logger.LogData> logData = new List<Logger.LogData>();
         private void OnLog(Logger.LogData data)
         {
-            if(data.level != Logger.Level.Info)
+            logData.Add(data);
+        }
+        private void ProcessLogData()
+        {
+            if (logData.Count <= 0)
+                return;
+            int oldErrorCount = errorCount;
+            string latestErrorMsg = string.Empty;
+            foreach(var data in logData)
             {
-                if(data.level == Logger.Level.Error)
+                if (data.level == Logger.Level.Error)
                 {
                     ++errorCount;
-                    lblInfoBoxErrorCount.Content = errorCount + (errorCount == 1 ? " Error" : " Errors");
+                    latestErrorMsg = data.message;
                 }
-                SetInfoBox(data.ToString());
             }
-            if(Logger.main.Count == 1)
+            if(errorCount != oldErrorCount)
             {
-                OnPropertyChanged("LogNotEmpty");
+                lblInfoBoxErrorCount.Content = errorCount + (errorCount == 1 ? " Error" : " Errors");
+                SetInfoBox(latestErrorMsg);
             }
+            OnPropertyChanged("LogNotEmpty");
+            logData.Clear();
+        }
+        private void LogError(string message)
+        {
+            Logger.main.Error(message);
+            ProcessLogData();
+        }
+
+        private void LogInfo(string message)
+        {
+            Logger.main.Info(message);
+            ProcessLogData();
         }
 
         private void SetInfoBox(string content)
@@ -191,7 +213,7 @@ namespace PokemonRandomizer
             }
             else
             {
-                Logger.main.Error("Failed to open rom - unsupported generation (" + metadata.Gen.ToString() + ")");
+                LogError("Failed to open rom - unsupported generation (" + metadata.Gen.ToString() + ")");
                 return false;
             }
 
@@ -269,13 +291,13 @@ namespace PokemonRandomizer
             if (openFileDialog.ShowDialog() == true)
             {
                 void Open() => GetRomData(File.ReadAllBytes(openFileDialog.FileName));
-                static void Error(Exception e) => Logger.main.Error($"Failed to open rom: {e.Message}");
+                void Error(Exception e) => LogError($"Failed to open rom: {e.Message}");
                 void Success()
                 {
                     IsROMLoaded = true;
                     // Log open and set info box
                     string msg = $"Rom opened: {metadata.Name} ({metadata.Code})"; ;
-                    Logger.main.Info(msg);
+                    LogInfo(msg);
                     SetInfoBox(msg);
                     InitializeRomDependentUI(RomData, Metadata);
                 }
@@ -291,12 +313,12 @@ namespace PokemonRandomizer
         private void SaveFile<T>(string path, string name, Func<T[]> fileFn, Action<string, T[]> writeFn, string writingMsg = null)
         {
             void Save() => writeFn(path, fileFn());
-            void Error(Exception e) => Logger.main.Error($"Failed to save {name.ToLower()}: {e.Message}");
+            void Error(Exception e) => LogError($"Failed to save {name.ToLower()}: {e.Message}");
             void Success()
             {
                 // Log open and set info box
                 string msg = $"{name} saved to {path}";
-                Logger.main.Info(msg);
+                LogInfo(msg);
                 SetInfoBox(msg);
             }
             PauseUIAndRunInBackground(writingMsg ?? $"Saving {name.ToLower()}...", Save, Success, Error);
@@ -336,7 +358,7 @@ namespace PokemonRandomizer
         {
             if(Rom == null)
             {
-                Logger.main.Error("Diff Error: Diff cannot be run with no open rom");
+                LogError("Diff Error: Diff cannot be run with no open rom");
                 return;
             }
             var openFileDialog = new OpenFileDialog
@@ -353,7 +375,7 @@ namespace PokemonRandomizer
                     var metadata2 = new RomMetadata(rawRom2);
                     if(metadata2.Gen != Metadata.Gen)
                     {
-                        Logger.main.Error("Diff Error: Roms have different generations");
+                        LogError("Diff Error: Roms have different generations");
                         return;
                     }
                     var rom2 = new Rom(rawRom2, 0x00, 0x00); // No free space data, will do later
@@ -373,7 +395,7 @@ namespace PokemonRandomizer
                 }
                 catch (IOException exception)
                 {
-                    Logger.main.Error(openRomError + exception.Message);
+                    LogError(openRomError + exception.Message);
                 }
             }
         }
@@ -473,13 +495,13 @@ namespace PokemonRandomizer
                     }
                     AppData = JsonSerializer.Deserialize<ApplicationDataModel>(file[0], serializerOptions);
                 }
-                static void Error(Exception e) => Logger.main.Error($"Preset load error: {e.Message}");
+                void Error(Exception e) => LogError($"Preset load error: {e.Message}");
                 void Success()
                 {
                     IsROMLoaded = true;
                     // Log open and set info box
                     string msg = $"Preset loaded: {openFileDialog.FileName}";
-                    Logger.main.Info(msg);
+                    LogInfo(msg);
                     SetInfoBox(msg);
                     InitializeAppData();
                 }
