@@ -62,8 +62,6 @@ IDEAS //////////////////////////////////////////////////////////////////////////
 		- Power similarity
 		- Learn level similarity (maybe need to compare std.dev and average for similarity)
 			- Fallback to power learn level if no data
-- Misc / Minor
-	- Raining routes should auto-water berries
 - Pokemon Weighting
 	- Choose priority for different heuristics for a category
 		- Heuristics can be on the same level
@@ -81,6 +79,9 @@ IDEAS //////////////////////////////////////////////////////////////////////////
 	- Pokemon are given to the player in poke balls in the starting town
 	- Pokemon are optionally given to the player as in-game trades in the first town (allowing the player to give custom IV values and nicknames, etc)?
 		- May cause boosted exp which could be undesirable (may be some way to reset OT)
+- Misc / Minor / Polish
+	- Raining routes should auto-water berries
+	- Change the devon goods guy's shroomish text into something that is in that area
 
 FEATURES ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -121,10 +122,13 @@ FEATURES ///////////////////////////////////////////////////////////////////////
 - Min moves added randomization support
 - UI:
 	- ROM / Randomizer info readout. Add to the randomizer tab and make the top part "settings"
-	- Name / Code of opened rom
-	- Current version
-	- Is update availible?
-	- Downloads link
+		- Name / Code of opened rom
+		- Current version
+		- Is update availible?
+		- Downloads link
+	- Dark mode UI
+	- Drag rom into application
+	- Random Compatibility on chance needs to be more clear (change label based on compatibility option)
 
 CLEANUP /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
