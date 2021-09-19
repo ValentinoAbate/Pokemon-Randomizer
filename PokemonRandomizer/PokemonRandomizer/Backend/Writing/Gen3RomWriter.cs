@@ -680,7 +680,7 @@ namespace PokemonRandomizer.Backend.Writing
                 rom.WriteByte(item.param);
                 if (item.ReformatDescription)
                 {
-                    item.Description = TextUtils.Reformat(item.Description, '\n', descriptionLineLength);
+                    item.Description = TextUtils.Reformat(item.Description, '\n', descriptionLineLength, 3);
                 }
                 if(item.Description.Length == item.OriginalDescription.Length)
                 {

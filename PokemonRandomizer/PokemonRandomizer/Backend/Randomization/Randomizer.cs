@@ -806,9 +806,17 @@ namespace PokemonRandomizer.Backend.Randomization
             }
             #endregion
 
+#if DEBUG
             #region Debugging / Testing
 
+
+            foreach (var move in data.MoveData)
+            {
+                string test = TextUtils.Reformat(move.Description, '\n', 18, 3);
+            }
+
             #endregion
+#endif
 
             data.CalculateMetrics();
 
