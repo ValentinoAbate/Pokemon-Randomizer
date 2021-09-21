@@ -68,10 +68,7 @@ namespace PokemonRandomizer.Backend
         }
         public override string ToString()
         {
-            string ret = string.Empty;
-            foreach (var item in items)
-                ret += item.ToString() + ", ";
-            return ret;
+            return string.Join(", ", items);
         }
 
         #region IList<MoveSet.Item> Implementation

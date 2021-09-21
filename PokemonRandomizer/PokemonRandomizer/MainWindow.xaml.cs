@@ -48,6 +48,8 @@ namespace PokemonRandomizer
         private readonly BackgroundWorker backgroundWorker = new BackgroundWorker();
         private readonly JsonSerializerOptions serializerOptions = new JsonSerializerOptions();
 
+        private readonly InfoFileGenerator infoFileGenerator = new InfoFileGenerator();
+
         private RomData RomData { get; set; }
         private Rom Rom { get; set; }
         private RomMetadata Metadata
@@ -194,6 +196,11 @@ namespace PokemonRandomizer
             MiscView.Content = new MiscDataView(AppData.MiscData, metadata);
         }
 
+        private void SetLastRandomizationInfo(RomData data, RomMetadata metadata)
+        {
+            LastRandomizationInfo = infoFileGenerator.GenerateInfoFile(data, metadata);
+        }
+
         private bool GetRomData(byte[] rawRom)
         {
             // Initialize ROM metadata
@@ -213,12 +220,12 @@ namespace PokemonRandomizer
             }
             else
             {
-                LogError("Failed to open rom - unsupported generation (" + metadata.Gen.ToString() + ")");
+                LogError($"Failed to open rom - unsupported generation ({metadata.Gen})");
                 return false;
             }
 
-            // Cache metadata and last randomization info
-            LastRandomizationInfo = RomData.ToStringArray();
+            // Cache metadata and last randomization 
+            SetLastRandomizationInfo(RomData, metadata);
             Metadata = metadata;
             return true;
         }
@@ -228,13 +235,13 @@ namespace PokemonRandomizer
             var copyData = Parser.Parse(Rom, Metadata, RomInfo);
             var randomzier = new Backend.Randomization.Randomizer(copyData, AppSettings);
             var randomizedData = randomzier.Randomize();
-            LastRandomizationInfo = randomizedData.ToStringArray();
+            SetLastRandomizationInfo(randomizedData, Metadata);
             if(Metadata.Gen == Generation.III)
             {
                 var writer = new Gen3RomWriter();
                 return writer.Write(randomizedData, Rom, Metadata, RomInfo, AppSettings).File;
             }
-            throw new Exception("Attempting to write randomized data to ROM of unsupported generation (" + Metadata.Gen.ToString() + ")");
+            throw new Exception($"Attempting to write randomized data to ROM of unsupported generation ({Metadata.Gen})");
         }
 
 #region INotifyPropertyChanged Implementation
@@ -437,14 +444,7 @@ namespace PokemonRandomizer
             };
             if (saveFileDialog.ShowDialog() == true)
             {
-                var info = new List<string>(LastRandomizationInfo.Length + 5);
-                info.Add(divider);
-                info.Add("   Randomizer Info");
-                info.Add(divider);
-                info.Add($"Randomizer Version: {version}");
-                info.Add($"Seed              : {(AppData.RandomizerData.UseSeed ? AppData.RandomizerData.Seed : randomSeedText)}");
-                info.AddRange(LastRandomizationInfo);
-                SaveFile(saveFileDialog.FileName, "Info file", info.ToArray(), File.WriteAllLines);
+                SaveFile(saveFileDialog.FileName, "Info file", LastRandomizationInfo, File.WriteAllLines);
             }
         }
 

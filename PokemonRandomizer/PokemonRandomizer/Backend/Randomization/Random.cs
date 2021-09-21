@@ -8,13 +8,16 @@ namespace PokemonRandomizer.Backend.Randomization
     public class Random
     {
         private readonly System.Random rand;
-        public Random()
-        {
-            rand = new System.Random();
-        }
+
+        public string Seed { get; }
+        public int IntSeed { get; }
+
+        public Random() : this(Environment.TickCount.ToString()) { }
         public Random(string seed)
         {
-            rand = new System.Random(seed.GetHashCode());
+            Seed = seed;
+            IntSeed = seed.GetHashCode();
+            rand = new System.Random(IntSeed);
         }
 
         #region Utility Functions

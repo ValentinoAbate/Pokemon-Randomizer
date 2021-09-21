@@ -12,6 +12,7 @@ namespace PokemonRandomizer.Backend.DataStructures
 
         // A metrics database calculated from the input ROM data (the base game if the rom being loaded is normal)
         public RomMetrics Metrics { get; private set; }
+        public string Seed { get; set; }
         public Item PcStartItem { get; set; }
         public List<Pokemon> Starters { get; set; }
         public List<Item> StarterItems { get; set; }
@@ -153,58 +154,6 @@ namespace PokemonRandomizer.Backend.DataStructures
                 LinkMoves(pokemon.HMCompat, HMMoves, pokemon.originalTmHmMtMoves);
                 LinkMoves(pokemon.moveTutorCompat, tutorMoves, pokemon.originalTmHmMtMoves);
             }
-        }
-
-        // Create string array to write to info file
-        public string[] ToStringArray()
-        {
-            const string divider = "===============================================================================================================================================";
-            List<string> outLs = new List<string>();
-
-            #region Print Pokemon Definitions
-            outLs.Add(divider);
-            outLs.Add("   Pokémon Info List");
-            outLs.Add(divider);
-            outLs.Add(("Pkmn Name      |  HP  AT  DF  SP  SA  SD   |    EV Yields   | Type(s) |  Ability 1     | Ability 2     | Held Item 1   | Held Item 2   | "));
-            outLs.Add(("-------------------------------------------------------------------------------------------------------------------------------------"));
-            var pkmnSorted = PokemonNationalDexOrder;
-            foreach (PokemonBaseStats pkmn in pkmnSorted)
-            {
-                outLs.Add(pkmn.ToString());
-                #region TM/HM/MT compat printing (Make prettier)
-                //string compatStr = "TM Compat: ";
-                //for (int i = 0; i < pkmn.TMCompat.Length; ++i)
-                //{
-                //    if (pkmn.TMCompat[i])
-                //        compatStr += (i + 1) + ": " + TMMoves[i].ToDisplayString() + ", ";
-                //}
-                //compatStr += "||| HM Compat: ";
-                //for (int i = 0; i < pkmn.HMCompat.Length; ++i)
-                //{
-                //    if (pkmn.HMCompat[i])
-                //        compatStr += (i + 1) + ": " + HMMoves[i].ToDisplayString() + ", ";
-                //}
-                //compatStr += "||| Tutor Compat: ";
-                //for (int i = 0; i < pkmn.moveTutorCompat.Length; ++i)
-                //{
-                //    if (pkmn.moveTutorCompat[i])
-                //        compatStr += tutorMoves[i].ToDisplayString() + ", ";
-                //}
-                //outLs.Add(compatStr);
-                #endregion
-            }
-
-            outLs.Add(divider);
-            outLs.Add("   Pokémon Moveset List");
-            outLs.Add(divider);
-
-            foreach (PokemonBaseStats pkmn in pkmnSorted)
-            {
-                outLs.Add(pkmn.Name + new string(' ', 15 - pkmn.Name.Length) + "| " +  pkmn.learnSet.ToString());
-            }
-            #endregion
-
-            return outLs.ToArray();
         }
     }
 }
