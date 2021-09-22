@@ -312,26 +312,31 @@ namespace PokemonRandomizer
             }
         }
 
-        private void SaveFile<T>(string path, string name, T[] file, Action<string, T[]> writeFn, string writingMsg = null)
+        private void SaveFile<T>(string path, string name, T[] file, Action<string, T[]> writeFn, string writingMsg = null, Action<bool> onComplete = null)
         {
-            SaveFile(path, name, () => file, writeFn, writingMsg);
+            SaveFile(path, name, () => file, writeFn, writingMsg, onComplete);
         }
 
-        private void SaveFile<T>(string path, string name, Func<T[]> fileFn, Action<string, T[]> writeFn, string writingMsg = null)
+        private void SaveFile<T>(string path, string name, Func<T[]> fileFn, Action<string, T[]> writeFn, string writingMsg = null, Action<bool> onComplete = null)
         {
             void Save() => writeFn(path, fileFn());
-            void Error(Exception e) => LogError($"Failed to save {name.ToLower()}: {e.Message}");
+            void Error(Exception e)
+            {
+                LogError($"Failed to save {name.ToLower()}: {e.Message}");
+                onComplete?.Invoke(false);
+            }
             void Success()
             {
                 // Log open and set info box
                 string msg = $"{name} saved to {path}";
                 LogInfo(msg);
                 SetInfoBox(msg);
+                onComplete?.Invoke(true);
             }
             PauseUIAndRunInBackground(writingMsg ?? $"Saving {name.ToLower()}...", Save, Success, Error);
         }
 
-        private void WriteRom(Func<byte[]> fileFn, string message)
+        private void WriteRom(Func<byte[]> fileFn, string message, Action<bool> onComplete = null)
         {
             string filter = gbaRomFileFilter;
             if (Metadata.Gen == Generation.IV)
@@ -343,13 +348,39 @@ namespace PokemonRandomizer
             };
             if (saveFileDialog.ShowDialog() == true)
             {
-                SaveFile(saveFileDialog.FileName, "Rom", fileFn, File.WriteAllBytes, message);     
+                SaveFile(saveFileDialog.FileName, "Rom", fileFn, File.WriteAllBytes, message, onComplete);     
+            }
+        }
+
+        private void PostRandomizationUIFlow(bool success)
+        {
+            if (!success)
+                return;
+            void AskToSaveSetttingsFile(bool success)
+            {
+                var result = MessageBox.Show("The Settings File contains the randomizer settings you used", "Save Settings File?", MessageBoxButton.YesNo);
+                switch (result)
+                {
+                    case MessageBoxResult.Yes:
+                        SavePreset(null);
+                        break;
+                }
+            }
+            var result = MessageBox.Show("The Randomization Info File contains info such as your seed, randomier version, and randomization results", "Save Randomization Info File?", MessageBoxButton.YesNo);
+            switch (result)
+            {
+                case MessageBoxResult.Yes:
+                    GenerateInfoDoc(AskToSaveSetttingsFile);
+                    break;
+                case MessageBoxResult.No:
+                    AskToSaveSetttingsFile(true);
+                    break;
             }
         }
 
         private void SaveROM(object sender, RoutedEventArgs e)
         {
-            WriteRom(GetRandomizedRom, "Randomizing...");
+            WriteRom(GetRandomizedRom, "Randomizing...", PostRandomizationUIFlow);
         }
 
         private void SaveCleanROM(object sender, RoutedEventArgs e)
@@ -432,9 +463,12 @@ namespace PokemonRandomizer
             OnPropertyChanged("LogNotEmpty");
         }
 
-        private const string divider = "===============================================================================================================================================";
-        private const string randomSeedText = "[Random]";
         private void GenerateInfoDoc(object sender, RoutedEventArgs e)
+        {
+            GenerateInfoDoc(null);
+        }
+
+        private void GenerateInfoDoc(Action<bool> onComplete)
         {
             var saveFileDialog = new SaveFileDialog
             {
@@ -444,7 +478,11 @@ namespace PokemonRandomizer
             };
             if (saveFileDialog.ShowDialog() == true)
             {
-                SaveFile(saveFileDialog.FileName, "Info file", LastRandomizationInfo, File.WriteAllLines);
+                SaveFile(saveFileDialog.FileName, "Info file", LastRandomizationInfo, File.WriteAllLines, null, onComplete);
+            }
+            else
+            {
+                onComplete?.Invoke(false);
             }
         }
 
@@ -464,6 +502,11 @@ namespace PokemonRandomizer
 
         private void SavePreset(object sender, RoutedEventArgs e)
         {
+            SavePreset(null);
+        }
+
+        private void SavePreset(Action<bool> onComplete)
+        {
             // Save Log File
             var saveFileDialog = new SaveFileDialog
             {
@@ -473,7 +516,11 @@ namespace PokemonRandomizer
             };
             if (saveFileDialog.ShowDialog() == true)
             {
-                SaveFile(saveFileDialog.FileName, "Settings", new string[] { JsonSerializer.Serialize(AppData, serializerOptions) }, File.WriteAllLines);
+                SaveFile(saveFileDialog.FileName, "Settings", new string[] { JsonSerializer.Serialize(AppData, serializerOptions) }, File.WriteAllLines, null, onComplete);
+            }
+            else
+            {
+                onComplete?.Invoke(false);
             }
         }
 

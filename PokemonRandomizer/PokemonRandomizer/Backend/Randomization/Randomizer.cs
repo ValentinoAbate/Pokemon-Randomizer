@@ -33,7 +33,7 @@ namespace PokemonRandomizer.Backend.Randomization
             this.data = data;
             this.settings = settings;
             // Initialize random generator
-            rand = settings.SetSeed ? new Random(settings.Seed) : new Random();
+            rand = settings.SetSeed ? new Random(settings.Seed.Trim()) : new Random();
             data.Seed = rand.Seed;
             // Intialize evolution helper
             evoUtils = new EvolutionUtils(rand, data);

@@ -30,7 +30,7 @@
             <MenuItem Header="File">
                 <MenuItem Header="Open ROM" Click="OpenROM"/>
                 <MenuItem Name="menuSaveROM" IsEnabled="{Binding IsROMLoaded}" Header="Randomize (Save)" Click="SaveROM"/>
-                <MenuItem Name="menuGenerateInfoDoc" IsEnabled="{Binding IsROMLoaded}" Header="Save Randomized ROM Info" Click="GenerateInfoDoc"/>
+                <MenuItem Name="menuGenerateInfoDoc" IsEnabled="{Binding IsROMLoaded}" Header="Save ROM Info" Click="GenerateInfoDoc"/>
                 <MenuItem Visibility="Collapsed" Header="_Convert Table" Click="ConvertTable" />
             </MenuItem>
             <MenuItem Header="Settings" IsEnabled="{Binding IsROMLoaded}">
