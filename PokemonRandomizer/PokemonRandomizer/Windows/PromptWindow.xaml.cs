@@ -1,27 +1,20 @@
 ﻿using System;
-using System.Diagnostics;
+using System.ComponentModel;
 using System.Windows;
 using System.Windows.Interop;
 
 namespace PokemonRandomizer.Windows
 {
     /// <summary>
-    /// Interaction logic for AboutWindow.xaml
+    /// Interaction logic for PromptWindow.xaml
     /// </summary>
-    public partial class AboutWindow : Window
+    public partial class PromptWindow : Window
     {
-        public AboutWindow()
+        public PromptWindow()
         {
             InitializeComponent();
-            VersionText.Content = MainWindow.version;
             this.SourceInitialized += OnSourceInitialized;
         }
-
-        private void CloseWindow(object sender, RoutedEventArgs e)
-        {
-            Close();
-        }
-
 
         private void OnSourceInitialized(object sender, EventArgs e)
         {
@@ -51,10 +44,30 @@ namespace PokemonRandomizer.Windows
             return IntPtr.Zero;
         }
 
-        private void GoToDownloadPage(object sender, System.Windows.Navigation.RequestNavigateEventArgs e)
+        public bool? ShowDialog(string title, string message, string affirmative = "Yes", string negative = "No")
         {
-            Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri));
-            e.Handled = true;
+            Title = title;
+            MessageTb.Text = message;
+            AffirmativeButton.Content = affirmative;
+            NegativeButton.Content = negative;
+            return ShowDialog();
+        }
+
+        protected override void OnClosing(CancelEventArgs e)
+        {
+            base.OnClosing(e);
+        }
+
+        private void AffirmativeButton_Click(object sender, RoutedEventArgs e)
+        {
+            DialogResult = true;
+            Close();
+        }
+
+        private void NegativeButton_Click(object sender, RoutedEventArgs e)
+        {
+            DialogResult = false;
+            Close();
         }
     }
 }

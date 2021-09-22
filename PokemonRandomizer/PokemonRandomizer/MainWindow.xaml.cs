@@ -358,29 +358,42 @@ namespace PokemonRandomizer
                 return;
             void AskToSaveSetttingsFile(bool success)
             {
-                var result = MessageBox.Show("The Settings File contains the randomizer settings you used", "Save Settings File?", MessageBoxButton.YesNo);
-                switch (result)
+                var promptWindow = new PromptWindow()
                 {
-                    case MessageBoxResult.Yes:
-                        SavePreset(null);
-                        break;
+                    Owner = this
+                };
+                bool? result = promptWindow.ShowDialog("Save Settings File?", "The Settings File contains the randomizer settings you used.");
+                if(result == true)
+                {
+                    SavePreset(null);
                 }
             }
-            var result = MessageBox.Show("The Randomization Info File contains info such as your seed, randomier version, and randomization results", "Save Randomization Info File?", MessageBoxButton.YesNo);
-            switch (result)
+            var promptWindow = new PromptWindow()
             {
-                case MessageBoxResult.Yes:
-                    GenerateInfoDoc(AskToSaveSetttingsFile);
-                    break;
-                case MessageBoxResult.No:
-                    AskToSaveSetttingsFile(true);
-                    break;
+                Owner = this
+            };
+            bool? result = promptWindow.ShowDialog("Save Randomization Info File?", "The Randomization Info File contains info such as your seed, randomizer version, and randomization results.");
+            if (result == true)
+            {
+                GenerateInfoDoc(AskToSaveSetttingsFile);
+            }
+            else
+            {
+                AskToSaveSetttingsFile(true);
             }
         }
 
+        private const string randomizingProgressMessage = "Randomizing...";
         private void SaveROM(object sender, RoutedEventArgs e)
         {
-            WriteRom(GetRandomizedRom, "Randomizing...", PostRandomizationUIFlow);
+            if (UseHardCodedSettings)
+            {
+                WriteRom(GetRandomizedRom, randomizingProgressMessage);
+            }
+            else
+            {
+                WriteRom(GetRandomizedRom, randomizingProgressMessage, PostRandomizationUIFlow);
+            }
         }
 
         private void SaveCleanROM(object sender, RoutedEventArgs e)
