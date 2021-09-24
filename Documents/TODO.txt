@@ -72,9 +72,6 @@ IDEAS //////////////////////////////////////////////////////////////////////////
 	- Ensures all pokemon are obtainable in the game
 	- Hardcore:
 		- To obtain all pokemon, you must do all in-game trades, special events (like mew), obtain all gift pokemon, and baby pokemon must be obtained from breeding or gift eggs
-- TM Text Fix+:
-	- For text that is more than maximum allowed lines after reformatting, abbreviate text and try the reformat again
-		- Example: remove "the foe" and "the foe's" and "that is"
 - Dream Team:
 	- Pokemon are given to the player in poke balls in the starting town
 	- Pokemon are optionally given to the player as in-game trades in the first town (allowing the player to give custom IV values and nicknames, etc)?
@@ -82,6 +79,7 @@ IDEAS //////////////////////////////////////////////////////////////////////////
 - Misc / Minor / Polish
 	- Raining routes should auto-water berries
 	- Change the devon goods guy's shroomish text into something that is in that area
+	- Wally Text Fix ("RALTS" to current pokemon)
 	- Allow Text reformatting to put hyphenated words on two separate lines
 
 FEATURES ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -116,7 +114,7 @@ FEATURES ///////////////////////////////////////////////////////////////////////
 - Move description writing
 - Move tutor NPC text fix
 - Ban selfdestruct works by move effect rather than explicit move number
-- Wally Text Fix ("RALTS" to current pokemon)
+
 - Game corner randomization????
 	- High stakes roulette
 - Money Scaling
