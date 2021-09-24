@@ -13,7 +13,7 @@ namespace PokemonRandomizer.Backend.Utilities
                 numLines = 0;
                 return text;
             }
-            var tokens = text.Split(' ', newline);
+            var tokens = text.Replace(newline + "-", "-").Replace("-" + newline, "-").Split(' ', newline);
             if (tokens.Length <= 1)
             {
                 numLines = tokens.Length;
