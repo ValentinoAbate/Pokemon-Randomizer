@@ -70,7 +70,7 @@
 
     <!-- Items -->
 
-    <itemDefinitions descriptionLineLength="18"/>
+    <itemDefinitions tmDescriptionLineLength="18" tmDescriptionMaxLines="3"/>
     
     <!-- Special Trainer Battles -->
 
@@ -293,7 +293,7 @@
 
     <!-- Items -->
 
-    <itemDefinitions descriptionLineLength="24"/>
+    <itemDefinitions tmDescriptionLineLength="24" tmDescriptionMaxLines="4"/>
     <pickupItems num="16"/>
 
     <!-- Static Pokemon -->

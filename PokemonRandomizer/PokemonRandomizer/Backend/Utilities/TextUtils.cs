@@ -42,24 +42,23 @@ namespace PokemonRandomizer.Backend.Utilities
             return string.Join(newline.ToString(), lines);
         }
 
-        public static string Reformat(string text, char newline, int maxLineLength, int maxLines)
+        public static string ReformatAndAbbreviate(string text, char newline, int maxLineLength, int maxLines, string[] toRemove, (string, string)[] toReplace)
         {
             string reformatted = Reformat(text, newline, maxLineLength, out int lines);
             if (lines <= maxLines)
                 return reformatted;
-            Logger.main.Info($"Text with greater than {maxLines} lines ({lines}) detected after reformat ({RemoveNewLines(text)}). Attempting abbreviation");
+            Logger.main.Info($"Text ({RemoveNewLines(text)}) with greater than {maxLines} lines ({lines}) detected after reformat. Attempting abbreviation");
             string abbreviated = text.Replace(newline, ' ');
-            // Remove uneccesary words
-            abbreviated = RemoveAll(abbreviated, " that is", "the foe’s ", " the foe", " the enemy", " a little", " slightly", " about");
-            // critical-hit to crit
-            abbreviated = ReplaceAll(abbreviated, ("critical- hit", "crit"), ("critical -hit", "crit"), ("critical-hit", "crit"), ("functions", "works"), 
-                                                  ("POKéMON’s", "user’s"), ("leaves the user immobile the next turn.", "the user must recharge next turn."), 
-                                                  ("always inflict", "inflict"), ("eliminates", "removes"), ("causes fainting", "one-hit KOs"),
-                                                  ("Flies up on the first turn", "Flies up"), ("A corkscrewing attack", "An attack"),
-                                                  ("inflicts more damage on", "does more damage to"), ("Frightens with", "Makes"), ("switch out", "switch"),
-                                                  ("horrible screech", "screech"), ("strikes", "hits"), ("rainbow-colored", "rainbow"), 
-                                                  ("Liquifies the user’s body", "Liquifies the body"), ("shares them equally", "splits them"),
-                                                  ("Covers the user in mud", "Sprays mud"), ("A 1st-turn\" 1st-strike move that causes flinching", "A 1st-turn\" 1st-strike move that flinches"));
+            if(toRemove.Length > 0)
+            {
+                // Remove uneccesary words
+                abbreviated = RemoveAll(abbreviated, toRemove);
+            }
+            if(toReplace.Length > 0)
+            {
+                // try replacements
+                abbreviated = ReplaceAll(abbreviated, toReplace);
+            }
             reformatted = Reformat(abbreviated, newline, maxLineLength, out lines);
             if (lines <= maxLines)
             {

@@ -811,11 +811,6 @@ namespace PokemonRandomizer.Backend.Randomization
             #region Debugging / Testing
 
 
-            foreach (var move in data.MoveData)
-            {
-                string test = TextUtils.Reformat(move.Description, '\n', 18, 3);
-            }
-
             #endregion
 #endif
 

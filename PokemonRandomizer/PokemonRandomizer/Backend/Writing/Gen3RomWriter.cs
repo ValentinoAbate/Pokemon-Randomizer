@@ -383,7 +383,8 @@ namespace PokemonRandomizer.Backend.Writing
             // If any of the movesets have changed we will have to perform repoint operations
             bool needToRelocateMoveData = romData.Pokemon.Any((stats) => stats.learnSet.Count != stats.learnSet.OriginalCount);
             // Find a block to write to in so we can log repoints if we need to
-            int newMoveDataOffset = needToRelocateMoveData ? rom.ScanForFreeSpace(moveData.Length).offset : 0;
+            int? newMoveDataOffset = needToRelocateMoveData ? rom.FindFreeSpaceOffset(moveData.Length) : null;
+            bool ableToRelocateMoveData = newMoveDataOffset != null;
             // Main writing loop
             for (int i = 0; i < info.Num(ElementNames.pokemonBaseStats); i++)
             {
@@ -397,21 +398,37 @@ namespace PokemonRandomizer.Backend.Writing
                 WriteBaseStatsSingle(stats, pkmnOffset + (i * pkmnSize), rom);
                 // Log a repoint if necessary
                 if (needToRelocateMoveData)
-                    repoints.Add(stats.learnSet.OriginalOffset, newMoveDataOffset + movesetIndex);
-                // Write moveset
-                movesetIndex = WriteAttacks(moveData, stats.learnSet, movesetIndex);
+                {
+                    if (ableToRelocateMoveData)
+                    {
+                        repoints.Add(stats.learnSet.OriginalOffset, (int)newMoveDataOffset + movesetIndex);
+                        // Write moveset
+                        movesetIndex = WriteAttacks(moveData, stats.learnSet, movesetIndex);
+                    }
+                }
+                else
+                {
+                    // Write moveset
+                    movesetIndex = WriteAttacks(moveData, stats.learnSet, movesetIndex);
+                }
                 WriteTMHMCompat(stats, tmHmCompatOffset + (i * tmHmSize), rom);
                 WriteTutorCompat(stats, tutorCompatOffset + (i * tutorSize), rom);
                 WriteEvolutions(stats, evolutionOffset + (i * evolutionSize), rom);
             }
             // If we don't need to repoint move data, write it in it's original location
             if (!needToRelocateMoveData)
-                rom.WriteBlock(originalMovesetOffset, moveData.File);
-            else // else move and log repoint
             {
-                rom.WriteBlock(newMoveDataOffset, moveData.File);
+                rom.WriteBlock(originalMovesetOffset, moveData.File);
+            }
+            else if(ableToRelocateMoveData) // else move and log repoint
+            {
+                rom.WriteBlock((int)newMoveDataOffset, moveData.File);
                 rom.WipeBlock(originalMovesetOffset, moveData.File.Length);
-                repoints.Add(originalMovesetOffset, newMoveDataOffset);
+                repoints.Add(originalMovesetOffset, (int)newMoveDataOffset);
+            }
+            else
+            {
+                Logger.main.Error("Moveset data relocation is needed, but couldn't find enough Free Space to write Moveset data. Moveset data will not be written");
             }
         }
         private void WriteBaseStatsSingle(PokemonBaseStats pokemon, int offset, Rom rom)
@@ -666,11 +683,34 @@ namespace PokemonRandomizer.Backend.Writing
             }
         }
 
+        private static readonly string[] tmDescriptionRemovals = new string[]
+        {
+            " the enemy", " a little", " slightly", " about"
+        };
+
+        private static readonly (string, string)[] tmDescriptionReplacements = new (string, string)[]
+        {
+            ("critical- hit", "crit"), ("critical -hit", "crit"), ("critical-hit", "crit"), ("functions", "works"),
+            ("POKéMON’s", "user’s"), ("leaves the user immobile the next turn.", "the user must recharge next turn."),
+            ("always inflict", "inflict"), ("eliminates", "removes"), ("causes fainting", "one-hit KOs"),
+            ("Flies up on the first turn", "Flies up"), ("A corkscrewing attack", "An attack"),
+            ("inflicts more damage on", "does more damage to"), ("Frightens with", "Makes"), ("switch out", "switch"),
+            ("horrible screech", "screech"), ("strikes", "hits"), ("rainbow-colored", "rainbow"),
+            ("Liquifies the user’s body", "Liquifies the body"), ("shares them equally", "splits them"),
+            ("Covers the user in mud", "Sprays mud"), ("A 1st-turn\" 1st-strike move that causes flinching", "A 1st-turn\" 1st-strike move that flinches"),
+            ("in the foe’s face", "at the foe"), ("that is thrown", "thrown"), ("May confuse the foe", "May confuse"),
+            ("Ensnares", "Snares"), ("Senses the foe’s action", "Senses action"), ("Wraps and squeezes", "Squeezes"),
+            ("Strikes the foe with", "Strikes with"), ("strike the foe", "strike"), ("Envelops", "Covers"), ("stop it from", "prevent"),
+            ("over 2 to 6 turns", "2 to 6 times"), ("if the TRAINER is disliked", "with lower friendship"),
+            ("Torments the foe and stops", "Torments the foe to stop")
+        };
+
         private void WriteItemData(IEnumerable<ItemData> itemData, Rom rom, XmlManager info)
         {
             if (!info.FindAndSeekOffset(ElementNames.itemData, rom))
                 return;
-            int descriptionLineLength = info.IntAttr(ElementNames.itemData, "descriptionLineLength");
+            int tmDescriptionLineLength = info.IntAttr(ElementNames.itemData, "tmDescriptionLineLength");
+            int tmDescriptionMaxLines = info.IntAttr(ElementNames.itemData, "tmDescriptionMaxLines");
             foreach (var item in itemData)
             {
                 rom.WriteFixedLengthString(item.Name, ItemData.nameLength);
@@ -680,7 +720,11 @@ namespace PokemonRandomizer.Backend.Writing
                 rom.WriteByte(item.param);
                 if (item.ReformatDescription)
                 {
-                    item.Description = TextUtils.Reformat(item.Description, '\n', descriptionLineLength, 3);
+                    if (item.IsTM())
+                    {
+                        item.Description = TextUtils.ReformatAndAbbreviate(item.Description, '\n',
+                            tmDescriptionLineLength, tmDescriptionMaxLines, tmDescriptionRemovals, tmDescriptionReplacements);
+                    }
                 }
                 if(item.Description.Length == item.OriginalDescription.Length)
                 {

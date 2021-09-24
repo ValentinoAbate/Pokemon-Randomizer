@@ -21,6 +21,8 @@ namespace PokemonRandomizer.Backend.DataStructures
         public byte FreeSpaceByte { get; }
         /// <summary>The offset that WriteInFreeSpace(byte[] data) starts searching at </summary>
         public int SearchStartOffset { get; }
+        /// <summary>The byte that WriteInFreeSpace(byte[] data) can explicitly consider not to be free space</summary>
+        public byte PaddingByte { get; }
         public int InternalOffset { get; private set; }
         public Stack<int> SavedOffsets { get; } = new Stack<int>();
         public int Length { get => File.Length; }
@@ -42,6 +44,7 @@ namespace PokemonRandomizer.Backend.DataStructures
         {
             FreeSpaceByte = freeSpaceByte;
             SearchStartOffset = searchStartOffset;
+            PaddingByte = (byte)((FreeSpaceByte == 0xFF) ? 0x00 : 0xFF);
             File = new byte[rawRom.Length];
             Array.Copy(rawRom, File, rawRom.Length);
             InternalOffset = 0;           
@@ -51,6 +54,7 @@ namespace PokemonRandomizer.Backend.DataStructures
         {
             FreeSpaceByte = toCopy.FreeSpaceByte;
             SearchStartOffset = toCopy.SearchStartOffset;
+            PaddingByte = toCopy.PaddingByte;
             File = new byte[toCopy.File.Length];
             Array.Copy(toCopy.File, File, toCopy.File.Length);
             InternalOffset = 0;  
@@ -95,42 +99,17 @@ namespace PokemonRandomizer.Backend.DataStructures
         }
 
         #region Free Space and Hacking Utils
-        /// <summary>Scans the File and returns all free space blocks above a certain size (in bytes)</summary> 
-        public MemoryBlock[] ScanAllFreeSpace(int minSize = 10000, int? startAddy = null)
-        {
-            List<MemoryBlock> blocks = new List<MemoryBlock>();
-            for (int offset = startAddy ?? SearchStartOffset; offset < File.Length; ++offset)
-            {
-                if (File[offset] != FreeSpaceByte || offset % 4 != 0)
-                    continue;
-                int start = offset;
-                while (++offset < File.Length && File[offset] == FreeSpaceByte)
-                    continue;
-                if (offset - start >= minSize)
-                    blocks.Add(new MemoryBlock(start, offset - start));
-            }
-            return blocks.ToArray();
-        }
         /// <summary>Scans for the first open block of free space above a certain size (in bytes).
-        /// Returns null if no big enough block is found</summary> 
-        public MemoryBlock ScanForFreeSpace(int minSize = 10000, int? startAddy = null)
+        /// Returns null if no big enough block is found, else returns the offset of the block</summary>
+        public int? FindFreeSpaceOffset(int? startAddy = null, int minSize = 10000)
         {
-            for (int offset = startAddy ?? SearchStartOffset; offset < File.Length; ++offset)
-            {
-                if (File[offset] != FreeSpaceByte || offset % 4 != 0)
-                    continue;
-                int start = offset;
-                while (++offset < File.Length && File[offset] == FreeSpaceByte)
-                    if (offset - start >= minSize)
-                        return new MemoryBlock(start, offset - start);
-            }
-            return null;
+            return FindFreeSpaceOffset(FreeSpaceByte, startAddy, minSize);
         }
         /// <summary>Scans for the first open block of free space above a certain size (in bytes).
         /// Returns null if no big enough block is found, else returns the offset of the block</summary>
-        private int? ScanForFreeSpaceOffset(byte freeSpace, int startAddy, int minSize = 10000)
+        private int? FindFreeSpaceOffset(byte freeSpace, int? startAddy = null, int minSize = 10000)
         {
-            for (int offset = startAddy; offset < File.Length; ++offset)
+            for (int offset = startAddy ?? SearchStartOffset; offset < File.Length; ++offset)
             {
                 if (File[offset] != freeSpace || offset % 4 != 0)
                     continue;
@@ -146,10 +125,17 @@ namespace PokemonRandomizer.Backend.DataStructures
         /// Returns null if no big enough block is found, else returns the ROM offset of the block </summary>
         public int? WriteInFreeSpace(byte[] data, int? startOffset = null)
         {
-            int? blockOffset = ScanForFreeSpaceOffset(FreeSpaceByte, startOffset ?? SearchStartOffset, data.Length);
+            if(data.Length <=0)
+                return null;
+            bool lastByteIsFreeSpace = data[data.Length - 1] == FreeSpaceByte;
+            int? blockOffset = FindFreeSpaceOffset(FreeSpaceByte, startOffset, lastByteIsFreeSpace ? data.Length + 1 : data.Length);
             if (blockOffset == null)
                 return null;
             Array.Copy(data, 0, File, (int)blockOffset, data.Length);
+            if (lastByteIsFreeSpace)
+            {
+                WriteByte((int)blockOffset + data.Length, PaddingByte);
+            }
             return blockOffset;
         }
         /// <summary> Repoint all pointers to an offset to a target offset. 
@@ -218,21 +204,6 @@ namespace PokemonRandomizer.Backend.DataStructures
         public void WipeBlock(int length) => SetBlock(length, FreeSpaceByte);
         /// <summary> Set entire block to the Free Space value </summary>
         public void WipeBlock(int offset, int length) => SetBlock(offset, length, FreeSpaceByte);
-        ///.<summary>A simple class to hold an address in memory with a length</summary>
-        public class MemoryBlock
-        {
-            public int offset;
-            public int length;
-            public MemoryBlock(int offset, int length)
-            {
-                this.offset = offset;
-                this.length = length;
-            }
-            public override string ToString()
-            {
-                return offset.ToString("X") + " - " + (offset - 1 + length).ToString("X") + ": length " + length;
-            }
-        }
         #endregion
 
         public bool IsValidOffset(int offset)
