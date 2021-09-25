@@ -382,7 +382,7 @@ namespace PokemonRandomizer.AppSettings
             { Map.Weather.RainHeavyThunderstrorm, 0.025f },
             { Map.Weather.Snow, 0.85f },
             { Map.Weather.SnowSteady, 0.1f },
-            { Map.Weather.StrongSunlight, 0.6f },
+            { Map.Weather.StrongSunlight, 0.7f },
             { Map.Weather.Sandstorm, 0.85f },
         };
 
