@@ -16,6 +16,10 @@ namespace PokemonRandomizer.UI.Models
         {
             SamePocketChance = 0,
         };
+        public Box<bool> AddItemToPokemarts { get; set; } = new Box<bool>(false);
+        public Box<Item> CustomMartItem { get; set; } = new Box<Item>(Item.Rare_Candy);
+        public Box<bool> OverrideCustomMartItemPrice { get; set; } = new Box<bool>(false);
+        public Box<double> CustomMartItemPrice { get; set; } = new Box<double>(4800);
 
         public Box<bool> RandomizeFieldItems { get; set; } = new Box<bool>(true);
         public Box<double> FieldItemRandChance { get; set; } = new Box<double>(1);

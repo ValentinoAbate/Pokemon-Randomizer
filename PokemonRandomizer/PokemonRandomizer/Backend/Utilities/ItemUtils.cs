@@ -55,5 +55,12 @@ namespace PokemonRandomizer.Backend.Utilities
         {
             return tms.Contains(item);
         }
+
+        private static readonly HashSet<Item> pokeBalls = new HashSet<Item>
+        {
+            Item.Poké_Ball, Item.Great_Ball, Item.Dive_Ball, Item.Luxury_Ball, Item.Master_Ball, Item.Nest_Ball,
+            Item.Net_Ball, Item.Premier_Ball, Item.Repeat_Ball, Item.Safari_Ball, Item.Timer_Ball, Item.Ultra_Ball
+        };
+        public static bool IsPokeBall(this Item item) => pokeBalls.Contains(item);
     }
 }

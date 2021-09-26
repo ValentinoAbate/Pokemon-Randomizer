@@ -164,15 +164,17 @@ namespace PokemonRandomizer.Backend.Randomization
             }
             #endregion
 
-            #region Item Definitions (NOTHING YET)
+            #region Item Definitions
 
-            // Prepare Item Remap Dictionary
-
-            // Find blank item entries with effect
             // Define Item Definitions
             // Hack in new items if applicable
             // Possible Hacks: Add GenIV items (some might not be possible), add fairy-related items
             // Mutate item definitions
+            // Modify Custom Shop Item Price (if applicable)
+            if (settings.AddCustomItemToPokemarts && settings.OverrideCustomMartItemPrice && settings.CustomMartItem != Item.None)
+            {
+                data.GetItemData(settings.CustomMartItem).Price = settings.CustomMartItemPrice;
+            }
 
             #endregion
 
@@ -611,6 +613,12 @@ namespace PokemonRandomizer.Backend.Randomization
                             {
                                 bool baby = settings.EnsureGiftEggsAreBabyPokemon && babySet.Count > 0;
                                 giveEgg.pokemon = pokeRand.RandomPokemon(baby ? babySet : pokemonSet, giveEgg.pokemon, settings.GiftSpeciesSettings, 1);
+                            }
+                            break;
+                        case ShopCommand shopCommand:
+                            if(settings.AddCustomItemToPokemarts && settings.CustomMartItem != Item.None && shopCommand.shop.items.Any(i => i == Item.Potion || i.IsPokeBall()))
+                            {
+                                shopCommand.shop.items.Add(settings.CustomMartItem);
                             }
                             break;
                     }

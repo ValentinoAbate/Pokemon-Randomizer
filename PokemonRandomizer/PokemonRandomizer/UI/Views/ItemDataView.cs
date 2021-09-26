@@ -31,45 +31,43 @@ namespace PokemonRandomizer.UI.Views
 
         private TabItem CreateMiscTab(ItemDataModel model)
         {
-            var tab = new TabItem() { Header = "Misc" };
-            var stack = new StackPanel() { Orientation = Orientation.Vertical };
-            stack.Add(new Label() { Content = "PC Potion Randomization" });
-            stack.Add(new Separator());
+
+            var stack = CreateStack();
+            stack.Header("PC Potion Randomization");
             var strategyCb = stack.Add(new EnumComboBoxUI<PcItemOption>("Randomization Strategy", PCPotionStrategyDropdown, model.PcPotionOption));
             strategyCb.BindVisibility(stack.Add(new ItemSettingsUI(model.PcItemSettings, false)), (int)PcItemOption.Random);
             strategyCb.BindVisibility(stack.Add(new EnumComboBoxUI<Item>("Custom PC Potion Item", EnumUtils.GetDisplayValues<Item>(), model.CustomPcItem, EnumUtils.GetValues<Item>().ToList())), (int)PcItemOption.Custom);
-            tab.Content = stack;
-            return tab;
+            stack.Header("Custom Poké Mart Item");
+            var customMartItemCb = stack.Add(new BoundCheckBoxUI(model.AddItemToPokemarts, "Add Custom Item To Poké Marts"));
+            var customMartItemStack = customMartItemCb.BindVisibility(stack.Add(CreateStack()));
+            customMartItemStack.Add(new EnumComboBoxUI<Item>("Item to Add", EnumUtils.GetDisplayValues<Item>(), model.CustomMartItem, EnumUtils.GetValues<Item>().ToList()));
+            var modifyMartItemPriceCb = customMartItemStack.Add(new BoundCheckBoxUI(model.OverrideCustomMartItemPrice, "Override Item Price"));
+            modifyMartItemPriceCb.BindVisibility(customMartItemStack.Add(new BoundSliderUI("Item Price", model.CustomMartItemPrice, false, 100, 100, 9800)));
+            return CreateTabItem("Misc", stack);
         }
 
         private TabItem CreateShopsTab(ItemDataModel model)
         {
-            var tab = new TabItem() { Header = "Shops" };
-            var stack = new StackPanel() { Orientation = Orientation.Vertical };
-            tab.IsEnabled = false;
-            return tab;
+            var stack = CreateStack();
+            return CreateTabItem("Shops", stack);
         }
 
         private TabItem CreateFieldItemsTab(ItemDataModel model)
         {
-            var tab = new TabItem() { Header = "Field and Gift Items" };
-            var stack = new StackPanel() { Orientation = Orientation.Vertical };
-            stack.Add(new Label() { Content = "Field And Gift Item Randomization" });
-            stack.Add(new Separator());
+            var stack = CreateStack();
+            stack.Header("Field And Gift Item Randomization");
             var fieldItemSettings = new ItemSettingsUI(model.FieldItemSettings, false);
             stack.Add(new RandomChanceUI("Randomize Field and Gift Items", model.RandomizeFieldItems, model.FieldItemRandChance, fieldItemSettings));
             stack.Add(fieldItemSettings);
-            stack.Add(new Label() { Content = "Hidden Item Randomization" });
-            stack.Add(new Separator());
-            var hiddenItemStack = new StackPanel() { Orientation = Orientation.Vertical };
+            stack.Header("Hidden Item Randomization");
+            var hiddenItemStack = CreateStack();
             var hiddenItemSettings = new ItemSettingsUI(model.HiddenItemSettings, false);
             hiddenItemStack.Add(new RandomChanceUI("Randomize Hidden Items", model.RandomizeHiddenItems, model.HiddenItemRandChance, hiddenItemSettings));
             hiddenItemStack.Add(hiddenItemSettings);
             var separateHiddenItemsCb = new BoundCheckBoxUI(model.UseSeperateHiddenItemSettings, "Use Separate Settings for Hidden Items");
             separateHiddenItemsCb.BindVisibility(hiddenItemStack);
             stack.Add(separateHiddenItemsCb, hiddenItemStack);
-            tab.Content = stack;
-            return tab;
+            return CreateTabItem("Field and Gift Items", stack);
         }
     }
 }

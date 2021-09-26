@@ -299,6 +299,10 @@ namespace PokemonRandomizer
         public abstract PcItemOption PcPotionOption { get; }
         public abstract Item CustomPcItem { get; }
         public abstract ItemRandomizer.Settings PcItemSettings { get; }
+        public abstract bool AddCustomItemToPokemarts { get; }
+        public abstract Item CustomMartItem { get; }
+        public abstract bool OverrideCustomMartItemPrice { get; }
+        public abstract int CustomMartItemPrice { get; }
 
         public abstract double FieldItemRandChance { get; }
         public abstract ItemRandomizer.Settings FieldItemSettings { get; }

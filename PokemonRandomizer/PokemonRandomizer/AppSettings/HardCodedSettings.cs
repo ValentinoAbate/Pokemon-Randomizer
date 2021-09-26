@@ -398,7 +398,10 @@ namespace PokemonRandomizer.AppSettings
         {
             SamePocketChance = 0.75,
         };
-
+        public override bool AddCustomItemToPokemarts => false;
+        public override Item CustomMartItem => Item.Rare_Candy;
+        public override bool OverrideCustomMartItemPrice => false;
+        public override int CustomMartItemPrice => 4800;
         public override double FieldItemRandChance => 1;
         public override ItemRandomizer.Settings FieldItemSettings { get; } = new ItemRandomizer.Settings()
         {

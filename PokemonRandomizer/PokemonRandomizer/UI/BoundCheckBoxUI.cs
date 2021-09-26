@@ -44,11 +44,12 @@ namespace PokemonRandomizer.UI
             ToolTip = tooltip;
         }
 
-        public void BindVisibility(UIElement bindElement)
+        public T BindVisibility<T>(T bindElement) where T : UIElement
         {
             Checked += (_, _2) => bindElement.SetVisibility(true);
             Unchecked += (_, _2) => bindElement.SetVisibility(false);
             bindElement.SetVisibility(IsChecked ?? false);
+            return bindElement;
         }
     }
 }

@@ -223,6 +223,11 @@ namespace PokemonRandomizer.AppSettings
         public override Item CustomPcItem => itemData.CustomPcItem;
         public override ItemRandomizer.Settings PcItemSettings => itemData.PcItemSettings;
 
+        public override bool AddCustomItemToPokemarts => itemData.AddItemToPokemarts;
+        public override Item CustomMartItem => itemData.CustomMartItem;
+        public override bool OverrideCustomMartItemPrice => itemData.OverrideCustomMartItemPrice;
+        public override int CustomMartItemPrice => (int)itemData.CustomMartItemPrice;
+
         public override double FieldItemRandChance => RandomChance(itemData.RandomizeFieldItems, itemData.FieldItemRandChance);
         public override ItemRandomizer.Settings FieldItemSettings => itemData.FieldItemSettings;
         public override bool UseSeperateHiddenItemSettings => itemData.UseSeperateHiddenItemSettings;
