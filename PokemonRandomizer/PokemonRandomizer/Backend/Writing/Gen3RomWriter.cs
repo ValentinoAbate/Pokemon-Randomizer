@@ -786,11 +786,11 @@ namespace PokemonRandomizer.Backend.Writing
             }
         }
 
-        public class RepointList : List<Tuple<int, int>>
+        public class RepointList : List<(int, int)>
         {
             public void Add(int oldOffset, int newOffset)
             {
-                Add(new Tuple<int, int>(oldOffset, newOffset));
+                Add((oldOffset, newOffset));
             }
         }
     }

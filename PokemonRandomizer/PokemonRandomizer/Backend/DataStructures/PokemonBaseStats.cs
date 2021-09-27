@@ -79,15 +79,18 @@ namespace PokemonRandomizer.Backend.DataStructures
         public byte safariZoneRunRate;
         public bool flip;
         public SearchColor searchColor;
+
         #endregion
 
         #region Move Data (TM, HM, Tutor compatibility)
+
         public List<Move> eggMoves;
         public LearnSet learnSet;
         public BitArray TMCompat; //Compatibility with TMs 01-50 (index maps to RomData.TMMoves)
         public BitArray HMCompat; //Compatibility with HMs 01-08 (index maps to RomData.HMMoves)
         public BitArray moveTutorCompat; //Compatibility with moveTutors (index maps to RomData.tutorMoves)
         public HashSet<Move> originalTmHmMtMoves = new HashSet<Move>();
+
         #endregion
 
         public string Name { get; set; }

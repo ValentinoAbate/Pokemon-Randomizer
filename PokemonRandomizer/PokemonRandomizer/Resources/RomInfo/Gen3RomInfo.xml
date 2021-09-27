@@ -50,6 +50,10 @@
     <eggMoves pokemonSigniture="0x4E20"/>
     <evolutions size="40" sizePerEvolution="8" evolutionsPerPokemon="5"/>
     <pokemonNames length ="11"/>
+    <!-- Constant for FRLG+E (R/S will override) -->
+    <pokemonPalettes pointer="0x000130"/>
+    <!-- Constant for FRLG+E (R/S will override) -->
+    <pokemonPalettesShiny pointer="0x000134"/>
 
     <!-- Map Data -->
     
@@ -234,6 +238,11 @@
 
     <moveDescriptions pointer="0x0A0494"/>
 
+    <!-- Pokemon Definitions -->
+
+    <pokemonPalettes pointer="0x040954"/>
+    <pokemonPalettesShiny pointer="0x04098C"/>
+
     <!-- Static Pokemon -->
 
     <trades pointer="0x04D8D4"/>
@@ -253,6 +262,11 @@
     <!-- Move Data -->
 
     <moveDescriptions pointer="0x0A04B4"/>
+
+    <!-- Pokemon Definitions -->
+
+    <pokemonPalettes pointer="0x040974"/>
+    <pokemonPalettesShiny pointer="0x0409AC"/>
 
     <!-- Static Pokemon -->
 

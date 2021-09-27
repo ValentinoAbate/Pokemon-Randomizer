@@ -107,11 +107,13 @@
     </ApplicationDefinition>
     <Compile Include="AppSettings\AppSettings.cs" />
     <Compile Include="AppSettings\HardCodedSettings.cs" />
+    <Compile Include="Backend\DataStructures\Color.cs" />
     <Compile Include="Backend\DataStructures\InGameTrade.cs" />
     <Compile Include="Backend\DataStructures\ItemData.cs" />
     <Compile Include="Backend\DataStructures\MapData.cs" />
     <Compile Include="Backend\DataStructures\MapEventData.cs" />
     <Compile Include="Backend\DataStructures\MapScriptData.cs" />
+    <Compile Include="Backend\DataStructures\Palette.cs" />
     <Compile Include="Backend\DataStructures\PickupData.cs" />
     <Compile Include="Backend\DataStructures\RomMetadata.cs" />
     <Compile Include="Backend\DataStructures\Scripts\GiveEggCommand.cs" />
@@ -132,6 +134,7 @@
     <Compile Include="Backend\Randomization\TrainerRandomizer.cs" />
     <Compile Include="Backend\Randomization\WildEncounterRandomizer.cs" />
     <Compile Include="Backend\Reading\Gen3MapParser.cs" />
+    <Compile Include="Backend\Reading\Gen3PaletteParser.cs" />
     <Compile Include="Backend\Reading\Gen3ScriptParser.cs" />
     <Compile Include="Backend\Reading\Gen4RomParser.cs" />
     <Compile Include="Backend\Reading\RomParser.cs" />

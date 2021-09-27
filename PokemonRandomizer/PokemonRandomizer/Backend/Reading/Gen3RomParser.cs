@@ -14,11 +14,13 @@ namespace PokemonRandomizer.Backend.Reading
     {
         private readonly Gen3ScriptParser scriptParser;
         private readonly Gen3MapParser mapParser;
+        private readonly Gen3PaletteParser paletteParser;
 
         public Gen3RomParser()
         {
             scriptParser = new Gen3ScriptParser();
             mapParser = new Gen3MapParser(scriptParser);
+            paletteParser = new Gen3PaletteParser();
         }
 
         // Parse the ROM bytes into a RomData object

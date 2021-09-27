@@ -26,7 +26,7 @@ namespace PokemonRandomizer.Backend.DataStructures
         public int InternalOffset { get; private set; }
         public Stack<int> SavedOffsets { get; } = new Stack<int>();
         public int Length { get => File.Length; }
-        public byte[] File { get;}
+        public byte[] File { get; }
 
         static Rom()
         {
@@ -66,11 +66,20 @@ namespace PokemonRandomizer.Backend.DataStructures
         public byte WriteByte(byte value) => File[InternalOffset++] = value;
         /// <summary>Reads a byte from the internal offset</summary>
         public byte WriteByte(int offset, byte value) => File[offset] = value;
+        public void ReadBlock(ref byte[] destinationArray, int destinationIndex, int length)
+        {
+            Array.Copy(File, InternalOffset, destinationArray, destinationIndex, length);
+            InternalOffset += length;
+        }
+        public void ReadBlock(int offset, ref byte[] destinationArray, int destinationIndex, int length)
+        {
+            Array.Copy(File, offset, destinationArray, destinationIndex, length);
+        }
         /// <summary>Read a block of bytes at the internal offset</summary>
         public byte[] ReadBlock(int length)
         {
             byte[] block = new byte[length];
-            System.Array.Copy(File, InternalOffset, block, 0, length);
+            Array.Copy(File, InternalOffset, block, 0, length);
             InternalOffset += length;
             return block;
         }
@@ -78,7 +87,7 @@ namespace PokemonRandomizer.Backend.DataStructures
         public byte[] ReadBlock(int offset, int length)
         {
             byte[] block = new byte[length];
-            System.Array.Copy(File, offset, block, 0, length);
+            Array.Copy(File, offset, block, 0, length);
             return block;
         }
         /// <summary>Write a block of bytes to the internal offset</summary>
@@ -154,7 +163,7 @@ namespace PokemonRandomizer.Backend.DataStructures
         /// Argument given is assumed to be a List of Tuples of 24-bit ROM addresses, which are converted to 32-bit RAM addresses.
         /// The first int in the Tuple is the original pointer value, and the second int is new value
         /// </summary>
-        public void RepointMany(List<System.Tuple<int, int>> repoints)
+        public void RepointMany(List<(int originalPtr, int newPtr)> repoints)
         {
             // A caching dictionary of pointer values to known locations
             var locations = new Dictionary<int, List<int>>();
@@ -174,10 +183,10 @@ namespace PokemonRandomizer.Backend.DataStructures
             foreach(var repoint in repoints)
             {
                 // If there were no pointers of the given value found, skip
-                if (!locations.ContainsKey(repoint.Item1))
+                if (!locations.ContainsKey(repoint.originalPtr))
                     continue;
-                foreach (var ptr in locations[repoint.Item1])
-                    WritePointer(ptr, repoint.Item2);
+                foreach (var ptr in locations[repoint.originalPtr])
+                    WritePointer(ptr, repoint.newPtr);
             }
         }
 
@@ -598,6 +607,80 @@ namespace PokemonRandomizer.Backend.DataStructures
         public void WriteVariableLengthString(int offset, string text)
         {
             WriteBlock(offset, TranslateString(text, true));
+        }
+
+        #endregion
+
+        #region Compression and Decompression
+
+        private const byte lzIdentifier = 0x10;
+
+        public byte[] ReadCompressedData(int offset)
+        {
+            SaveAndSeekOffset(offset);
+            var data = ReadCompressedData();
+            LoadOffset();
+            return data;
+        }
+
+        public byte[] ReadCompressedData()
+        {
+            // Read header
+            // First byte is the lz identifier, which is a magic number
+            if (ReadByte() != lzIdentifier)
+            {
+                Logger.main.Error($"Attempting to read compressed data at {InternalOffset:x2}, but no lzIdentifier ({lzIdentifier:x2}) found");
+                return Array.Empty<byte>();
+            }
+            // Next three bytes are the length of the data (in bytes) 
+            int length = ReadUInt(3);
+            var data = new byte[length];
+            int dataIndex = 0;
+            while(dataIndex < length)
+            {
+                // 1-byte section header. Tells you which of the next 8 tokens are compressed (by bitflag, msb is first token)
+                byte sectionHeader = ReadByte();
+                // All uncompressed, just copy the data
+                if(sectionHeader == 0x00)
+                {
+                    ReadBlock(ref data, dataIndex, 8);
+                    dataIndex += 8;
+                    continue;
+                }
+                // Some compressed tokens, iterate though tokens
+                byte mask = 0b10000000;
+                for(int tokenIndex = 0; tokenIndex < 8; ++tokenIndex)
+                {
+                    if ((sectionHeader & mask) != 0) // Compressed Token
+                    {
+                        // Read Compressed Token
+                        byte byte1 = ReadByte();
+                        byte byte2 = ReadByte();
+                        int runLength = (byte1 >> 4) + 3; // First 4 bits of byte one
+                        int runOffset = (((byte1 & 0xF) << 8) | byte2) + 1; // Second 4 bits of byte 1 and byte two (+1)
+                        // Uncompress compressed token into data
+                        for(int runIndex = 0; runIndex < runLength; ++runIndex)
+                        {
+                            data[dataIndex] = data[dataIndex - runOffset];
+                            ++dataIndex;
+                        }
+                        if (dataIndex == length)
+                            return data;
+                    }
+                    else // Uncompressed token
+                    {
+                        data[dataIndex] = ReadByte();
+                        ++dataIndex;
+                    }
+                    mask >>= 1;
+                }
+            }
+            return data;
+        }
+
+        public void CompressAndWriteData(byte[] data)
+        {
+
         }
 
         #endregion
