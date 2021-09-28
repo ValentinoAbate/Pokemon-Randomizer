@@ -643,8 +643,9 @@ namespace PokemonRandomizer.Backend.DataStructures
                 // All uncompressed, just copy the data
                 if(sectionHeader == 0x00)
                 {
-                    ReadBlock(ref data, dataIndex, 8);
-                    dataIndex += 8;
+                    int blockLength = Math.Min(8, length - dataIndex);
+                    ReadBlock(ref data, dataIndex, blockLength);
+                    dataIndex += blockLength;
                     continue;
                 }
                 // Some compressed tokens, iterate though tokens
@@ -656,7 +657,7 @@ namespace PokemonRandomizer.Backend.DataStructures
                         // Read Compressed Token
                         byte byte1 = ReadByte();
                         byte byte2 = ReadByte();
-                        int runLength = (byte1 >> 4) + 3; // First 4 bits of byte one
+                        int runLength = (byte1 >> 4) + 3; // First 4 bits of byte one (+3)
                         int runOffset = (((byte1 & 0xF) << 8) | byte2) + 1; // Second 4 bits of byte 1 and byte two (+1)
                         // Uncompress compressed token into data
                         for(int runIndex = 0; runIndex < runLength; ++runIndex)
@@ -687,7 +688,11 @@ namespace PokemonRandomizer.Backend.DataStructures
 
         public void CompressAndWriteData(byte[] data)
         {
+            // Tokenize data
+            for(int i = 0; i < data.Length; ++i)
+            {
 
+            }
         }
 
         #endregion

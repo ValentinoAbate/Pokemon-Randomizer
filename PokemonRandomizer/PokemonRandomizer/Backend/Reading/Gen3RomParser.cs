@@ -227,8 +227,8 @@ namespace PokemonRandomizer.Backend.Reading
             int nameLength = info.Length(ElementNames.pokemonNames);
             namesOffset += nameLength;
             // Setup palette offsets
-            int normalPaletteOffset = info.FindOffset(ElementNames.pokemonPalettes, rom);
-            int shinyPaletteOffset = info.FindOffset(ElementNames.pokemonPalettesShiny, rom);
+            int normalPaletteOffset = info.FindOffset(ElementNames.pokemonPalettes, rom) + info.Size(ElementNames.pokemonPalettes);
+            int shinyPaletteOffset = info.FindOffset(ElementNames.pokemonPalettesShiny, rom) + info.Size(ElementNames.pokemonPalettesShiny);
             #endregion
 
             // Read Egg Moves
@@ -366,7 +366,13 @@ namespace PokemonRandomizer.Backend.Reading
         // Read Palettes
         private void ReadPalettes(Rom rom, int normalOffset, int shinyOffset, PokemonBaseStats pokemon)
         {
-
+            rom.SaveAndSeekOffset(normalOffset);
+            pokemon.palette = paletteParser.ParseCompressed(rom.ReadPointer(), rom);
+            pokemon.paletteIndex = rom.ReadUInt16();
+            rom.Seek(shinyOffset);
+            pokemon.shinyPalette = paletteParser.ParseCompressed(rom.ReadPointer(), rom);
+            pokemon.shinyPaletteIndex = rom.ReadUInt16();
+            rom.LoadOffset();
         }
         #endregion
 

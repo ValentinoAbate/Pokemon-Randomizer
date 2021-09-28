@@ -93,6 +93,15 @@ namespace PokemonRandomizer.Backend.DataStructures
 
         #endregion
 
+        #region Graphical Data
+
+        public Palette palette;
+        public int paletteIndex;
+        public Palette shinyPalette;
+        public int shinyPaletteIndex;
+
+        #endregion
+
         public string Name { get; set; }
 
         public Evolution[] evolvesTo;

@@ -51,9 +51,9 @@
     <evolutions size="40" evolutionsPerPokemon="5"/>
     <pokemonNames length ="11"/>
     <!-- Constant for FRLG+E (R/S will override) -->
-    <pokemonPalettes pointer="0x000130"/>
+    <pokemonPalettes pointer="0x000130" size="8"/>
     <!-- Constant for FRLG+E (R/S will override) -->
-    <pokemonPalettesShiny pointer="0x000134"/>
+    <pokemonPalettesShiny pointer="0x000134" size="8"/>
 
     <!-- Map Data -->
     
