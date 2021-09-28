@@ -39,11 +39,9 @@ namespace PokemonRandomizer.Backend.DataStructures
         public bool EvolvesByLevel { get => Type.ToString().Contains("Level"); }
         public bool EvolvesByTrade { get => Type == EvolutionType.Trade || Type == EvolutionType.TradeWithItem; }
         public bool EvolvesByFriendship { get => Type == EvolutionType.Friendship || Type == EvolutionType.FriendshipDay || Type == EvolutionType.FriendshipNight; }
-        public Evolution(byte[] data)
+        public Evolution(EvolutionType type, int parameter, Pokemon pokemon)
         {
-            Type = (EvolutionType)data.ReadUInt16(0);
-            parameter = data.ReadUInt16(2);
-            Pokemon = (Pokemon)data.ReadUInt16(4);
+
         }
         public Evolution(EvolutionType type, Pokemon pokemon, int parameter)
         {
