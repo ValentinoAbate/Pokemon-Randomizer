@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using PokemonRandomizer.Backend.DataStructures;
+﻿using PokemonRandomizer.Backend.DataStructures;
 using PokemonRandomizer.Backend.Utilities;
 
 namespace PokemonRandomizer.Backend.Reading
 {
     public class Gen3PaletteParser
     {
-        private const int bytesPerColor = 2;
+        public const int bytesPerColor = 2;
         public Palette Parse(Rom rom)
         {
             return Parse(rom.ReadCompressedData());
@@ -22,9 +17,9 @@ namespace PokemonRandomizer.Backend.Reading
             var colors = new Color[numColors];
             for (int i = 0; i < numColors; ++i)
             {
-                colors[i] = ReadColor(uncompressed, i * 2);
+                colors[i] = ReadColor(uncompressed, i * bytesPerColor);
             }
-            return new Palette(colors);
+            return new Palette(ref colors);
         }
 
         private const int rMask = 0b0000000000011111;

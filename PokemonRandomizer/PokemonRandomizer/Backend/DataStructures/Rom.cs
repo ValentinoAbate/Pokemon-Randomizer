@@ -678,6 +678,13 @@ namespace PokemonRandomizer.Backend.DataStructures
             return data;
         }
 
+        public void CompressAndWriteData(int offset, byte[] data)
+        {
+            SaveAndSeekOffset(offset);
+            CompressAndWriteData(data);
+            LoadOffset();
+        }
+
         public void CompressAndWriteData(byte[] data)
         {
 
