@@ -650,7 +650,7 @@ namespace PokemonRandomizer.Backend.DataStructures
                 }
                 // Some compressed tokens, iterate though tokens
                 byte mask = 0b10000000;
-                for(int tokenIndex = 0; tokenIndex < 8; ++tokenIndex)
+                for(int tokenIndex = 0; tokenIndex < 8 && dataIndex < length; ++tokenIndex)
                 {
                     if ((sectionHeader & mask) != 0) // Compressed Token
                     {

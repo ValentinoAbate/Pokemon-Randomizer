@@ -227,8 +227,9 @@ namespace PokemonRandomizer.Backend.Reading
             int nameLength = info.Length(ElementNames.pokemonNames);
             namesOffset += nameLength;
             // Setup palette offsets
-            int normalPaletteOffset = info.FindOffset(ElementNames.pokemonPalettes, rom) + info.Size(ElementNames.pokemonPalettes);
-            int shinyPaletteOffset = info.FindOffset(ElementNames.pokemonPalettesShiny, rom) + info.Size(ElementNames.pokemonPalettesShiny);
+            int pokemonPaletteSize = info.Size(ElementNames.pokemonPalettes);
+            int normalPaletteOffset = info.FindOffset(ElementNames.pokemonPalettes, rom) + pokemonPaletteSize;
+            int shinyPaletteOffset = info.FindOffset(ElementNames.pokemonPalettesShiny, rom) + pokemonPaletteSize;
             #endregion
 
             // Read Egg Moves
@@ -255,7 +256,7 @@ namespace PokemonRandomizer.Backend.Reading
                 ReadTMHMCompat(rom, tmHmCompatOffset + (i * tmHmSize), numTms, numHms, tmHmSize, out pkmn.TMCompat, out pkmn.HMCompat);
                 ReadTutorCompat(rom, tutorCompatOffset + (i * tutorSize), numTutorMoves, tutorSize, out pkmn.moveTutorCompat);
                 ReadEvolutions(rom, evolutionOffset + (i * evolutionSize), evolutionsPerPokemon, out pkmn.evolvesTo);
-                ReadPalettes(rom, normalPaletteOffset, shinyPaletteOffset, pkmn);
+                ReadPalettes(rom, normalPaletteOffset + (i * pokemonPaletteSize), shinyPaletteOffset + (i * pokemonPaletteSize), pkmn);
                 pokemon.Add(pkmn);
             }
             return pokemon;

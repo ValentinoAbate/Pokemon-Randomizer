@@ -19,10 +19,12 @@ namespace PokemonRandomizer.Backend.Writing
         private readonly HashSet<Item> failedItemRemaps = new HashSet<Item>();
         private readonly Gen3ScriptWriter scriptWriter;
         private readonly Gen3MapWriter mapWriter;
+        private readonly Gen3PaletteWriter paletteWriter;
         public Gen3RomWriter()
         {
             scriptWriter = new Gen3ScriptWriter(RemapItem);
             mapWriter = new Gen3MapWriter(scriptWriter);
+            paletteWriter = new Gen3PaletteWriter();
         }
         public override Rom Write(RomData data, Rom originalRom, RomMetadata metadata, XmlManager info, Settings settings)
         {
@@ -373,6 +375,10 @@ namespace PokemonRandomizer.Backend.Writing
             int originalMovesetOffset = info.FindOffset(ElementNames.movesets, rom);
             if (originalMovesetOffset == Rom.nullPointer)
                 return;
+            // Setup palette offsets
+            int pokemonPaletteSize = info.Size(ElementNames.pokemonPalettes);
+            int normalPaletteOffset = info.FindOffset(ElementNames.pokemonPalettes, rom) + pokemonPaletteSize;
+            int shinyPaletteOffset = info.FindOffset(ElementNames.pokemonPalettesShiny, rom) + pokemonPaletteSize;
 
             #endregion
 
@@ -385,10 +391,11 @@ namespace PokemonRandomizer.Backend.Writing
             // Find a block to write to in so we can log repoints if we need to
             int? newMoveDataOffset = needToRelocateMoveData ? rom.FindFreeSpaceOffset(moveData.Length) : null;
             bool ableToRelocateMoveData = newMoveDataOffset != null;
+            int skipAt = (int)info.Attr(ElementNames.pokemonBaseStats, "skipAt");
             // Main writing loop
             for (int i = 0; i < info.Num(ElementNames.pokemonBaseStats); i++)
             {
-                if (i == (int)info.Attr(ElementNames.pokemonBaseStats, "skipAt")) // potentially skip empty slots
+                if (i == skipAt) // potentially skip empty slots
                 {
                     i += skipNum;
                     moveData.WriteBlock(movesetIndex, romData.SkippedLearnSetData);
@@ -414,6 +421,7 @@ namespace PokemonRandomizer.Backend.Writing
                 WriteTMHMCompat(stats, tmHmCompatOffset + (i * tmHmSize), rom);
                 WriteTutorCompat(stats, tutorCompatOffset + (i * tutorSize), rom);
                 WriteEvolutions(stats, evolutionOffset + (i * evolutionSize), rom);
+                WritePokemonPalettes(stats, normalPaletteOffset + (i * pokemonPaletteSize), shinyPaletteOffset + (i * pokemonPaletteSize), rom);
             }
             // If we don't need to repoint move data, write it in it's original location
             if (!needToRelocateMoveData)
@@ -520,6 +528,16 @@ namespace PokemonRandomizer.Backend.Writing
                 rom.WriteUInt16((int)evo.Pokemon);
                 rom.Skip(2);
             }
+        }
+        private void WritePokemonPalettes(PokemonBaseStats pokemon, int normalOffeset, int shinyOffset, Rom rom)
+        {
+            rom.SaveAndSeekOffset(normalOffeset);
+            paletteWriter.WriteCompressed(rom.ReadPointer(), pokemon.palette, rom);
+            rom.WriteUInt16(pokemon.paletteIndex);
+            rom.Seek(shinyOffset);
+            paletteWriter.WriteCompressed(rom.ReadPointer(), pokemon.shinyPalette, rom);
+            rom.WriteUInt16(pokemon.shinyPaletteIndex);
+            rom.LoadOffset();
         }
         private void WriteTypeDefinitions(RomData data, Rom rom, XmlManager info, ref RepointList repoints)
         {
