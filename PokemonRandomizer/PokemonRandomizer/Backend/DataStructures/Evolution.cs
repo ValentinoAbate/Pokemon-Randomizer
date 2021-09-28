@@ -41,7 +41,9 @@ namespace PokemonRandomizer.Backend.DataStructures
         public bool EvolvesByFriendship { get => Type == EvolutionType.Friendship || Type == EvolutionType.FriendshipDay || Type == EvolutionType.FriendshipNight; }
         public Evolution(EvolutionType type, int parameter, Pokemon pokemon)
         {
-
+            Type = type;
+            Pokemon = pokemon;
+            this.parameter = parameter;
         }
         public Evolution(EvolutionType type, Pokemon pokemon, int parameter)
         {
