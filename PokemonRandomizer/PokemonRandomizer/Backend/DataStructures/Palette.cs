@@ -11,5 +11,10 @@ namespace PokemonRandomizer.Backend.DataStructures
         {
             this.colors = colors;
         }
+
+        public override string ToString()
+        {
+            return string.Join(", ", colors);
+        }
     }
 }
