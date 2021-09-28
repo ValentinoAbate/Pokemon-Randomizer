@@ -614,6 +614,7 @@ namespace PokemonRandomizer.Backend.DataStructures
         #region Compression and Decompression
 
         private const byte lzIdentifier = 0x10;
+        private const int lzMinCompressedRunLengthExlusive = 3;
 
         public byte[] ReadCompressedData(int offset)
         {
@@ -657,7 +658,7 @@ namespace PokemonRandomizer.Backend.DataStructures
                         // Read Compressed Token
                         byte byte1 = ReadByte();
                         byte byte2 = ReadByte();
-                        int runLength = (byte1 >> 4) + 3; // First 4 bits of byte one (+3)
+                        int runLength = (byte1 >> 4) + lzMinCompressedRunLengthExlusive; // First 4 bits of byte one (+3)
                         int runOffset = (((byte1 & 0xF) << 8) | byte2) + 1; // Second 4 bits of byte 1 and byte two (+1)
                         // Uncompress compressed token into data
                         for(int runIndex = 0; runIndex < runLength; ++runIndex)
@@ -686,13 +687,71 @@ namespace PokemonRandomizer.Backend.DataStructures
             LoadOffset();
         }
 
+        private const byte compressionHeaderMask = 0b10000000;
+
         public void CompressAndWriteData(byte[] data)
         {
-            // Tokenize data
-            for(int i = 0; i < data.Length; ++i)
-            {
+            return;
+            // Write Header
+            WriteByte(lzIdentifier);
+            WriteUInt(data.Length, 3);
 
+            // Write Data
+            int dataIndex = 0;
+            int tokenIndex = 0;
+            byte header = 0x00;
+            int headerOffset = nullPointer;
+
+            while (dataIndex < data.Length)
+            {
+                if (tokenIndex >= 8)
+                {
+                    WriteByte(headerOffset, header);
+                    tokenIndex = 0;
+                    header = 0x00;
+                    headerOffset = InternalOffset;
+                    Skip(); // Skip the header byte. It will be filled in later when we know the compression status of upcoming tokens
+                }
+                // Compression tokens can't start on an odd byte (according to https://www.akkit.org/info/gbatek.htm : SWI 11h (GBA/NDS7/NDS9) - LZ77UnCompWram)
+                if (InternalOffset % 2 == 1)// Treat as uncompressed
+                {
+                    WriteByte(data[dataIndex++]);
+                    tokenIndex++;
+                    continue;
+                }
+                // Find the longest match
+                (int runLength, int runOffset) = FindLongestMatch(data, dataIndex);
+                // If compression token is lower than or equal to the exlusive minimum run length. Write uncompressed
+                if(runLength <= lzMinCompressedRunLengthExlusive)
+                {
+                    WriteByte(data[dataIndex++]);
+                }
+                else
+                {
+                    // Translate to the values we actually write
+                    int recordedOffset = Math.Min(runOffset - 1, 0xFFF);
+                    int recordedLength = Math.Min(runLength - lzMinCompressedRunLengthExlusive, 0xF);
+                    // Write first byte (first 4 bits = length, next 4 bits = 4 msbs of offset)
+                    WriteByte((byte)((recordedLength << 4) | (recordedOffset >> 8)));
+                    // Write second byte (8 lsbs of offset)
+                    WriteByte((byte)recordedOffset);
+                    dataIndex += runLength;
+                    header |= (byte)(compressionHeaderMask >> tokenIndex);
+                }
+                tokenIndex++;
             }
+            // Write final header
+            WriteByte(headerOffset, header);
+        }
+
+        private (int runLength, int runOffset) FindLongestMatch(byte[] data, int index)
+        {
+            int bestLength = 2;
+            int bestOffset = -1;
+
+            // TODO: Actually implement find longest match
+
+            return (bestLength, bestOffset);
         }
 
         #endregion
