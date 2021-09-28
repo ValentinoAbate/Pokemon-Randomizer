@@ -17,7 +17,7 @@ namespace PokemonRandomizer.Backend.Writing
             for(int i = 0; i< palette.Colors.Count; ++i)
             {
                 var color = palette.Colors[i];
-                int colorUint16 = color.R | (color.G << 5) | (color.B << 10) | (color.A << 15);
+                int colorUint16 = color.r | (color.g << 5) | (color.b << 10) | (color.a << 15);
                 bytes.WriteUInt16(i * bytesPerColor, colorUint16);
             }
             return bytes;

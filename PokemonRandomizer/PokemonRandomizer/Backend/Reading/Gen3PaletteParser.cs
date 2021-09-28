@@ -6,6 +6,15 @@ namespace PokemonRandomizer.Backend.Reading
     public class Gen3PaletteParser
     {
         public const int bytesPerColor = 2;
+
+        public Palette Parse(int offset, Rom rom)
+        {
+            rom.SaveAndSeekOffset(offset);
+            var palette = Parse(rom);
+            rom.LoadOffset();
+            return palette;
+        }
+
         public Palette Parse(Rom rom)
         {
             return Parse(rom.ReadCompressedData());
