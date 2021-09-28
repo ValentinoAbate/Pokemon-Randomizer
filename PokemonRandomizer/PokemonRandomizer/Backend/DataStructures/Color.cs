@@ -4,17 +4,25 @@ namespace PokemonRandomizer.Backend.DataStructures
 {
     public struct Color : IEquatable<Color>
     {
-        public int r;
-        public int g;
-        public int b;
-        public int a;
+        public ushort r;
+        public ushort g;
+        public ushort b;
+        public ushort a;
 
-        public Color(int r, int g, int b, int a)
+        public Color(ushort r, ushort g, ushort b, ushort a)
         {
             this.r = r;
             this.g = g;
             this.b = b;
             this.a = a;
+        }
+
+        public Color(int r, int g, int b, int a)
+        {
+            this.r = (ushort)r;
+            this.g = (ushort)g;
+            this.b = (ushort)b;
+            this.a = (ushort)a;
         }
 
         public override bool Equals(object obj)

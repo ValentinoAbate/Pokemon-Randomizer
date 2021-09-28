@@ -6,9 +6,22 @@ namespace PokemonRandomizer.Backend.Writing
     public class Gen3PaletteWriter
     {
         public const int bytesPerColor = Reading.Gen3PaletteParser.bytesPerColor;
-        public void Write(Palette palette, Rom rom)
+        public void WriteCompressed(Palette palette, Rom rom)
         {
             rom.CompressAndWriteData(ToByteArray(palette));
+        }
+        public void WriteCompressed(int offset, Palette palette, Rom rom)
+        {
+            rom.CompressAndWriteData(offset, ToByteArray(palette));
+        }
+
+        public void WriteUncompressed(Palette palette, Rom rom)
+        {
+            rom.WriteBlock(ToByteArray(palette));
+        }
+        public void WriteUncompressed(int offset, Palette palette, Rom rom)
+        {
+            rom.WriteBlock(offset, ToByteArray(palette));
         }
 
         public byte[] ToByteArray(Palette palette)

@@ -7,20 +7,27 @@ namespace PokemonRandomizer.Backend.Reading
     {
         public const int bytesPerColor = 2;
 
-        public Palette Parse(int offset, Rom rom)
+        public Palette ParseCompressed(int offset, Rom rom)
         {
-            rom.SaveAndSeekOffset(offset);
-            var palette = Parse(rom);
-            rom.LoadOffset();
-            return palette;
+            return ParseUncompressed(rom.ReadCompressedData(offset));
         }
 
-        public Palette Parse(Rom rom)
+        public Palette ParseCompressed(Rom rom)
         {
-            return Parse(rom.ReadCompressedData());
+            return ParseUncompressed(rom.ReadCompressedData());
         }
 
-        public Palette Parse(byte[] uncompressed)
+        public Palette ParseUncompressed(Rom rom, int numColors)
+        {
+            return ParseUncompressed(rom.ReadBlock(numColors * bytesPerColor));
+        }
+
+        public Palette ParseUncompressed(int offset, Rom rom, int numColors)
+        {
+            return ParseUncompressed(rom.ReadBlock(offset, numColors * bytesPerColor));
+        }
+
+        private Palette ParseUncompressed(byte[] uncompressed)
         {
             int numColors = uncompressed.Length / bytesPerColor;
             var colors = new Color[numColors];
