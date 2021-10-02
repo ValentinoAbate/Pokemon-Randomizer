@@ -39,12 +39,13 @@ namespace PokemonRandomizer.Backend.Utilities
         {
             public List<string> Readout()
             {
-                var ret = new List<string>();
-                ret.Add("Byte Diffs:");
-                ret.AddRange(ByteDiffs.Select(d => d.ToString()));
-                ret.Add(" ");
+                // Readout blocks
+                var blockDiffText = BlockDiffs.SelectMany(d => d.Readout());
+                // Initialize list with proper capacity
+                var ret = new List<string>(blockDiffText.Count() + 1);
+                // Add diff data
                 ret.Add("Block Diffs:");
-                ret.AddRange(BlockDiffs.SelectMany(d => d.Readout()));
+                ret.AddRange(blockDiffText);
                 return ret;
             }
             public List<ByteDiff> ByteDiffs { get; } = new List<ByteDiff>();
@@ -65,7 +66,7 @@ namespace PokemonRandomizer.Backend.Utilities
 
                 public override string ToString()
                 {
-                    return offset.ToString("x2") + ": " + originalValue.ToString("x2") + " -> " + changedValue.ToString("x2");
+                    return $"{offset:x2}: {originalValue:x2} -> {changedValue:x2}";
                 }
             }
 
@@ -87,9 +88,9 @@ namespace PokemonRandomizer.Backend.Utilities
 
                 public List<string> Readout()
                 {
-                    var ret = new List<string>();
-                    ret.Add("// Block: " + offset.ToString("x2") + " - " + (offset + values.Count - 1).ToString("x2") + " (" + values.Count + " bytes)");
-                    ret.AddRange(values.Select(v => v.Item1.ToString("x2") + " -> " + v.Item2.ToString("x2")));
+                    var ret = new List<string>(values.Count + 2);
+                    ret.Add($"// Block: {offset:x2} - {offset + values.Count - 1:x2} ({values.Count} bytes)");
+                    ret.AddRange(values.Select(v => $"{v.Item1:x2} -> {v.Item2:x2}"));
                     ret.Add(" ");
                     return ret;
                 }

@@ -509,7 +509,6 @@ namespace PokemonRandomizer.Backend.DataStructures
                 {
                     text += (textUnknownStr + string.Format("%02X", code));
                 }
-
             }
             return text;
         }
@@ -590,11 +589,11 @@ namespace PokemonRandomizer.Backend.DataStructures
                 WriteBlock(offset, translated);
                 // Write the text terminator
                 WriteByte(offset + translated.Length, textTerminatorSym);
-                // Wipe the rest of the space
+                // Set the rest of the space to 0x00
                 int lengthUsed = translated.Length + 1;
                 if(lengthUsed < length)
                 {
-                    WipeBlock(offset + lengthUsed, length - lengthUsed);
+                    SetBlock(offset + lengthUsed, length - lengthUsed, 0x00);
                 }
             }
         }
@@ -613,8 +612,31 @@ namespace PokemonRandomizer.Backend.DataStructures
 
         #region Compression and Decompression
 
+        // Compression Format Documentation (from https://www.akkit.org/info/gbatek.htm)
+        // SWI 11h(GBA/NDS7/NDS9) - LZ77UnCompWram
+        // SWI 12h(GBA/NDS7/NDS9) - LZ77UnCompVram(NDS: with Callback)
+        // Expands LZ77-compressed data.The Wram function is faster, and writes in units of 8bits.For the Vram function the destination must be halfword aligned, data is written in units of 16bits.
+        // If the size of the compressed data is not a multiple of 4, please adjust it as much as possible by padding with 0. Align the source address to a 4-Byte boundary.
+        // r0 Source address, pointing to data as such:
+        //  Data header (32bit)
+        //    Bit 0-3   Reserved
+        //    Bit 4-7   Compressed type(must be 1 for LZ77)
+        //    Bit 8-31  Size of decompressed data
+        //  Repeat below.Each Flag Byte followed by eight Blocks.
+        //  Flag data (8bit)
+        //    Bit 0-7   Type Flags for next 8 Blocks, MSB first
+        //  Block Type 0 - Uncompressed - Copy 1 Byte from Source to Dest
+        //    Bit 0-7   One data byte to be copied to dest
+        //  Block Type 1 - Compressed - Copy N+3 Bytes from Dest-Disp-1 to Dest
+        //    Bit 0-3   Disp MSBs
+        //    Bit 4-7   Number of bytes to copy(minus 3)
+        //    Bit 8-15  Disp LSBs
+        // r1 Destination address
+        // r2 Callback parameter(NDS SWI 12h only, see Callback notes below)
+        // r3 Callback structure(NDS SWI 12h only, see Callback notes below)
+
         private const byte lzIdentifier = 0x10;
-        private const int lzMinCompressedRunLengthExlusive = 3;
+        private const int lzMinCompressedRunLength = 3;
 
         public byte[] ReadCompressedData(int offset)
         {
@@ -658,7 +680,7 @@ namespace PokemonRandomizer.Backend.DataStructures
                         // Read Compressed Token
                         byte byte1 = ReadByte();
                         byte byte2 = ReadByte();
-                        int runLength = (byte1 >> 4) + lzMinCompressedRunLengthExlusive; // First 4 bits of byte one (+3)
+                        int runLength = (byte1 >> 4) + lzMinCompressedRunLength; // First 4 bits of byte one (+3)
                         int runOffset = (((byte1 & 0xF) << 8) | byte2) + 1; // Second 4 bits of byte 1 and byte two (+1)
                         // Uncompress compressed token into data
                         for(int runIndex = 0; runIndex < runLength; ++runIndex)
@@ -691,7 +713,6 @@ namespace PokemonRandomizer.Backend.DataStructures
 
         public void CompressAndWriteData(byte[] data)
         {
-            return;
             // Write Header
             WriteByte(lzIdentifier);
             WriteUInt(data.Length, 3);
@@ -701,7 +722,7 @@ namespace PokemonRandomizer.Backend.DataStructures
             int tokenIndex = 0;
             byte header = 0x00;
             int headerOffset = InternalOffset;
-            Skip();
+            Skip(); // Skip the header byte. It will be filled in later when we know the compression status of upcoming tokens
 
             while (dataIndex < data.Length)
             {
@@ -713,17 +734,10 @@ namespace PokemonRandomizer.Backend.DataStructures
                     headerOffset = InternalOffset;
                     Skip(); // Skip the header byte. It will be filled in later when we know the compression status of upcoming tokens
                 }
-                // Compression tokens can't start on an odd byte (according to https://www.akkit.org/info/gbatek.htm : SWI 11h (GBA/NDS7/NDS9) - LZ77UnCompWram)
-                if (InternalOffset % 2 == 1)// Treat as uncompressed
-                {
-                    WriteByte(data[dataIndex++]);
-                    tokenIndex++;
-                    continue;
-                }
                 // Find the longest match
                 (int runLength, int runOffset) = FindLongestMatch(data, dataIndex);
                 // If compression token is lower than or equal to the exlusive minimum run length. Write uncompressed
-                if(runLength <= lzMinCompressedRunLengthExlusive)
+                if(runLength < lzMinCompressedRunLength)
                 {
                     WriteByte(data[dataIndex++]);
                 }
@@ -731,7 +745,7 @@ namespace PokemonRandomizer.Backend.DataStructures
                 {
                     // Translate to the values we actually write
                     int recordedOffset = Math.Min(runOffset - 1, 0xFFF);
-                    int recordedLength = Math.Min(runLength - lzMinCompressedRunLengthExlusive, 0xF);
+                    int recordedLength = Math.Min(runLength - lzMinCompressedRunLength, 0xF);
                     // Write first byte (first 4 bits = length, next 4 bits = 4 msbs of offset)
                     WriteByte((byte)((recordedLength << 4) | (recordedOffset >> 8)));
                     // Write second byte (8 lsbs of offset)
