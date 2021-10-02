@@ -700,7 +700,8 @@ namespace PokemonRandomizer.Backend.DataStructures
             int dataIndex = 0;
             int tokenIndex = 0;
             byte header = 0x00;
-            int headerOffset = nullPointer;
+            int headerOffset = InternalOffset;
+            Skip();
 
             while (dataIndex < data.Length)
             {
@@ -735,8 +736,9 @@ namespace PokemonRandomizer.Backend.DataStructures
                     WriteByte((byte)((recordedLength << 4) | (recordedOffset >> 8)));
                     // Write second byte (8 lsbs of offset)
                     WriteByte((byte)recordedOffset);
-                    dataIndex += runLength;
+                    // Mark the token as compressed in the header
                     header |= (byte)(compressionHeaderMask >> tokenIndex);
+                    dataIndex += runLength;
                 }
                 tokenIndex++;
             }
@@ -749,7 +751,22 @@ namespace PokemonRandomizer.Backend.DataStructures
             int bestLength = 2;
             int bestOffset = -1;
 
-            // TODO: Actually implement find longest match
+            // Iterate though the even offsets (starting 2, because the minimum compressible match is 3)
+            for (int runOffset = 2; index - runOffset >= 0; runOffset += 2)
+            {
+                int runLength = 0;
+                // See how long the run at this offset is
+                while (index + runLength < data.Length && runLength < 18 && data[index - runOffset + runLength] == data[index + runLength])
+                {
+                    ++runLength;
+                }
+                // If the run is longer than before, log the new bests
+                if (runLength > bestLength)
+                {
+                    bestLength = runLength;
+                    bestOffset = runOffset;
+                }
+            }
 
             return (bestLength, bestOffset);
         }
