@@ -26,8 +26,8 @@ namespace PokemonRandomizer.Backend.Writing
 
         public byte[] ToByteArray(Palette palette)
         {
-            var bytes = new byte[palette.Colors.Count * bytesPerColor];
-            for(int i = 0; i< palette.Colors.Count; ++i)
+            var bytes = new byte[palette.Colors.Length * bytesPerColor];
+            for(int i = 0; i< palette.Colors.Length; ++i)
             {
                 var color = palette.Colors[i];
                 int colorUint16 = color.r | (color.g << 5) | (color.b << 10) | (color.a << 15);
