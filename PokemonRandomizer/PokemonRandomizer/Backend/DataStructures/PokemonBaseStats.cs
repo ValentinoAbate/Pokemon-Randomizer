@@ -118,6 +118,7 @@ namespace PokemonRandomizer.Backend.DataStructures
         // Just for lookup purposes, not to be written to file
         public List<Evolution> evolvesFrom = new List<Evolution>();
         public int NationalDexIndex { get; set; }
+        public bool IsVariant { get; set; } = false;
 
         public bool IsType(PokemonType type)
         {

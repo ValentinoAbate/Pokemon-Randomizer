@@ -36,16 +36,16 @@ namespace PokemonRandomizer.Backend.Randomization
 
         public void CreateVariant(PokemonBaseStats pokemon, Settings settings)
         {
-            // This should only be done per evolution line, not per pokemon
-            if (!pokemon.IsBasic)
+            if (pokemon.IsVariant)
                 return;
+            pokemon.IsVariant = true;
             // Original Type Data
             var origninalTypes = (pokemon.PrimaryType, pokemon.SecondaryType);
             bool originallySingleType = pokemon.IsSingleTyped;
             // Change to variant type
             ChooseType(pokemon, settings, out TypeTransformation transformationType);
             // Propogate type
-            PropogateType(pokemon, origninalTypes, originallySingleType, transformationType);
+            PropogateType(pokemon, settings, origninalTypes, originallySingleType, transformationType);
 
             // Modify Evolutions (if applicable)
 
@@ -116,6 +116,10 @@ namespace PokemonRandomizer.Backend.Randomization
                 {
                     pokemon.SetSingleType(RandomPrimaryType(types, pokemon.types));
                 }
+                if (settings.SafeWonderGuard)
+                {
+                    WonderGuardFix(pokemon);
+                }
             }
         }
 
@@ -124,6 +128,18 @@ namespace PokemonRandomizer.Backend.Randomization
         private static readonly PokemonType[] excludeFromPrimary = new PokemonType[] { PokemonType.FLY };
         private static readonly PokemonType[] excludeFromSecondary = new PokemonType[] { PokemonType.NRM };
 
+        private PokemonType RandomPrimaryTypeAndRemove(IList<PokemonType> choices, params PokemonType[] exclude)
+        {
+            var choice = RandomType(choices.Except(excludeFromPrimary), exclude);
+            choices.Remove(choice);
+            return choice;
+        }
+        private PokemonType RandomSecondaryTypeAndRemove(IList<PokemonType> choices, params PokemonType[] exclude)
+        {
+            var choice = RandomType(choices.Except(excludeFromSecondary), exclude);
+            choices.Remove(choice);
+            return choice;
+        }
         private PokemonType RandomPrimaryType(IEnumerable<PokemonType> choices, params PokemonType[] exclude)
         {
             return RandomType(choices.Except(excludeFromPrimary), exclude);
@@ -139,21 +155,30 @@ namespace PokemonRandomizer.Backend.Randomization
 
         #endregion
 
-        private void PropogateType(PokemonBaseStats pokemon, (PokemonType PrimaryType, PokemonType SecondaryType) originalTypes, bool originallySingleType, TypeTransformation transformationType)
+        private void PropogateType(PokemonBaseStats pokemon, Settings settings, (PokemonType PrimaryType, PokemonType SecondaryType) originalTypes, bool originallySingleType, TypeTransformation transformationType)
         {
-            //var newTypes = new List<PokemonType>(types);
-
+            var newTypes = new List<PokemonType>(types);
+            newTypes.Remove(pokemon.PrimaryType);
+            if (!pokemon.IsSingleTyped)
+            {
+                newTypes.Remove(pokemon.SecondaryType);
+            }
             foreach (var evo in pokemon.evolvesTo)
             {
                 if (!evo.IsRealEvolution)
                     continue;
                 var evolvedPokemon = dataT.GetBaseStats(evo.Pokemon);
+                evolvedPokemon.IsVariant = true;
                 // If the evolved pokemon is the same type as the base pokemon originally was, just pass the type changes through
                 if(evolvedPokemon.PrimaryType == originalTypes.PrimaryType && evolvedPokemon.SecondaryType == originalTypes.SecondaryType)
                 {
                     evolvedPokemon.PrimaryType = pokemon.PrimaryType;
                     evolvedPokemon.SecondaryType = pokemon.SecondaryType;
-                    PropogateType(evolvedPokemon, originalTypes, originallySingleType, transformationType);
+                    PropogateType(evolvedPokemon, settings, originalTypes, originallySingleType, transformationType);
+                    if (settings.SafeWonderGuard)
+                    {
+                        WonderGuardFix(pokemon);
+                    }
                     continue;
                 }
                 // This evolution is a type change, need to do something more complicated
@@ -171,7 +196,7 @@ namespace PokemonRandomizer.Backend.Randomization
                         // Pokemon is still single typed: choose a different primary type that is not the base pokemon's new type or the evolved pokemon's old type
                         if (transformationType == TypeTransformation.SingleTypeReplacement)
                         {
-                            evolvedPokemon.SetSingleType(RandomPrimaryType(types, evolvedPokemon.PrimaryType, pokemon.PrimaryType));
+                            evolvedPokemon.SetSingleType(RandomPrimaryTypeAndRemove(newTypes, evolvedPokemon.PrimaryType));
                         }
                         else if(transformationType == TypeTransformation.GainSecondaryType)
                         {
@@ -181,7 +206,7 @@ namespace PokemonRandomizer.Backend.Randomization
                         else if(transformationType == TypeTransformation.DoubleTypeReplacement)
                         {
                             // Replace the first type with something that isn't the original single type or either of the new types
-                            evolvedPokemon.PrimaryType = RandomPrimaryType(types, evolvedPokemon.PrimaryType, pokemon.PrimaryType, pokemon.SecondaryType);
+                            evolvedPokemon.PrimaryType = RandomPrimaryTypeAndRemove(newTypes, evolvedPokemon.PrimaryType);
                             // Carry over the newly gained secondary type
                             evolvedPokemon.SecondaryType = pokemon.SecondaryType;
                         }
@@ -216,18 +241,15 @@ namespace PokemonRandomizer.Backend.Randomization
                         }
                         else if(transformationType == TypeTransformation.DoubleTypeReplacement)
                         {
-                            var exceptTypes = pokemon.types.Concat(evolvedPokemon.types).ToArray();
                             evolvedPokemon.PrimaryType = pokemon.PrimaryType;
-                            evolvedPokemon.SecondaryType = RandomSecondaryType(types, exceptTypes);
+                            evolvedPokemon.SecondaryType = RandomSecondaryTypeAndRemove(newTypes, evolvedPokemon.types);
                         }
                     }
                     else // Evolved pokemon turns into two unrelated types (double replacement) (e.g cubone -> alolan marowak)
                     {
                         // Always do a double type replacement
-                        var exceptTypes = pokemon.types.Concat(evolvedPokemon.types).ToList();
-                        evolvedPokemon.PrimaryType = RandomPrimaryType(types, exceptTypes.ToArray());
-                        exceptTypes.Add(evolvedPokemon.PrimaryType);
-                        evolvedPokemon.SecondaryType = RandomSecondaryType(types, exceptTypes.ToArray());
+                        evolvedPokemon.PrimaryType = RandomPrimaryTypeAndRemove(newTypes, evolvedPokemon.types);
+                        evolvedPokemon.SecondaryType = RandomSecondaryTypeAndRemove(newTypes, evolvedPokemon.types);
                         newTransformationType = TypeTransformation.DoubleTypeReplacement;
                     }
                 }
@@ -247,7 +269,7 @@ namespace PokemonRandomizer.Backend.Randomization
                         else // Type Loss
                         {
                             evolvedPokemon.PrimaryType = pokemon.PrimaryType;
-                            evolvedPokemon.SecondaryType = RandomSecondaryType(types, pokemon.PrimaryType, pokemon.SecondaryType, evolvedPokemon.SecondaryType);
+                            evolvedPokemon.SecondaryType = RandomSecondaryTypeAndRemove(newTypes, evolvedPokemon.SecondaryType);
                             transformationType = TypeTransformation.GainSecondaryType;
                         }
                     }
@@ -263,13 +285,13 @@ namespace PokemonRandomizer.Backend.Randomization
                         else if(transformationType == TypeTransformation.SecondaryTypeReplacement)
                         {
                             // Generate new secondary type
-                            evolvedPokemon.SecondaryType = RandomSecondaryType(types, pokemon.SecondaryType, pokemon.PrimaryType, evolvedPokemon.SecondaryType);
+                            evolvedPokemon.SecondaryType = RandomSecondaryTypeAndRemove(newTypes, evolvedPokemon.SecondaryType);
                         }
                         else if(transformationType == TypeTransformation.DoubleTypeReplacement)
                         {
                             // Carry over new primary type and generate new secondary type
                             evolvedPokemon.PrimaryType = pokemon.PrimaryType;
-                            evolvedPokemon.SecondaryType = RandomSecondaryType(types, pokemon.SecondaryType, pokemon.PrimaryType, evolvedPokemon.SecondaryType);
+                            evolvedPokemon.SecondaryType = RandomSecondaryTypeAndRemove(newTypes, evolvedPokemon.SecondaryType);
                             transformationType = TypeTransformation.SecondaryTypeReplacement;
                         }
                         else // type loss
@@ -286,7 +308,7 @@ namespace PokemonRandomizer.Backend.Randomization
                         if (transformationType == TypeTransformation.PrimaryTypeReplacement)
                         {
                             // Generate new primary type
-                            evolvedPokemon.PrimaryType = RandomPrimaryType(types, pokemon.SecondaryType, pokemon.PrimaryType, evolvedPokemon.PrimaryType);
+                            evolvedPokemon.PrimaryType = RandomPrimaryTypeAndRemove(newTypes, evolvedPokemon.PrimaryType);
                         }
                         else if (transformationType == TypeTransformation.SecondaryTypeReplacement)
                         {
@@ -297,7 +319,7 @@ namespace PokemonRandomizer.Backend.Randomization
                         {
 
                             // Carry over new secondary type and generate new primary type
-                            evolvedPokemon.PrimaryType = RandomPrimaryType(types, pokemon.SecondaryType, pokemon.PrimaryType, evolvedPokemon.PrimaryType);
+                            evolvedPokemon.PrimaryType = RandomPrimaryTypeAndRemove(newTypes, evolvedPokemon.PrimaryType);
                             evolvedPokemon.SecondaryType = pokemon.SecondaryType;
                             transformationType = TypeTransformation.PrimaryTypeReplacement;
                         }
@@ -322,15 +344,28 @@ namespace PokemonRandomizer.Backend.Randomization
                     else // Evolved pokemon turns into two unrelated types (double replacement) (unsure if this ever happens)
                     {
                         // Always do a double type replacement
-                        var exceptTypes = pokemon.types.Concat(evolvedPokemon.types).ToList();
-                        evolvedPokemon.PrimaryType = RandomPrimaryType(types, exceptTypes.ToArray());
-                        exceptTypes.Add(evolvedPokemon.PrimaryType);
-                        evolvedPokemon.SecondaryType = RandomSecondaryType(types, exceptTypes.ToArray());
+                        evolvedPokemon.PrimaryType = RandomPrimaryTypeAndRemove(newTypes, evolvedPokemon.types);
+                        evolvedPokemon.SecondaryType = RandomSecondaryTypeAndRemove(newTypes, evolvedPokemon.types);
                         newTransformationType = TypeTransformation.DoubleTypeReplacement;
                     }
                 }
+                if (settings.SafeWonderGuard)
+                {
+                    WonderGuardFix(pokemon);
+                }
                 // Keep propogating
-                PropogateType(evolvedPokemon, evoOrigninalTypes, evoOriginallySingleType, newTransformationType);
+                PropogateType(evolvedPokemon, settings, evoOrigninalTypes, evoOriginallySingleType, newTransformationType);
+            }
+        }
+
+        private void WonderGuardFix(PokemonBaseStats pokemon)
+        {
+            if (!pokemon.abilities.Contains(Ability.Wonder_Guard))
+                return;
+            if(pokemon.IsType(PokemonType.DRK) && pokemon.IsType(PokemonType.GHO))
+            {
+                Logger.main.Info($"{pokemon.Name} is DRK/GHO and has Wonder Guard. Correcting type to GHO or DRK");
+                pokemon.SetSingleType(rand.RandomBool() ? PokemonType.DRK : PokemonType.GHO);
             }
         }
 
@@ -339,6 +374,7 @@ namespace PokemonRandomizer.Backend.Randomization
             public WeightedSet<TypeTransformation> SingleTypeTransformationWeights { get; set; }
             public WeightedSet<TypeTransformation> DualTypeTransformationWeights { get; set; }
             public bool InvertChanceOfSecondaryTypeChangingForFlyingTypes { get; set; }
+            public bool SafeWonderGuard { get; set; } = true;
         }
     }
 }
