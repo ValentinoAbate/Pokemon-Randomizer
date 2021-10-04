@@ -100,6 +100,7 @@ namespace PokemonRandomizer.Backend.DataStructures
         public BitArray HMCompat; //Compatibility with HMs 01-08 (index maps to RomData.HMMoves)
         public BitArray moveTutorCompat; //Compatibility with moveTutors (index maps to RomData.tutorMoves)
         public HashSet<Move> originalTmHmMtMoves = new HashSet<Move>();
+        public HashSet<Move> originalUnlearnableTmHmMtMoves = new HashSet<Move>();
 
         #endregion
 

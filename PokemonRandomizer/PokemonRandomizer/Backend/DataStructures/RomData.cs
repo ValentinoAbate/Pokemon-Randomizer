@@ -137,22 +137,26 @@ namespace PokemonRandomizer.Backend.DataStructures
 
         private void LinkOriginalMoveLearns()
         {
-            static void LinkMoves(BitArray arr, Move[] moves, HashSet<Move> moveOutput)
+            static void LinkMoves(BitArray arr, Move[] moves, HashSet<Move> moveOutputCanLearn, HashSet<Move> moveOutputCantLearn)
             {
                 for (int i = 0; i < arr.Count; ++i)
                 {
                     if (arr[i])
                     {
-                        moveOutput.Add(moves[i]);
+                        moveOutputCanLearn.Add(moves[i]);
+                    }
+                    else
+                    {
+                        moveOutputCantLearn.Add(moves[i]);
                     }
                 }
             }
             foreach(var pokemon in Pokemon)
             { 
                 pokemon.originalTmHmMtMoves.Clear();
-                LinkMoves(pokemon.TMCompat, TMMoves, pokemon.originalTmHmMtMoves);
-                LinkMoves(pokemon.HMCompat, HMMoves, pokemon.originalTmHmMtMoves);
-                LinkMoves(pokemon.moveTutorCompat, tutorMoves, pokemon.originalTmHmMtMoves);
+                LinkMoves(pokemon.TMCompat, TMMoves, pokemon.originalTmHmMtMoves, pokemon.originalUnlearnableTmHmMtMoves);
+                LinkMoves(pokemon.HMCompat, HMMoves, pokemon.originalTmHmMtMoves, pokemon.originalUnlearnableTmHmMtMoves);
+                LinkMoves(pokemon.moveTutorCompat, tutorMoves, pokemon.originalTmHmMtMoves, pokemon.originalUnlearnableTmHmMtMoves);
             }
         }
     }

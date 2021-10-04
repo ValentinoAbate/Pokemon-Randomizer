@@ -33,6 +33,12 @@ namespace PokemonRandomizer.Backend.Randomization
                     RandomKeepNumber(compat);
                     break;
                 case MoveCompatOption.Intelligent:
+                    // If the pokemon is intentionally designed to learn all TM/HM/MT moves (e.g Mew), set all true
+                    if (data.pokemon.originalUnlearnableTmHmMtMoves.Count == 0)
+                    {
+                        compat.SetAll(true);
+                        break;
+                    }
                     for (int i = 0; i < compat.Length; ++i)
                     {
                         compat[i] = IntelligentCompat(data.moveList[i], data);
@@ -67,14 +73,19 @@ namespace PokemonRandomizer.Backend.Randomization
         {
             var moveData = dataT.GetMoveData(move);
             var pokemon = data.pokemon;
+            if (pokemon.learnSet.Any(l => l.move == move))
+                return true;
+            // If the pokemon is intentionally designed to not learn TM/HM/MT moves (e.g Magikarp, etc.), set all false (except moves in the moveset)
+            if (pokemon.originalTmHmMtMoves.Count == 0)
+                return false;
             if (pokemon.originalTmHmMtMoves.Contains(move))
                 return true;
-            if (pokemon.types.Contains(moveData.type))
+            if (pokemon.IsType(moveData.type))
                 return true;
-            if (pokemon.learnSet.Any((l) => l.move == moveData.move))
+            if (pokemon.eggMoves.Contains(move))
                 return true;
-            if (pokemon.eggMoves.Contains(moveData.move))
-                return true;
+            if (pokemon.originalUnlearnableTmHmMtMoves.Contains(move))
+                return false;
             if (moveData.type == PokemonType.NRM)
                 return rand.RollSuccess(data.randomChance);
             return rand.RollSuccess(data.intelligentNoise);
