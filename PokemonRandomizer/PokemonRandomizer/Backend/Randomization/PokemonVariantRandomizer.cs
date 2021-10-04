@@ -40,12 +40,12 @@ namespace PokemonRandomizer.Backend.Randomization
                 return;
             pokemon.IsVariant = true;
             // Original Type Data
-            var origninalTypes = (pokemon.PrimaryType, pokemon.SecondaryType);
+            var originalTypes = (pokemon.PrimaryType, pokemon.SecondaryType);
             bool originallySingleType = pokemon.IsSingleTyped;
             // Change to variant type
             ChooseType(pokemon, settings, out TypeTransformation transformationType);
-            // Propogate type
-            PropogateType(pokemon, settings, origninalTypes, originallySingleType, transformationType);
+            // Propogate type (Change to propogate variance)
+            PropogateType(pokemon, settings, originalTypes, originallySingleType, transformationType);
 
             // Modify Evolutions (if applicable)
 
