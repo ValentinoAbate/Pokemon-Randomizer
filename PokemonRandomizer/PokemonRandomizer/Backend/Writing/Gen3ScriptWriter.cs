@@ -1,15 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PokemonRandomizer.Backend.Writing
 {
-    using Scripting.GenIII;
-    using DataStructures.Scripts;
     using DataStructures;
+    using DataStructures.Scripts;
     using EnumTypes;
+    using Scripting.GenIII;
     public class Gen3ScriptWriter
     {
         private readonly Func<Item, Item> itemRemap;
