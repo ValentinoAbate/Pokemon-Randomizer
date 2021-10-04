@@ -104,7 +104,7 @@ namespace PokemonRandomizer
             Logger.main.OnLog += OnLog;
         }
 
-        private List<Logger.LogData> logData = new List<Logger.LogData>();
+        private readonly List<Logger.LogData> logData = new List<Logger.LogData>();
         private void OnLog(Logger.LogData data)
         {
             logData.Add(data);

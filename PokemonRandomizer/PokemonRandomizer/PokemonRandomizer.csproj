@@ -131,6 +131,7 @@
     <Compile Include="Backend\Randomization\Metric.cs" />
     <Compile Include="Backend\Randomization\MoveCompatibilityRandomizer.cs" />
     <Compile Include="Backend\Randomization\PkmnRandomizer.cs" />
+    <Compile Include="Backend\Randomization\PokemonVariantRandomizer.cs" />
     <Compile Include="Backend\Randomization\TrainerRandomizer.cs" />
     <Compile Include="Backend\Randomization\WildEncounterRandomizer.cs" />
     <Compile Include="Backend\Reading\Gen3MapParser.cs" />

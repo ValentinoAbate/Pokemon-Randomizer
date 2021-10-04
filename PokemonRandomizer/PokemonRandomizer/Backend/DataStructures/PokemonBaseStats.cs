@@ -66,6 +66,16 @@ namespace PokemonRandomizer.Backend.DataStructures
         #endregion
 
         public int[] evYields = new int[6]; // How many evs you get when you defeat this pokemon
+        public PokemonType PrimaryType 
+        {
+            get => types[0];
+            set => types[0] = value;
+        }
+        public PokemonType SecondaryType
+        {
+            get => types[1];
+            set => types[1] = value;
+        }
         public PokemonType[] types = new PokemonType[2];
         public Ability[] abilities = new Ability[] { Ability.NONE, Ability.NONE };
         public Item[] heldItems = new Item[] { Item.None, Item.None };
@@ -108,6 +118,21 @@ namespace PokemonRandomizer.Backend.DataStructures
         // Just for lookup purposes, not to be written to file
         public List<Evolution> evolvesFrom = new List<Evolution>();
         public int NationalDexIndex { get; set; }
+
+        public bool IsType(PokemonType type)
+        {
+            return PrimaryType == type || SecondaryType == type;
+        }
+
+        public bool IsSameTypeAs(PokemonBaseStats other)
+        {
+            return PrimaryType == other.PrimaryType && SecondaryType == other.SecondaryType;
+        }
+
+        public void SetSingleType(PokemonType type)
+        {
+            PrimaryType = SecondaryType = type;
+        }
 
         public override string ToString()
         {
