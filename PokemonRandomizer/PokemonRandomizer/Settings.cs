@@ -61,6 +61,13 @@ namespace PokemonRandomizer
 
         #region Pokemon Base Stats
 
+        #region Variants
+
+        public abstract double VariantChance { get; }
+        public abstract PokemonVariantRandomizer.Settings VariantSettings { get; }
+
+        #endregion
+
         #region Typing
         public abstract double SingleTypeRandChance { get; }
         public abstract double DualTypePrimaryRandChance { get; }

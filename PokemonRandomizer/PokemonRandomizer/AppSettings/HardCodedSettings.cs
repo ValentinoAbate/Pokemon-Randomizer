@@ -71,6 +71,30 @@ namespace PokemonRandomizer.AppSettings
 
         #region Pokemon Base Stats
 
+        #region Variants
+
+        public override double VariantChance => 1; 
+
+        public override PokemonVariantRandomizer.Settings VariantSettings { get; } = new PokemonVariantRandomizer.Settings()
+        {
+            SingleTypeTransformationWeights = new WeightedSet<PokemonVariantRandomizer.TypeTransformation>(){
+
+                        {PokemonVariantRandomizer.TypeTransformation.GainSecondaryType, 0.40f},
+                        {PokemonVariantRandomizer.TypeTransformation.PrimaryTypeReplacement, 0.55f},
+                        {PokemonVariantRandomizer.TypeTransformation.DoubleTypeReplacement, 0.05f},
+                    },
+            DualTypeTransformationWeights = new WeightedSet<PokemonVariantRandomizer.TypeTransformation>(){
+
+                        {PokemonVariantRandomizer.TypeTransformation.PrimaryTypeReplacement, 0.35f},
+                        {PokemonVariantRandomizer.TypeTransformation.SecondaryTypeReplacement, 0.5f},
+                        {PokemonVariantRandomizer.TypeTransformation.DoubleTypeReplacement, 0.075f},
+                        {PokemonVariantRandomizer.TypeTransformation.TypeLoss, 0.025f},
+                    },
+            InvertChanceOfSecondaryTypeChangingForFlyingTypes = true,
+        };
+
+        #endregion
+
         #region Typing
         public override double SingleTypeRandChance => 0.0;
         public override double DualTypePrimaryRandChance => 0.0;

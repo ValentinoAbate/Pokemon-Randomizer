@@ -380,6 +380,7 @@ namespace PokemonRandomizer.Backend.Randomization
 
         #endregion
 
+        // May also modify EVs
         private void ModifyBaseStats(PokemonBaseStats pokemon, Settings settings, VariantData data)
         {
             return; // not ready yet

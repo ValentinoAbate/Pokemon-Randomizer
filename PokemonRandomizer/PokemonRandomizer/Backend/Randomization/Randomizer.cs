@@ -11,8 +11,7 @@ using System.Linq;
 
 namespace PokemonRandomizer.Backend.Randomization
 {
-    // This class does the actualmutation and randomizing by creating a mutated copy
-    // of the original ROM data
+    // This class does the randomizing and randomizing by creating a randomized copy of the original ROM data
     public class Randomizer
     {
         private readonly RomData data;
@@ -24,6 +23,7 @@ namespace PokemonRandomizer.Backend.Randomization
         private readonly WildEncounterRandomizer encounterRand;
         private readonly TrainerRandomizer trainerRand;
         private readonly MoveCompatibilityRandomizer compatRand;
+        private readonly PokemonVariantRandomizer variantRand;
         /// <summary>
         /// Create a new randomizer with given data and settings
         /// Input data will be mutated by randomizer calls
@@ -47,6 +47,7 @@ namespace PokemonRandomizer.Backend.Randomization
             // Initialize Trainer randomizer
             trainerRand = new TrainerRandomizer(rand, pokeRand, evoUtils, data);
             compatRand = new MoveCompatibilityRandomizer(rand, data);
+            variantRand = new PokemonVariantRandomizer(rand, data);
         }
         // Apply mutations based on program settings.
         public RomData Randomize()
@@ -195,6 +196,11 @@ namespace PokemonRandomizer.Backend.Randomization
             // Mutate Pokemon
             foreach (PokemonBaseStats pokemon in data.Pokemon)
             {
+                if (pokemon.IsBasic && rand.RollSuccess(settings.VariantChance)) // || !pokemon.isBasic and not already a variant and chance
+                {
+                    variantRand.CreateVariant(pokemon, settings.VariantSettings);
+                }
+
                 #region Evolutions
                 // Fix Impossible Evolutions
                 if(settings.FixImpossibleEvos)
@@ -292,7 +298,6 @@ namespace PokemonRandomizer.Backend.Randomization
                     #endregion
                 }
                 #endregion
-                // Mutate low-consequence base stats
 
                 #region Types
                 // Mutate Pokemon Type
@@ -311,7 +316,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 #endregion
 
                 // Mutate battle stats and EVs
-                // Mutate Learn Sets
+
                 #region Learn Sets
                 if(settings.BanSelfdestruct)
                 {
