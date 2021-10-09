@@ -65,7 +65,18 @@ namespace PokemonRandomizer.Backend.DataStructures
 
         #endregion
 
+        #region EVs
+
         public int[] evYields = new int[6]; // How many evs you get when you defeat this pokemon
+        public int HpEvYield { get => evYields[0]; set => evYields[0] = value; }
+        public int AttackEvYield { get => evYields[1]; set => evYields[1] = value; }
+        public int DefenseEvYield { get => evYields[2]; set => evYields[2] = value; }
+        public int SpeedEvYield { get => evYields[3]; set => evYields[3] = value; }
+        public int SpAttackEvYield { get => evYields[4]; set => evYields[4] = value; }
+        public int SpDefenseEvYield { get => evYields[5]; set => evYields[5] = value; }
+
+        #endregion
+
         public PokemonType PrimaryType 
         {
             get => types[0];

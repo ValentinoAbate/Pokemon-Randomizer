@@ -315,8 +315,6 @@ namespace PokemonRandomizer.Backend.Randomization
                 }
                 #endregion
 
-                // Mutate battle stats and EVs
-
                 #region Learn Sets
                 if(settings.BanSelfdestruct)
                 {

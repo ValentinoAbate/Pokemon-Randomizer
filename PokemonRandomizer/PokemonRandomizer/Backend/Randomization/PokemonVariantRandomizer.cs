@@ -21,6 +21,12 @@ namespace PokemonRandomizer.Backend.Randomization
             DoubleTypeReplacement,
             TypeLoss
         }
+        public enum TypeProfile
+        {
+            Balanced,
+            Special,
+            Physical
+        }
         private readonly Random rand;
         private readonly IDataTranslator dataT;
         private readonly List<PokemonType> types;
@@ -39,7 +45,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 return;
             pokemon.IsVariant = true;
             // Variant Data
-            var variantData = new VariantData()
+            var variantData = new VariantData(pokemon)
             {
                 // Log original type data
                 OriginalTypes = (pokemon.PrimaryType, pokemon.SecondaryType),
@@ -76,7 +82,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 var evolvedPokemon = dataT.GetBaseStats(evo.Pokemon);
                 evolvedPokemon.IsVariant = true;
                 // New Variant Data
-                var evoVariantData = new VariantData()
+                var evoVariantData = new VariantData(evolvedPokemon)
                 {
                     OriginalTypes = (evolvedPokemon.PrimaryType, evolvedPokemon.SecondaryType),
                     TransformationType = PropogateType(pokemon, evolvedPokemon, newTypes, settings, data)
@@ -130,7 +136,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 if(transformationType == TypeTransformation.PrimaryTypeReplacement)
                 {
                     // Change the primary type
-                    pokemon.PrimaryType = RandomPrimaryType(types, pokemon.SecondaryType);
+                    pokemon.PrimaryType = RandomPrimaryType(types, pokemon.types);
                 }
                 else if(transformationType == TypeTransformation.SecondaryTypeReplacement)
                 {
@@ -141,7 +147,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 {
                     var originalPrimaryType = pokemon.PrimaryType;
                     // Change the pokemon into a dual-type pokemon with unrelated types
-                    pokemon.PrimaryType = RandomPrimaryType(types, pokemon.PrimaryType);
+                    pokemon.PrimaryType = RandomPrimaryType(types, pokemon.types);
                     pokemon.SecondaryType = RandomSecondaryType(types, originalPrimaryType, pokemon.PrimaryType, pokemon.SecondaryType);
                 }
                 else // Type loss
@@ -195,7 +201,7 @@ namespace PokemonRandomizer.Backend.Randomization
                     {
                         // Carry over the new primary type
                         evolvedPokemon.PrimaryType = pokemon.PrimaryType;
-                        data.TransformationType = TypeTransformation.PrimaryTypeReplacement;
+                        newTransformationType = TypeTransformation.PrimaryTypeReplacement;
                     }
                     else if (data.TransformationType == TypeTransformation.GainSecondaryType)
                     {
@@ -209,12 +215,12 @@ namespace PokemonRandomizer.Backend.Randomization
                             // If the secondary type was flying, reverse the type order
                             evolvedPokemon.PrimaryType = evolvedPokemon.SecondaryType;
                             evolvedPokemon.SecondaryType = PokemonType.FLY;
-                            data.TransformationType = TypeTransformation.SecondaryTypeReplacement;
+                            newTransformationType = TypeTransformation.SecondaryTypeReplacement;
                         }
                         else
                         {
                             evolvedPokemon.PrimaryType = pokemon.SecondaryType;
-                            data.TransformationType = TypeTransformation.PrimaryTypeReplacement;
+                            newTransformationType = TypeTransformation.PrimaryTypeReplacement;
                         }
                     }
                     else if (data.TransformationType == TypeTransformation.DoubleTypeReplacement)
@@ -235,7 +241,7 @@ namespace PokemonRandomizer.Backend.Randomization
             {
                 if (evolvedPokemon.IsSingleTyped) // Type loss (e.g gloom -> bellossom)
                 {
-                    data.TransformationType = TypeTransformation.SingleTypeReplacement;
+                    newTransformationType = TypeTransformation.SingleTypeReplacement;
                     if (data.TransformationType == TypeTransformation.PrimaryTypeReplacement || data.TransformationType == TypeTransformation.DoubleTypeReplacement)
                     {
                         evolvedPokemon.SetSingleType(pokemon.PrimaryType);
@@ -248,7 +254,7 @@ namespace PokemonRandomizer.Backend.Randomization
                     {
                         evolvedPokemon.PrimaryType = pokemon.PrimaryType;
                         evolvedPokemon.SecondaryType = RandomSecondaryTypeAndRemove(newTypes, evolvedPokemon.SecondaryType);
-                        data.TransformationType = TypeTransformation.GainSecondaryType;
+                        newTransformationType = TypeTransformation.GainSecondaryType;
                     }
                 }
                 else if (evolvedPokemon.IsType(data.OriginalTypes.PrimaryType))
@@ -270,13 +276,13 @@ namespace PokemonRandomizer.Backend.Randomization
                         // Carry over new primary type and generate new secondary type
                         evolvedPokemon.PrimaryType = pokemon.PrimaryType;
                         evolvedPokemon.SecondaryType = RandomSecondaryTypeAndRemove(newTypes, evolvedPokemon.SecondaryType);
-                        data.TransformationType = TypeTransformation.SecondaryTypeReplacement;
+                        newTransformationType = TypeTransformation.SecondaryTypeReplacement;
                     }
                     else // type loss
                     {
                         evolvedPokemon.PrimaryType = pokemon.PrimaryType;
                         if (!evolvedPokemon.IsSingleTyped)
-                            data.TransformationType = TypeTransformation.PrimaryTypeReplacement;
+                            newTransformationType = TypeTransformation.PrimaryTypeReplacement;
                     }
                 }
                 else if (evolvedPokemon.IsType(data.OriginalTypes.SecondaryType))
@@ -299,7 +305,7 @@ namespace PokemonRandomizer.Backend.Randomization
                         // Carry over new secondary type and generate new primary type
                         evolvedPokemon.PrimaryType = RandomPrimaryTypeAndRemove(newTypes, evolvedPokemon.PrimaryType);
                         evolvedPokemon.SecondaryType = pokemon.SecondaryType;
-                        data.TransformationType = TypeTransformation.PrimaryTypeReplacement;
+                        newTransformationType = TypeTransformation.PrimaryTypeReplacement;
                     }
                     else // type loss
                     {
@@ -308,15 +314,15 @@ namespace PokemonRandomizer.Backend.Randomization
                             // If the secondary type was flying, reverse the type order
                             evolvedPokemon.SecondaryType = evolvedPokemon.PrimaryType;
                             evolvedPokemon.PrimaryType = PokemonType.NRM;
-                            data.TransformationType = TypeTransformation.PrimaryTypeReplacement;
+                            newTransformationType = TypeTransformation.PrimaryTypeReplacement;
                         }
                         else
                         {
                             evolvedPokemon.SecondaryType = pokemon.PrimaryType;
-                            data.TransformationType = TypeTransformation.SecondaryTypeReplacement;
+                            newTransformationType = TypeTransformation.SecondaryTypeReplacement;
                         }
                         if (evolvedPokemon.IsSingleTyped)
-                            data.TransformationType = TypeTransformation.TypeLoss;
+                            newTransformationType = TypeTransformation.TypeLoss;
                     }
                 }
                 else // Evolved pokemon turns into two unrelated types (double replacement) (unsure if this ever happens)
@@ -383,37 +389,134 @@ namespace PokemonRandomizer.Backend.Randomization
         // May also modify EVs
         private void ModifyBaseStats(PokemonBaseStats pokemon, Settings settings, VariantData data)
         {
-            return; // not ready yet
-            bool primaryTypeSpecial = IsSpecial(pokemon.PrimaryType);
-            if(primaryTypeSpecial != IsSpecial(pokemon.SecondaryType)) // Balanced
+            int originalBST = pokemon.BST;
+            var oldTypeProfile = ComputeTypeProfile(data.OriginalTypes.PrimaryType, data.OriginalTypes.SecondaryType);
+            var newTypeProfile = ComputeTypeProfile(pokemon.PrimaryType, pokemon.SecondaryType);
+            int attackStatTotal = pokemon.Attack + pokemon.SpAttack;
+
+            // Adjust attacking stats
+            if(settings.AdjustAttackStats && (attackStatTotal / (double)originalBST) >= 0.25)
             {
-                int average = (pokemon.Attack + pokemon.SpAttack) / 2;
-                if(pokemon.SpAttack > pokemon.Attack)
+                // Compensate for variant types
+                int minimumDifference = (int)Math.Round(attackStatTotal * 0.025);
+                bool madeStatAdjustment = false;
+                foreach (var type in data.VariantTypes)
                 {
-                    pokemon.Attack = (byte)Math.Min(average + (pokemon.Attack * 0.25), 0xFF);
+                    if (IsSpecial(type))
+                    {
+                        if(pokemon.Attack > (pokemon.SpAttack + minimumDifference))
+                        {
+                            pokemon.SpAttack = pokemon.Attack;
+                            madeStatAdjustment = true;
+                            break;
+                        }
+                    }
+                    else if(pokemon.SpAttack > (pokemon.Attack + minimumDifference))
+                    {
+                        pokemon.Attack = pokemon.SpAttack;
+                        madeStatAdjustment = true;
+                        break;
+                    }
                 }
-                else
+                if (madeStatAdjustment)
                 {
-                    pokemon.SpAttack = (byte)Math.Min(average + (pokemon.SpAttack * 0.25), 0xFF);
+                    // Readjust stats to maintain BST for single-type attackers
+                    int bstDiff = pokemon.BST - originalBST;
+                    if (bstDiff > 0)
+                    {
+                        if (newTypeProfile == TypeProfile.Special)
+                        {
+                            pokemon.Attack = DecreaseStat(pokemon.Attack, bstDiff);
+                        }
+                        else if (newTypeProfile == TypeProfile.Physical)
+                        {
+                            pokemon.SpAttack = DecreaseStat(pokemon.SpAttack, bstDiff);
+                        }
+                        else if(settings.ReduceBalancedPokemonBST)
+                        {
+                            var statChoiceWeight = new WeightedSet<int>(pokemon.stats.Length);
+                            while (bstDiff >= 15)
+                            {
+                                statChoiceWeight.Clear();
+                                statChoiceWeight.AddRange(Enumerable.Range(0, pokemon.stats.Length), i => pokemon.stats[i]);
+                                int statChoice = rand.Choice(statChoiceWeight);
+                                pokemon.stats[statChoice] = DecreaseStat(pokemon.stats[statChoice], 5);
+                                bstDiff -= 5;
+                            }
+                        }
+                    }
+                    // Adjust EVs if necessary to match adjustment
+                    int totalAttackEVs = pokemon.AttackEvYield + pokemon.SpAttackEvYield;
+                    if (totalAttackEVs > 0)
+                    {
+                        if (newTypeProfile == TypeProfile.Physical)
+                        {
+                            pokemon.AttackEvYield = totalAttackEVs;
+                            pokemon.SpAttackEvYield = 0;
+                        }
+                        else if (newTypeProfile == TypeProfile.Special)
+                        {
+                            pokemon.AttackEvYield = 0;
+                            pokemon.SpAttackEvYield = totalAttackEVs;
+                        }
+                        else
+                        {
+                            int avgAttackEVs = totalAttackEVs / 2;
+                            pokemon.AttackEvYield = avgAttackEVs;
+                            pokemon.SpAttackEvYield = avgAttackEVs;
+                            int remainder = totalAttackEVs % 2;
+                            if (remainder >= 1)
+                            {
+                                if (rand.RandomBool())
+                                {
+                                    pokemon.AttackEvYield++;
+                                }
+                                else
+                                {
+                                    pokemon.SpAttackEvYield++;
+                                }
+                            }
+                        }
+                    }
                 }
             }
-            else if(primaryTypeSpecial) // All special types
+            if (settings.GiveBonusStats)
             {
-                if(pokemon.Attack > pokemon.SpAttack)
+                // Augment variant pokemon
+                short statGrowth = (short)(rand.RandomGaussianInt(settings.StatChangeMean, settings.StatChangeStdDev) - (pokemon.BST - originalBST));
+                if (statGrowth <= 0)
+                    return;
+                const short increment = 5;
+                var statChoiceWeight = new WeightedSet<int>(pokemon.stats.Length);
+                while (statGrowth > 0)
                 {
-                    int average = (pokemon.Attack + pokemon.SpAttack) / 2;
-                    pokemon.Attack = (byte)Math.Max(average - (pokemon.SpAttack * 0.25), 0);
-                    pokemon.SpAttack = (byte)Math.Min(average + (pokemon.Attack * 0.25), 0xFF);
+                    short numstats = statGrowth < increment ? statGrowth : increment;
+                    statChoiceWeight.Clear();
+                    statChoiceWeight.AddRange(Enumerable.Range(0, pokemon.stats.Length), i => pokemon.stats[i]);
+                    int statChoice = rand.Choice(statChoiceWeight);
+                    pokemon.stats[statChoice] = IncreaseStat(pokemon.stats[statChoice], numstats);
+                    statGrowth -= increment;
                 }
-            }
-            else if(pokemon.SpAttack > pokemon.Attack) // All physical types
-            {
-                int average = (pokemon.Attack + pokemon.SpAttack) / 2;
-                pokemon.Attack = (byte)Math.Min(average + (pokemon.SpAttack * 0.25), 0xFF);
-                pokemon.SpAttack = (byte)Math.Max(average - (pokemon.Attack * 0.25), 0);
             }
         }
+
+        private byte IncreaseStat(byte currentValue, int increaseAmount)
+        {
+            return (byte)Math.Min(currentValue + increaseAmount, 0xFF);
+        }
+
+        private byte DecreaseStat(byte currentValue, int decreaseAmount)
+        {
+            return (byte)Math.Max(currentValue - decreaseAmount, 0x00);
+        }
         
+        private TypeProfile ComputeTypeProfile(PokemonType primary, PokemonType secondary)
+        {
+            bool primaryTypeSpecial = IsSpecial(primary);
+            if (primaryTypeSpecial != IsSpecial(secondary))
+                return TypeProfile.Balanced;
+            return primaryTypeSpecial ? TypeProfile.Special : TypeProfile.Physical;
+        }
         private bool IsSpecial(PokemonType type)
         {
             return type > PokemonType.Unknown;
@@ -421,6 +524,11 @@ namespace PokemonRandomizer.Backend.Randomization
 
         private class VariantData
         {
+            private readonly PokemonBaseStats pokemon;
+            public VariantData(PokemonBaseStats pokemon)
+            {
+                this.pokemon = pokemon;
+            }
             private (PokemonType PrimaryType, PokemonType SecondaryType) originalTypes;
             public (PokemonType PrimaryType, PokemonType SecondaryType) OriginalTypes 
             { 
@@ -431,8 +539,23 @@ namespace PokemonRandomizer.Backend.Randomization
                     OriginallySingleType = value.PrimaryType == value.SecondaryType;
                 } 
             }
-            public TypeTransformation TransformationType { get; set; }
             public bool OriginallySingleType { get; private set; }
+            public TypeTransformation TransformationType { get; set; }
+
+            public PokemonType[] VariantTypes
+            {
+                get
+                {
+                    return TransformationType switch
+                    {
+                        TypeTransformation.SecondaryTypeReplacement => new PokemonType[] { pokemon.SecondaryType },
+                        TypeTransformation.PrimaryTypeReplacement => new PokemonType[] { pokemon.PrimaryType },
+                        TypeTransformation.DoubleTypeReplacement => new PokemonType[] { pokemon.PrimaryType, pokemon.SecondaryType },
+                        TypeTransformation.TypeLoss => new PokemonType[] { pokemon.PrimaryType },
+                        _ => Array.Empty<PokemonType>()
+                    };
+                }
+            }
         }
 
         public class Settings
@@ -441,6 +564,11 @@ namespace PokemonRandomizer.Backend.Randomization
             public WeightedSet<TypeTransformation> DualTypeTransformationWeights { get; set; }
             public bool InvertChanceOfSecondaryTypeChangingForFlyingTypes { get; set; }
             public bool SafeWonderGuard { get; set; } = true;
+            public bool AdjustAttackStats { get; set; } = true;
+            public bool ReduceBalancedPokemonBST { get; set; } = false;
+            public bool GiveBonusStats { get; set; } = true;
+            public double StatChangeStdDev { get; set; } = 5;
+            public double StatChangeMean { get; set; } = 15;
         }
     }
 }

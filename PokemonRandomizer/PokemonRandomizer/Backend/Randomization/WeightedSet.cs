@@ -60,8 +60,7 @@ namespace PokemonRandomizer.Backend.Randomization
         public WeightedSet(IEnumerable<T> items, Func<T, float> weight)
         {
             this.items = new Dictionary<T, float>(items.Count());
-            foreach (var item in items)
-                Add(item, weight(item));
+            AddRange(items, weight);
         }
         #endregion
 
@@ -70,13 +69,11 @@ namespace PokemonRandomizer.Backend.Randomization
             foreach (var item in set.Items)
                 Add(item, set[item]);
         }
-
         public void Add(WeightedSet<T> set, float multiplier)
         {
             foreach (var item in set.Items)
                 Add(item, set[item] * multiplier);
         }
-
         public void Add(T item, float weight = 1)
         {
             if (items.ContainsKey(item))
@@ -105,6 +102,13 @@ namespace PokemonRandomizer.Backend.Randomization
             var keys = new List<T>(Items);
             foreach (var key in keys)
                 Add(key, m(key));
+        }
+        public void AddRange(IEnumerable<T> items, Func<T, float> weight)
+        {
+            foreach(var item in items)
+            {
+                Add(item, weight(item));
+            }
         }
         public void Multiply(float multiplier)
         {
