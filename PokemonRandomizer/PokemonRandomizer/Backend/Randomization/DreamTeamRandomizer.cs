@@ -33,9 +33,9 @@ namespace PokemonRandomizer.Backend.Randomization
                 {
                     if(p.IsSingleTyped)
                     {
-                        return !settings.TypeFilter.Contains(p.types[0]);
+                        return !settings.TypeFilter.Contains(p.PrimaryType);
                     }
-                    return !settings.TypeFilter.Any(t => t == p.types[0] || t == p.types[1]);
+                    return !settings.TypeFilter.Any(t => t == p.PrimaryType || t == p.SecondaryType);
                 }
                 choices.RemoveAll(TypeFilter);
             }

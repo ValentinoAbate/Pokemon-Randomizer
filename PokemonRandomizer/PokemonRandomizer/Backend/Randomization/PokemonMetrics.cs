@@ -63,15 +63,14 @@ namespace PokemonRandomizer.Backend.Randomization
         /// Returns 1 if single typed and the other is the same single type, or 0.8</summary>
         private static float TypeSimilarity(PokemonBaseStats self, PokemonBaseStats other)
         {
-            if (self.IsSingleTyped)
-                return other.types.Contains(self.types[0]) ? 1 : 0;
-            else
+            if (self.OriginallySingleType)
             {
-                var matches = self.types.Intersect(other.types).Count();
-                if (matches == 2)
-                    return 1;
-                return matches == 1 ? 0.95f : 0;
+                return other.IsType(self.OriginalPrimaryType) ? 1 : 0;
             }
+            var matches = self.OriginalTypes.Intersect(other.types).Count();
+            if (matches == 2)
+                return 1;
+            return matches == 1 ? 0.95f : 0;
         }
 
         public static WeightedSet<PokemonType> TypeOccurence(IEnumerable<PokemonBaseStats> pokemon)
@@ -79,10 +78,10 @@ namespace PokemonRandomizer.Backend.Randomization
             var set = new WeightedSet<PokemonType>(16);
             foreach(var p in pokemon)
             {
-                set.Add(p.types[0]);
-                if (!p.IsSingleTyped)
+                set.Add(p.OriginalPrimaryType);
+                if (!p.OriginallySingleType)
                 {
-                    set.Add(p.types[1]);
+                    set.Add(p.OriginalSecondaryType);
                 }
             }
             return set;

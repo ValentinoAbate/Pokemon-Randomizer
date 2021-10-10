@@ -179,13 +179,13 @@ namespace PokemonRandomizer.Backend.Randomization
             float TypeMultiplier(Pokemon p)
             {
                 var data = dataT.GetBaseStats(p);
-                float type1Val = modTypeData.Contains(data.types[0]) ? modTypeData[data.types[0]] : 0;
+                float type1Val = modTypeData.Contains(data.PrimaryType) ? modTypeData[data.PrimaryType] : 0;
                 if (data.IsSingleTyped) // If single typed, just return the first type value
                 {
                     return type1Val;
                 }
                 // For dual-typed pokemon, return the sum of their type values
-                return type1Val + (modTypeData.Contains(data.types[1]) ? modTypeData[data.types[1]] : 0);
+                return type1Val + (modTypeData.Contains(data.SecondaryType) ? modTypeData[data.SecondaryType] : 0);
             }
             set.Multiply(TypeMultiplier);
             set.RemoveWhere(p => set[p] <= 0);
@@ -196,7 +196,7 @@ namespace PokemonRandomizer.Backend.Randomization
         {
             var newTypeData = new WeightedSet<PokemonType>(typeData);
             newTypeData.Pow(sharpness);
-            return TypeSimilarityGroup(all, typeData);
+            return TypeSimilarityGroup(all, newTypeData);
         }
 
         public WeightedSet<Pokemon> PowerSimilarityIndividual(IEnumerable<Pokemon> all, Pokemon pokemon)
@@ -211,12 +211,12 @@ namespace PokemonRandomizer.Backend.Randomization
         private float TypeBalanceFunction(Pokemon p)
         {
             var pData = dataT.GetBaseStats(p);
-            float type1 = TypeBalanceFunction(pData.types[0]);
+            float type1 = TypeBalanceFunction(pData.OriginalPrimaryType);
             if (pData.IsSingleTyped)
             {
                 return type1;
             }
-            float type2 = TypeBalanceFunction(pData.types[1]);
+            float type2 = TypeBalanceFunction(pData.OriginalSecondaryType);
             return (type1 + type2) / 2;
         }
 

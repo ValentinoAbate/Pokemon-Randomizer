@@ -226,7 +226,7 @@ namespace PokemonRandomizer.AppSettings
                         ForceHighestLegalEvolution = true,
                         Data = new List<MetricData>()
                         {
-                            new MetricData(PokemonMetric.typeTrainerParty, 0, 10000, 0.2f),
+                            new MetricData(PokemonMetric.typeTrainerParty, 0, 10, 0.2f),
                             new MetricData(PokemonMetric.powerIndividual, 3),
                             //new MetricData(PokemonMetric.typeIndividual, 1),
                         }
@@ -242,7 +242,7 @@ namespace PokemonRandomizer.AppSettings
                         ForceHighestLegalEvolution = true,
                         Data = new List<MetricData>()
                         {
-                            new MetricData(PokemonMetric.typeTrainerParty, 0, 1000, 0.2f),
+                            new MetricData(PokemonMetric.typeTrainerParty, 0, 10, 0.2f),
                             //new MetricData(PokemonMetric.typeIndividual, 1),
                         }
                     }
@@ -258,7 +258,7 @@ namespace PokemonRandomizer.AppSettings
                         Noise = 0.001f,
                         Data = new List<MetricData>()
                         {
-                            new MetricData(PokemonMetric.typeTrainerParty, 0, 1000, 0.2f),
+                            new MetricData(PokemonMetric.typeTrainerParty, 0, 10, 0.2f),
                             //new MetricData(PokemonMetric.typeIndividual, 1),
                         }
                     }

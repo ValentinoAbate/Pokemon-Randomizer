@@ -56,15 +56,15 @@ namespace PokemonRandomizer.Backend.DataStructures
                 // if pkmn is single-typed
                 if (pkmn.IsSingleTyped)
                 {
-                    TypeOccurenceAll.Add(pkmn.types[0]);
-                    TypeRatiosSingle.Add(pkmn.types[0]);
+                    TypeOccurenceAll.Add(pkmn.PrimaryType);
+                    TypeRatiosSingle.Add(pkmn.PrimaryType);
                 }
                 else
                 {
-                    TypeOccurenceAll.Add(pkmn.types[0]);
-                    TypeOccurenceAll.Add(pkmn.types[1]);
-                    TypeRatiosDualPrimary.Add(pkmn.types[0]);
-                    TypeRatiosDualSecondary.Add(pkmn.types[1]);
+                    TypeOccurenceAll.Add(pkmn.PrimaryType);
+                    TypeOccurenceAll.Add(pkmn.SecondaryType);
+                    TypeRatiosDualPrimary.Add(pkmn.PrimaryType);
+                    TypeRatiosDualSecondary.Add(pkmn.SecondaryType);
                 }
             }
             DualTypePercentage = data.Pokemon.Count / TypeRatiosDualPrimary.Count;
@@ -127,10 +127,10 @@ namespace PokemonRandomizer.Backend.DataStructures
                 foreach(var pokemon in trainer.pokemon)
                 {
                     var pData = data.GetBaseStats(pokemon.species);
-                    set.Add(pData.types[0]);
+                    set.Add(pData.PrimaryType);
                     if (!pData.IsSingleTyped)
                     {
-                        set.Add(pData.types[1]);
+                        set.Add(pData.SecondaryType);
                     }
                 }
             }
@@ -145,10 +145,10 @@ namespace PokemonRandomizer.Backend.DataStructures
                 foreach(var enc in encounter)
                 {
                     var pData = data.GetBaseStats(enc.pokemon);
-                    set.Add(pData.types[0]);
+                    set.Add(pData.PrimaryType);
                     if (!pData.IsSingleTyped)
                     {
-                        set.Add(pData.types[1]);
+                        set.Add(pData.SecondaryType);
                     }
                 }
             }

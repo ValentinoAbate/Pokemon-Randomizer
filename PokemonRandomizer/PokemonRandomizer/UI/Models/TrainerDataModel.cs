@@ -84,7 +84,7 @@ namespace PokemonRandomizer.UI.Models
         {
             if (metric.DataSource == PokemonMetric.typeTrainerParty)
             {
-                metric.Sharpness = 10000;
+                metric.Sharpness = 10;
                 metric.Filter = 0.2f;
             }
             else

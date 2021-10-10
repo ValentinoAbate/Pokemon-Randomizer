@@ -304,14 +304,16 @@ namespace PokemonRandomizer.Backend.Randomization
                 if (pokemon.IsSingleTyped)
                 {
                     if (rand.RollSuccess(settings.SingleTypeRandChance))
-                        pokemon.types[0] = pokemon.types[1] = rand.Choice(data.Metrics.TypeRatiosSingle);
+                    {
+                        pokemon.SetSingleType(rand.Choice(data.Metrics.TypeRatiosSingle));
+                    };
                 }
                 else
                 {
                     if (rand.RollSuccess(settings.DualTypePrimaryRandChance))
-                        pokemon.types[0] = rand.Choice(data.Metrics.TypeRatiosDualPrimary);
+                        pokemon.PrimaryType = rand.Choice(data.Metrics.TypeRatiosDualPrimary);
                     if (rand.RollSuccess(settings.DualTypeSecondaryRandChance))
-                        pokemon.types[1] = rand.Choice(data.Metrics.TypeRatiosDualSecondary);
+                        pokemon.SecondaryType = rand.Choice(data.Metrics.TypeRatiosDualSecondary);
                 }
                 #endregion
 

@@ -25,7 +25,7 @@ namespace PokemonRandomizer.Backend.Randomization
 
         public static Move[] SmartMoveSet(Random rand, PokemonBaseStats pokemon, int level, IDataTranslator dataT)
         {
-            bool IsStab(Move m) => pokemon.types.Contains(dataT.GetMoveData(m).type);
+            bool IsStab(Move m) => pokemon.IsType(dataT.GetMoveData(m).type);
             // Initialize move choices
             var availableMoves = new Dictionary<Move, int>();
             foreach(var entry in pokemon.learnSet.Where((e) => e.learnLvl <= level))
