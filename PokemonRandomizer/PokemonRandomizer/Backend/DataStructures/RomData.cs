@@ -35,8 +35,10 @@ namespace PokemonRandomizer.Backend.DataStructures
                 LinkEvolutions();
                 LinkEggMoves();
                 LinkOriginalMoveLearns();
+                // Set any necessary original values
+                Pokemon.ForEach(p => p.SetOriginalValues());
                 // Set up the names
-                PokemonNames = PokemonNationalDexOrder.Select((p) => p.Name).ToArray();
+                PokemonNames = PokemonNationalDexOrder.Select(p => p.Name).ToArray();
             }
         }
         public string[] PokemonNames { get; private set; }

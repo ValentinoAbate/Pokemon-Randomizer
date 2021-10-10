@@ -77,7 +77,19 @@ namespace PokemonRandomizer.Backend.DataStructures
 
         #endregion
 
-        public PokemonType PrimaryType 
+        #region Types
+
+        public bool OriginallySingleType => OriginalPrimaryType == OriginalSecondaryType;
+        public PokemonType OriginalPrimaryType
+        {
+            get => OriginalTypes[0];
+        }
+        public PokemonType OriginalSecondaryType
+        {
+            get => OriginalTypes[1];
+        }
+        public IReadOnlyList<PokemonType> OriginalTypes { get; private set; }
+        public PokemonType PrimaryType
         {
             get => types[0];
             set => types[0] = value;
@@ -88,6 +100,9 @@ namespace PokemonRandomizer.Backend.DataStructures
             set => types[1] = value;
         }
         public PokemonType[] types = new PokemonType[2];
+
+        #endregion
+
         public Ability[] abilities = new Ability[] { Ability.NONE, Ability.NONE };
         public Item[] heldItems = new Item[] { Item.None, Item.None };
         public byte genderRatio; // The gender ratio (0 is always male, 254 is always female, 255 is none)
@@ -131,6 +146,11 @@ namespace PokemonRandomizer.Backend.DataStructures
         public List<Evolution> evolvesFrom = new List<Evolution>();
         public int NationalDexIndex { get; set; }
         public bool IsVariant { get; set; } = false;
+
+        public void SetOriginalValues()
+        {
+            OriginalTypes = new PokemonType[] { PrimaryType, SecondaryType };
+        }
 
         public bool IsType(PokemonType type)
         {

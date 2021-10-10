@@ -47,8 +47,6 @@ namespace PokemonRandomizer.Backend.Randomization
             // Variant Data
             var variantData = new VariantData(pokemon)
             {
-                // Log original type data
-                OriginalTypes = (pokemon.PrimaryType, pokemon.SecondaryType),
                 // Change to variant type
                 TransformationType = ChooseType(pokemon, settings),
             };
@@ -84,7 +82,6 @@ namespace PokemonRandomizer.Backend.Randomization
                 // New Variant Data
                 var evoVariantData = new VariantData(evolvedPokemon)
                 {
-                    OriginalTypes = (evolvedPokemon.PrimaryType, evolvedPokemon.SecondaryType),
                     TransformationType = PropogateType(pokemon, evolvedPokemon, newTypes, settings, data)
                 };
                 ModifyBaseStats(evolvedPokemon, settings, evoVariantData);
@@ -166,12 +163,12 @@ namespace PokemonRandomizer.Backend.Randomization
         {
             TypeTransformation newTransformationType = data.TransformationType;
             // If the evolved pokemon is the same type as the base pokemon originally was, just pass the type changes through
-            if (evolvedPokemon.PrimaryType == data.OriginalTypes.PrimaryType && evolvedPokemon.SecondaryType == data.OriginalTypes.SecondaryType)
+            if (evolvedPokemon.PrimaryType == pokemon.OriginalPrimaryType && evolvedPokemon.SecondaryType == pokemon.OriginalSecondaryType)
             {
                 evolvedPokemon.PrimaryType = pokemon.PrimaryType;
                 evolvedPokemon.SecondaryType = pokemon.SecondaryType;
             }
-            else if (data.OriginallySingleType) // Pattern is either single replacement, gain type, or double replacement
+            else if (pokemon.OriginallySingleType) // Pattern is either single replacement, gain type, or double replacement
             {
                 // base pokemon was single typed, and evolved pokemon is a different single type (single replacement)
                 // E.g azurill -> marill
@@ -195,7 +192,7 @@ namespace PokemonRandomizer.Backend.Randomization
                         evolvedPokemon.SecondaryType = pokemon.SecondaryType;
                     }
                 }
-                else if (evolvedPokemon.IsType(data.OriginalTypes.PrimaryType)) // pokemon gains a type when evolving (e.g shroomish -> breloom)
+                else if (evolvedPokemon.IsType(pokemon.OriginalPrimaryType)) // pokemon gains a type when evolving (e.g shroomish -> breloom)
                 {
                     if (data.TransformationType == TypeTransformation.SingleTypeReplacement)
                     {
@@ -257,7 +254,7 @@ namespace PokemonRandomizer.Backend.Randomization
                         newTransformationType = TypeTransformation.GainSecondaryType;
                     }
                 }
-                else if (evolvedPokemon.IsType(data.OriginalTypes.PrimaryType))
+                else if (evolvedPokemon.IsType(pokemon.OriginalPrimaryType))
                 {
                     // Secondary type replacement
                     // E.g nincada -> ninjask, nincada -> shedinja
@@ -285,7 +282,7 @@ namespace PokemonRandomizer.Backend.Randomization
                             newTransformationType = TypeTransformation.PrimaryTypeReplacement;
                     }
                 }
-                else if (evolvedPokemon.IsType(data.OriginalTypes.SecondaryType))
+                else if (evolvedPokemon.IsType(pokemon.OriginalSecondaryType))
                 {
                     // Primary type replacement
                     // E.g swablu -> altaria
@@ -390,7 +387,7 @@ namespace PokemonRandomizer.Backend.Randomization
         private void ModifyBaseStats(PokemonBaseStats pokemon, Settings settings, VariantData data)
         {
             int originalBST = pokemon.BST;
-            var oldTypeProfile = ComputeTypeProfile(data.OriginalTypes.PrimaryType, data.OriginalTypes.SecondaryType);
+            var oldTypeProfile = ComputeTypeProfile(pokemon.OriginalPrimaryType, pokemon.OriginalSecondaryType);
             var newTypeProfile = ComputeTypeProfile(pokemon.PrimaryType, pokemon.SecondaryType);
             int attackStatTotal = pokemon.Attack + pokemon.SpAttack;
 
@@ -529,17 +526,6 @@ namespace PokemonRandomizer.Backend.Randomization
             {
                 this.pokemon = pokemon;
             }
-            private (PokemonType PrimaryType, PokemonType SecondaryType) originalTypes;
-            public (PokemonType PrimaryType, PokemonType SecondaryType) OriginalTypes 
-            { 
-                get => originalTypes;
-                set
-                {
-                    originalTypes = value;
-                    OriginallySingleType = value.PrimaryType == value.SecondaryType;
-                } 
-            }
-            public bool OriginallySingleType { get; private set; }
             public TypeTransformation TransformationType { get; set; }
 
             public PokemonType[] VariantTypes
