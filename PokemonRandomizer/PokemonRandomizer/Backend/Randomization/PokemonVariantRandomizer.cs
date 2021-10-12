@@ -51,18 +51,17 @@ namespace PokemonRandomizer.Backend.Randomization
                 TransformationType = ChooseType(pokemon, settings),
             };
             ModifyBaseStats(pokemon, settings, variantData);
-            // Propogate type (Change to propogate variance)
-            PropogateVariance(pokemon, settings, variantData);
-
-            // Modify Evolutions (if applicable)
-
-            // Modify Color Palette
 
             // Create new signature move (if applicable)
 
             // Modify Learnset
+            ModifyMoveset(pokemon, settings, variantData);
 
-            // Modify Base Stats (If applicable)
+            // Modify Color Palette
+
+            // Propogate variance to evolutions
+            PropogateVariance(pokemon, settings, variantData);
+
         }
 
         private void PropogateVariance(PokemonBaseStats pokemon, Settings settings, VariantData data)
@@ -86,6 +85,9 @@ namespace PokemonRandomizer.Backend.Randomization
                     BonusStats = data.BonusStats
                 };
                 ModifyBaseStats(evolvedPokemon, settings, evoVariantData);
+
+                // Modify Evolution (if applicable)
+
                 // Keep propogating
                 PropogateVariance(evolvedPokemon, settings, evoVariantData);
             }
@@ -384,6 +386,8 @@ namespace PokemonRandomizer.Backend.Randomization
 
         #endregion
 
+        #region Base Stats and EVs
+
         // May also modify EVs
         private void ModifyBaseStats(PokemonBaseStats pokemon, Settings settings, VariantData data)
         {
@@ -521,7 +525,28 @@ namespace PokemonRandomizer.Backend.Randomization
         {
             return (byte)Math.Max(currentValue - decreaseAmount, 0x00);
         }
-        
+
+        #endregion
+
+        #region Learnset
+
+        private void ModifyMoveset(PokemonBaseStats pokemon, Settings settings, VariantData data)
+        {
+            // Apply signiture move replacement
+            // Replace Types
+            foreach(var typeReplacement in data.TypeReplacements)
+            {
+
+            }
+            // Add new types
+            foreach(var gainedType in data.GainedTypes)
+            {
+
+            }
+        }
+
+        #endregion
+
         private TypeProfile ComputeTypeProfile(PokemonType primary, PokemonType secondary)
         {
             bool primaryTypeSpecial = IsSpecial(primary);
@@ -555,6 +580,42 @@ namespace PokemonRandomizer.Backend.Randomization
                         TypeTransformation.TypeLoss => new PokemonType[] { pokemon.PrimaryType },
                         _ => Array.Empty<PokemonType>()
                     };
+                }
+            }
+
+            public (PokemonType originalType, PokemonType newType)[] TypeReplacements
+            {
+                get
+                {
+                    if (pokemon.OriginallySingleType)
+                    {
+                        return TransformationType switch
+                        {
+                            TypeTransformation.SingleTypeReplacement => new (PokemonType originalType, PokemonType newType)[] { (pokemon.OriginalPrimaryType, pokemon.PrimaryType) },
+                            TypeTransformation.DoubleTypeReplacement => new (PokemonType originalType, PokemonType newType)[] { (pokemon.OriginalPrimaryType, pokemon.PrimaryType) },
+                            _ => Array.Empty<(PokemonType originalType, PokemonType newType)>()
+                        };
+                    }
+                    else
+                    {
+                        return TransformationType switch
+                        {
+                            TypeTransformation.SecondaryTypeReplacement => new (PokemonType originalType, PokemonType newType)[] { (pokemon.OriginalSecondaryType, pokemon.SecondaryType) },
+                            TypeTransformation.PrimaryTypeReplacement => new (PokemonType originalType, PokemonType newType)[] { (pokemon.OriginalPrimaryType, pokemon.PrimaryType) },
+                            TypeTransformation.DoubleTypeReplacement => new (PokemonType originalType, PokemonType newType)[] { (pokemon.OriginalPrimaryType, pokemon.PrimaryType), (pokemon.OriginalSecondaryType, pokemon.SecondaryType)},
+                            TypeTransformation.TypeLoss => new (PokemonType originalType, PokemonType newType)[] { (pokemon.OriginalPrimaryType, pokemon.PrimaryType), (pokemon.OriginalSecondaryType, pokemon.SecondaryType) },
+                            _ => Array.Empty<(PokemonType originalType, PokemonType newType)>()
+                        };
+                    }
+                }
+            }
+
+            // Any types the pokemon has gained that do not replace one of it's original types
+            public IEnumerable<PokemonType> GainedTypes
+            {
+                get
+                {
+                    return pokemon.OriginallySingleType? VariantTypes.Where(t => t != pokemon.OriginalPrimaryType) : Enumerable.Empty<PokemonType>();
                 }
             }
 
