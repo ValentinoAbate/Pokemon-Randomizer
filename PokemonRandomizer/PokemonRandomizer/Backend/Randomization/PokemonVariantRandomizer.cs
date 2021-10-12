@@ -82,7 +82,8 @@ namespace PokemonRandomizer.Backend.Randomization
                 // New Variant Data
                 var evoVariantData = new VariantData(evolvedPokemon)
                 {
-                    TransformationType = PropogateType(pokemon, evolvedPokemon, newTypes, settings, data)
+                    TransformationType = PropogateType(pokemon, evolvedPokemon, newTypes, settings, data),
+                    BonusStats = data.BonusStats
                 };
                 ModifyBaseStats(evolvedPokemon, settings, evoVariantData);
                 // Keep propogating
@@ -479,20 +480,34 @@ namespace PokemonRandomizer.Backend.Randomization
             }
             if (settings.GiveBonusStats)
             {
-                // Augment variant pokemon
-                short statGrowth = (short)(rand.RandomGaussianInt(settings.StatChangeMean, settings.StatChangeStdDev) - (pokemon.BST - originalBST));
-                if (statGrowth <= 0)
-                    return;
-                const short increment = 5;
-                var statChoiceWeight = new WeightedSet<int>(pokemon.stats.Length);
-                while (statGrowth > 0)
+                if(data.BonusStats == null) // Determine bonus stats
                 {
-                    short numstats = statGrowth < increment ? statGrowth : increment;
-                    statChoiceWeight.Clear();
-                    statChoiceWeight.AddRange(Enumerable.Range(0, pokemon.stats.Length), i => pokemon.stats[i]);
-                    int statChoice = rand.Choice(statChoiceWeight);
-                    pokemon.stats[statChoice] = IncreaseStat(pokemon.stats[statChoice], numstats);
-                    statGrowth -= increment;
+                    data.BonusStats = new int[6];
+                    // Augment variant pokemon
+                    short statGrowth = (short)(rand.RandomGaussianInt(settings.StatChangeMean, settings.StatChangeStdDev) - (pokemon.BST - originalBST));
+                    if (statGrowth <= 0)
+                        return;
+                    const short increment = 5;
+                    var statChoiceWeight = new WeightedSet<int>(pokemon.stats.Length);
+                    while (statGrowth > 0)
+                    {
+                        short numstats = statGrowth < increment ? statGrowth : increment;
+                        statChoiceWeight.Clear();
+                        statChoiceWeight.AddRange(Enumerable.Range(0, pokemon.stats.Length), i => pokemon.stats[i]);
+                        int statChoice = rand.Choice(statChoiceWeight);
+                        data.BonusStats[statChoice] += numstats;
+                        pokemon.stats[statChoice] = IncreaseStat(pokemon.stats[statChoice], numstats);
+                        statGrowth -= increment;
+                    }
+                }
+                else // Bonus stats have already been determined, propogate
+                {
+                    for(int i = 0; i < data.BonusStats.Length; ++i)
+                    {
+                        if (data.BonusStats[i] <= 0)
+                            continue;
+                        pokemon.stats[i] = IncreaseStat(pokemon.stats[i], data.BonusStats[i]);
+                    }
                 }
             }
         }
@@ -542,6 +557,8 @@ namespace PokemonRandomizer.Backend.Randomization
                     };
                 }
             }
+
+            public int[] BonusStats { get; set; } = null;
         }
 
         public class Settings
