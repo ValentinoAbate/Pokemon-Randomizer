@@ -1,5 +1,6 @@
 ﻿using PokemonRandomizer.Backend.DataStructures;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace PokemonRandomizer.Backend.Utilities
 {
@@ -38,16 +39,30 @@ namespace PokemonRandomizer.Backend.Utilities
             lines.Add("Pkmn Name      |  HP  AT  DF  SP  SA  SD   |    EV Yields   | Type(s) |  Ability 1     | Ability 2     | Held Item 1   | Held Item 2   | ");
             lines.Add("-------------------------------------------------------------------------------------------------------------------------------------");
             var pkmnSorted = data.PokemonNationalDexOrder;
-            foreach (PokemonBaseStats pkmn in pkmnSorted)
+            foreach (var pkmn in pkmnSorted)
             {
                 lines.Add(pkmn.ToString());
             }
 
             Header(ref lines, "Pokémon Moveset List");
-            foreach (PokemonBaseStats pkmn in pkmnSorted)
+            foreach (var pkmn in pkmnSorted)
             {
-                lines.Add(pkmn.Name + new string(' ', 15 - pkmn.Name.Length) + "| " + pkmn.learnSet.ToString());
+                lines.Add($"{NameFormatted(pkmn)}| {pkmn.learnSet.ToString()}");
             }
+
+            Header(ref lines, "Evolution Info");
+            foreach (var pkmn in pkmnSorted)
+            {
+                if (pkmn.HasRealEvolution)
+                {
+                    lines.Add($"{NameFormatted(pkmn)}| {string.Join(", ", pkmn.evolvesTo.Where(e => e.IsRealEvolution))}");
+                }
+            }
+        }
+
+        private static string NameFormatted(PokemonBaseStats pkmn)
+        {
+            return pkmn.Name + new string(' ', 15 - pkmn.Name.Length);
         }
     }
 }

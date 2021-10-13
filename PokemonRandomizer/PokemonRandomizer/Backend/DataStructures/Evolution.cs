@@ -53,7 +53,20 @@ namespace PokemonRandomizer.Backend.DataStructures
         }
         public override string ToString()
         {
-            return Pokemon.ToDisplayString() + ": " + Type.ToDisplayString() + " " + parameter;
+            string ret = $"{Pokemon.ToDisplayString()}: {Type.ToDisplayString()}";
+            if (EvolvesByLevel)
+            {
+                return ret + $" (Level {parameter})";
+            }
+            else if(Type == EvolutionType.UseItem || Type == EvolutionType.TradeWithItem)
+            {
+                return ret + $" ({((Item)parameter).ToDisplayString()})";
+            }
+            else if(Type == EvolutionType.Beauty)
+            {
+                return ret + $" ({parameter})";
+            }
+            return ret;
         }
     }
 }
