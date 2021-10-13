@@ -27,6 +27,15 @@ namespace PokemonRandomizer.Backend.Randomization
             Special,
             Physical
         }
+
+        private static readonly HashSet<Pokemon> specialPokemon = new HashSet<Pokemon>()
+        {
+            Pokemon.SMEARGLE,
+            Pokemon.SHUCKLE,
+            Pokemon.DITTO,
+            Pokemon.UNOWN
+        };
+
         private readonly Random rand;
         private readonly IDataTranslator dataT;
         private readonly List<PokemonType> types;
@@ -55,7 +64,7 @@ namespace PokemonRandomizer.Backend.Randomization
             // Create new signature move (if applicable)
 
             // Modify Learnset
-            ModifyMoveset(pokemon, settings, variantData);
+            //ModifyMoveset(pokemon, settings, variantData);
 
             // Modify Color Palette
 
@@ -532,16 +541,61 @@ namespace PokemonRandomizer.Backend.Randomization
 
         private void ModifyMoveset(PokemonBaseStats pokemon, Settings settings, VariantData data)
         {
+            var availableAddMoves = EnumUtils.GetValues<Move>().Where(m => m != Move.None).Select(m => dataT.GetMoveData(m)).ToList();
             // Apply signiture move replacement
             // Replace Types
-            foreach(var typeReplacement in data.TypeReplacements)
+            foreach (var typeReplacement in data.TypeReplacements)
             {
-
+                var typeMoves = availableAddMoves.Where(m => m.type == typeReplacement.newType).ToList();
+                typeMoves.Sort((m1, m2) => m1.EffectivePower.CompareTo(m2.EffectivePower));
+                foreach(var entry in pokemon.learnSet.Where(entry => dataT.GetMoveData(entry.move).type == typeReplacement.originalType))
+                {
+                    var oldMove = dataT.GetMoveData(entry.move);
+                    if(oldMove.power == 0)
+                    {
+                        var eligibleMoves = typeMoves.Where(m => m.EffectivePower == 0);
+                        if (eligibleMoves.Count() > 0)
+                        {
+                            entry.move = rand.Choice(typeMoves).move;
+                        }
+                        else
+                        {
+                            entry.move = rand.Choice(availableAddMoves.Where(m => m.EffectivePower == 0)).move;
+                        }
+                    }
+                    else
+                    {
+                        var eligibleMoves = typeMoves.Where(m => m.EffectivePower != 0 && m.EffectivePower >= oldMove.EffectivePower - 10 && m.EffectivePower <= oldMove.EffectivePower + 10);
+                        if (eligibleMoves.Count() > 0)
+                        {
+                            entry.move = rand.Choice(typeMoves).move;
+                        }
+                        else
+                        {
+                            Move closestMove = Move.None;
+                            int closestPowerDifference = 0;
+                            foreach(var move in typeMoves)
+                            {
+                                int powerDiff = Math.Abs(move.EffectivePower - oldMove.EffectivePower);
+                                if (powerDiff < closestPowerDifference)
+                                {
+                                    closestMove = move.move;
+                                    closestPowerDifference = powerDiff;
+                                }
+                            }
+                            if(closestMove != Move.None)
+                            {
+                                entry.move = closestMove;
+                            }
+                        }
+                    }
+                }
             }
             // Add new types
             foreach(var gainedType in data.GainedTypes)
             {
-
+                var typeMoves = availableAddMoves.Where(m => m.type == gainedType);
+                // Add move in at an appropriate level
             }
         }
 
