@@ -72,9 +72,9 @@ namespace PokemonRandomizer.Backend.Randomization
             Move[] ret = new Move[4] { Move.None, Move.None, Move.None, Move.None };
             if (availableMoves.Count <= 0)
                 return ret;
-            IEnumerable<Move> GetAttackMoves() => availableMoves.Keys.Where(m => dataT.GetMoveData(m).power > 0);
+            IEnumerable<Move> GetAttackMoves() => availableMoves.Keys.Where(m => !dataT.GetMoveData(m).IsStatus);
             //IEnumerable<LearnSet.Entry> GetNonStabMoves() => GetAttackMoves().Where((e) => !pokemon.types.Contains(GetData(e).type));
-            IEnumerable<Move> GetZeroPowerMoves() => availableMoves.Keys.Where(m => dataT.GetMoveData(m).power <= 0);
+            IEnumerable<Move> GetStatusMoves() => availableMoves.Keys.Where(m => dataT.GetMoveData(m).IsStatus);
             float PowerWeightScale(Move e) => (float)Math.Pow(dataT.GetMoveData(e).EffectivePower * (IsStab(e) ? 1.5 : 1), 3);
             float RedundantTypeFactor(Move m)
             {
@@ -118,7 +118,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 return ret;
 
             // Choose third move - Attempt to choose a status move
-            var noPowerMoves = new WeightedSet<Move>(GetZeroPowerMoves(), LevelWeightScaleSmall);
+            var noPowerMoves = new WeightedSet<Move>(GetStatusMoves(), LevelWeightScaleSmall);
             if (noPowerMoves.Count > 0)
             {
                 ret[2] = rand.Choice(noPowerMoves);

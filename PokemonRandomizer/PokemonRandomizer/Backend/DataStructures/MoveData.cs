@@ -284,6 +284,10 @@ namespace PokemonRandomizer.Backend.DataStructures
                     case MoveEffect.DelayedAttack:
                     case MoveEffect.SkullBash:
                         return (int)Math.Floor(power * 0.75);
+                    case MoveEffect.OneHitKill:
+                        return 150;
+                    case MoveEffect.DamageWeightBased:
+                        return 40;
                     default:
                         return power;
                 }
@@ -293,6 +297,20 @@ namespace PokemonRandomizer.Backend.DataStructures
 
         public string Description { get; set; }
         public int OrigininalDescriptionLength { get; set; }
+
+        public bool IsStatus => MoveCategory == Type.Status;
+
+        public Type MoveCategory
+        {
+            get
+            {
+                // Implement logic for type split later
+                if (power <= 0)
+                    return Type.Status;
+                return type <= PokemonType.Unknown ? Type.Physical : Type.Special;
+            }
+
+        }
 
         public MoveData() { }
 
