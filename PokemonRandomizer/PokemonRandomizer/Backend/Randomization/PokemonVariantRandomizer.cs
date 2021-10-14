@@ -68,12 +68,12 @@ namespace PokemonRandomizer.Backend.Randomization
 
             // Modify Color Palette
 
-            // Propogate variance to evolutions
-            PropogateVariance(pokemon, settings, variantData);
+            // Propagate variance to evolutions
+            PropagateVariance(pokemon, settings, variantData);
 
         }
 
-        private void PropogateVariance(PokemonBaseStats pokemon, Settings settings, VariantData data)
+        private void PropagateVariance(PokemonBaseStats pokemon, Settings settings, VariantData data)
         {
             var newTypes = new List<PokemonType>(types);
             newTypes.Remove(pokemon.PrimaryType);
@@ -90,7 +90,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 // New Variant Data
                 var evoVariantData = new VariantData(evolvedPokemon)
                 {
-                    TransformationType = PropogateType(pokemon, evolvedPokemon, newTypes, settings, data),
+                    TransformationType = PropagateType(pokemon, evolvedPokemon, newTypes, settings, data),
                     BonusStats = data.BonusStats,
  
                 };
@@ -103,7 +103,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 // Modify Evolution (if applicable)
 
                 // Keep propogating
-                PropogateVariance(evolvedPokemon, settings, evoVariantData);
+                PropagateVariance(evolvedPokemon, settings, evoVariantData);
             }
         }
 
@@ -176,7 +176,7 @@ namespace PokemonRandomizer.Backend.Randomization
             return transformationType;
         }
 
-        private TypeTransformation PropogateType(PokemonBaseStats pokemon, PokemonBaseStats evolvedPokemon, List<PokemonType> newTypes, Settings settings, VariantData data)
+        private TypeTransformation PropagateType(PokemonBaseStats pokemon, PokemonBaseStats evolvedPokemon, List<PokemonType> newTypes, Settings settings, VariantData data)
         {
             TypeTransformation newTransformationType = data.TransformationType;
             // If the evolved pokemon is the same type as the base pokemon originally was, just pass the type changes through
@@ -518,7 +518,7 @@ namespace PokemonRandomizer.Backend.Randomization
                         statGrowth -= increment;
                     }
                 }
-                else // Bonus stats have already been determined, propogate
+                else // Bonus stats have already been determined, propagate
                 {
                     for(int i = 0; i < data.BonusStats.Length; ++i)
                     {
