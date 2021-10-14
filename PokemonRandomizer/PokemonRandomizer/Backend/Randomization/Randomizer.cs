@@ -320,7 +320,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 #region Learn Sets
                 if(settings.BanSelfdestruct)
                 {
-                    pokemon.learnSet.RemoveWhere((m) => m.move == Move.SELFDESTRUCT || m.move == Move.EXPLOSION);
+                    pokemon.learnSet.RemoveWhere((m) => data.GetMoveData(m.move).effect == MoveData.MoveEffect.Selfdestruct);
                 }
                 if(settings.AddMoves && pokemon.IsBasic && rand.RollSuccess(settings.AddMovesChance))
                 {
