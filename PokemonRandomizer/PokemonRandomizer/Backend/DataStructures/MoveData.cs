@@ -262,6 +262,17 @@ namespace PokemonRandomizer.Backend.DataStructures
         public bool AffectedByKingRock { get => flags[5]; }    // 5 - This move is affected by the effects of King's Rock. The flinch effect is considered an additional effect for the purposes of Shield Dust, but not Serene Grace
         public BitArray flags;
 
+        public bool AffectedByStab
+        {
+            get
+            {
+                return !IsStatus && !IsOneHitKO && !IsFlatDamage;
+            }
+        }
+        public bool IsOneHitKO => effect == MoveEffect.OneHitKill;
+
+        public bool IsFlatDamage => effect == MoveEffect.FlatDamageLevel || effect == MoveEffect.DamageFlat20 || effect == MoveEffect.FlatDamage40 || effect == MoveEffect.VaryingDamageLevel;
+
         public int EffectivePower
         {
             get
@@ -284,10 +295,20 @@ namespace PokemonRandomizer.Backend.DataStructures
                     case MoveEffect.DelayedAttack:
                     case MoveEffect.SkullBash:
                         return (int)Math.Floor(power * 0.75);
-                    case MoveEffect.OneHitKill:
-                        return 150;
                     case MoveEffect.DamageWeightBased:
                         return 40;
+                    case MoveEffect.DamageFlat20:
+                        return 50;
+                    case MoveEffect.FlatDamage40:
+                        return 70;
+                    case MoveEffect.FlatDamageLevel:
+                        return 30;
+                    case MoveEffect.VaryingDamageLevel:
+                        return 40;
+                    case MoveEffect.HiddenPower:
+                        return 50;
+                    case MoveEffect.Present:
+                        return 30;
                     default:
                         return power;
                 }

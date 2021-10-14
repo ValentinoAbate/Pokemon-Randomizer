@@ -75,7 +75,7 @@ namespace PokemonRandomizer.Backend.Randomization
             IEnumerable<Move> GetAttackMoves() => availableMoves.Keys.Where(m => !dataT.GetMoveData(m).IsStatus);
             //IEnumerable<LearnSet.Entry> GetNonStabMoves() => GetAttackMoves().Where((e) => !pokemon.types.Contains(GetData(e).type));
             IEnumerable<Move> GetStatusMoves() => availableMoves.Keys.Where(m => dataT.GetMoveData(m).IsStatus);
-            float PowerWeightScale(Move e) => (float)Math.Pow(dataT.GetMoveData(e).EffectivePower * (IsStab(e) ? 1.5 : 1), 3);
+            float PowerWeightScale(Move e) => (float)Math.Pow(dataT.GetMoveData(e).EffectivePower * (IsStab(e) && dataT.GetMoveData(e).AffectedByStab ? 1.5 : 1), 3);
             float RedundantTypeFactor(Move m)
             {
                 int ind = ret.ToList().FindIndex((m2) => m2 != Move.None && dataT.GetMoveData(m).type == dataT.GetMoveData(m2).type);

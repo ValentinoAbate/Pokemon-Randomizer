@@ -91,9 +91,14 @@ namespace PokemonRandomizer.Backend.Randomization
                 var evoVariantData = new VariantData(evolvedPokemon)
                 {
                     TransformationType = PropogateType(pokemon, evolvedPokemon, newTypes, settings, data),
-                    BonusStats = data.BonusStats
+                    BonusStats = data.BonusStats,
+ 
                 };
+                evoVariantData.MoveReplacements.AddRange(data.MoveReplacements);
+
                 ModifyBaseStats(evolvedPokemon, settings, evoVariantData);
+
+                ModifyMoveset(evolvedPokemon, settings, evoVariantData);
 
                 // Modify Evolution (if applicable)
 
@@ -554,23 +559,51 @@ namespace PokemonRandomizer.Backend.Randomization
 
         private void ModifyMoveset(PokemonBaseStats pokemon, Settings settings, VariantData data)
         {
+            // Apply carried over data from evolutionary line
+            foreach (var moveReplacement in data.MoveReplacements)
+            {
+                var newMoveData = dataT.GetMoveData(moveReplacement.newMove);
+                var oldMoveData = dataT.GetMoveData(moveReplacement.oldMove);
+                if (!(IsType(newMoveData, pokemon.PrimaryType) || IsType(newMoveData, pokemon.SecondaryType)) && (IsType(newMoveData, pokemon.OriginalPrimaryType) || IsType(newMoveData, pokemon.OriginalSecondaryType)))
+                    continue;
+                foreach(var entry in pokemon.learnSet.Where(entry => entry.move == moveReplacement.oldMove))
+                {
+                    entry.move = moveReplacement.newMove;
+                }
+            }
             var availableAddMoves = EnumUtils.GetValues<Move>().Where(m => m != Move.None).Select(m => dataT.GetMoveData(m)).ToList();
             // Anything in here may need typing adjustment
-            var normalStatusMoves = availableAddMoves.Where(m => m.type == PokemonType.NRM && m.IsStatus);
+            //var normalStatusMoves = availableAddMoves.Where(m => m.type == PokemonType.NRM && m.IsStatus);
             // Anything in here needs to get an effective power rating
-            var onePowerMoves = availableAddMoves.Where(m => m.EffectivePower == 1);
+            //var onePowerMoves = availableAddMoves.Where(m => m.EffectivePower == 1);
             // Apply signiture move replacement
             // Replace Types
             foreach (var typeReplacement in data.TypeReplacements)
             {
-                var availibleTypeMoves = availableAddMoves.Where(m => m.type == typeReplacement.newType && !pokemon.learnSet.Learns(m.move)).ToList();
+                var availibleTypeMoves = availableAddMoves.Where(m => IsType(m, typeReplacement.newType) && !pokemon.learnSet.Learns(m.move)).ToList();
                 availibleTypeMoves.Sort((m1, m2) => m1.EffectivePower.CompareTo(m2.EffectivePower));
                 foreach(var entry in pokemon.learnSet.Where(entry => dataT.GetMoveData(entry.move).type == typeReplacement.originalType))
                 {
                     if (dontReplace.Contains(entry.move))
                         continue;
                     var oldMove = dataT.GetMoveData(entry.move);
-                    if(oldMove.IsStatus)
+                    if (oldMove.IsOneHitKO)
+                    {
+                        var eligibleMoves = availibleTypeMoves.Where(m => m.IsOneHitKO);
+                        if(eligibleMoves.Count() > 0)
+                        {
+                            entry.move = rand.Choice(eligibleMoves).move;
+                        }
+                        else
+                        {
+                            var newMove = ChooseAttackingMove(availibleTypeMoves, 100, 20);
+                            if (newMove != Move.None)
+                            {
+                                entry.move = newMove;
+                            }
+                        }
+                    }
+                    else if(oldMove.IsStatus)
                     {
                         if (oldMove.type == PokemonType.NRM)
                             continue;
@@ -586,32 +619,17 @@ namespace PokemonRandomizer.Backend.Randomization
                     }
                     else
                     {
-                        var nonStatusMoves = availibleTypeMoves.Where(m => !m.IsStatus);
-                        var eligibleMoves = nonStatusMoves.Where(m => m.EffectivePower >= oldMove.EffectivePower - 10 && m.EffectivePower <= oldMove.EffectivePower + 10);
-                        if (eligibleMoves.Count() > 0)
+                        var newMove = ChooseAttackingMove(availibleTypeMoves, oldMove.EffectivePower, 10);
+                        if(newMove != Move.None)
                         {
-                            entry.move = rand.Choice(eligibleMoves).move;
-                        }
-                        else
-                        {
-                            Move closestMove = Move.None;
-                            int closestPowerDifference = int.MaxValue;
-                            foreach (var move in nonStatusMoves)
-                            {
-                                int powerDiff = Math.Abs(move.EffectivePower - oldMove.EffectivePower);
-                                if (powerDiff < closestPowerDifference)
-                                {
-                                    closestMove = move.move;
-                                    closestPowerDifference = powerDiff;
-                                }
-                            }
-                            if(closestMove != Move.None)
-                            {
-                                entry.move = closestMove;
-                            }
+                            entry.move = newMove;
                         }
                     }
                     availibleTypeMoves.RemoveAll(m => m.move == entry.move); 
+                    if(entry.move != oldMove.move)
+                    {
+                        data.MoveReplacements.Add((oldMove.move, entry.move));
+                    }
                 }
             }
             // Add new types
@@ -619,6 +637,49 @@ namespace PokemonRandomizer.Backend.Randomization
             {
                 var typeMoves = availableAddMoves.Where(m => m.type == gainedType);
                 // Add move in at an appropriate level
+            }
+        }
+
+        private static readonly HashSet<(Move move, PokemonType type)> moveTypeOverrides = new HashSet<(Move move, PokemonType type)>()
+        {
+            (Move.SMOKESCREEN, PokemonType.FIR),
+            (Move.WHIRLWIND, PokemonType.FLY),
+            (Move.HARDEN, PokemonType.RCK),
+            (Move.HARDEN, PokemonType.BUG),
+            (Move.GROWTH, PokemonType.GRS),
+            (Move.MEAN_LOOK, PokemonType.GHO),
+            (Move.CURSE, PokemonType.GHO)
+        };
+
+        private bool IsType(MoveData move, PokemonType type)
+        {
+            if (moveTypeOverrides.Contains((move.move, type)))
+                return true;
+            return move.type == type;
+        }
+
+        private Move ChooseAttackingMove(IEnumerable<MoveData> availibleTypeMoves, int oldMovePower, int powerDiffTolerance)
+        {
+            var nonStatusMoves = availibleTypeMoves.Where(m => !m.IsStatus && !m.IsOneHitKO);
+            var eligibleMoves = nonStatusMoves.Where(m => m.EffectivePower >= oldMovePower - powerDiffTolerance && m.EffectivePower <= oldMovePower + powerDiffTolerance);
+            if (eligibleMoves.Count() > 0)
+            {
+                return rand.Choice(eligibleMoves).move;
+            }
+            else
+            {
+                Move closestMove = Move.None;
+                int closestPowerDifference = int.MaxValue;
+                foreach (var move in nonStatusMoves)
+                {
+                    int powerDiff = Math.Abs(move.EffectivePower - oldMovePower);
+                    if (powerDiff < closestPowerDifference)
+                    {
+                        closestMove = move.move;
+                        closestPowerDifference = powerDiff;
+                    }
+                }
+                return closestMove;
             }
         }
 
@@ -697,6 +758,8 @@ namespace PokemonRandomizer.Backend.Randomization
             }
 
             public int[] BonusStats { get; set; } = null;
+
+            public List<(Move oldMove, Move newMove)> MoveReplacements { get; } = new List<(Move oldMove, Move newMove)>();
         }
 
         public class Settings
