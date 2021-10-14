@@ -24,6 +24,7 @@ namespace PokemonRandomizer.Backend.Randomization
         private readonly TrainerRandomizer trainerRand;
         private readonly MoveCompatibilityRandomizer compatRand;
         private readonly PokemonVariantRandomizer variantRand;
+        private readonly BonusMoveGenerator bonusMoveGenerator;
         /// <summary>
         /// Create a new randomizer with given data and settings
         /// Input data will be mutated by randomizer calls
@@ -47,6 +48,7 @@ namespace PokemonRandomizer.Backend.Randomization
             // Initialize Trainer randomizer
             trainerRand = new TrainerRandomizer(rand, pokeRand, evoUtils, data);
             compatRand = new MoveCompatibilityRandomizer(rand, data);
+            bonusMoveGenerator = new BonusMoveGenerator(rand, data, settings);
             variantRand = new PokemonVariantRandomizer(rand, data);
         }
         // Apply mutations based on program settings.
@@ -320,110 +322,12 @@ namespace PokemonRandomizer.Backend.Randomization
                 #region Learn Sets
                 if(settings.BanSelfdestruct)
                 {
-                    pokemon.learnSet.RemoveWhere((m) => data.GetMoveData(m.move).effect == MoveData.MoveEffect.Selfdestruct);
+                    pokemon.learnSet.RemoveWhere(m => data.GetMoveData(m.move).effect == MoveData.MoveEffect.Selfdestruct);
                 }
                 if(settings.AddMoves && pokemon.IsBasic && rand.RollSuccess(settings.AddMovesChance))
                 {
                     int numMoves = rand.RandomGaussianPositiveNonZeroInt(settings.NumMovesMean, settings.NumMovesStdDeviation);
-                    var availableMoves = new List<Move>(availableAddMoves);
-                    availableMoves.RemoveAll((m) => pokemon.learnSet.Learns(m));
-                    var availableEggMoves = pokemon.eggMoves.Where((m) => availableMoves.Contains(m)).ToList();
-                    for (int i = 0; i < numMoves; ++i)
-                    {
-                        Move move = Move.None;
-                        switch (rand.Choice(settings.AddMoveSourceWeights))
-                        {
-                            case Settings.AddMoveSource.Random:
-                                move = rand.Choice(availableMoves);
-                                break;
-                            case Settings.AddMoveSource.Damaging:
-                                break;
-                            case Settings.AddMoveSource.Status:
-                                break;
-                            case Settings.AddMoveSource.STAB:
-                                break;
-                            case Settings.AddMoveSource.STABDamaging:
-                                break;
-                            case Settings.AddMoveSource.STABStatus:
-                                break;
-                            case Settings.AddMoveSource.EggMoves:
-                                if (availableEggMoves.Count > 0)
-                                {
-                                    move = rand.Choice(availableEggMoves);
-                                    availableEggMoves.Remove(move);
-                                }
-                                break;
-                            case Settings.AddMoveSource.CompatibleTms:
-                                break;
-                        }
-                        if(move != Move.None)
-                        {
-                            void AddMoveToEvoTreeMoveSet(PokemonBaseStats p, Move m, int level, int creep = 0)
-                            {
-                                p.learnSet.Add(m, level);
-                                for (int i = 0; i < p.evolvesTo.Length; ++i)
-                                {
-                                    var evo = p.evolvesTo[i];
-                                    if (!evo.IsRealEvolution)
-                                        return;
-                                    // Make this stable with the Dunsparse Plague
-                                    if (evo.Pokemon == Pokemon.DUNSPARCE && settings.DunsparsePlaugeChance > 0)
-                                        continue;
-                                    // Don't add the move twice to pokemon that appear twice in the same evoltion tree
-                                    // Occurs with fixed evolutions where the original trade evolution is left
-                                    bool duplicate = false;
-                                    for(int j = 0; j < i; ++j)
-                                    {
-                                        if(p.evolvesTo[j].Pokemon == evo.Pokemon)
-                                        {
-                                            duplicate = true;
-                                            break;
-                                        }
-                                    }
-                                    if (duplicate)
-                                        continue;
-                                    AddMoveToEvoTreeMoveSet(data.GetBaseStats(evo.Pokemon), m, level + creep, creep);
-                                }
-                            }
-                            availableMoves.Remove(move);
-                            if(data.Metrics.LearnLevels.ContainsKey(move))
-                            {
-                                double mean = data.Metrics.LearnLevelMeans[move];
-                                double stdDev = data.Metrics.LearnLevelStandardDeviations[move];
-                                int learnLevel = rand.RandomGaussianPositiveNonZeroInt(mean, stdDev);
-                                AddMoveToEvoTreeMoveSet(pokemon, move, learnLevel);
-                                continue;
-                            }
-                            int effectivePower = data.GetMoveData(move).EffectivePower;
-                            if(data.Metrics.LearnLevelPowers.ContainsKey(effectivePower))
-                            {
-                                double mean = data.Metrics.LearnLevelPowerMeans[effectivePower];
-                                double stdDev = data.Metrics.LearnLevelPowerStandardDeviations[effectivePower];
-                                int learnLevel = rand.RandomGaussianPositiveNonZeroInt(mean, stdDev);
-                                AddMoveToEvoTreeMoveSet(pokemon, move, learnLevel);
-                            }
-                            else if(data.Metrics.LearnLevelPowers.Count > 0)
-                            {
-                                var powers = data.Metrics.LearnLevelPowers.Keys.ToList();
-                                powers.Sort();
-                                int closestPower = 0;
-                                int last = 0;
-                                foreach(var power in powers)
-                                {
-                                    if(power > effectivePower)
-                                    {
-                                        closestPower = effectivePower - last > power - effectivePower ? power : last;
-                                        break;
-                                    }
-                                    last = power;
-                                }
-                                double mean = data.Metrics.LearnLevelPowerMeans[closestPower];
-                                double stdDev = data.Metrics.LearnLevelPowerStandardDeviations[closestPower];
-                                int learnLevel = rand.RandomGaussianPositiveNonZeroInt(mean, stdDev);
-                                AddMoveToEvoTreeMoveSet(pokemon, move, learnLevel);
-                            }
-                        }
-                    }
+                    bonusMoveGenerator.GenerateBonusMoves(pokemon, numMoves, settings.AddMoveSourceWeights);
                 }
                 #endregion
 
@@ -476,7 +380,6 @@ namespace PokemonRandomizer.Backend.Randomization
                 else
                     unknownPokeData.types[1] = PokemonType.Unknown;
             }
-            // Change pallettes to fit new types
             #endregion
 
             #region Starters

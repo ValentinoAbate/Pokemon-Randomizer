@@ -126,6 +126,7 @@
     <Compile Include="Backend\EnumTypes\Generation.cs" />
     <Compile Include="Backend\EnumTypes\IDataTranslator.cs" />
     <Compile Include="Backend\GenIII\Constants\ElementNames\ElementNames.cs" />
+    <Compile Include="Backend\Randomization\BonusMoveGenerator.cs" />
     <Compile Include="Backend\Randomization\DreamTeamRandomizer.cs" />
     <Compile Include="Backend\Randomization\ItemRandomizer.cs" />
     <Compile Include="Backend\Randomization\Metric.cs" />
