@@ -153,7 +153,7 @@ namespace PokemonRandomizer.AppSettings
         #region Learnsets
 
         public override bool BanSelfdestruct => false;
-        public override bool AddMoves => true;
+        public override bool AddMoves => false;
         public override bool DisableAddingHmMoves => false;
 
         public override double AddMovesChance => 1;

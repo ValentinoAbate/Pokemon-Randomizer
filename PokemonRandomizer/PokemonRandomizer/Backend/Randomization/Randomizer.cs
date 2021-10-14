@@ -49,7 +49,7 @@ namespace PokemonRandomizer.Backend.Randomization
             trainerRand = new TrainerRandomizer(rand, pokeRand, evoUtils, data);
             compatRand = new MoveCompatibilityRandomizer(rand, data);
             bonusMoveGenerator = new BonusMoveGenerator(rand, data, settings);
-            variantRand = new PokemonVariantRandomizer(rand, data);
+            variantRand = new PokemonVariantRandomizer(rand, data, bonusMoveGenerator);
         }
         // Apply mutations based on program settings.
         public RomData Randomize()
