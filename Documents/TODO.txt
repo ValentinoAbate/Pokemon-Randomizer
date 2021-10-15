@@ -118,7 +118,6 @@ FEATURES ///////////////////////////////////////////////////////////////////////
 - Egg move writing
 - Move description writing
 - Move tutor NPC text fix
-- Ban selfdestruct works by move effect rather than explicit move number
 
 - Game corner randomization????
 	- High stakes roulette
@@ -144,6 +143,7 @@ CLEANUP ////////////////////////////////////////////////////////////////////////
 - Move Elt name constants into constants class(es)
 - Check to see if pkmn base stat offsets point to after the null pokemon
 - Make "Size" and other rom data shortcut methods safe to fail with warnings
+- Make variants support the ban selfdestruct setting
 
 FIXES ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

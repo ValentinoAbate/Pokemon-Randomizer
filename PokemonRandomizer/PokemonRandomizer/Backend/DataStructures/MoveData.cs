@@ -282,6 +282,8 @@ namespace PokemonRandomizer.Backend.DataStructures
             }
         }
 
+        public bool IsSelfdestruct => effect == MoveEffect.Selfdestruct;
+
         public int EffectivePower
         {
             get

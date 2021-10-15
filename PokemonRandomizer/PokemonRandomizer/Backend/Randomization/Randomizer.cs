@@ -200,8 +200,7 @@ namespace PokemonRandomizer.Backend.Randomization
             availableAddMoves.Remove(Move.None);
             if(settings.BanSelfdestruct)
             {
-                availableAddMoves.Remove(Move.SELFDESTRUCT);
-                availableAddMoves.Remove(Move.EXPLOSION);
+                availableAddMoves.RemoveWhere(m => data.GetMoveData(m).IsSelfdestruct);
             }
             if(settings.DisableAddingHmMoves)
             {
@@ -336,7 +335,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 #region Learn Sets
                 if(settings.BanSelfdestruct)
                 {
-                    pokemon.learnSet.RemoveWhere(m => data.GetMoveData(m.move).effect == MoveData.MoveEffect.Selfdestruct);
+                    pokemon.learnSet.RemoveWhere(m => data.GetMoveData(m.move).IsSelfdestruct);
                 }
                 if(settings.AddMoves && pokemon.IsBasic && rand.RollSuccess(settings.AddMovesChance))
                 {

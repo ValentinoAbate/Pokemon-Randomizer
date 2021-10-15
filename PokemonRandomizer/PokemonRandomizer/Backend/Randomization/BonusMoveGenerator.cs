@@ -26,8 +26,7 @@ namespace PokemonRandomizer.Backend.Randomization
             availableAddMoves.Remove(Move.None);
             if (settings.BanSelfdestruct)
             {
-                availableAddMoves.Remove(Move.SELFDESTRUCT);
-                availableAddMoves.Remove(Move.EXPLOSION);
+                availableAddMoves.RemoveWhere(m => data.GetMoveData(m).IsSelfdestruct);
             }
             if (settings.DisableAddingHmMoves)
             {
