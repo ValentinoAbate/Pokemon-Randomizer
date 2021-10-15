@@ -81,18 +81,32 @@ namespace PokemonRandomizer.Backend.Randomization
             }
             #endregion
 
-            #region Move Definitions (NOTHING YET)
-            // Define Move Definitions
-            // Hack in new moves if applicable
-            // Possible Hacks: Add GenIV moves (idk if this is possible), Add Fairy moves (should be OK),
-            // add some ???-type moves, procedurally generate new moves. Animations would be a problem
-            // Ideas: Mystery Power: 60 power ??? move, random chance of a randomly chosen stat buff/debuff or special condition
-            // Ideas: Unknown Power: 75-80 power ??? move, random chance of a randomly chosen stat buff/debuff or special condition
-            // Ideas: Cryptic Power: 30 power ???, chance of weirder effects like multi-hit, much higher chance of multiple effects
-            // Ideas: Strange power: 30-90 power, ??? random target (higher chance of weird targets)
-            // Ideas: Enigma: 1-150 power, ???, low chance of any bonus effect
-            // Mutate move definitions (should this come before or after hacks (maybe let user choose))
-            // Change move type, power, etc. (this would be really lame if not at a low mutation rate)
+            #region Move Definitions
+
+            void SetAccuracyAndPower(MoveData data, byte power, byte acc)
+            {
+                data.power = power;
+                data.accuracy = acc;
+            }
+            // Update DOT moves to Gen V Power, ACC, and PP if applicable
+            if (settings.UpdateDOTMoves)
+            {
+                // Bind: 75 -> 85 ACC
+                data.GetMoveData(Move.BIND).accuracy = 85;
+                // Wrap: 85 -> 90 ACC
+                data.GetMoveData(Move.WRAP).accuracy = 90;
+                // Fire Spin: 15 -> 35 Power, 70 -> 85 ACC
+                SetAccuracyAndPower(data.GetMoveData(Move.FIRE_SPIN), 35, 85);
+                // Whirlpool: 15 -> 35 Power, 70 -> 85 ACC
+                SetAccuracyAndPower(data.GetMoveData(Move.WHIRLPOOL), 35, 85);
+                // Sand Tomb: 15 -> 35 Power, 70 -> 85 ACC
+                SetAccuracyAndPower(data.GetMoveData(Move.SAND_TOMB), 35, 85);
+                // Sand Tomb: 70 -> 85 ACC, 10 -> 15 PP
+                var clamp = data.GetMoveData(Move.CLAMP);
+                clamp.pp = 15;
+                clamp.accuracy = 85;
+            }
+
             #endregion
 
             #region TMs, HMs, and Move Tutor Move Mappings

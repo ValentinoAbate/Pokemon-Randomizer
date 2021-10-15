@@ -321,6 +321,9 @@ namespace PokemonRandomizer
 
         #region Misc
 
+        // Gen II-IV Hacks and Tweaks
+        public abstract bool UpdateDOTMoves { get; }
+
         // Gen III Hacks and Tweaks
         public abstract bool RunIndoors { get; }
         public abstract bool StartWithNationalDex { get; }

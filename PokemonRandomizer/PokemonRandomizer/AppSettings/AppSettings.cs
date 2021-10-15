@@ -256,6 +256,9 @@ namespace PokemonRandomizer.AppSettings
 
         #region Misc
 
+        // Gen II-IV Hacks and Tweaks
+        public override bool UpdateDOTMoves => miscData.UpdateDOTMoves;
+
         // Gen III Hacks and Tweaks
         public override bool RunIndoors => miscData.RunIndoors;
 

@@ -17,6 +17,7 @@ namespace PokemonRandomizer.UI.Views
 
             stack.Header(UISkin.Current.HacksAndTweaksHeader);
             stack.Add(new BoundCheckBoxUI(model.RunIndoors, "Run Indoors"));
+            stack.Add(new BoundCheckBoxUI(model.UpdateDOTMoves, "Update Wrap Moves", "Updates the moves Wrap, Bind, Fire Spin, Sand Tomb, Whirlpool, and Clamp to their Gen V power, accuracy, and PP"));
             stack.Header("Randomizer Options");
             stack.Add(new BoundCheckBoxUI(model.CountRelicanthAsFossil, "Count Relicanth as a Fossil Pokemon"));
             if (metadata.IsEmerald)

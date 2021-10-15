@@ -4,7 +4,11 @@ IDEAS //////////////////////////////////////////////////////////////////////////
 
 - Randomize unknown's base stats
 - Add some ??? type attack moves to the game
-	- Start by randomizing Hidden Power
+	- Mystery Power: 60 power ??? move, random chance of a randomly chosen stat buff/debuff or special condition
+	- Unknown Power: 75-80 power ??? move, random chance of a randomly chosen stat buff/debuff or special condition
+	- Cryptic Power: 30 power ???, chance of weirder effects like multi-hit, much higher chance of multiple effects
+	- Strange power: 30-90 power, ??? random target (higher chance of weird targets)
+	- Enigma: 1-150 power, ???, low chance of any bonus effect
 - Gym / Leader Overhaul
 	- Make gym leader TM based on type and make sure their pokemon know it (if applicable)
 	- Add option to randomize gym type
