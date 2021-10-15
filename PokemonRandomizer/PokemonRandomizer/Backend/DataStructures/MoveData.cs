@@ -273,6 +273,15 @@ namespace PokemonRandomizer.Backend.DataStructures
 
         public bool IsFlatDamage => effect == MoveEffect.FlatDamageLevel || effect == MoveEffect.DamageFlat20 || effect == MoveEffect.FlatDamage40 || effect == MoveEffect.VaryingDamageLevel;
 
+        public bool IsCounterAttack
+        {
+            get
+            {
+                return effect == MoveEffect.Counter || effect == MoveEffect.MirrorCoat || effect == MoveEffect.MirrorMove
+                    || effect == MoveEffect.Endeavor || effect == MoveEffect.Bide;
+            }
+        }
+
         public int EffectivePower
         {
             get
@@ -309,12 +318,15 @@ namespace PokemonRandomizer.Backend.DataStructures
                         return 50;
                     case MoveEffect.Present:
                         return 30;
+                    case MoveEffect.DamageMoreAtLowHP:
+                        return 20; // Flail, reversal, etc
                     default:
                         return power;
                 }
 
             }
         }
+        public bool HasUndefinedRealPower => power == 1;
 
         public string Description { get; set; }
         public int OrigininalDescriptionLength { get; set; }

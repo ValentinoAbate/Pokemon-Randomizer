@@ -40,21 +40,7 @@ namespace PokemonRandomizer.Backend.Randomization
             Pokemon.WYNAUT,
             Pokemon.WOBBUFFET,
             Pokemon.CASTFORM,
-        };
-
-        // Pokemon that shouldn't recieve bonus moves, only replacement moves
-        private static readonly HashSet<Pokemon> dontAddBonusMovesTo = new HashSet<Pokemon>()
-        {
-            Pokemon.CATERPIE,
-            Pokemon.WURMPLE,
-            Pokemon.WEEDLE,
-            Pokemon.KAKUNA,
-            Pokemon.METAPOD,
-            Pokemon.SILCOON,
-            Pokemon.CASCOON,
-            Pokemon.BELDUM,
-            Pokemon.MAGIKARP,
-            Pokemon.FEEBAS,
+            Pokemon.DELIBIRD
         };
 
         private readonly Random rand;
@@ -87,7 +73,7 @@ namespace PokemonRandomizer.Backend.Randomization
             // Create new signature move (if applicable)
 
             // Modify Learnset
-            ModifyMoveset(pokemon, settings, variantData);
+            ModifyLearnset(pokemon, settings, variantData);
 
             // Modify Color Palette
 
@@ -121,7 +107,7 @@ namespace PokemonRandomizer.Backend.Randomization
 
                 ModifyBaseStats(evolvedPokemon, settings, evoVariantData);
 
-                ModifyMoveset(evolvedPokemon, settings, evoVariantData);
+                ModifyLearnset(evolvedPokemon, settings, evoVariantData);
 
                 // Modify Evolution (if applicable)
 
@@ -585,11 +571,93 @@ namespace PokemonRandomizer.Backend.Randomization
             Move.SLACK_OFF,
             Move.MILK_DRINK,
             Move.SOFTBOILED,
-            Move.TRANSFORM
+            Move.TRANSFORM,
+            Move.METRONOME,
+            Move.SUPER_FANG,
+            Move.SPIT_UP
         };
 
-        private void ModifyMoveset(PokemonBaseStats pokemon, Settings settings, VariantData data)
+        // Pokemon that shouldn't recieve bonus moves, only replacement moves
+        private static readonly HashSet<Pokemon> specialLearnsetPokemon = new HashSet<Pokemon>()
         {
+            Pokemon.CATERPIE,
+            Pokemon.WURMPLE,
+            Pokemon.WEEDLE,
+            Pokemon.KAKUNA,
+            Pokemon.METAPOD,
+            Pokemon.SILCOON,
+            Pokemon.CASCOON,
+            Pokemon.BELDUM,
+            Pokemon.MAGIKARP,
+            Pokemon.FEEBAS,
+            Pokemon.TYROGUE,
+            Pokemon.ABRA
+        };
+
+        private bool IsAttackingMoveOfType(LearnSet.Entry entry, PokemonType type, int minPower = 0, int maxPower = 0xFF)
+        {
+            var moveData = dataT.GetMoveData(entry.move);
+            if (moveData.IsStatus || moveData.IsCounterAttack)
+                return false;
+            int effectivePower = moveData.EffectivePower;
+            return IsType(moveData, type) &&  effectivePower >= minPower && effectivePower <= maxPower;
+        }
+
+        public bool HasAttackingMoveOfType(LearnSet learnSet, PokemonType type, int minPower = 0, int maxPower = 0xFF)
+        {
+            return learnSet.Any(entry => IsAttackingMoveOfType(entry, type, minPower, maxPower));
+        }
+
+        private List<MoveData> GetAvailibleAddMoves(LearnSet learnSet)
+        {
+            return EnumUtils.GetValues<Move>().Where(m => m != Move.None && !learnSet.Learns(m)).Select(m => dataT.GetMoveData(m)).ToList();
+        }
+
+        private List<MoveData> GetAvailibleTypeMoves(IEnumerable<MoveData> allMoves, PokemonType type, LearnSet learnSet)
+        {
+            var moves = allMoves.Where(m => IsType(m, type) && !learnSet.Learns(m.move)).ToList();
+            moves.Sort((m1, m2) => m1.EffectivePower.CompareTo(m2.EffectivePower));
+            return moves;
+        }
+
+        private LearnSet.Entry[] GetEntriesOfType(PokemonType type, LearnSet learnSet)
+        {
+            return learnSet.Where(entry => dataT.GetMoveData(entry.move).type == type).ToArray();
+        }
+
+        private void ModifyLearnsetSpecial(PokemonBaseStats pokemon, Settings settings, VariantData data)
+        {
+            // Apply standard replacements
+            var availableAddMoves = GetAvailibleAddMoves(pokemon.learnSet);
+            foreach (var typeReplacement in data.TypeReplacements)
+            {
+                var availibleTypeMoves = GetAvailibleTypeMoves(availableAddMoves, typeReplacement.newType, pokemon.learnSet);
+                var movesToReplace = GetEntriesOfType(typeReplacement.originalType, pokemon.learnSet);
+                foreach (var entry in movesToReplace)
+                {
+                    entry.move = ReplaceMove(entry.move, data, ref availibleTypeMoves);
+                }
+            }
+            // Replace normal type attacking moves
+            var normalAttackingMoveEntries = pokemon.learnSet.Where(entry => IsAttackingMoveOfType(entry, PokemonType.NRM));
+            var availibleNormalReplacementMoves = GetAvailibleTypeMoves(availableAddMoves, data.VariantTypes[0], pokemon.learnSet);
+            if(data.VariantTypes.Length > 1)
+            {
+                availibleNormalReplacementMoves.AddRange(GetAvailibleTypeMoves(availableAddMoves, data.VariantTypes[1], pokemon.learnSet));
+            }
+            foreach(var entry in normalAttackingMoveEntries)
+            {
+                entry.move = ReplaceMove(entry.move, data, ref availibleNormalReplacementMoves);
+            }
+        }
+
+        private void ModifyLearnset(PokemonBaseStats pokemon, Settings settings, VariantData data)
+        {
+            if (specialLearnsetPokemon.Contains(pokemon.species))
+            {
+                ModifyLearnsetSpecial(pokemon, settings, data);
+                return;
+            }
             // Apply carried over data from evolutionary line
             foreach (var moveReplacement in data.MoveReplacements)
             {
@@ -612,100 +680,48 @@ namespace PokemonRandomizer.Backend.Randomization
                     continue;
                 pokemon.learnSet.Add(bonusMove);
             }
-            var availableAddMoves = EnumUtils.GetValues<Move>().Where(m => m != Move.None && !pokemon.learnSet.Learns(m)).Select(m => dataT.GetMoveData(m)).ToList();
-            // Anything in here may need typing adjustment
-            //var normalStatusMoves = availableAddMoves.Where(m => m.type == PokemonType.NRM && m.IsStatus);
-            // Anything in here needs to get an effective power rating
-            //var onePowerMoves = availableAddMoves.Where(m => m.EffectivePower == 1);
+            var availableAddMoves = GetAvailibleAddMoves(pokemon.learnSet);
             // Apply signiture move replacement
             // Replace Types
             foreach (var typeReplacement in data.TypeReplacements)
             {
-                var availibleTypeMoves = availableAddMoves.Where(m => IsType(m, typeReplacement.newType) && !pokemon.learnSet.Learns(m.move)).ToList();
-                availibleTypeMoves.Sort((m1, m2) => m1.EffectivePower.CompareTo(m2.EffectivePower));
-                var movesToReplace = pokemon.learnSet.Where(entry => dataT.GetMoveData(entry.move).type == typeReplacement.originalType).ToArray();
+                var availibleTypeMoves = GetAvailibleTypeMoves(availableAddMoves, typeReplacement.newType, pokemon.learnSet);
+                var movesToReplace = GetEntriesOfType(typeReplacement.originalType, pokemon.learnSet);
                 foreach (var entry in movesToReplace)
                 {
-                    if (dontReplace.Contains(entry.move))
-                        continue;
-                    var oldMove = dataT.GetMoveData(entry.move);
-                    if (oldMove.IsOneHitKO)
-                    {
-                        var eligibleMoves = availibleTypeMoves.Where(m => m.IsOneHitKO);
-                        if (eligibleMoves.Count() > 0)
-                        {
-                            entry.move = rand.Choice(eligibleMoves).move;
-                        }
-                        else
-                        {
-                            var newMove = ChooseAttackingMove(availibleTypeMoves, 100, 20);
-                            if (newMove != Move.None)
-                            {
-                                entry.move = newMove;
-                            }
-                        }
-                    }
-                    else if (oldMove.IsStatus)
-                    {
-                        if (oldMove.type == PokemonType.NRM)
-                            continue;
-                        var eligibleMoves = availibleTypeMoves.Where(m => m.IsStatus);
-                        if (eligibleMoves.Count() > 0)
-                        {
-                            entry.move = rand.Choice(eligibleMoves).move;
-                        }
-                        else
-                        {
-                            entry.move = rand.Choice(availableAddMoves.Where(m => m.IsStatus)).move;
-                        }
-                    }
-                    else
-                    {
-                        var newMove = ChooseAttackingMove(availibleTypeMoves, oldMove.EffectivePower, 10);
-                        if (newMove != Move.None)
-                        {
-                            entry.move = newMove;
-                        }
-                    }
-                    availibleTypeMoves.RemoveAll(m => m.move == entry.move);
-                    if (entry.move != oldMove.move)
-                    {
-                        data.MoveReplacements.Add((oldMove.move, entry.move));
-                    }
-                }
-                bool IsAttackingMoveOfReplacementType(LearnSet.Entry entry)
-                {
-                    var moveData = dataT.GetMoveData(entry.move);
-                    if (moveData.IsStatus)
-                        return false;
-                    return IsType(moveData, typeReplacement.newType);
+                    entry.move = ReplaceMove(entry.move, data, ref availibleTypeMoves);
                 }
                 // Pokemon still doesn't have any attacking moves of the replacement type, add some!
-                if (!pokemon.learnSet.Any(IsAttackingMoveOfReplacementType) && !dontAddBonusMovesTo.Contains(pokemon.species))
+                if (!HasAttackingMoveOfType(pokemon.learnSet, typeReplacement.newType, 2, 50))
                 {
                     AddMove(pokemon, 2, 50, 1, 18, data, ref availibleTypeMoves);
+                }
+                if(!HasAttackingMoveOfType(pokemon.learnSet, typeReplacement.newType, 51))
+                {
                     AddMove(pokemon, 51, 120, 22, 99, data, ref availibleTypeMoves);
                 }
             }
-            // Add bonus moves for gained types
-            if (!dontAddBonusMovesTo.Contains(pokemon.species))
+            foreach (var gainedType in data.GainedTypes)
             {
-                foreach (var gainedType in data.GainedTypes)
+                if (data.BonusMoves.Any(entry => IsType(dataT.GetMoveData(entry.move), gainedType)))
+                    continue;
+                // Add moves in at an appropriate level
+                var availibleTypeMoves = GetAvailibleTypeMoves(availableAddMoves, gainedType, pokemon.learnSet);
+                if (!HasAttackingMoveOfType(pokemon.learnSet, gainedType, 2, 50))
                 {
-                    if (data.BonusMoves.Any(entry => IsType(dataT.GetMoveData(entry.move), gainedType)))
-                        continue;
-                    // Add moves in at an appropriate level
-                    var availibleTypeMoves = availableAddMoves.Where(m => IsType(m, gainedType) && !pokemon.learnSet.Learns(m.move)).ToList();
                     AddMove(pokemon, 2, 50, 1, 18, data, ref availibleTypeMoves);
+                }
+                if (!HasAttackingMoveOfType(pokemon.learnSet, gainedType, 51, 95))
+                {
                     AddMove(pokemon, 51, 95, 22, 55, data, ref availibleTypeMoves);
-                    if (rand.RandomBool())
-                    {
-                        AddMove(pokemon, 80, 255, 45, 99, data, ref availibleTypeMoves);
-                    }
-                    else
-                    {
-                        AddMove(pokemon, 0, 1, 1, 99, data, ref availibleTypeMoves);
-                    }
+                }
+                if (rand.RandomBool() && !HasAttackingMoveOfType(pokemon.learnSet, gainedType, 90, 255))
+                {
+                    AddMove(pokemon, 80, 255, 45, 99, data, ref availibleTypeMoves);
+                }
+                else
+                {
+                    AddMove(pokemon, 0, 0, 1, 99, data, ref availibleTypeMoves);
                 }
             }
         }
@@ -727,6 +743,60 @@ namespace PokemonRandomizer.Backend.Randomization
             availibleMoves.RemoveAll(m => m.move == move);
         }
 
+        private Move ReplaceMove(Move move, VariantData data, ref List<MoveData> availibleMoves)
+        {
+            if (dontReplace.Contains(move))
+                return move;
+            var oldMove = dataT.GetMoveData(move);
+            var newMove = Move.None;
+            if (oldMove.HasUndefinedRealPower) // Attempt to swap sheer cold w/ fissure, night shade w/ seismic toss, etc if applicable
+            {
+                IEnumerable<MoveData> eligibleMoves;
+                if (oldMove.IsCounterAttack)
+                {
+                    eligibleMoves = availibleMoves.Where(m => m.IsCounterAttack);
+                }
+                else
+                {
+                    eligibleMoves = availibleMoves.Where(m => m.HasUndefinedRealPower && m.effect == oldMove.effect);
+                }
+                // Actually replace move
+                if (eligibleMoves.Count() > 0)
+                {
+                    newMove = rand.Choice(eligibleMoves).move;
+                }
+                else if (oldMove.EffectivePower != 1)
+                {
+                    newMove = ChooseAttackingMove(availibleMoves, oldMove.EffectivePower, 10);
+                }
+                else if (oldMove.IsOneHitKO)
+                {
+                    newMove = ChooseAttackingMove(availibleMoves, 100, 20);
+                }
+                else // replace with status move
+                {
+                    newMove = ChooseStatusMove(availibleMoves);
+                }
+            }
+            else if (oldMove.IsStatus)
+            {
+                if (oldMove.type == PokemonType.NRM)
+                    return move;
+                newMove = ChooseStatusMove(availibleMoves);
+            }
+            else
+            {
+                newMove = ChooseAttackingMove(availibleMoves, oldMove.EffectivePower, 10);
+            }
+            if(newMove == Move.None || newMove == move)
+            {
+                return move;
+            }
+            availibleMoves.RemoveAll(m => m.move == newMove);
+            data.MoveReplacements.Add((move, newMove));
+            return newMove;
+        }
+
         private static readonly HashSet<(Move move, PokemonType type)> moveTypeOverrides = new HashSet<(Move move, PokemonType type)>()
         {
             (Move.SMOKESCREEN, PokemonType.FIR),
@@ -745,9 +815,9 @@ namespace PokemonRandomizer.Backend.Randomization
             return types.Any(type => move.type == type);
         }
 
-        private Move ChooseAttackingMove(IEnumerable<MoveData> availibleTypeMoves, int oldMovePower, int powerDiffTolerance)
+        private Move ChooseAttackingMove(IEnumerable<MoveData> allMoves, int oldMovePower, int powerDiffTolerance)
         {
-            var nonStatusMoves = availibleTypeMoves.Where(m => !m.IsStatus && !m.IsOneHitKO);
+            var nonStatusMoves = allMoves.Where(m => !m.IsStatus && !m.IsOneHitKO);
             var eligibleMoves = nonStatusMoves.Where(m => m.EffectivePower >= oldMovePower - powerDiffTolerance && m.EffectivePower <= oldMovePower + powerDiffTolerance);
             if (eligibleMoves.Count() > 0)
             {
@@ -768,6 +838,16 @@ namespace PokemonRandomizer.Backend.Randomization
                 }
                 return closestMove;
             }
+        }
+
+        private Move ChooseStatusMove(IEnumerable<MoveData> allMoves)
+        {
+            var eligibleMoves = allMoves.Where(m => m.IsStatus);
+            if (eligibleMoves.Count() > 0)
+            {
+                return rand.Choice(eligibleMoves).move;
+            }
+            return Move.None;
         }
 
         #endregion
