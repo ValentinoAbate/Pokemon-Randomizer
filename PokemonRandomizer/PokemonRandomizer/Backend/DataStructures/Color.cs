@@ -9,13 +9,13 @@ namespace PokemonRandomizer.Backend.DataStructures
             return (c1 * (1 - lerpFactor)) + (c2 * lerpFactor);
         }
 
-        public ushort Value => Math.Max(Math.Max(r, g), b);
+        public int Value => Math.Max(Math.Max(r, g), b);
         public int Hue
         {
             get
             {
-                ushort max = Math.Max(Math.Max(r, g), b);
-                ushort min = Math.Min(Math.Min(r, g), b);
+                int max = Math.Max(Math.Max(r, g), b);
+                int min = Math.Min(Math.Min(r, g), b);
 
                 if (min == max)
                 {
@@ -47,23 +47,30 @@ namespace PokemonRandomizer.Backend.DataStructures
                 return (int)Math.Round(hue);
             }
         }
-        public ushort r;
-        public ushort g;
-        public ushort b;
-        public ushort a;
+        public int r;
+        public int g;
+        public int b;
+        public int a;
 
         public Color(int color, int alpha = 0)
         {
-            r = g = b = (ushort)color;
-            a = (ushort)alpha;
+            r = g = b = color;
+            a = alpha;
         }
 
         public Color(int r, int g, int b, int a)
         {
-            this.r = (ushort)Math.Max(r, 0);
-            this.g = (ushort)Math.Max(g, 0);
-            this.b = (ushort)Math.Max(b, 0);
-            this.a = (ushort)a;
+            this.r = Math.Max(r, 0);
+            this.g = Math.Max(g, 0);
+            this.b = Math.Max(b, 0);
+            this.a = a;
+        }
+
+        public void Clamp(int min, int max)
+        {
+            r = Math.Max(Math.Min(r, max), min);
+            g = Math.Max(Math.Min(g, max), min);
+            b = Math.Max(Math.Min(b, max), min);
         }
 
         public override bool Equals(object obj)

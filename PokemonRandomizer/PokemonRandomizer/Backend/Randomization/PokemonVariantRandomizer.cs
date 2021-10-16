@@ -76,6 +76,7 @@ namespace PokemonRandomizer.Backend.Randomization
             ModifyLearnset(pokemon, settings, variantData);
 
             // Modify Color Palette
+            ModifyPalette(pokemon, settings, variantData);
 
             // Propagate variance to evolutions
             PropagateVariance(pokemon, settings, variantData);
@@ -110,6 +111,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 ModifyLearnset(evolvedPokemon, settings, evoVariantData);
 
                 // Modify Evolution (if applicable)
+                ModifyPalette(evolvedPokemon, settings, evoVariantData);
 
                 // Keep propogating
                 PropagateVariance(evolvedPokemon, settings, evoVariantData);
@@ -852,6 +854,52 @@ namespace PokemonRandomizer.Backend.Randomization
 
         #endregion
 
+        #region Palette
+
+        private static readonly Dictionary<Pokemon, PaletteData> variantPaletteData = new Dictionary<Pokemon, PaletteData>()
+        {
+            { Pokemon.BULBASAUR, new PaletteData(new int[]{ 2, 3, 4}, new int[]{ 11, 12, 13}) }
+        };
+
+        private static readonly Dictionary<PokemonType, TypeColorData> typeColorData = new Dictionary<PokemonType, TypeColorData>()
+        {
+            {PokemonType.FIR, new TypeColorData(new Color(26, 12, 9, 0)) }
+        };
+
+        private void ModifyPalette(PokemonBaseStats pokemon, Settings settings, VariantData data)
+        {
+            var firstVariantType = data.VariantTypes[0];
+            // If we don't have specific palette data or type color data to support this pokemon / type combo, return
+            // Perhaps I should add a fallback for pokemon I haven't done specific work for
+            if (!variantPaletteData.ContainsKey(pokemon.species) || !typeColorData.ContainsKey(firstVariantType))
+                return;
+            var typeData = typeColorData[firstVariantType];
+            var paletteData = variantPaletteData[pokemon.species];
+            ApplyColorChanges(pokemon.palette, paletteData.FirstVariantColorIndices, typeData);
+            if (pokemon.IsSingleTyped)
+            {
+                ApplyColorChanges(pokemon.palette, paletteData.SingleTypeVariantColorIndices, typeData);
+            }
+            else if(data.VariantTypes.Length > 1)
+            {
+                var secondVariantType = data.VariantTypes[1];
+                if (!typeColorData.ContainsKey(secondVariantType))
+                    return;
+                ApplyColorChanges(pokemon.palette, paletteData.SecondVariantColorIndices, typeColorData[secondVariantType]);
+            }
+        }
+
+        private void ApplyColorChanges(Palette palette, int[] indices, TypeColorData typeData)
+        {
+            foreach (int colorIndex in indices)
+            {
+                var color = palette.Colors[colorIndex];
+                palette.Colors[colorIndex] = typeData.Colors[color.Value];
+            }
+        }
+
+        #endregion
+
         private TypeProfile ComputeTypeProfile(PokemonType primary, PokemonType secondary)
         {
             bool primaryTypeSpecial = IsSpecial(primary);
@@ -932,6 +980,42 @@ namespace PokemonRandomizer.Backend.Randomization
 
             public List<(Move oldMove, Move newMove)> MoveReplacements { get; } = new List<(Move oldMove, Move newMove)>();
             public List<LearnSet.Entry> BonusMoves { get; } = new List<LearnSet.Entry>();
+        }
+
+        private class PaletteData
+        {
+            public int[] FirstVariantColorIndices { get; }
+            public int[] SingleTypeVariantColorIndices { get; }
+            public int[] SecondVariantColorIndices { get; }
+
+            public PaletteData(int[] firstColors, int[] singleOrSecondColors = null)
+            {
+                FirstVariantColorIndices = firstColors;
+                SingleTypeVariantColorIndices = SecondVariantColorIndices = singleOrSecondColors ?? Array.Empty<int>();
+            }
+
+            public PaletteData(int[] firstColors, int[] singleColors, int[] secondColors)
+            {
+                FirstVariantColorIndices = firstColors;
+                SingleTypeVariantColorIndices = singleColors;
+                SecondVariantColorIndices = secondColors;
+            }
+        }
+
+        private class TypeColorData
+        {
+            public Color[] Colors { get; } = new Color[32];
+            public TypeColorData(Color baseColor)
+            {
+                int value = baseColor.Value;
+                Colors[value] = baseColor;
+                for (int i = 0; i < Colors.Length; ++i)
+                {
+                    int offset = i - value;
+                    Colors[i] = new Color(baseColor.r + offset, baseColor.g + offset, baseColor.b + offset, baseColor.a);
+                    Colors[i].Clamp(0, 31);
+                }
+            }
         }
 
         public class Settings

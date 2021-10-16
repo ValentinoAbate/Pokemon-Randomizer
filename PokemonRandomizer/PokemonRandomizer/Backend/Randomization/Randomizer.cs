@@ -83,7 +83,7 @@ namespace PokemonRandomizer.Backend.Randomization
 
             #region Move Definitions
 
-            void SetAccuracyAndPower(MoveData data, byte power, byte acc)
+            static void SetAccuracyAndPower(MoveData data, byte power, byte acc)
             {
                 data.power = power;
                 data.accuracy = acc;
