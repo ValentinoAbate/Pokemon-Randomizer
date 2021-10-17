@@ -337,7 +337,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 {
                     pokemon.learnSet.RemoveWhere(m => data.GetMoveData(m.move).IsSelfdestruct);
                 }
-                if(settings.AddMoves && pokemon.IsBasic && rand.RollSuccess(settings.AddMovesChance))
+                if(settings.AddMoves && pokemon.IsBasic && !pokemon.IsVariant && rand.RollSuccess(settings.AddMovesChance))
                 {
                     int numMoves = rand.RandomGaussianPositiveNonZeroInt(settings.NumMovesMean, settings.NumMovesStdDeviation);
                     bonusMoveGenerator.GenerateBonusMoves(pokemon, numMoves, settings.AddMoveSourceWeights);

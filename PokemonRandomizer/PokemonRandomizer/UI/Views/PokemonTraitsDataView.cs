@@ -24,7 +24,7 @@ namespace PokemonRandomizer.UI.Views
             tabs.SetValue(Grid.RowProperty, 0);
             grid.Children.Add(tabs);
 
-            tabs.Items.Add(CreateTypesTab(model));
+            //tabs.Items.Add(CreateTypesTab(model));
             tabs.Items.Add(CreateEvolutionTab(model));
             tabs.Items.Add(CreateLearnsetsTab(model));
             tabs.Items.Add(CreateCatchRateTab(model));
