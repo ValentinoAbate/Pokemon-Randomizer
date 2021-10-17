@@ -1,4 +1,5 @@
 ﻿using System;
+using PokemonRandomizer.Backend.EnumTypes;
 
 namespace PokemonRandomizer.Backend.Writing
 {
@@ -8,9 +9,11 @@ namespace PokemonRandomizer.Backend.Writing
     public class Gen3MapWriter
     {
         private readonly Gen3ScriptWriter scriptWriter;
-        public Gen3MapWriter(Gen3ScriptWriter scriptWriter)
+        private readonly Func<Item, Item> remapItem;
+        public Gen3MapWriter(Gen3ScriptWriter scriptWriter, Func<Item, Item> remapItem)
         {
             this.scriptWriter = scriptWriter;
+            this.remapItem = remapItem;
         }
         /// <summary>
         /// Write the maps back to the file. Currently edits in place, and does not support exapansion of Map Bank Table.
@@ -167,7 +170,7 @@ namespace PokemonRandomizer.Backend.Writing
                     rom.WriteByte(sign.unknown2);
                     if (sign.IsHiddenItem)
                     {
-                        rom.WriteUInt16((int)sign.hiddenItem);
+                        rom.WriteUInt16((int)remapItem(sign.hiddenItem));
                         rom.WriteByte(sign.hiddenID);
                         rom.WriteByte(sign.hiddenItemAmount);
                     }
