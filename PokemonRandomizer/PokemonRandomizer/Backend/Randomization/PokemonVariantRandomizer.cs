@@ -858,34 +858,80 @@ namespace PokemonRandomizer.Backend.Randomization
 
         private static readonly Dictionary<Pokemon, PaletteData> variantPaletteData = new Dictionary<Pokemon, PaletteData>()
         {
-            { Pokemon.BULBASAUR, new PaletteData(new int[]{ 2, 3, 4}, new int[]{ 11, 12, 13}) }
+            { Pokemon.BULBASAUR, new PaletteData(new int[]{ 2, 3, 4 }, new int[]{ 11, 12, 13 }) }, // Needs outline check
+            { Pokemon.IVYSAUR, new PaletteData(new int[]{ 6, 7, 10, 12 }, new int[]{ 2, 8, 9, }, null,  new int[]{ 3, 4, 5, 13, 14, 15 }) },
         };
 
         private static readonly Dictionary<PokemonType, TypeColorData> typeColorData = new Dictionary<PokemonType, TypeColorData>()
         {
-            {PokemonType.FIR, new TypeColorData(new Color(26, 12, 9, 0)) }
+            {PokemonType.FIR, new TypeColorData(new Color(26, 9, 9, 0)) },
+            {PokemonType.GRS, new TypeColorData(new Color(13, 25, 8, 0)) },
+            {PokemonType.WAT, new TypeColorData(new Color(16, 20, 28, 0)) },
+            {PokemonType.ICE, new TypeColorData(new Color(21, 26, 31, 0)) },
+            {PokemonType.FLY, new TypeColorData(new Color(25, 26, 27, 0)) },
+            {PokemonType.ELE, new TypeColorData(new Color(31, 31, 15, 0)) },
+            {PokemonType.BUG, new TypeColorData(new Color(23, 31, 14, 0)) },
+            {PokemonType.GRD, new TypeColorData(new Color(27, 24, 4, 0)) },
+            {PokemonType.RCK, new TypeColorData(new Color(12, 13, 4, 0)) },
+            {PokemonType.STL, new TypeColorData(new Color(23, 25, 24, 0)) },
+            {PokemonType.DRK, new TypeColorData(new Color(11, 10, 10, 0)) },
+            {PokemonType.PSN, new TypeColorData(new Color(23, 15, 22, 0)) },
+            {PokemonType.GHO, new TypeColorData(new Color(10, 6, 11, 0)) },
+            {PokemonType.PSY, new TypeColorData(new Color(22, 14, 28, 0)) }, // 22, 16, 26 
+            {PokemonType.FTG, new TypeColorData(new Color(20, 15, 11, 0)) },
+            {PokemonType.DRG, new TypeColorData(new Color(10, 20, 26, 0)) },
+            {PokemonType.NRM, new TypeColorData(new Color(21, 15, 11, 0)) } // 31, 26, 22
         };
+
+        private static readonly int[] allIndices = new int[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
 
         private void ModifyPalette(PokemonBaseStats pokemon, Settings settings, VariantData data)
         {
-            var firstVariantType = data.VariantTypes[0];
             // If we don't have specific palette data or type color data to support this pokemon / type combo, return
             // Perhaps I should add a fallback for pokemon I haven't done specific work for
-            if (!variantPaletteData.ContainsKey(pokemon.species) || !typeColorData.ContainsKey(firstVariantType))
+            if (!variantPaletteData.ContainsKey(pokemon.species))
+            {
+                ApplyColorChanges(pokemon.palette, allIndices, typeColorData[data.VariantTypes[0]]);
                 return;
+            }
+            ApplyColorsPrimarySecondary(pokemon, data);
+        }
+
+        private void ApplyColorsPrimarySecondary(PokemonBaseStats pokemon, VariantData data)
+        {
+            var firstVariantType = data.VariantTypes[0];
             var typeData = typeColorData[firstVariantType];
             var paletteData = variantPaletteData[pokemon.species];
-            ApplyColorChanges(pokemon.palette, paletteData.FirstVariantColorIndices, typeData);
             if (pokemon.IsSingleTyped)
             {
-                ApplyColorChanges(pokemon.palette, paletteData.SingleTypeVariantColorIndices, typeData);
+                ApplyColorChanges(pokemon.palette, paletteData.PrimaryVariantColorIndices, typeData);
+                ApplyColorChanges(pokemon.palette, paletteData.SecondaryVariantColorIndices, typeData);
             }
-            else if(data.VariantTypes.Length > 1)
+            else
             {
-                var secondVariantType = data.VariantTypes[1];
-                if (!typeColorData.ContainsKey(secondVariantType))
-                    return;
-                ApplyColorChanges(pokemon.palette, paletteData.SecondVariantColorIndices, typeColorData[secondVariantType]);
+                if (pokemon.PrimaryType == firstVariantType)
+                {
+                    ApplyColorChanges(pokemon.palette, paletteData.PrimaryVariantColorIndices, typeData);
+                }
+                else
+                {
+                    ApplyColorChanges(pokemon.palette, paletteData.SecondaryVariantColorIndices, typeData);
+                }
+                if (data.VariantTypes.Length > 1)
+                {
+                    var secondVariantType = data.VariantTypes[1];
+                    typeData = typeColorData[secondVariantType];
+                    if (!typeColorData.ContainsKey(secondVariantType))
+                        return;
+                    if (pokemon.PrimaryType == secondVariantType)
+                    {
+                        ApplyColorChanges(pokemon.palette, paletteData.PrimaryVariantColorIndices, typeData);
+                    }
+                    else
+                    {
+                        ApplyColorChanges(pokemon.palette, paletteData.SecondaryVariantColorIndices, typeData);
+                    }
+                }
             }
         }
 
@@ -984,22 +1030,19 @@ namespace PokemonRandomizer.Backend.Randomization
 
         private class PaletteData
         {
-            public int[] FirstVariantColorIndices { get; }
-            public int[] SingleTypeVariantColorIndices { get; }
-            public int[] SecondVariantColorIndices { get; }
+            public int[] PrimaryVariantColorIndices { get; }
+            public int[] PrimaryVariantColorIndices2 { get; }
+            public int[] SecondaryVariantColorIndices { get; }
+            public int[] SecondaryVariantColorIndices2 { get; }
 
-            public PaletteData(int[] firstColors, int[] singleOrSecondColors = null)
+            public PaletteData(int[] primaryColorIndices, int[] secondaryColorIndices = null, int[] primaryColorIndices2 = null, int[] secondaryColorIndices2 = null)
             {
-                FirstVariantColorIndices = firstColors;
-                SingleTypeVariantColorIndices = SecondVariantColorIndices = singleOrSecondColors ?? Array.Empty<int>();
+                PrimaryVariantColorIndices = primaryColorIndices;
+                PrimaryVariantColorIndices2 = primaryColorIndices2 ?? Array.Empty<int>();
+                SecondaryVariantColorIndices = secondaryColorIndices ?? Array.Empty<int>();
+                SecondaryVariantColorIndices2 = secondaryColorIndices2 ?? Array.Empty<int>();
             }
 
-            public PaletteData(int[] firstColors, int[] singleColors, int[] secondColors)
-            {
-                FirstVariantColorIndices = firstColors;
-                SingleTypeVariantColorIndices = singleColors;
-                SecondVariantColorIndices = secondColors;
-            }
         }
 
         private class TypeColorData
