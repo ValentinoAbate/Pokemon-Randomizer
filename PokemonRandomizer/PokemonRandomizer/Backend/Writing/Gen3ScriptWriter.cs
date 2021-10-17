@@ -8,10 +8,10 @@ namespace PokemonRandomizer.Backend.Writing
     using Scripting.GenIII;
     public class Gen3ScriptWriter
     {
-        private readonly Func<Item, Item> itemRemap;
-        public Gen3ScriptWriter(Func<Item, Item> itemRemap)
+        private readonly Func<Item, Item> remapItem;
+        public Gen3ScriptWriter(Func<Item, Item> remapItem)
         {
-            this.itemRemap = itemRemap;
+            this.remapItem = remapItem;
         }
         public void Write(Script script, Rom rom, int offset, RomMetadata metadata)
         {
@@ -38,7 +38,7 @@ namespace PokemonRandomizer.Backend.Writing
                     case GiveItemCommand giveItem:
                         rom.WriteByte(Gen3Command.copyvarifnotzero);
                         rom.WriteUInt16(Gen3Command.itemTypeVar);
-                        rom.WriteUInt16((int)itemRemap(giveItem.item));
+                        rom.WriteUInt16((int)remapItem(giveItem.item));
                         rom.WriteByte(Gen3Command.copyvarifnotzero);
                         rom.WriteUInt16(Gen3Command.itemQuantityVar);
                         rom.WriteUInt16(giveItem.amount);
@@ -49,7 +49,7 @@ namespace PokemonRandomizer.Backend.Writing
                         rom.WriteByte(Gen3Command.givePokemon);
                         rom.WriteUInt16((int)givePokemon.pokemon);
                         rom.WriteByte(givePokemon.level);
-                        rom.WriteUInt16((int)itemRemap(givePokemon.heldItem));
+                        rom.WriteUInt16((int)remapItem(givePokemon.heldItem));
                         rom.SetBlock(9, 0x00);
                         break;
                     case GiveEggCommand giveEggCommand:
@@ -95,7 +95,7 @@ namespace PokemonRandomizer.Backend.Writing
                 rom.SaveAndSeekOffset(command.shopOffset);
                 foreach(var item in command.shop.items)
                 {
-                    rom.WriteUInt16((int)itemRemap(item));
+                    rom.WriteUInt16((int)remapItem(item));
                 }
                 rom.WriteUInt16((int)Item.None); // Add the terminator
                 rom.LoadOffset();
@@ -106,7 +106,7 @@ namespace PokemonRandomizer.Backend.Writing
                 var dataBlock = new Rom((command.shop.items.Count + 1) * 2, rom.FreeSpaceByte);
                 foreach (var item in command.shop.items)
                 {
-                    dataBlock.WriteUInt16((int)itemRemap(item));
+                    dataBlock.WriteUInt16((int)remapItem(item));
                 }
                 dataBlock.WriteUInt16((int)Item.None);
                 // Attempt to write shop data block in free space
