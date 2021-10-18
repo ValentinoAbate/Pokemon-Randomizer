@@ -12,11 +12,17 @@ namespace PokemonRandomizer.Backend.Randomization
         public string Seed { get; }
         public int IntSeed { get; }
 
-        public Random() : this(Environment.TickCount.ToString()) { }
+        public Random() : this(Environment.TickCount) { }
+        public Random(int seed)
+        {
+            Seed = seed.ToString();
+            IntSeed = seed;
+            rand = new System.Random(IntSeed);
+        }
         public Random(string seed)
         {
             Seed = seed;
-            IntSeed = seed.GetHashCode();
+            IntSeed = int.TryParse(seed, out int intSeed) ? intSeed : seed.GetHashCode();
             rand = new System.Random(IntSeed);
         }
 
