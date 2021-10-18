@@ -79,6 +79,13 @@ IDEAS //////////////////////////////////////////////////////////////////////////
 	- Pokemon are given to the player in poke balls in the starting town
 	- Pokemon are optionally given to the player as in-game trades in the first town (allowing the player to give custom IV values and nicknames, etc)?
 		- May cause boosted exp which could be undesirable (may be some way to reset OT)
+- Item Randomization
+	- Add a "ban useless items" setting instead of ban mail
+	- The list of "useless"/banned items items will default to contain:
+		- Mail
+		- Scarves
+		- Shoal Items (salt / shell)
+	- The list can be custom configured in the randomizer settings part though!
 - Misc / Minor / Polish
 	- Raining routes should auto-water berries
 	- Change the devon goods guy's shroomish text into something that is in that area

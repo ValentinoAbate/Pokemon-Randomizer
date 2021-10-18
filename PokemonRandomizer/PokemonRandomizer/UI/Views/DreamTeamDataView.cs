@@ -54,8 +54,7 @@ namespace PokemonRandomizer.UI.Views
         { 
             var stack = CreateMainStack();
             stack.Header("Dream Team");
-            stack.Add(new Label() { Content = "Dream Team will put 6 Pokemon in the first route of the game. You can select custom pokemon, or randomly generate a team!" });
-            stack.Add(new Separator());
+            stack.Description("Dream Team will put 6 Pokemon in the first route of the game. You can select custom pokemon, or randomly generate a team!");
             var optionCb = stack.Add(new EnumComboBoxUI<DreamTeamSetting>("Dream Team Strategy", DreamTeamOptionDropdown, model.DreamTeamOption));
 
             // Custom Team UI

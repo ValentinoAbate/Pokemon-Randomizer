@@ -24,6 +24,15 @@ namespace PokemonRandomizer.UI
             p.Add(new Label { Content = content }, new Separator());
         }
 
+        public static void Description(this Panel p, params string[] content)
+        {
+            foreach(var line in content)
+            {
+                p.Add(new Label() { Content = line });
+            }
+            p.Add(new Separator());
+        }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T Add<T>(this ItemsControl control, T element) where T : UIElement
         {

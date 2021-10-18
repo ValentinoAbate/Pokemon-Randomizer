@@ -9,27 +9,15 @@ namespace PokemonRandomizer.UI.Views
     using Models;
     using static PokemonRandomizer.Settings;
     using CatchRateOption = Settings.CatchRateOption;
-    public class PokemonTraitsDataView : GroupDataView<PokemonTraitsModel>
+    public class PokemonTraitsDataView : DataView<PokemonTraitsModel>
     {
-        public override PokemonTraitsModel CloneModel(PokemonTraitsModel model)
+
+        public PokemonTraitsDataView(PokemonTraitsModel model)
         {
-            throw new NotImplementedException();
-        }
-
-        public override Panel CreateModelView(PokemonTraitsModel model)
-        {
-            var grid = new Grid();
-            grid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(1, GridUnitType.Star) });
-            var tabs = new TabControl();
-            tabs.SetValue(Grid.RowProperty, 0);
-            grid.Children.Add(tabs);
-
-            //tabs.Items.Add(CreateTypesTab(model));
-            tabs.Items.Add(CreateEvolutionTab(model));
-            tabs.Items.Add(CreateLearnsetsTab(model));
-            tabs.Items.Add(CreateCatchRateTab(model));
-
-            return grid;
+            var tabs = CreateMainTabControl();
+            tabs.Add(CreateEvolutionTab(model));
+            tabs.Add(CreateLearnsetsTab(model));
+            tabs.Add(CreateCatchRateTab(model));
         }
 
         private TabItem CreateTypesTab(PokemonTraitsModel model)

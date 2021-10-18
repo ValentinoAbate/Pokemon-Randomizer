@@ -8,11 +8,13 @@ namespace PokemonRandomizer.AppSettings
     using Backend.EnumTypes;
     using UI.Models;
     using PokemonRandomizer.Backend.DataStructures;
+    using static PokemonRandomizer.Backend.Randomization.PokemonVariantRandomizer;
 
     public class AppSettings : HardCodedSettings
     {
         public RomMetadata Metadata { get; set; }
         private TmHmTutorModel tmHmTutorData;
+        private VariantPokemonDataModel variantData;
         private PokemonTraitsModel pokemonData;
         private InGameTradesDataModel tradeData;
         private StartersDataModel starterData;
@@ -34,6 +36,7 @@ namespace PokemonRandomizer.AppSettings
             tradeData = specialPokemonData.TradeData;
             giftData = specialPokemonData.GiftData;
             dreamTeamData = specialPokemonData.DreamTeamData;
+            variantData = data.VariantPokemonData;
             tmHmTutorData = data.TmHmTutorData;
             pokemonData = data.PokemonData;
             wildEncounterData = data.WildEncounterData;
@@ -67,6 +70,27 @@ namespace PokemonRandomizer.AppSettings
         #endregion
 
         #region Pokemon Base Stats
+
+        #region Variants
+
+        public static WeightedSet<TypeTransformation> SingleTypeVariantTransformationDefaultWeights { get; } = new WeightedSet<TypeTransformation>()
+        {
+            {TypeTransformation.GainSecondaryType, 0.40f},
+            {TypeTransformation.PrimaryTypeReplacement, 0.55f},
+            {TypeTransformation.DoubleTypeReplacement, 0.05f},
+        };
+
+        public static  WeightedSet<TypeTransformation> DualTypeVariantTransformationDefaultWeights { get; } = new WeightedSet<TypeTransformation>()
+        {
+            {TypeTransformation.PrimaryTypeReplacement, 0.35f},
+            {TypeTransformation.SecondaryTypeReplacement, 0.5f},
+            {TypeTransformation.DoubleTypeReplacement, 0.075f},
+            {TypeTransformation.TypeLoss, 0.025f},
+        };
+
+        public override double VariantChance => RandomChance(variantData.CreateVariants, variantData.VariantChance);
+
+        #endregion
 
         #region Typing
         public override double SingleTypeRandChance => RandomChance(pokemonData.RandomizeSingleType, pokemonData.SingleTypeRandChance);

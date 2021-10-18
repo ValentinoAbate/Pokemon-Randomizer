@@ -64,17 +64,14 @@
 
             </TabItem>
 
+            <TabItem Name="VariantPokemonView" Header="Variant Pokemon">
+
+            </TabItem>
+
             <!-- Pokemon Traits -->
 
-            <TabItem Header="Pokemon Traits">
-                <Grid Name="PokemonTraitsGrid">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
-                    <DockPanel Name="TraitsGroupsPanel" Grid.Column="0" Width="105"/>
-                    <DockPanel Name="TraitsViewPanel" Grid.Column="1"/>
-                </Grid>
+            <TabItem Name="PokemonTraitsView" Header="Pokemon Traits">
+
             </TabItem>
 
             <!--Starter Pokemon-->

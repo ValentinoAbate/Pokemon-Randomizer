@@ -176,9 +176,8 @@ namespace PokemonRandomizer
         private void InitializeUI()
         {
             RandomizerView.Content = new RandomizerDataView(AppData.RandomizerData);
-            // Create pokemon traits UI
-            var pokemonTraitsGroup = new GroupUI<PokemonTraitsDataView, PokemonTraitsModel>(TraitsGroupsPanel, TraitsViewPanel, AppData.PokemonData);
-            pokemonTraitsGroup.SetAddButtonVisibility(Visibility.Hidden);
+            VariantPokemonView.Content = new VariantPokemonDataView(AppData.VariantPokemonData);
+            PokemonTraitsView.Content = new PokemonTraitsDataView(AppData.PokemonData);
             TmHmTutorView.Content = new TmHmTutorDataView(AppData.TmHmTutorData);
             WildPokemonView.Content = new WildEncounterDataView(AppData.WildEncounterData);
             var trainerTraitsGroup = new GroupUI<TrainerDataView, TrainerDataModel>(TrainerGroups, TrainerView, AppData.TrainerDataModels);
