@@ -106,6 +106,9 @@ namespace PokemonRandomizer.Backend.Randomization
                 evoVariantData.MoveReplacements.AddRange(data.MoveReplacements);
                 evoVariantData.BonusMoves.AddRange(data.BonusMoves);
 
+                if (evoVariantData.TransformationType == TypeTransformation.None)
+                    continue;
+
                 ModifyBaseStats(evolvedPokemon, settings, evoVariantData);
 
                 ModifyLearnset(evolvedPokemon, settings, evoVariantData);
@@ -371,6 +374,11 @@ namespace PokemonRandomizer.Backend.Randomization
             if (settings.SafeWonderGuard)
             {
                 WonderGuardFix(pokemon);
+            }
+            if (evolvedPokemon.PrimaryType == evolvedPokemon.OriginalPrimaryType && evolvedPokemon.SecondaryType == evolvedPokemon.OriginalSecondaryType)
+            {
+                Logger.main.Error($"None transformation type detected for {pokemon.Name} -> {evolvedPokemon.Name}");
+                return TypeTransformation.None;
             }
             return newTransformationType;
         }
@@ -861,6 +869,8 @@ namespace PokemonRandomizer.Backend.Randomization
         {
             { Pokemon.BULBASAUR, new PaletteData(new int[]{ 2, 3, 4 }, new int[]{ 11, 12, 13 }) }, // Needs outline check
             { Pokemon.IVYSAUR, new PaletteData(new int[]{ 6, 7, 10, 12 }, new int[]{ 2, 8, 9, }, null,  new int[]{ 3, 4, 5, 13, 14, 15 }) },
+            // 1 is a shared outline color
+            { Pokemon.VENUSAUR, new PaletteData(new int[]{ 1, 2, 3, 4 }, new int[]{ 10, 13, 14, }, null,  new int[]{ 5, 6, 8, 9 }) },
         };
 
         private static readonly Dictionary<PokemonType, TypeColorData> typeColorData = new Dictionary<PokemonType, TypeColorData>()
@@ -875,9 +885,9 @@ namespace PokemonRandomizer.Backend.Randomization
             {PokemonType.GRD, new TypeColorData(new Color(27, 24, 4, 0)) },
             {PokemonType.RCK, new TypeColorData(new Color(12, 13, 4, 0)) },
             {PokemonType.STL, new TypeColorData(new Color(23, 25, 24, 0)) },
-            {PokemonType.DRK, new TypeColorData(new Color(11, 10, 10, 0)) },
+            {PokemonType.DRK, new TypeColorData(new Color(11, 10, 10, 0)) { ValueOffset = -7 } },
             {PokemonType.PSN, new TypeColorData(new Color(23, 15, 22, 0)) },
-            {PokemonType.GHO, new TypeColorData(new Color(10, 6, 11, 0)) },
+            {PokemonType.GHO, new TypeColorData(new Color(10, 6, 11, 0)) { ValueOffset = -3 }},
             {PokemonType.PSY, new TypeColorData(new Color(22, 14, 28, 0)) }, // 22, 16, 26 
             {PokemonType.FTG, new TypeColorData(new Color(20, 15, 11, 0)) },
             {PokemonType.DRG, new TypeColorData(new Color(10, 20, 26, 0)) },
@@ -888,6 +898,8 @@ namespace PokemonRandomizer.Backend.Randomization
 
         private void ModifyPalette(PokemonBaseStats pokemon, Settings settings, VariantData data)
         {
+            if (data.TransformationType == TypeTransformation.None)
+                return;
             // If we don't have specific palette data or type color data to support this pokemon / type combo, return
             // Perhaps I should add a fallback for pokemon I haven't done specific work for
             if (!variantPaletteData.ContainsKey(pokemon.species))
@@ -905,18 +917,18 @@ namespace PokemonRandomizer.Backend.Randomization
             var paletteData = variantPaletteData[pokemon.species];
             if (pokemon.IsSingleTyped)
             {
-                ApplyColorChanges(pokemon.palette, paletteData.PrimaryVariantColorIndices, typeData);
-                ApplyColorChanges(pokemon.palette, paletteData.SecondaryVariantColorIndices, typeData);
+                ApplyColorChanges(pokemon.palette, paletteData.PrimaryVariantColorIndices, paletteData.PrimaryVariantColorIndices2, typeData);
+                ApplyColorChanges(pokemon.palette, paletteData.SecondaryVariantColorIndices, paletteData.SecondaryVariantColorIndices2, typeData);
             }
             else
             {
                 if (pokemon.PrimaryType == firstVariantType)
                 {
-                    ApplyColorChanges(pokemon.palette, paletteData.PrimaryVariantColorIndices, typeData);
+                    ApplyColorChanges(pokemon.palette, paletteData.PrimaryVariantColorIndices, paletteData.PrimaryVariantColorIndices2, typeData);
                 }
                 else
                 {
-                    ApplyColorChanges(pokemon.palette, paletteData.SecondaryVariantColorIndices, typeData);
+                    ApplyColorChanges(pokemon.palette, paletteData.SecondaryVariantColorIndices, paletteData.SecondaryVariantColorIndices2, typeData);
                 }
                 if (data.VariantTypes.Length > 1)
                 {
@@ -926,13 +938,27 @@ namespace PokemonRandomizer.Backend.Randomization
                         return;
                     if (pokemon.PrimaryType == secondVariantType)
                     {
-                        ApplyColorChanges(pokemon.palette, paletteData.PrimaryVariantColorIndices, typeData);
+                        ApplyColorChanges(pokemon.palette, paletteData.PrimaryVariantColorIndices, paletteData.PrimaryVariantColorIndices2, typeData);
                     }
                     else
                     {
-                        ApplyColorChanges(pokemon.palette, paletteData.SecondaryVariantColorIndices, typeData);
+                        ApplyColorChanges(pokemon.palette, paletteData.SecondaryVariantColorIndices, paletteData.SecondaryVariantColorIndices2, typeData);
                     }
                 }
+            }
+        }
+
+        private void ApplyColorChanges(Palette palette, int[] indices, int[] secondaryIndices, TypeColorData typeData)
+        {
+            foreach (int colorIndex in indices)
+            {
+                var color = palette.Colors[colorIndex];
+                palette.Colors[colorIndex] = typeData.GetColor(color.Value);
+            }
+            foreach (int colorIndex in secondaryIndices)
+            {
+                var color = palette.Colors[colorIndex];
+                palette.Colors[colorIndex] = typeData.HasSecondaryColors ? typeData.GetSecondaryColor(color.Value) : typeData.GetColor(color.Value);
             }
         }
 
@@ -941,7 +967,7 @@ namespace PokemonRandomizer.Backend.Randomization
             foreach (int colorIndex in indices)
             {
                 var color = palette.Colors[colorIndex];
-                palette.Colors[colorIndex] = typeData.Colors[color.Value];
+                palette.Colors[colorIndex] = typeData.GetColor(color.Value);
             }
         }
 
@@ -1048,17 +1074,42 @@ namespace PokemonRandomizer.Backend.Randomization
 
         private class TypeColorData
         {
-            public Color[] Colors { get; } = new Color[32];
+            private const int numColors = 32;
+            public bool HasSecondaryColors => SecondaryColors.Length > 0;
+            public int ValueOffset { get; set; } = 0;
+            private Color[] Colors { get; }
+            private Color[] SecondaryColors { get; }
             public TypeColorData(Color baseColor)
             {
+                Colors = GenerateColorAtAllValues(baseColor);
+                SecondaryColors = Array.Empty<Color>();
+            }
+
+            public TypeColorData(Color baseColor, Color secondaryColor)
+            {
+                Colors = GenerateColorAtAllValues(baseColor);
+                SecondaryColors = GenerateColorAtAllValues(secondaryColor);
+            }
+
+            public Color GetColor(int value) => GetColor(Colors, value);
+            public Color GetSecondaryColor(int value) => GetColor(Colors, value);
+
+            private Color GetColor(Color[] colors, int value)
+            {
+                return colors[Math.Max(Math.Min(value + ValueOffset, colors.Length - 1), 0)];
+            }
+
+            private Color[] GenerateColorAtAllValues(Color baseColor)
+            {
                 int value = baseColor.Value;
-                Colors[value] = baseColor;
-                for (int i = 0; i < Colors.Length; ++i)
+                var colors = new Color[numColors];
+                for (int i = 0; i < colors.Length; ++i)
                 {
                     int offset = i - value;
-                    Colors[i] = new Color(baseColor.r + offset, baseColor.g + offset, baseColor.b + offset, baseColor.a);
-                    Colors[i].Clamp(0, 31);
+                    colors[i] = new Color(baseColor.r + offset, baseColor.g + offset, baseColor.b + offset, baseColor.a);
+                    colors[i].Clamp(0, 31);
                 }
+                return colors;
             }
         }
 
