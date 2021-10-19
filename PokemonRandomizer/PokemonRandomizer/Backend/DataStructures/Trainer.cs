@@ -141,6 +141,14 @@ namespace PokemonRandomizer.Backend.DataStructures
             rom.LoadOffset();
         }
 
+        public void EnsureSafeBattleType()
+        {
+            if(pokemon.Length <= 1)
+            {
+                isDoubleBattle = false;
+            }
+        }
+
         public override string ToString()
         {
             return Class + " " + name;

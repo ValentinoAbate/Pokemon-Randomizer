@@ -71,7 +71,9 @@ namespace PokemonRandomizer.Backend.Randomization
             // Set item stock (if applicable)
             // Set Battle Type
             if (rand.RollSuccess(settings.BattleTypeRandChance))
+            {
                 trainer.isDoubleBattle = rand.RollSuccess(settings.DoubleBattleChance);
+            }
             // Set pokemon
             if (rand.RollSuccess(settings.PokemonRandChance))
             {
@@ -81,8 +83,7 @@ namespace PokemonRandomizer.Backend.Randomization
             if (safe)
             {
                 // Set 1-pokemon battle to solo if appropriate
-                if (trainer.pokemon.Length == 1)
-                    trainer.isDoubleBattle = false;
+                trainer.EnsureSafeBattleType();
             }
         }
 
@@ -98,28 +99,28 @@ namespace PokemonRandomizer.Backend.Randomization
             // Battle Type
             if (settings.BattleTypeStrategy == TrainerSettings.BattleTypePcgStrategy.None)
             {
-                for (int i = 1; i < battles.Count; i++)
+                foreach (var battle in battles)
                 {
                     if (rand.RollSuccess(settings.BattleTypeRandChance))
                     {
-                        battles[i].isDoubleBattle = rand.RollSuccess(settings.DoubleBattleChance);
+                        battle.isDoubleBattle = rand.RollSuccess(settings.DoubleBattleChance);
                     }
                 }
             }
             else if (settings.BattleTypeStrategy == TrainerSettings.BattleTypePcgStrategy.KeepSameType)
             {
-                for (int i = 1; i < battles.Count; i++)
+                foreach (var battle in battles)
                 {
-                    battles[i].isDoubleBattle = firstBattle.isDoubleBattle;
+                    battle.isDoubleBattle = firstBattle.isDoubleBattle;
                 }
             }
 
             // Pokemon
             if (settings.PokemonStrategy == TrainerSettings.PokemonPcgStrategy.None)
             {
-                for (int i = 1; i < battles.Count; i++)
+                foreach (var battle in battles)
                 {
-                    RandomizeTrainerPokemon(battles[i], pokemonSet, pkmnSettings);
+                    RandomizeTrainerPokemon(battle, pokemonSet, pkmnSettings);
                 }
             }
             else if (settings.PokemonStrategy == TrainerSettings.PokemonPcgStrategy.KeepAce)
@@ -164,11 +165,9 @@ namespace PokemonRandomizer.Backend.Randomization
 
             foreach (var battle in battles)
             {
-                if (battle.pokemon.Length <= 1)
-                    battle.isDoubleBattle = false;
+                battle.EnsureSafeBattleType();
             }
-            if (firstBattle.pokemon.Length <= 1)
-                firstBattle.isDoubleBattle = false;
+            firstBattle.EnsureSafeBattleType();
         }
 
         #endregion

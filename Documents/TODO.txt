@@ -160,8 +160,6 @@ FIXES //////////////////////////////////////////////////////////////////////////
 	- Still an issue, but fixed in smart moveset generation. Currently no fix for default movesets
 - Emerald post-battle snow fix
 - TM Compat and Learnset generation could be dependent on each other
-- Weird hiker man isn't becoming a double battle
-- Second (optional) rival battle isn't becoming a double battle
 - Potentially: write catching tut on emerald has some differences from clean ROMs (see diff9)
 - Fix professor Oak's aides for National Dex mode:
 	- https://www.reddit.com/r/PokemonROMhacks/comments/ew7bl3/fire_red_prof_oak_aides_check_national_dex/
