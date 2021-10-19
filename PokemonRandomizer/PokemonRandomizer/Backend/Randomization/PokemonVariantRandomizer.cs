@@ -213,7 +213,8 @@ namespace PokemonRandomizer.Backend.Randomization
                         evolvedPokemon.SecondaryType = pokemon.SecondaryType;
                         if (evolvedPokemon.IsSingleTyped)
                         {
-                            newTransformationType = TypeTransformation.None;
+                            evolvedPokemon.PrimaryType = pokemon.PrimaryType;
+                            newTransformationType = TypeTransformation.GainPrimaryType;
                         }
                     }
                     else if (data.TransformationType == TypeTransformation.DoubleTypeReplacement)
