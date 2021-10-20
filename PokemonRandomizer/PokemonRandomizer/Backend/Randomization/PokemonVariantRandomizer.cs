@@ -134,12 +134,12 @@ namespace PokemonRandomizer.Backend.Randomization
                     // Change the pokemon into a different single type
                     pokemon.SetSingleType(RandomPrimaryType(types, pokemon.PrimaryType));
                 }
-                else if(transformationType == TypeTransformation.GainSecondaryType)
+                else if (transformationType == TypeTransformation.GainSecondaryType)
                 {
                     // Change the pokemon into a dual-typed pokemon by adding a new type
                     pokemon.SecondaryType = RandomSecondaryType(types, pokemon.PrimaryType);
                 }
-                else if(transformationType == TypeTransformation.DoubleTypeReplacement)
+                else if (transformationType == TypeTransformation.DoubleTypeReplacement)
                 {
                     // Change the pokemon into a dual-type pokemon with unrelated types
                     pokemon.PrimaryType = RandomPrimaryType(types, pokemon.PrimaryType);
@@ -161,17 +161,17 @@ namespace PokemonRandomizer.Backend.Randomization
                         transformationType = TypeTransformation.PrimaryTypeReplacement;
                     }
                 }
-                if(transformationType == TypeTransformation.PrimaryTypeReplacement)
+                if (transformationType == TypeTransformation.PrimaryTypeReplacement)
                 {
                     // Change the primary type
                     pokemon.PrimaryType = RandomPrimaryType(types, pokemon.types);
                 }
-                else if(transformationType == TypeTransformation.SecondaryTypeReplacement)
+                else if (transformationType == TypeTransformation.SecondaryTypeReplacement)
                 {
                     // Change secondary type
                     pokemon.SecondaryType = RandomSecondaryType(types, pokemon.types);
                 }
-                else if(transformationType == TypeTransformation.DoubleTypeReplacement)
+                else if (transformationType == TypeTransformation.DoubleTypeReplacement)
                 {
                     var originalPrimaryType = pokemon.PrimaryType;
                     // Change the pokemon into a dual-type pokemon with unrelated types
@@ -439,7 +439,7 @@ namespace PokemonRandomizer.Backend.Randomization
             int attackStatTotal = pokemon.Attack + pokemon.SpAttack;
 
             // Adjust attacking stats
-            if(settings.AdjustAttackStats && (attackStatTotal / (double)originalBST) >= 0.25)
+            if (settings.AdjustAttackStats && (attackStatTotal / (double)originalBST) >= 0.25)
             {
                 // Compensate for variant types
                 int minimumDifference = (int)Math.Round(attackStatTotal * 0.025);
@@ -448,14 +448,14 @@ namespace PokemonRandomizer.Backend.Randomization
                 {
                     if (IsSpecial(type))
                     {
-                        if(pokemon.Attack > (pokemon.SpAttack + minimumDifference))
+                        if (pokemon.Attack > (pokemon.SpAttack + minimumDifference))
                         {
                             pokemon.SpAttack = pokemon.Attack;
                             madeStatAdjustment = true;
                             break;
                         }
                     }
-                    else if(pokemon.SpAttack > (pokemon.Attack + minimumDifference))
+                    else if (pokemon.SpAttack > (pokemon.Attack + minimumDifference))
                     {
                         pokemon.Attack = pokemon.SpAttack;
                         madeStatAdjustment = true;
@@ -476,7 +476,7 @@ namespace PokemonRandomizer.Backend.Randomization
                         {
                             pokemon.SpAttack = DecreaseStat(pokemon.SpAttack, bstDiff);
                         }
-                        else if(settings.ReduceBalancedPokemonBST)
+                        else if (settings.ReduceBalancedPokemonBST)
                         {
                             var statChoiceWeight = new WeightedSet<int>(pokemon.stats.Length);
                             while (bstDiff >= 15)
@@ -526,7 +526,7 @@ namespace PokemonRandomizer.Backend.Randomization
             }
             if (settings.GiveBonusStats)
             {
-                if(data.BonusStats == null) // Determine bonus stats
+                if (data.BonusStats == null) // Determine bonus stats
                 {
                     data.BonusStats = new int[6];
                     // Augment variant pokemon
@@ -548,7 +548,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 }
                 else // Bonus stats have already been determined, propagate
                 {
-                    for(int i = 0; i < data.BonusStats.Length; ++i)
+                    for (int i = 0; i < data.BonusStats.Length; ++i)
                     {
                         if (data.BonusStats[i] <= 0)
                             continue;
@@ -611,7 +611,7 @@ namespace PokemonRandomizer.Backend.Randomization
             if (moveData.IsStatus || moveData.IsCounterAttack)
                 return false;
             int effectivePower = moveData.EffectivePower;
-            return IsType(moveData, type) &&  effectivePower >= minPower && effectivePower <= maxPower;
+            return IsType(moveData, type) && effectivePower >= minPower && effectivePower <= maxPower;
         }
 
         public bool HasAttackingMoveOfType(LearnSet learnSet, PokemonType type, int minPower = 0, int maxPower = 0xFF)
@@ -652,11 +652,11 @@ namespace PokemonRandomizer.Backend.Randomization
             // Replace normal type attacking moves
             var normalAttackingMoveEntries = pokemon.learnSet.Where(entry => IsAttackingMoveOfType(entry, PokemonType.NRM));
             var availibleNormalReplacementMoves = GetAvailibleTypeMoves(availableAddMoves, data.VariantTypes[0], pokemon.learnSet);
-            if(data.VariantTypes.Length > 1)
+            if (data.VariantTypes.Length > 1)
             {
                 availibleNormalReplacementMoves.AddRange(GetAvailibleTypeMoves(availableAddMoves, data.VariantTypes[1], pokemon.learnSet));
             }
-            foreach(var entry in normalAttackingMoveEntries)
+            foreach (var entry in normalAttackingMoveEntries)
             {
                 entry.move = ReplaceMove(entry.move, data, ref availibleNormalReplacementMoves);
             }
@@ -678,12 +678,12 @@ namespace PokemonRandomizer.Backend.Randomization
                 // This move will be reaplaced with a different move later
                 if (!IsType(newMoveData, pokemon.types) && IsType(oldMoveData, pokemon.OriginalTypes.ToArray()))
                     continue;
-                foreach(var entry in pokemon.learnSet.Where(entry => entry.move == moveReplacement.oldMove))
+                foreach (var entry in pokemon.learnSet.Where(entry => entry.move == moveReplacement.oldMove))
                 {
                     entry.move = moveReplacement.newMove;
                 }
             }
-            foreach(var bonusMove in data.BonusMoves)
+            foreach (var bonusMove in data.BonusMoves)
             {
                 var bonusMoveData = dataT.GetMoveData(bonusMove.move);
                 // If the pokemon is no longer this type, don't apply the bonus move
@@ -707,7 +707,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 {
                     AddMove(pokemon, 2, 50, 1, 18, data, ref availibleTypeMoves);
                 }
-                if(!HasAttackingMoveOfType(pokemon.learnSet, typeReplacement.newType, 51))
+                if (!HasAttackingMoveOfType(pokemon.learnSet, typeReplacement.newType, 51))
                 {
                     AddMove(pokemon, 51, 120, 22, 99, data, ref availibleTypeMoves);
                 }
@@ -740,7 +740,7 @@ namespace PokemonRandomizer.Backend.Randomization
         private void AddMove(PokemonBaseStats pokemon, int minPower, int maxPower, int minLevel, int maxLevel, VariantData data, ref List<MoveData> availibleMoves)
         {
             var eligibleMoves = availibleMoves.Where(m => m.EffectivePower >= minPower && m.EffectivePower <= maxPower);
-            if(eligibleMoves.Count() <= 0)
+            if (eligibleMoves.Count() <= 0)
             {
                 Logger.main.Warning($"Variant Generator: Attemping to add a move to {pokemon.Name} but no eligible move found. Move add will be skipped");
                 return;
@@ -799,7 +799,7 @@ namespace PokemonRandomizer.Backend.Randomization
             {
                 newMove = ChooseAttackingMove(availibleMoves, oldMove.EffectivePower, 10);
             }
-            if(newMove == Move.None || newMove == move)
+            if (newMove == Move.None || newMove == move)
             {
                 return move;
             }
@@ -820,7 +820,7 @@ namespace PokemonRandomizer.Backend.Randomization
         };
 
         private bool IsType(MoveData move, params PokemonType[] types)
-        { 
+        {
             if (types.Any(type => moveTypeOverrides.Contains((move.move, type))))
                 return true;
             return types.Any(type => move.type == type);
@@ -871,6 +871,14 @@ namespace PokemonRandomizer.Backend.Randomization
             { Pokemon.IVYSAUR, new PaletteData(new int[]{ 6, 7, 10, 12 }, new int[]{ 2, 8, 9, }, null,  new int[]{ 3, 4, 5, 13, 14, 15 }) },
             // 1 is a shared outline color
             { Pokemon.VENUSAUR, new PaletteData(new int[]{ 1, 2, 3, 4 }, new int[]{ 10, 13, 14, }, null,  new int[]{ 5, 6, 8, 9 }) },
+            //{ Pokemon.CHARMANDER, new PaletteData(new int[]{ 9, 10, 11, 12 }, new int[]{ 4, 5, 6, 7, 8}) },
+            { Pokemon.CHARMANDER, new PaletteData(new int[]{ 9, 10, 11, 12 }) },
+            //{ Pokemon.CHARMELEON, new PaletteData(new int[]{ 10, 11, 12, 13 }, new int[]{ 4, 5, 6, 7, 8}) },
+            { Pokemon.CHARMELEON, new PaletteData(new int[]{ 10, 11, 12, 13 }) },
+            { Pokemon.CHARIZARD, new PaletteData(new int[]{ 10, 11, 12, 13 }, new int[]{ 1, 2, 6, 7, 8 }, null, new int[]{ 3, 4, 5 }) },
+            { Pokemon.SQUIRTLE, new PaletteData(new int[]{ 11, 12, 13, 14 }, new int[]{ 2, 3, 4 })},
+            { Pokemon.WARTORTLE, new PaletteData(new int[]{ 11, 12, 13, 14 }, new int[]{ 5, 6, 7 })},
+            { Pokemon.BLASTOISE, new PaletteData(new int[]{ 11, 12, 13, 14 }, new int[]{ 4, 8, 9, 10 })},
         };
 
         private static readonly Dictionary<PokemonType, TypeColorData> typeColorData = new Dictionary<PokemonType, TypeColorData>()
@@ -880,14 +888,14 @@ namespace PokemonRandomizer.Backend.Randomization
             {PokemonType.WAT, new TypeColorData(new Color(16, 20, 28, 0)) },
             {PokemonType.ICE, new TypeColorData(new Color(21, 26, 31, 0)) },
             {PokemonType.FLY, new TypeColorData(new Color(25, 26, 27, 0)) },
-            {PokemonType.ELE, new TypeColorData(new Color(31, 31, 15, 0)) },
-            {PokemonType.BUG, new TypeColorData(new Color(23, 31, 14, 0)) },
-            {PokemonType.GRD, new TypeColorData(new Color(27, 24, 4, 0)) },
-            {PokemonType.RCK, new TypeColorData(new Color(12, 13, 4, 0)) },
+            {PokemonType.ELE, new TypeColorData(new Color(31, 31, 15, 0)) { ValueOffset = 2 }},
+            {PokemonType.BUG, new TypeColorData(new Color(28, 31, 14, 0)) },
+            {PokemonType.GRD, new TypeColorData(new Color(27, 24, 4, 0)) { ValueOffset = -1 }},
+            {PokemonType.RCK, new TypeColorData(new Color(12, 13, 4, 0)) { ValueOffset = -3 }},
             {PokemonType.STL, new TypeColorData(new Color(23, 25, 24, 0)) },
-            {PokemonType.DRK, new TypeColorData(new Color(11, 10, 10, 0)) { ValueOffset = -7 } },
+            {PokemonType.DRK, new TypeColorData(new Color(11, 10, 10, 0)) { ValueOffset = -8 } },
             {PokemonType.PSN, new TypeColorData(new Color(23, 15, 22, 0)) },
-            {PokemonType.GHO, new TypeColorData(new Color(10, 6, 11, 0)) { ValueOffset = -3 }},
+            {PokemonType.GHO, new TypeColorData(new Color(10, 6, 11, 0)) { ValueOffset = -6 }},
             {PokemonType.PSY, new TypeColorData(new Color(22, 14, 28, 0)) }, // 22, 16, 26 
             {PokemonType.FTG, new TypeColorData(new Color(20, 15, 11, 0)) },
             {PokemonType.DRG, new TypeColorData(new Color(10, 20, 26, 0)) },
@@ -907,8 +915,23 @@ namespace PokemonRandomizer.Backend.Randomization
                 ApplyColorChanges(pokemon.palette, allIndices, typeColorData[data.VariantTypes[0]]);
                 return;
             }
-            ApplyColorsPrimarySecondary(pokemon, data);
+            ApplyColorsFirstSecond(pokemon, data);
         }
+
+        private void ApplyColorsFirstSecond(PokemonBaseStats pokemon, VariantData data)
+        {
+            var firstVariantType = data.VariantTypes[0];
+            var typeData = typeColorData[firstVariantType];
+            var paletteData = variantPaletteData[pokemon.species];
+            ApplyColorChanges(pokemon.palette, paletteData.PrimaryVariantColorIndices, paletteData.PrimaryVariantColorIndices2, typeData);
+            if(data.VariantTypes.Length > 1)
+            {
+                var secondVariantType = data.VariantTypes[1];
+                typeData = typeColorData[secondVariantType];
+                ApplyColorChanges(pokemon.palette, paletteData.SecondaryVariantColorIndices, paletteData.SecondaryVariantColorIndices2, typeData);
+            }
+        }
+
 
         private void ApplyColorsPrimarySecondary(PokemonBaseStats pokemon, VariantData data)
         {
