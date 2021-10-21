@@ -585,7 +585,8 @@ namespace PokemonRandomizer.Backend.Randomization
             Move.TRANSFORM,
             Move.METRONOME,
             Move.SUPER_FANG,
-            Move.SPIT_UP
+            Move.SPIT_UP,
+            Move.TAIL_GLOW
         };
 
         // Pokemon that shouldn't recieve bonus moves, only replacement moves
@@ -894,7 +895,7 @@ namespace PokemonRandomizer.Backend.Randomization
             { Pokemon.WEEDLE, new PaletteData(new int[]{ 4, 5, 6, 7, 13 },  new int[]{ 2, 3 })},
             { Pokemon.KAKUNA, new PaletteData(new int[]{ 2, 3, 4, 5, 6 })},
             { Pokemon.BEEDRILL, new PaletteData(Range(2, 5), new int[]{ 10, 11, 12 })},
-            { Pokemon.PIDGEY, new PaletteData(Range(6, 12), Range(3, 5))},
+            { Pokemon.PIDGEY, new PaletteData(Range(6, 12), Range(3, 5))}, // Pidgey line doesn't do well with light primary / dark secondary colors
             { Pokemon.PIDGEOTTO, new PaletteData(Range(6, 11), Range(3, 5))},
             { Pokemon.PIDGEOT, new PaletteData(new int[]{ 6, 7, 8, 11, 12, 13, 14 }, new int[]{ 3, 4, 5, 9, 10 })},
             { Pokemon.RATTATA, new PaletteData(Range(7, 10))},
@@ -903,8 +904,27 @@ namespace PokemonRandomizer.Backend.Randomization
             { Pokemon.FEAROW, new PaletteData(PalRange(2, 3, 10, 11, 12, 13), PalRange(6, 7, 8, 9, 14)) },
             { Pokemon.EKANS, new PaletteData(Range(12, 15), Range(6, 9))},
             { Pokemon.ARBOK, new PaletteData(Range(9, 12), Range(5, 7))},
-            { Pokemon.PIKACHU, new PaletteData(Range(2, 6))}, // , Range(10, 12) // Cheeks
+            { Pokemon.PIKACHU, new PaletteData(Range(2, 6), Range(10, 12))}, // , Range(10, 12) // Cheeks
             { Pokemon.RAICHU, new PaletteData(Range(2, 4), Range(6, 12))},
+            { Pokemon.SANDSHREW, new PaletteData(Range(3, 6))},
+            { Pokemon.SANDSLASH, new PaletteData(Range(2, 5), Range(10, 13))},
+            { Pokemon.NIDORAN_GAL, new PaletteData(Range(1, 5), Range(8, 10))},
+            { Pokemon.NIDORINA, new PaletteData(Range(10, 14), Range(4, 6))},
+            { Pokemon.NIDOQUEEN, new PaletteData(Range(10, 14), Range(3, 6))},
+            { Pokemon.NIDORAN_BOI, new PaletteData(Range(10, 13), Range(6, 8))},
+            { Pokemon.NIDORINO, new PaletteData(Range(10, 13), Range(5, 7))},
+            { Pokemon.NIDOKING, new PaletteData(Range(11, 14), Range(8, 10))},
+            { Pokemon.CLEFAIRY, new PaletteData(Range(11, 14), Range(6, 9))},
+            { Pokemon.CLEFABLE, new PaletteData(Range(5, 8), Range(12, 14))},
+            { Pokemon.VULPIX, new PaletteData(Range(12, 15), Range(8, 11))}, // Paws: 5-7
+            { Pokemon.NINETALES, new PaletteData(Range(11, 14), Range(2, 4))}, // Eyes: 2-4
+            { Pokemon.JIGGLYPUFF, new PaletteData(Range(12, 15), Range(2, 5))},
+            { Pokemon.WIGGLYTUFF, new PaletteData(Range(11, 15), Range(2, 5))},
+            { Pokemon.ZUBAT, new PaletteData(Range(6, 9), Range(10, 13))},
+            { Pokemon.GOLBAT, new PaletteData(Range(5, 8), Range(9, 12))},
+            { Pokemon.ODDISH, new PaletteData(Range(4, 7), Range(11, 14))},
+            { Pokemon.GLOOM, new PaletteData(Range(7, 10), Range(11, 14), Range(2, 5))}, // Extra leaves: 2-5
+            { Pokemon.VILEPLUME, new PaletteData(Range(5, 8), Range(9, 14), Range(2, 5))},
         };
 
         private static readonly Dictionary<PokemonType, TypeColorData> typeColorData = new Dictionary<PokemonType, TypeColorData>()
@@ -914,11 +934,11 @@ namespace PokemonRandomizer.Backend.Randomization
             {PokemonType.WAT, new TypeColorData(new Color(16, 20, 28, 0)) },
             {PokemonType.ICE, new TypeColorData(new Color(21, 26, 31, 0)) },
             {PokemonType.FLY, new TypeColorData(new Color(25, 26, 27, 0)) },
-            {PokemonType.ELE, new TypeColorData(new Color(31, 31, 15, 0)) { ValueOffset = 2 }},
+            {PokemonType.ELE, new TypeColorData(new Color(31, 31, 15, 0)) { ValueOffset = 1 }},
             {PokemonType.BUG, new TypeColorData(new Color(28, 31, 14, 0)) },
             {PokemonType.GRD, new TypeColorData(new Color(27, 24, 4, 0)) { ValueOffset = -1 }},
             {PokemonType.RCK, new TypeColorData(new Color(12, 13, 4, 0)) { ValueOffset = -3 }},
-            {PokemonType.STL, new TypeColorData(new Color(23, 25, 24, 0)) },
+            {PokemonType.STL, new TypeColorData(new Color(23, 25, 24, 0)){ ValueOffset = -2 }},
             {PokemonType.DRK, new TypeColorData(new Color(11, 10, 10, 0)) { ValueOffset = -8 } },
             {PokemonType.PSN, new TypeColorData(new Color(23, 15, 22, 0)) },
             {PokemonType.GHO, new TypeColorData(new Color(10, 6, 11, 0)) { ValueOffset = -6 }},

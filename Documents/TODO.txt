@@ -179,3 +179,4 @@ DUMB IDEA CORNER ///////////////////////////////////////////////////////////////
 - No evolution zone: pokemon cannot evolve (will make any pokemon a valid level unless done as a post-process (which could be an option))
 - Kaiji mode:
 	- no exp from battles, rare candies can be bought at the game corner
+- Remove Scott
