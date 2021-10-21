@@ -869,6 +869,10 @@ namespace PokemonRandomizer.Backend.Randomization
         {
             return Enumerable.Range(start, 1 + (end - start)).ToArray();
         }
+        private static int[] PalRange(params int[] indices)
+        {
+            return indices;
+        }
 
         private static readonly Dictionary<Pokemon, PaletteData> variantPaletteData = new Dictionary<Pokemon, PaletteData>()
         {
@@ -895,6 +899,12 @@ namespace PokemonRandomizer.Backend.Randomization
             { Pokemon.PIDGEOT, new PaletteData(new int[]{ 6, 7, 8, 11, 12, 13, 14 }, new int[]{ 3, 4, 5, 9, 10 })},
             { Pokemon.RATTATA, new PaletteData(Range(7, 10))},
             { Pokemon.RATICATE, new PaletteData(Range(8, 11), Range(2, 7))},
+            { Pokemon.SPEAROW, new PaletteData(Range(10, 14), Range(6, 9), Range(2, 5)) },
+            { Pokemon.FEAROW, new PaletteData(PalRange(2, 3, 10, 11, 12, 13), PalRange(6, 7, 8, 9, 14)) },
+            { Pokemon.EKANS, new PaletteData(Range(12, 15), Range(6, 9))},
+            { Pokemon.ARBOK, new PaletteData(Range(9, 12), Range(5, 7))},
+            { Pokemon.PIKACHU, new PaletteData(Range(2, 6))}, // , Range(10, 12) // Cheeks
+            { Pokemon.RAICHU, new PaletteData(Range(2, 4), Range(6, 12))},
         };
 
         private static readonly Dictionary<PokemonType, TypeColorData> typeColorData = new Dictionary<PokemonType, TypeColorData>()
