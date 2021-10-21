@@ -865,9 +865,14 @@ namespace PokemonRandomizer.Backend.Randomization
 
         #region Palette
 
+        private static int[] Range(int start, int end)
+        {
+            return Enumerable.Range(start, 1 + (end - start)).ToArray();
+        }
+
         private static readonly Dictionary<Pokemon, PaletteData> variantPaletteData = new Dictionary<Pokemon, PaletteData>()
         {
-            { Pokemon.BULBASAUR, new PaletteData(new int[]{ 2, 3, 4 }, new int[]{ 11, 12, 13 }) }, // Needs outline check
+            { Pokemon.BULBASAUR, new PaletteData(new int[]{ 2, 3, 4, 5 }, new int[]{ 11, 12, 13, 14 }) }, // Needs outline check
             { Pokemon.IVYSAUR, new PaletteData(new int[]{ 6, 7, 10, 12 }, new int[]{ 2, 8, 9, }, null,  new int[]{ 3, 4, 5, 13, 14, 15 }) },
             // 1 is a shared outline color
             { Pokemon.VENUSAUR, new PaletteData(new int[]{ 1, 2, 3, 4 }, new int[]{ 10, 13, 14, }, null,  new int[]{ 5, 6, 8, 9 }) },
@@ -879,6 +884,17 @@ namespace PokemonRandomizer.Backend.Randomization
             { Pokemon.SQUIRTLE, new PaletteData(new int[]{ 11, 12, 13, 14 }, new int[]{ 2, 3, 4 })},
             { Pokemon.WARTORTLE, new PaletteData(new int[]{ 11, 12, 13, 14 }, new int[]{ 5, 6, 7 })},
             { Pokemon.BLASTOISE, new PaletteData(new int[]{ 11, 12, 13, 14 }, new int[]{ 4, 8, 9, 10 })},
+            { Pokemon.CATERPIE, new PaletteData(new int[]{ 9, 10, 11, 12 }, new int[]{ 3, 4, 8 }, null, new int[]{ 2, 5, 6, 7 })},
+            { Pokemon.METAPOD, new PaletteData(new int[]{ 2, 3, 4, 5 })},
+            { Pokemon.BUTTERFREE, new PaletteData(new int[]{ 4, 5, 6, 7 },  new int[]{ 14, 15 })},
+            { Pokemon.WEEDLE, new PaletteData(new int[]{ 4, 5, 6, 7, 13 },  new int[]{ 2, 3 })},
+            { Pokemon.KAKUNA, new PaletteData(new int[]{ 2, 3, 4, 5, 6 })},
+            { Pokemon.BEEDRILL, new PaletteData(Range(2, 5), new int[]{ 10, 11, 12 })},
+            { Pokemon.PIDGEY, new PaletteData(Range(6, 12), Range(3, 5))},
+            { Pokemon.PIDGEOTTO, new PaletteData(Range(6, 11), Range(3, 5))},
+            { Pokemon.PIDGEOT, new PaletteData(new int[]{ 6, 7, 8, 11, 12, 13, 14 }, new int[]{ 3, 4, 5, 9, 10 })},
+            { Pokemon.RATTATA, new PaletteData(Range(7, 10))},
+            { Pokemon.RATICATE, new PaletteData(Range(8, 11), Range(2, 7))},
         };
 
         private static readonly Dictionary<PokemonType, TypeColorData> typeColorData = new Dictionary<PokemonType, TypeColorData>()
