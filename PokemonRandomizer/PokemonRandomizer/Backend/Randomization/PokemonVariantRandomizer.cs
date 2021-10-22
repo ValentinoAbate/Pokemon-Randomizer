@@ -1010,7 +1010,7 @@ namespace PokemonRandomizer.Backend.Randomization
             { Pokemon.TAUROS, new PaletteData(Range(7, 10), Range(11, 14), Range(2, 5))},
             { Pokemon.MAGIKARP, new PaletteData(Range(12, 15), Range(6, 8), null, Range(9, 11))},
             { Pokemon.GYARADOS, new PaletteData(Range(4, 7), Range(8, 10), null, Range(1, 13))},
-            { Pokemon.LAPRAS, new PaletteData(Range(11, 14), Range(7, 10), null, Range(4, 6))},
+            { Pokemon.LAPRAS, new PaletteData(Range(11, 14), Range(7, 10))}, // Belly Range(4, 6)
             { Pokemon.DITTO, new PaletteData(Range(5, 9))},
             { Pokemon.EEVEE, new PaletteData(Range(11, 14), Range(2, 5))},
             { Pokemon.VAPOREON, new PaletteData(Range(11, 14), Range(7, 9), null, Range(4, 6))},
@@ -1023,14 +1023,14 @@ namespace PokemonRandomizer.Backend.Randomization
             { Pokemon.KABUTOPS, new PaletteData(Range(11, 14))},
             { Pokemon.AERODACTYL, new PaletteData(Range(11, 14), Range(4, 7))},
             { Pokemon.SNORLAX, new PaletteData(Range(1, 4), Range(5, 8), Range(9, 11))},
-            { Pokemon.ARTICUNO, new PaletteData(Range(1, 6), null, Range(9, 11))}, // maybe move type 1 highlight to type 2
+            { Pokemon.ARTICUNO, new PaletteData(Range(1, 6), Range(9, 11))}, // maybe move type 1 highlight to type 2
             { Pokemon.ZAPDOS, new PaletteData(Range(11, 15))}, // 8-10 beak and feet
             { Pokemon.MOLTRES, new PaletteData(Range(4, 7), Range(11, 14), Range(8, 10))},
             { Pokemon.DRATINI, new PaletteData(Range(11, 14))},
             { Pokemon.DRAGONAIR, new PaletteData(Range(11, 14), Range(5, 7))},
-            { Pokemon.DRAGONITE, new PaletteData(Range(2, 5), Range(6, 9))},
-            { Pokemon.MEWTWO, new PaletteData(Range(2, 4), Range(5, 8))},
-            { Pokemon.MEW, new PaletteData(Range(11, 14), Range(3, 4))},
+            { Pokemon.DRAGONITE, new PaletteData(Range(2, 5), Range(6, 8))},
+            { Pokemon.MEWTWO, new PaletteData(Range(1, 4), Range(5, 8))},
+            { Pokemon.MEW, new PaletteData(Range(10, 14), Range(3, 4))},
         };
 
         private static readonly Dictionary<PokemonType, TypeColorData> typeColorData = new Dictionary<PokemonType, TypeColorData>()
