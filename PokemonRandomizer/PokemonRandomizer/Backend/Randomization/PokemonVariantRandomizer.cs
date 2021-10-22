@@ -900,7 +900,7 @@ namespace PokemonRandomizer.Backend.Randomization
             { Pokemon.PIDGEOT, new PaletteData(new int[]{ 6, 7, 8, 11, 12, 13, 14 }, new int[]{ 3, 4, 5, 9, 10 })},
             { Pokemon.RATTATA, new PaletteData(Range(7, 10))},
             { Pokemon.RATICATE, new PaletteData(Range(8, 11), Range(2, 7))},
-            { Pokemon.SPEAROW, new PaletteData(Range(10, 14), Range(6, 9), Range(2, 5)) },
+            { Pokemon.SPEAROW, new PaletteData(Range(10, 13), PalRange(6, 7, 8, 9, 14), Range(2, 5)) },
             { Pokemon.FEAROW, new PaletteData(PalRange(2, 3, 10, 11, 12, 13), PalRange(6, 7, 8, 9, 14)) },
             { Pokemon.EKANS, new PaletteData(Range(12, 15), Range(6, 9))},
             { Pokemon.ARBOK, new PaletteData(Range(9, 12), Range(5, 7))},
@@ -925,6 +925,29 @@ namespace PokemonRandomizer.Backend.Randomization
             { Pokemon.ODDISH, new PaletteData(Range(4, 7), Range(11, 14))},
             { Pokemon.GLOOM, new PaletteData(Range(7, 10), Range(11, 14), Range(2, 5))}, // Extra leaves: 2-5
             { Pokemon.VILEPLUME, new PaletteData(Range(5, 8), Range(9, 14), Range(2, 5))},
+            { Pokemon.PARAS, new PaletteData(Range(10, 13), Range(6, 8))},
+            { Pokemon.PARASECT, new PaletteData(Range(11, 14), Range(6, 9))},
+            { Pokemon.VENONAT, new PaletteData(Range(11, 14), PalRange(2, 5, 6, 7), null, Range(8, 10))},
+            { Pokemon.VENOMOTH, new PaletteData(Range(12, 15), Range(4, 7))},
+            { Pokemon.DIGLETT, new PaletteData(Range(11, 14), Range(5, 8))}, // 2-4 nose
+            { Pokemon.DUGTRIO, new PaletteData(Range(11, 14), Range(5, 8))}, // 2-4 nose
+            { Pokemon.MEOWTH, new PaletteData(Range(12, 15), Range(9, 11), null, Range(5, 6))},
+            { Pokemon.PERSIAN, new PaletteData(Range(12, 15), Range(4, 6))},
+            { Pokemon.PSYDUCK, new PaletteData(Range(11, 14), Range(1, 4))},
+            { Pokemon.GOLDUCK, new PaletteData(Range(11, 14), Range(6, 9))},
+            { Pokemon.MANKEY, new PaletteData(Range(12, 15), Range(8, 11))}, // 3-5 nose
+            { Pokemon.PRIMEAPE, new PaletteData(Range(12, 15), Range(7, 11))}, // 5-6 nose
+            { Pokemon.GROWLITHE, new PaletteData(Range(11, 14), Range(7, 10))},
+            { Pokemon.ARCANINE, new PaletteData(Range(11, 14), Range(7, 10))},
+            { Pokemon.POLIWAG, new PaletteData(Range(11, 14), Range(8, 10))},
+            { Pokemon.POLIWHIRL, new PaletteData(Range(11, 14))},
+            { Pokemon.POLIWRATH, new PaletteData(Range(11, 14))},
+            { Pokemon.ABRA, new PaletteData(Range(11, 14), Range(5, 8))},
+            { Pokemon.KADABRA, new PaletteData(Range(11, 14), Range(5, 8), null, Range(3, 4))},
+            { Pokemon.ALAKAZAM, new PaletteData(Range(11, 14), Range(5, 8))},
+            { Pokemon.MACHOP, new PaletteData(Range(11, 14), Range(2, 5))},
+            { Pokemon.MACHOKE, new PaletteData(Range(11, 14), Range(2, 5), null, Range(7, 9))},
+            { Pokemon.MACHAMP, new PaletteData(Range(11, 14))}, // Mouth and fins Range(2, 5)
         };
 
         private static readonly Dictionary<PokemonType, TypeColorData> typeColorData = new Dictionary<PokemonType, TypeColorData>()
