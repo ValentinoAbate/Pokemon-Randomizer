@@ -948,6 +948,35 @@ namespace PokemonRandomizer.Backend.Randomization
             { Pokemon.MACHOP, new PaletteData(Range(11, 14), Range(2, 5))},
             { Pokemon.MACHOKE, new PaletteData(Range(11, 14), Range(2, 5), null, Range(7, 9))},
             { Pokemon.MACHAMP, new PaletteData(Range(11, 14))}, // Mouth and fins Range(2, 5)
+            { Pokemon.BELLSPROUT, new PaletteData(Range(6, 8), Range(9, 11), null, Range(3, 5))},
+            { Pokemon.WEEPINBELL, new PaletteData(Range(6, 8), Range(9, 11), null, Range(2, 5))},
+            { Pokemon.VICTREEBEL, new PaletteData(PalRange(2, 6, 7, 8), Range(9, 11), null, Range(4, 5))},
+            { Pokemon.TENTACOOL, new PaletteData(Range(11, 14), Range(3, 5))},
+            { Pokemon.TENTACRUEL, new PaletteData(Range(11, 14), Range(3, 5))},
+            { Pokemon.GEODUDE, new PaletteData(Range(11, 14))},
+            { Pokemon.GRAVELER, new PaletteData(Range(12, 15))},
+            { Pokemon.GOLEM, new PaletteData(Range(5, 8), Range(9, 12))},
+            { Pokemon.PONYTA, new PaletteData(Range(2, 5), Range(9, 12))}, // 2-5 is body (should likely be 2ndary. 9-12 is flames (hue gradient not value gradient, needs more advanced processing)
+            { Pokemon.RAPIDASH, new PaletteData(Range(2, 6), Range(9, 12))}, // 2-6 is body (should likely be 2ndary. 9-12 is flames (hue gradient not value gradient, needs more advanced processing)
+            { Pokemon.SLOWPOKE, new PaletteData(Range(10, 14), Range(3, 6))},
+            { Pokemon.SLOWBRO, new PaletteData(Range(11, 14), Range(7, 9), null, Range(2, 5))},
+            { Pokemon.MAGNEMITE, new PaletteData(Range(11, 14), Range(3, 4), Range(5, 6))},
+            { Pokemon.MAGNETON, new PaletteData(Range(11, 14), Range(3, 4), Range(5, 6))},
+            { Pokemon.FARFETCHD, new PaletteData(Range(11, 14), Range(3, 4), null, Range(9, 10))}, // 5-6 break and feet
+            { Pokemon.DODUO, new PaletteData(Range(5, 8), Range(9, 11))},
+            { Pokemon.DODRIO, new PaletteData(Range(1, 3), Range(4, 7), null, Range(8, 10))},
+            { Pokemon.SEEL, new PaletteData(Range(1, 4), Range(5, 7))},
+            { Pokemon.DEWGONG, new PaletteData(Range(1, 4))},
+            { Pokemon.GRIMER, new PaletteData(Range(5, 8))}, // Mouth 2-4
+            { Pokemon.MUK, new PaletteData(Range(1, 5))}, // Mouth 7-9
+            { Pokemon.SHELLDER, new PaletteData(Range(1, 5))}, // Tounge 6-8
+            { Pokemon.CLOYSTER, new PaletteData(Range(2, 5))},
+            { Pokemon.GASTLY, new PaletteData(Range(6, 9), Range(10, 12))}, // 10-12 is gas, this might need to be flipped
+            { Pokemon.HAUNTER, new PaletteData(Range(1, 4), Range(9, 11))},
+            { Pokemon.GENGAR, new PaletteData(Range(11, 14), Range(4, 6))},
+            { Pokemon.ONIX, new PaletteData(Range(10, 14))},
+            { Pokemon.DROWZEE, new PaletteData(Range(11, 14), Range(7, 10))},
+            { Pokemon.HYPNO, new PaletteData(PalRange(1, 2, 3, 4, 7), Range(12, 13))}, // may also want to include 6 in primary. secondary may be unneccessary
         };
 
         private static readonly Dictionary<PokemonType, TypeColorData> typeColorData = new Dictionary<PokemonType, TypeColorData>()
