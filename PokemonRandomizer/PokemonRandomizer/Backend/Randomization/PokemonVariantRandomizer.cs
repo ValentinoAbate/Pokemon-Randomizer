@@ -977,6 +977,60 @@ namespace PokemonRandomizer.Backend.Randomization
             { Pokemon.ONIX, new PaletteData(Range(10, 14))},
             { Pokemon.DROWZEE, new PaletteData(Range(11, 14), Range(7, 10))},
             { Pokemon.HYPNO, new PaletteData(PalRange(1, 2, 3, 4, 7), Range(12, 13))}, // may also want to include 6 in primary. secondary may be unneccessary
+            { Pokemon.KRABBY, new PaletteData(Range(11, 14))},
+            { Pokemon.KINGLER, new PaletteData(Range(1, 4))},
+            { Pokemon.VOLTORB, new PaletteData(Range(10, 14))},
+            { Pokemon.ELECTRODE, new PaletteData(Range(10, 14))},
+            { Pokemon.EXEGGCUTE, new PaletteData(Range(11, 15))}, // 3-5 cracked egg
+            { Pokemon.EXEGGUTOR, new PaletteData(Range(8, 11), Range(5, 7))}, // 1-4 heads
+            { Pokemon.CUBONE, new PaletteData(Range(1, 4), Range(9, 11))},
+            { Pokemon.MAROWAK, new PaletteData(Range(12, 15), Range(8, 11))},
+            { Pokemon.HITMONLEE, new PaletteData(Range(1, 5), Range(11, 13))},
+            { Pokemon.HITMONCHAN, new PaletteData(Range(11, 14), Range(2, 5))}, // 6-9 gloves
+            { Pokemon.LICKITUNG, new PaletteData(Range(10, 14), Range(5, 8))},
+            { Pokemon.KOFFING, new PaletteData(Range(11, 14), Range(9, 10))}, // 3-4 cross
+            { Pokemon.WEEZING, new PaletteData(Range(10, 14), Range(7, 9))}, // 4 cross
+            { Pokemon.RHYHORN, new PaletteData(Range(1, 5))},
+            { Pokemon.RHYDON, new PaletteData(Range(11, 14), Range(2, 5))},
+            { Pokemon.CHANSEY, new PaletteData(Range(11, 15), Range(8, 10))},
+            { Pokemon.TANGELA, new PaletteData(Range(1, 4), Range(5, 7))},
+            { Pokemon.KANGASKHAN, new PaletteData(Range(12, 15), Range(9, 11))}, // 3-5 belly and ears
+            { Pokemon.HORSEA, new PaletteData(Range(5, 8), PalRange(4, 9, 10))},
+            { Pokemon.SEADRA, new PaletteData(Range(2, 6), Range(7, 9))},
+            { Pokemon.GOLDEEN, new PaletteData(Range(6, 11), null, PalRange(5))},
+            { Pokemon.SEAKING, new PaletteData(PalRange(5, 6, 9, 10, 11, 12), null, PalRange(13))},
+            { Pokemon.STARYU, new PaletteData(Range(6, 9), Range(2, 5), Range(10, 13))},
+            { Pokemon.STARMIE, new PaletteData(Range(1, 4), Range(5, 8), Range(10, 13))},
+            { Pokemon.MR_MIME, new PaletteData(Range(5, 8), Range(10, 12))},
+            { Pokemon.SCYTHER, new PaletteData(Range(11, 14), Range(7, 10), null, Range(5, 6))},
+            { Pokemon.JYNX, new PaletteData(Range(10, 13), Range(6, 8))},
+            { Pokemon.ELECTABUZZ, new PaletteData(Range(11, 15))},
+            { Pokemon.MAGMAR, new PaletteData(Range(11, 14))}, // 7-10 body 2 and part of flame
+            { Pokemon.PINSIR, new PaletteData(Range(11, 14), Range(2, 5))},
+            { Pokemon.TAUROS, new PaletteData(Range(7, 10), Range(11, 14), Range(2, 5))},
+            { Pokemon.MAGIKARP, new PaletteData(Range(12, 15), Range(6, 8), null, Range(9, 11))},
+            { Pokemon.GYARADOS, new PaletteData(Range(4, 7), Range(8, 10), null, Range(1, 13))},
+            { Pokemon.LAPRAS, new PaletteData(Range(11, 14), Range(7, 10), null, Range(4, 6))},
+            { Pokemon.DITTO, new PaletteData(Range(5, 9))},
+            { Pokemon.EEVEE, new PaletteData(Range(11, 14), Range(2, 5))},
+            { Pokemon.VAPOREON, new PaletteData(Range(11, 14), Range(7, 9), null, Range(4, 6))},
+            { Pokemon.JOLTEON, new PaletteData(Range(1, 5))},
+            { Pokemon.FLAREON, new PaletteData(Range(12, 15), Range(2, 5))},
+            { Pokemon.PORYGON, new PaletteData(Range(1, 4), Range(5, 8))},
+            { Pokemon.OMANYTE, new PaletteData(Range(12, 15), Range(7, 11))},
+            { Pokemon.OMASTAR, new PaletteData(Range(12, 15), Range(7, 11))},
+            { Pokemon.KABUTO, new PaletteData(Range(11, 14))},
+            { Pokemon.KABUTOPS, new PaletteData(Range(11, 14))},
+            { Pokemon.AERODACTYL, new PaletteData(Range(11, 14), Range(4, 7))},
+            { Pokemon.SNORLAX, new PaletteData(Range(1, 4), Range(5, 8), Range(9, 11))},
+            { Pokemon.ARTICUNO, new PaletteData(Range(1, 6), null, Range(9, 11))}, // maybe move type 1 highlight to type 2
+            { Pokemon.ZAPDOS, new PaletteData(Range(11, 15))}, // 8-10 beak and feet
+            { Pokemon.MOLTRES, new PaletteData(Range(4, 7), Range(11, 14), Range(8, 10))},
+            { Pokemon.DRATINI, new PaletteData(Range(11, 14))},
+            { Pokemon.DRAGONAIR, new PaletteData(Range(11, 14), Range(5, 7))},
+            { Pokemon.DRAGONITE, new PaletteData(Range(2, 5), Range(6, 9))},
+            { Pokemon.MEWTWO, new PaletteData(Range(2, 4), Range(5, 8))},
+            { Pokemon.MEW, new PaletteData(Range(11, 14), Range(3, 4))},
         };
 
         private static readonly Dictionary<PokemonType, TypeColorData> typeColorData = new Dictionary<PokemonType, TypeColorData>()
