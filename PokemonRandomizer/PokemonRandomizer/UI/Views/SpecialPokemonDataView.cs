@@ -48,9 +48,9 @@ namespace PokemonRandomizer.UI.Views
             // Recieved Pokemon Tab
             stack = CreateStack();
             stack.Header("Randomization");
-            stack.Add(new RandomChanceUI("Randomize Pokemon Recieved by Trade", model.RandomizeTradeRecieve, model.TradePokemonRecievedRandChance))
+            stack.Add(new RandomChanceUI("Randomize Pokemon Received by Trade", model.RandomizeTradeRecieve, model.TradePokemonRecievedRandChance))
                 .BindEnabled(stack.Add(new PokemonSettingsUI(model.TradeSpeciesSettingsRecieve)));
-            tabs.Add(CreateTabItem("Recieved Pokemon", stack));
+            tabs.Add(CreateTabItem("Received Pokemon", stack));
             // Held Item Tab
             stack = CreateStack();
             stack.Header("Randomization");
