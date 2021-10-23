@@ -79,16 +79,18 @@ namespace PokemonRandomizer.Backend.Randomization
                     return rand.Choice(all.Where(p => !p.IsLegendary()));
                 return rand.Choice(all); 
             }
-            var choices = all.ToHashSet();
             // Process the metrics
             var set = Metric<Pokemon>.ProcessGroup(data);
+            // Remove any pokemon that were not in the input set
+            var choices = all.ToHashSet();
+            set.RemoveWhere(p => !choices.Contains(p));
             if (settings.BanLegendaries) // Remove legendaries if banned
             {
                 set.RemoveWhere(PokemonUtils.IsLegendary);
             }
-            set.RemoveWhere(p => !choices.Contains(p));
             return set.Count > 0 ? rand.Choice(set) : Pokemon.None;
         }
+
 
         #endregion
 
@@ -136,7 +138,7 @@ namespace PokemonRandomizer.Backend.Randomization
                     return null;
                 possibleSeconds.Remove(second);
                 // Get third pokemon
-                var possibleThirds = pool.Where(p => OneWayWeakness(typeDefinitions, second, p, strong) && OneWayWeakness(typeDefinitions, p, first, strong)).ToList();
+                var possibleThirds = pool.Where(p => OneWayWeakness(typeDefinitions, second, p, strong) && OneWayWeakness(typeDefinitions, p, first, strong)).ToHashSet();
                 // If at least one works, choose one randomly
                 if (possibleThirds.Count > 0)
                 {

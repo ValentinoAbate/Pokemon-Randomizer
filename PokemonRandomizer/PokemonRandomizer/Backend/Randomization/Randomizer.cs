@@ -4,7 +4,6 @@ using PokemonRandomizer.Backend.EnumTypes;
 using PokemonRandomizer.Backend.Utilities;
 using PokemonRandomizer.Backend.Utilities.Debug;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -54,6 +53,7 @@ namespace PokemonRandomizer.Backend.Randomization
         // Apply mutations based on program settings.
         public RomData Randomize()
         {
+            Timer.main.Start();
             var pokemonSet = DefinePokemonSet();
             var fossilSet = pokemonSet.Where(PokemonUtils.IsFossil).ToHashSet();
             if (settings.CountRelicanthAsFossil && pokemonSet.Contains(Pokemon.RELICANTH))
@@ -743,7 +743,8 @@ namespace PokemonRandomizer.Backend.Randomization
             #endregion
 #endif
 
-            data.CalculateMetrics();
+            Timer.main.Stop();
+            Timer.main.Log("Randomization");
 
             return data;
         }

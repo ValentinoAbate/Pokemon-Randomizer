@@ -28,6 +28,7 @@ namespace PokemonRandomizer.Backend.Writing
         }
         public override Rom Write(RomData data, Rom originalRom, RomMetadata metadata, XmlManager info, Settings settings)
         {
+            Timer.main.Start();
             var rom = new Rom(originalRom);
             // Initialize repoint list
             var repoints = new RepointList();
@@ -115,6 +116,8 @@ namespace PokemonRandomizer.Backend.Writing
 
             // Perform all of the repoint operations
             rom.RepointMany(repoints);
+            Timer.main.Stop();
+            Timer.main.Log("ROM Writing");
             return rom;
         }
 

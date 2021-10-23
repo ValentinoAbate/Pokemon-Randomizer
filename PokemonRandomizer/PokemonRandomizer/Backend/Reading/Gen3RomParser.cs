@@ -2,6 +2,7 @@
 using PokemonRandomizer.Backend.EnumTypes;
 using PokemonRandomizer.Backend.Utilities;
 using PokemonRandomizer.Backend.GenIII.Constants.ElementNames;
+using PokemonRandomizer.Backend.Utilities.Debug;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,6 +27,7 @@ namespace PokemonRandomizer.Backend.Reading
         // Parse the ROM bytes into a RomData object
         public override RomData Parse(Rom rom, RomMetadata metadata, XmlManager info)
         {
+            Timer.main.Start();
             RomData data = new RomData();
 
             #region Move Mappings (TMs/HMs/Tutors)
@@ -77,6 +79,8 @@ namespace PokemonRandomizer.Backend.Reading
             data.PickupItems = ReadPickupData(rom, info, metadata);
             // Calculate the balance metrics from the loaded data
             data.CalculateMetrics();
+            Timer.main.Stop();
+            Timer.main.Log("ROM Parsing");
             return data;
         }
 
