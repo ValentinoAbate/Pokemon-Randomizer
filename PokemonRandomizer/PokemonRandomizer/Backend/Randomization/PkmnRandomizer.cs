@@ -55,8 +55,8 @@ namespace PokemonRandomizer.Backend.Randomization
 
         private Pokemon RandomPokemonUnsafe(IEnumerable<Pokemon> all, IEnumerable<Metric<Pokemon>> data, PokemonSettings settings, int level)
         {
-            // Get a random pokemon (could possibly prefilter for level later to even out evolution stage odds unbalance)
-            var newPokemon = RandomPokemonUnsafe(all, data, settings);
+            var choices = settings.RestrictIllegalEvolutions ? all.Where(p => evoUtils.IsPokemonValidLevel(dataT.GetBaseStats(p), level)) : all;
+            var newPokemon = RandomPokemonUnsafe(choices, data, settings);
             // If we got a null result, propegate that
             if (newPokemon == Pokemon.None)
                 return Pokemon.None;
@@ -69,19 +69,24 @@ namespace PokemonRandomizer.Backend.Randomization
         }
         private Pokemon RandomPokemonUnsafe(IEnumerable<Pokemon> all, IEnumerable<Metric<Pokemon>> data, PokemonSettings settings)
         {
-            // If there is no metric data or if we roll on the noise
-            if (data.Count() <= 0 || rand.RollSuccess(settings.Noise))
+            // If we roll noise, choose a completely random pick
+            if (rand.RollSuccess(settings.Noise))
+                return rand.Choice(all);
+            // If there is no metric data
+            if (data.Count() <= 0)
             {
                 if (settings.BanLegendaries) // Remove legendaries if banned
                     return rand.Choice(all.Where(p => !p.IsLegendary()));
                 return rand.Choice(all); 
             }
+            var choices = all.ToHashSet();
             // Process the metrics
             var set = Metric<Pokemon>.ProcessGroup(data);
             if (settings.BanLegendaries) // Remove legendaries if banned
             {
                 set.RemoveWhere(PokemonUtils.IsLegendary);
             }
+            set.RemoveWhere(p => !choices.Contains(p));
             return set.Count > 0 ? rand.Choice(set) : Pokemon.None;
         }
 
