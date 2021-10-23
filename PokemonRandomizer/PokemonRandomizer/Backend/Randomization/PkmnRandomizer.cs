@@ -63,8 +63,8 @@ namespace PokemonRandomizer.Backend.Randomization
             // Restrict the evolution if specified in the settings
             if (settings.ForceHighestLegalEvolution)
                 newPokemon = evoUtils.MaxEvolution(newPokemon, level, settings.RestrictIllegalEvolutions);
-            else if (settings.RestrictIllegalEvolutions)
-                newPokemon = evoUtils.CorrectImpossibleEvo(newPokemon, level);
+            //else if (settings.RestrictIllegalEvolutions)
+            //    newPokemon = evoUtils.CorrectImpossibleEvo(newPokemon, level);
             return newPokemon;
         }
         private Pokemon RandomPokemonUnsafe(IEnumerable<Pokemon> all, IEnumerable<Metric<Pokemon>> data, PokemonSettings settings)
