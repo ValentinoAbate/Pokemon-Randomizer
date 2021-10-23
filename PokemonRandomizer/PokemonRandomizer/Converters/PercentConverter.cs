@@ -26,14 +26,40 @@ namespace PokemonRandomizer.Converters
             if (value != null)
             {
                 float fltValue = System.Convert.ToSingle(value);
-                return string.Format("{0:P1}", fltValue);
+                return ToPercentString(fltValue);
             }
             return 0;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            return float.Parse((value as string).RemovePercent()) / 100;
+            var str = (value as string).RemovePercent();
+            try
+            {
+                return float.Parse(str) / 100;
+            }
+            catch
+            {
+                bool onePeriod = false;
+                bool Filter(char c)
+                {
+                    if(c == '.' && !onePeriod)
+                    {
+                        onePeriod = true;
+                        return true;
+                    }
+                    return char.IsDigit(c);
+                }
+                str = new string(str.Where(Filter).ToArray());
+                try
+                {
+                    return float.Parse(str) / 100;
+                }
+                catch
+                {
+                    return float.NaN;
+                }
+            }
         }
     }
 }
