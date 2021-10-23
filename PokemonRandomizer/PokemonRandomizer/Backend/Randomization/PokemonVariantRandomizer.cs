@@ -70,6 +70,8 @@ namespace PokemonRandomizer.Backend.Randomization
             };
             ModifyBaseStats(pokemon, settings, variantData);
 
+            ModifyAbilities(pokemon, settings, variantData);
+
             // Create new signature move (if applicable)
 
             // Modify Learnset
@@ -102,6 +104,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 {
                     TransformationType = PropagateType(pokemon, evolvedPokemon, newTypes, settings, data),
                     BonusStats = data.BonusStats,
+                    AbilityReplacements = new Dictionary<Ability, Ability>(data.AbilityReplacements)
                 };
                 evoVariantData.MoveReplacements.AddRange(data.MoveReplacements);
                 evoVariantData.BonusMoves.AddRange(data.BonusMoves);
@@ -110,6 +113,8 @@ namespace PokemonRandomizer.Backend.Randomization
                     continue;
 
                 ModifyBaseStats(evolvedPokemon, settings, evoVariantData);
+
+                ModifyAbilities(evolvedPokemon, settings, evoVariantData);
 
                 ModifyLearnset(evolvedPokemon, settings, evoVariantData);
 
@@ -566,6 +571,64 @@ namespace PokemonRandomizer.Backend.Randomization
         private byte DecreaseStat(byte currentValue, int decreaseAmount)
         {
             return (byte)Math.Max(currentValue - decreaseAmount, 0x00);
+        }
+
+        #endregion
+
+        #region Abilities
+
+        private readonly Dictionary<Ability, PokemonType> replaceableAbilities = new Dictionary<Ability, PokemonType>()
+        {
+            { Ability.Torrent, PokemonType.WAT },
+            { Ability.Blaze, PokemonType.FIR},
+            { Ability.Overgrow, PokemonType.GRS },
+            { Ability.Swarm, PokemonType.BUG },
+        };
+
+        private readonly Dictionary<PokemonType, Ability[]> replacementAbilities = new Dictionary<PokemonType, Ability[]>
+        {
+            { PokemonType.WAT, new Ability[] { Ability.Torrent } },
+            { PokemonType.FIR, new Ability[] { Ability.Blaze } },
+            { PokemonType.GRS, new Ability[] { Ability.Overgrow } },
+            { PokemonType.BUG, new Ability[] { Ability.Swarm } },
+            { PokemonType.FTG, new Ability[] { Ability.Guts } },
+            { PokemonType.ELE, new Ability[] { Ability.Plus, Ability.Minus } },
+        };
+
+        private void ModifyAbilities(PokemonBaseStats pokemon, Settings settings, VariantData data)
+        {
+            for(int i = 0; i< pokemon.abilities.Length; ++i)
+            {
+
+                var ability = pokemon.abilities[i];
+                if (data.AbilityReplacements.ContainsKey(ability))
+                {
+                    pokemon.abilities[i] = ability = data.AbilityReplacements[ability];
+                }
+                if (ability == Ability.NONE || !replaceableAbilities.ContainsKey(ability))
+                    continue;
+                var type = replaceableAbilities[ability];
+                if (pokemon.IsType(type))
+                    continue;
+                Ability[] replacements = null;
+                if (data.TryGetReplacementType(type, out var newType) && replacementAbilities.ContainsKey(newType))
+                {
+                    replacements = replacementAbilities[newType];
+                }
+                else
+                {
+                    foreach(var varType in pokemon.types)
+                    {
+                        if (replacementAbilities.ContainsKey(varType))
+                            replacements = replacementAbilities[varType];
+                    }
+                }
+                if (replacements == null)
+                    continue;
+                var newAbility = replacements.Length == 1 ? replacements[0] : rand.Choice(replacements);
+                pokemon.abilities[i] = newAbility;
+                data.AbilityReplacements.Add(ability, newAbility);
+            }
         }
 
         #endregion
@@ -1185,6 +1248,20 @@ namespace PokemonRandomizer.Backend.Randomization
                 }
             }
 
+            public bool TryGetReplacementType(PokemonType orignalType, out PokemonType replacementType)
+            {
+                foreach(var replacement in TypeReplacements)
+                {
+                    if(replacement.originalType == orignalType)
+                    {
+                        replacementType = replacement.newType;
+                        return true;
+                    }
+                }
+                replacementType = PokemonType.Unknown;
+                return false;
+            }
+
             public (PokemonType originalType, PokemonType newType)[] TypeReplacements
             {
                 get
@@ -1225,6 +1302,8 @@ namespace PokemonRandomizer.Backend.Randomization
             }
 
             public int[] BonusStats { get; set; } = null;
+
+            public Dictionary<Ability, Ability> AbilityReplacements = new Dictionary<Ability, Ability>(3);
 
             public List<(Move oldMove, Move newMove)> MoveReplacements { get; } = new List<(Move oldMove, Move newMove)>();
             public List<LearnSet.Entry> BonusMoves { get; } = new List<LearnSet.Entry>();
