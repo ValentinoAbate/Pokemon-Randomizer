@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static PokemonRandomizer.Settings;
+﻿using static PokemonRandomizer.Settings;
 
 namespace PokemonRandomizer.UI.Models
 {

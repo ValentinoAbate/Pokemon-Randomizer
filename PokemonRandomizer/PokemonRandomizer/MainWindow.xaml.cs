@@ -266,10 +266,13 @@ namespace PokemonRandomizer
             SetInfoBox(progressMsg);
             void DoWork(object _, DoWorkEventArgs _2)
             {
+                backgroundWorker.DoWork -= DoWork;
                 work?.Invoke();
             }
             void RunWorkerCompleted(object _, RunWorkerCompletedEventArgs args)
             {
+                backgroundWorker.DoWork -= DoWork;
+                backgroundWorker.RunWorkerCompleted -= RunWorkerCompleted;
                 if (args.Error != null)
                 {
                     onError?.Invoke(args.Error);
@@ -278,8 +281,6 @@ namespace PokemonRandomizer
                 {
                     onSuccess?.Invoke();
                 }
-                backgroundWorker.DoWork -= DoWork;
-                backgroundWorker.RunWorkerCompleted -= RunWorkerCompleted;
                 SetUIEnabled(true);
             }
             backgroundWorker.DoWork += DoWork;
