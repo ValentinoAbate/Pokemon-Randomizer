@@ -1094,6 +1094,15 @@ namespace PokemonRandomizer.Backend.Randomization
             { Pokemon.DRAGONITE, new PaletteData(Range(2, 5), Range(6, 8))},
             { Pokemon.MEWTWO, new PaletteData(Range(1, 4), Range(5, 8))},
             { Pokemon.MEW, new PaletteData(Range(10, 14), Range(3, 4))},
+            { Pokemon.CHIKORITA, new PaletteData(Range(2, 5), Range(6, 9))},
+            { Pokemon.BAYLEEF, new PaletteData(Range(2, 6), Range(7, 10))},
+            { Pokemon.MEGANIUM, new PaletteData(Range(2, 5), Range(7, 10), null, Range(14, 15))},
+            { Pokemon.CYNDAQUIL, new PaletteData(Range(2, 5), Range(6, 9), Range(10, 13))}, // 10 - 13 is fire
+            { Pokemon.QUILAVA, new PaletteData(Range(2, 5), Range(6, 9), Range(10, 13))}, // 10 - 13 is fire
+            { Pokemon.TYPHLOSION, new PaletteData(Range(2, 5), Range(6, 9), Range(10, 13))}, // 10 - 13 is fire
+            { Pokemon.TOTODILE, new PaletteData(Range(2, 5), Range(8, 10), null, Range(13, 14))}, // 13-14 is stripe
+            { Pokemon.CROCONAW, new PaletteData(Range(2, 5), Range(8, 11), null, Range(12, 14))}, // 12-14 is belly
+            { Pokemon.FERALIGATR, new PaletteData(Range(2, 5), Range(7, 10), null, Range(11, 14))}, // 11-14 is stripe
         };
 
         private static readonly Dictionary<PokemonType, TypeColorData> typeColorData = new Dictionary<PokemonType, TypeColorData>()
