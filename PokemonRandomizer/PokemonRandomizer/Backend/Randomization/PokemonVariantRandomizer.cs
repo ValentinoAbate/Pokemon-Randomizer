@@ -605,6 +605,11 @@ namespace PokemonRandomizer.Backend.Randomization
                 {
                     pokemon.abilities[i] = ability = data.AbilityReplacements[ability];
                 }
+                // Check again in case the replacement ablity has a replacement
+                if (data.AbilityReplacements.ContainsKey(ability))
+                {
+                    pokemon.abilities[i] = ability = data.AbilityReplacements[ability];
+                }
                 if (ability == Ability.NONE || !replaceableAbilities.ContainsKey(ability))
                     continue;
                 var type = replaceableAbilities[ability];
@@ -627,7 +632,10 @@ namespace PokemonRandomizer.Backend.Randomization
                     continue;
                 var newAbility = replacements.Length == 1 ? replacements[0] : rand.Choice(replacements);
                 pokemon.abilities[i] = newAbility;
-                data.AbilityReplacements.Add(ability, newAbility);
+                if (!data.AbilityReplacements.ContainsKey(ability))
+                {
+                    data.AbilityReplacements.Add(ability, newAbility);
+                }
             }
         }
 
@@ -1103,6 +1111,43 @@ namespace PokemonRandomizer.Backend.Randomization
             { Pokemon.TOTODILE, new PaletteData(Range(2, 5), Range(8, 10), null, Range(13, 14))}, // 13-14 is stripe
             { Pokemon.CROCONAW, new PaletteData(Range(2, 5), Range(8, 11), null, Range(12, 14))}, // 12-14 is belly
             { Pokemon.FERALIGATR, new PaletteData(Range(2, 5), Range(7, 10), null, Range(11, 14))}, // 11-14 is stripe
+            { Pokemon.SENTRET, new PaletteData(Range(2, 8))}, 
+            { Pokemon.FURRET, new PaletteData(Range(2, 8))},
+            { Pokemon.HOOTHOOT, new PaletteData(Range(2, 9), Range(11, 12))},
+            { Pokemon.NOCTOWL, new PaletteData(PalRange(2, 3, 4, 5, 9, 14), Range(6, 8))},
+            { Pokemon.LEDYBA, new PaletteData(Range(2, 5), Range(6, 9))}, // 10-11 eyes
+            { Pokemon.LEDIAN, new PaletteData(Range(2, 5), Range(6, 9))}, // 10-11 eyes
+            { Pokemon.SPINARAK, new PaletteData(Range(2, 6), Range(7, 9))},
+            { Pokemon.ARIADOS, new PaletteData(Range(2, 6), Range(7, 9), null, Range(10, 12))},
+            { Pokemon.CROBAT, new PaletteData(Range(2, 5), Range(8, 10))},
+            { Pokemon.CHINCHOU, new PaletteData(Range(2, 7), Range(8, 13))},
+            { Pokemon.LANTURN, new PaletteData(Range(3, 7), Range(8, 12))},
+            { Pokemon.PICHU, new PaletteData(Range(2, 6), Range(9, 11))},
+            { Pokemon.CLEFFA, new PaletteData(Range(2, 5), Range(6, 10))},
+            { Pokemon.IGGLYBUFF, new PaletteData(Range(2, 7), Range(9, 13))},
+            { Pokemon.TOGEPI, new PaletteData(Range(6, 10), Range(11, 12), null, Range(13, 14))},
+            { Pokemon.TOGETIC, new PaletteData(PalRange(1, 2, 3, 4, 5, 6, 15), Range(11, 12), null, Range(13, 14))},
+            { Pokemon.NATU, new PaletteData(Range(2, 5), Range(9, 10), null, Range(6, 8))},
+            { Pokemon.XATU, new PaletteData(Range(2, 5), Range(9, 10), null, Range(6, 8))},
+            { Pokemon.MAREEP, new PaletteData(Range(6, 9), Range(2, 5), null, Range(10, 12))},
+            { Pokemon.FLAAFFY, new PaletteData(Range(6, 10), Range(2, 5), null, Range(11, 13))},
+            { Pokemon.AMPHAROS, new PaletteData(Range(2, 5), Range(11, 14))},
+            { Pokemon.BELLOSSOM, new PaletteData(Range(8, 10), Range(2, 4), Range(5, 7), Range(11, 13))},
+            { Pokemon.MARILL, new PaletteData(Range(6, 10), Range(12, 14))},
+            { Pokemon.AZUMARILL, new PaletteData(Range(6, 9), Range(12, 14))},
+            { Pokemon.SUDOWOODO, new PaletteData(Range(2, 5), Range(7, 10), null, Range(11, 13))},
+            { Pokemon.POLITOED, new PaletteData(Range(2, 5), Range(6, 9))},
+            { Pokemon.HOPPIP, new PaletteData(Range(2, 5), Range(7, 10))},
+            { Pokemon.SKIPLOOM, new PaletteData(Range(2, 5), Range(7, 10))},
+            { Pokemon.JUMPLUFF, new PaletteData(Range(2, 5), Range(7, 11), null, Range(14, 15))},
+            { Pokemon.AIPOM, new PaletteData(Range(2, 5))}, // Range(6, 10) tail, feet, etc
+            { Pokemon.SUNKERN, new PaletteData(Range(9, 12), Range(2, 7))},
+            { Pokemon.SUNFLORA, new PaletteData(Range(3, 9), Range(12, 15))},
+            { Pokemon.YANMA, new PaletteData(PalRange(1, 3, 4, 5, 10), Range(7, 9))},
+            { Pokemon.WOOPER, new PaletteData(Range(2, 6), Range(7, 10))},
+            { Pokemon.QUAGSIRE, new PaletteData(PalRange(1, 2, 3, 5, 6, 7), Range(11, 12))},
+            { Pokemon.ESPEON, new PaletteData(Range(8, 11), Range(5, 6))},
+            { Pokemon.UMBREON, new PaletteData(Range(3, 7), Range(8, 11))},
         };
 
         private static readonly Dictionary<PokemonType, TypeColorData> typeColorData = new Dictionary<PokemonType, TypeColorData>()
