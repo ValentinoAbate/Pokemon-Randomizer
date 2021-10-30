@@ -1136,7 +1136,7 @@ namespace PokemonRandomizer.Backend.Randomization
             { Pokemon.MARILL, new PaletteData(Range(6, 10), Range(12, 14))},
             { Pokemon.AZUMARILL, new PaletteData(Range(6, 9), Range(12, 14))},
             { Pokemon.SUDOWOODO, new PaletteData(Range(2, 5), Range(7, 10), null, Range(11, 13))},
-            { Pokemon.POLITOED, new PaletteData(Range(2, 5), Range(6, 9))},
+            { Pokemon.POLITOED, new PaletteData(Range(6, 9), Range(2, 5))},
             { Pokemon.HOPPIP, new PaletteData(Range(2, 5), Range(7, 10))},
             { Pokemon.SKIPLOOM, new PaletteData(Range(2, 5), Range(7, 10))},
             { Pokemon.JUMPLUFF, new PaletteData(Range(2, 5), Range(7, 11), null, Range(14, 15))},
@@ -1148,6 +1148,7 @@ namespace PokemonRandomizer.Backend.Randomization
             { Pokemon.QUAGSIRE, new PaletteData(PalRange(1, 2, 3, 5, 6, 7), Range(11, 12))},
             { Pokemon.ESPEON, new PaletteData(Range(8, 11), Range(5, 6))},
             { Pokemon.UMBREON, new PaletteData(Range(3, 7), Range(8, 11))},
+            { Pokemon.MURKROW, new PaletteData(Range(4, 7), Range(9, 12))},
         };
 
         private static readonly Dictionary<PokemonType, TypeColorData> typeColorData = new Dictionary<PokemonType, TypeColorData>()
