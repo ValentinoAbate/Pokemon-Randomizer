@@ -17,7 +17,7 @@ namespace PokemonRandomizer.UI.Models
         public Box<bool> RandomizeGymWeather { get; set; } = new Box<bool>(true);
         public Box<double> GymWeatherRandChance { get; set; } = new Box<double>(defaultWeatherRandChance);
 
-        public Box<bool> RandomizeTownWeather { get; set; } = new Box<bool>(true);
+        public Box<bool> RandomizeTownWeather { get; set; } = new Box<bool>(false);
         public Box<double> TownWeatherRandChance { get; set; } = new Box<double>(defaultWeatherRandChance);
 
         /// <summary>
