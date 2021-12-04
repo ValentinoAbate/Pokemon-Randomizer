@@ -1146,7 +1146,7 @@ namespace PokemonRandomizer.Backend.Randomization
             { Pokemon.YANMA, new PaletteData(PalRange(1, 3, 4, 5, 10), Range(7, 9))},
             { Pokemon.WOOPER, new PaletteData(Range(2, 6), Range(7, 10))},
             { Pokemon.QUAGSIRE, new PaletteData(PalRange(1, 2, 3, 5, 6, 7, 8), Range(11, 12))},
-            { Pokemon.ESPEON, new PaletteData(Range(8, 11), Range(5, 6))},
+            { Pokemon.ESPEON, new PaletteData(Range(8, 12), Range(5, 6))},
             { Pokemon.UMBREON, new PaletteData(Range(3, 7), Range(8, 11))},
             { Pokemon.MURKROW, new PaletteData(Range(4, 7), Range(9, 12))},
             { Pokemon.SLOWKING, new PaletteData(Range(4, 7), Range(12, 14), null, Range(1, 3))}, 
