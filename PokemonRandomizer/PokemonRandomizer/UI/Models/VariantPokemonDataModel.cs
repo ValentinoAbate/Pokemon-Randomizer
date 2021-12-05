@@ -6,6 +6,15 @@ namespace PokemonRandomizer.UI.Models
 {
     public class VariantPokemonDataModel : DataModel
     {
+        public enum TypeTransformationWeightOption
+        {
+            Random,
+            Balanced,
+            Custom
+        }
+
+        public Box<TypeTransformationWeightOption> TypeTransformationOption { get; set; } = new Box<TypeTransformationWeightOption>(TypeTransformationWeightOption.Balanced);
+
         public Box<bool> CreateVariants { get; set; } = new Box<bool>();
         public Box<double> VariantChance { get; set; } = new Box<double>(0.2);
 

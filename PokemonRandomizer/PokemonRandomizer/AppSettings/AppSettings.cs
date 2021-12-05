@@ -80,12 +80,46 @@ namespace PokemonRandomizer.AppSettings
             {TypeTransformation.DoubleTypeReplacement, 0.05f},
         };
 
+        private static WeightedSet<TypeTransformation> SingleTypeVariantTransformationEvenWeights { get; } = new WeightedSet<TypeTransformation>()
+        {
+            {TypeTransformation.GainSecondaryType, 1f},
+            {TypeTransformation.PrimaryTypeReplacement, 1f},
+            {TypeTransformation.DoubleTypeReplacement, 1f},
+        };
+
         public static  WeightedSet<TypeTransformation> DualTypeVariantTransformationDefaultWeights { get; } = new WeightedSet<TypeTransformation>()
         {
             {TypeTransformation.PrimaryTypeReplacement, 0.35f},
             {TypeTransformation.SecondaryTypeReplacement, 0.5f},
             {TypeTransformation.DoubleTypeReplacement, 0.075f},
             {TypeTransformation.TypeLoss, 0.025f},
+        };
+
+        public static WeightedSet<TypeTransformation> DualTypeVariantTransformationEvenWeights { get; } = new WeightedSet<TypeTransformation>()
+        {
+            {TypeTransformation.PrimaryTypeReplacement, 1},
+            {TypeTransformation.SecondaryTypeReplacement, 1},
+            {TypeTransformation.DoubleTypeReplacement, 1},
+            {TypeTransformation.TypeLoss, 1},
+        };
+
+        public override Settings VariantSettings => new PokemonVariantRandomizer.Settings()
+        {
+            SingleTypeTransformationWeights = variantData.TypeTransformationOption.Value switch
+            {
+                VariantPokemonDataModel.TypeTransformationWeightOption.Random => SingleTypeVariantTransformationEvenWeights,
+                VariantPokemonDataModel.TypeTransformationWeightOption.Balanced => SingleTypeVariantTransformationDefaultWeights,
+                VariantPokemonDataModel.TypeTransformationWeightOption.Custom => variantData.SingleTypeTransformationWeights,
+                _ => throw new NotImplementedException(),
+            },
+            DualTypeTransformationWeights = variantData.TypeTransformationOption.Value switch
+            {
+                VariantPokemonDataModel.TypeTransformationWeightOption.Random => DualTypeVariantTransformationEvenWeights,
+                VariantPokemonDataModel.TypeTransformationWeightOption.Balanced => DualTypeVariantTransformationDefaultWeights,
+                VariantPokemonDataModel.TypeTransformationWeightOption.Custom => variantData.DualTypeTransformationWeights,
+                _ => throw new NotImplementedException(),
+            },
+            InvertChanceOfSecondaryTypeChangingForFlyingTypes = true,
         };
 
         public override double VariantChance => RandomChance(variantData.CreateVariants, variantData.VariantChance);
