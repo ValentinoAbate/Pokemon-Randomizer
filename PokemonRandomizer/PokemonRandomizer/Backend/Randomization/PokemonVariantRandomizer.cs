@@ -1080,7 +1080,7 @@ namespace PokemonRandomizer.Backend.Randomization
             { Pokemon.PINSIR, new PaletteData(Range(11, 14), Range(2, 5))},
             { Pokemon.TAUROS, new PaletteData(Range(7, 10), Range(11, 14), Range(2, 5))},
             { Pokemon.MAGIKARP, new PaletteData(Range(12, 15), Range(6, 8), null, Range(9, 11))},
-            { Pokemon.GYARADOS, new PaletteData(Range(4, 7), Range(8, 10), null, Range(1, 13))},
+            { Pokemon.GYARADOS, new PaletteData(Range(4, 7), Range(8, 10), null, Range(11, 13))},
             { Pokemon.LAPRAS, new PaletteData(Range(11, 14), Range(7, 10))}, // Belly Range(4, 6)
             { Pokemon.DITTO, new PaletteData(Range(5, 9))},
             { Pokemon.EEVEE, new PaletteData(Range(11, 14), Range(2, 5))},
@@ -1167,6 +1167,7 @@ namespace PokemonRandomizer.Backend.Randomization
             { Pokemon.HERACROSS, new PaletteData(Range(2, 5))},
             { Pokemon.SNEASEL, new PaletteData(Range(2, 5), Range(6, 9))},
             { Pokemon.TEDDIURSA, new PaletteData(Range(2, 6), Range(7, 10))},
+            { Pokemon.URSARING, new PaletteData(Range(2, 6), Range(7, 10))},
             { Pokemon.SLUGMA, new PaletteData(Range(2, 6))},
             { Pokemon.MAGCARGO, new PaletteData(Range(2, 10), Range(11, 14))},
             { Pokemon.SWINUB, new PaletteData(Range(2, 7), Range(8, 10))},
