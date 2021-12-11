@@ -1177,6 +1177,31 @@ namespace PokemonRandomizer.Backend.Randomization
             { Pokemon.OCTILLERY, new PaletteData(Range(2, 5), Range(7, 10))},
             { Pokemon.DELIBIRD, new PaletteData(Range(2, 5))},
             { Pokemon.MANTINE, new PaletteData(Range(2, 5), Range(10, 14), null, Range(7, 9))},
+            { Pokemon.SKARMORY, new PaletteData(Range(1, 6), Range(7, 10))},
+            { Pokemon.HOUNDOUR, new PaletteData(Range(2, 5), Range(6, 9))}, // 15 is partial outline
+            { Pokemon.HOUNDOOM, new PaletteData(Range(2, 5), Range(6, 9))}, // 15 is partial outline
+            { Pokemon.KINGDRA, new PaletteData(Range(2, 5), Range(9, 12))},
+            { Pokemon.PHANPY, new PaletteData(Range(2, 5), Range(7, 10))},
+            { Pokemon.DONPHAN, new PaletteData(Range(7, 9), Range(2, 5))},
+            { Pokemon.PORYGON2, new PaletteData(Range(2, 5), Range(6, 11))},
+            { Pokemon.STANTLER, new PaletteData(Range(2, 5))}, // 70 is horns and other fur
+            { Pokemon.SMEARGLE, new PaletteData(PalRange(3, 4, 5, 8, 9), PalRange(2, 10, 11, 12))},
+            { Pokemon.TYROGUE, new PaletteData(Range(2, 6), Range(7, 10))},
+            { Pokemon.HITMONTOP, new PaletteData(Range(2, 5), Range(7, 10))},
+            { Pokemon.SMOOCHUM, new PaletteData(PalRange(2, 6, 7, 8), Range(9, 12))}, // 3-5 body
+            { Pokemon.ELEKID, new PaletteData(Range(2, 5))},
+            { Pokemon.MAGBY, new PaletteData(Range(2, 5), Range(7, 10))},
+            { Pokemon.MILTANK, new PaletteData(Range(2, 5), Range(6, 9))},
+            { Pokemon.BLISSEY, new PaletteData(Range(6, 10))},
+            { Pokemon.RAIKOU, new PaletteData(Range(2, 5), Range(6, 9))},
+            { Pokemon.ENTEI, new PaletteData(PalRange(2, 3, 4, 5, 9, 10, 11), Range(6, 8))},
+            { Pokemon.SUICUNE, new PaletteData(Range(2, 5), Range(6, 9))},
+            { Pokemon.LARVITAR, new PaletteData(Range(2, 5), Range(7, 10))},
+            { Pokemon.PUPITAR, new PaletteData(Range(2, 5))},
+            { Pokemon.TYRANITAR, new PaletteData(Range(2, 5), Range(7, 10))},
+            { Pokemon.LUGIA, new PaletteData(Range(1, 5), Range(6, 9))},
+            { Pokemon.HOーOH, new PaletteData(Range(2, 5), Range(6, 9), null, Range(10, 12))},
+            { Pokemon.CELEBI, new PaletteData(Range(2, 6), Range(8, 11))},
         };
 
         private static readonly Dictionary<PokemonType, TypeColorData> typeColorData = new Dictionary<PokemonType, TypeColorData>()
