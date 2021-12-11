@@ -163,6 +163,7 @@ FIXES //////////////////////////////////////////////////////////////////////////
 - Potentially: write catching tut on emerald has some differences from clean ROMs (see diff9)
 - Fix professor Oak's aides for National Dex mode:
 	- https://www.reddit.com/r/PokemonROMhacks/comments/ew7bl3/fire_red_prof_oak_aides_check_national_dex/
+- (Sometimes) hardlock right before the Wally catching tutorial
 
 DUMB IDEA CORNER ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

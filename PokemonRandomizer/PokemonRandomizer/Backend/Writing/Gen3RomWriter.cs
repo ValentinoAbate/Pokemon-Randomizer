@@ -434,7 +434,6 @@ namespace PokemonRandomizer.Backend.Writing
             else if(ableToRelocateMoveData) // else move and log repoint
             {
                 rom.WriteBlock((int)newMoveDataOffset, moveData.File);
-                rom.WipeBlock(originalMovesetOffset, moveData.File.Length);
                 repoints.Add(originalMovesetOffset, (int)newMoveDataOffset);
             }
             else
