@@ -3,6 +3,7 @@ using PokemonRandomizer.Backend.EnumTypes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using static PokemonRandomizer.Backend.DataStructures.MoveData;
 
 namespace PokemonRandomizer.Backend.Randomization
 {
@@ -61,7 +62,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 }
             }
 
-            //var highestPower = availableMoves.Max((m) => data.MoveData[(int)m].power);
+            //var highestPower = availableMoves.Max(m => data.MoveData[(int)m].power);
             //for (int i = 0; i < pokemon.TMCompat.Length; ++i)
             //{
             //    if (pokemon.TMCompat.Get(i) && data.MoveData[(int)data.TMMoves[i]].power <= highestPower)
@@ -132,7 +133,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 return ret;
 
             var fourthMoveChoice = new WeightedSet<Move>(availableMoves.Keys, LevelWeightScale);
-            var currentMoves = ret.Where((m) => m != Move.None).Select(dataT.GetMoveData);
+            var currentMoves = ret.Where(m => m != Move.None).Select(dataT.GetMoveData);
             var metrics = new List<Func<Move, float>>();
             const float needSynergy = 12500;
             const float preferSynergy = needSynergy / 2;
@@ -144,46 +145,46 @@ namespace PokemonRandomizer.Backend.Randomization
             void CalculateMoveSynergy(Func<MoveData, bool> currMovePred, Predicate<MoveData> moveChoicePred, float intensity)
             {
                 int count = currentMoves.Count(currMovePred);
-                if (currentMoves.Count(currMovePred) > 0)
+                if (count > 0)
                 {
-                    metrics.Add((m) => (moveChoicePred(dataT.GetMoveData(m)) ? intensity : 1) * count);
+                    metrics.Add(m => (moveChoicePred(dataT.GetMoveData(m)) ? intensity : 1) * count);
                 }
             }
 
             // Nightmare or Dream Eater + Sleep move Synergy
-            CalculateMoveSynergy((m) => m.effect == MoveData.MoveEffect.DreamEater || m.effect == MoveData.MoveEffect.StatusNightmare,
-                             (m) => m.effect == MoveData.MoveEffect.StatusSleep, needSynergy);
+            CalculateMoveSynergy(m => m.effect == MoveEffect.DreamEater || m.effect == MoveEffect.StatusNightmare,
+                             m => m.effect == MoveEffect.StatusSleep, needSynergy);
             // Snore or Sleep Talk + Rest Synergy
-            CalculateMoveSynergy((m) => m.effect == MoveData.MoveEffect.SleepTalk || m.effect == MoveData.MoveEffect.DamageFailUnlessAsleepFlinchChance,
-                 (m) => m.effect == MoveData.MoveEffect.Rest, needSynergy);
+            CalculateMoveSynergy(m => m.effect == MoveEffect.SleepTalk || m.effect == MoveEffect.DamageFailUnlessAsleepFlinchChance,
+                 m => m.effect == MoveEffect.Rest, needSynergy);
             // Rollout or Ice Ball + Defense Curl Synergy
-            CalculateMoveSynergy((m) => m.effect == MoveData.MoveEffect.MultiTurnBuildup,
-                             (m) => m.effect == MoveData.MoveEffect.DefPlus1AndPrepForRoll, preferSynergy);
+            CalculateMoveSynergy(m => m.effect == MoveEffect.MultiTurnBuildup,
+                             m => m.effect == MoveEffect.DefPlus1AndPrepForRoll, preferSynergy);
             // Spit Up or Swallow + Stockpile Synergy
-            CalculateMoveSynergy((m) => m.effect == MoveData.MoveEffect.SpitUp || m.effect == MoveData.MoveEffect.Swallow,
-                             (m) => m.effect == MoveData.MoveEffect.Stockpile, needSynergy);
+            CalculateMoveSynergy(m => m.effect == MoveEffect.SpitUp || m.effect == MoveEffect.Swallow,
+                             m => m.effect == MoveEffect.Stockpile, needSynergy);
             // Stockpile + Spit Up or Swallow Synergy
-            CalculateMoveSynergy((m) => m.effect == MoveData.MoveEffect.Stockpile, 
-                (m) => m.effect == MoveData.MoveEffect.SpitUp || m.effect == MoveData.MoveEffect.Swallow, preferSynergy);
+            CalculateMoveSynergy(m => m.effect == MoveEffect.Stockpile, 
+                m => m.effect == MoveEffect.SpitUp || m.effect == MoveEffect.Swallow, preferSynergy);
             // Sun Move + Sun
-            CalculateMoveSynergy((m) => m.effect == MoveData.MoveEffect.Solarbeam || m.effect == MoveData.MoveEffect.RecoverHpWeather2,
-                             (m) => m.effect == MoveData.MoveEffect.WeatherSun, preferSynergy);
+            CalculateMoveSynergy(m => m.effect == MoveEffect.Solarbeam || m.effect == MoveEffect.RecoverHpWeather2,
+                             m => m.effect == MoveEffect.WeatherSun, preferSynergy);
             // Fire Move + Sun
-            CalculateMoveSynergy((m) => m.type == PokemonType.FIR, (m) => m.effect == MoveData.MoveEffect.WeatherSun, weakSynergy);
+            CalculateMoveSynergy(m => m.type == PokemonType.FIR, m => m.effect == MoveEffect.WeatherSun, weakSynergy);
             // Rain move + Rain
-            CalculateMoveSynergy((m) => m.effect == MoveData.MoveEffect.Thunder,
-                             (m) => m.effect == MoveData.MoveEffect.WeatherRain, preferSynergy);
+            CalculateMoveSynergy(m => m.effect == MoveEffect.Thunder,
+                             m => m.effect == MoveEffect.WeatherRain, preferSynergy);
             // Water Move + Rain
-            CalculateMoveSynergy((m) => m.type == PokemonType.WAT, (m) => m.effect == MoveData.MoveEffect.WeatherRain, weakSynergy);
+            CalculateMoveSynergy(m => m.type == PokemonType.WAT, m => m.effect == MoveEffect.WeatherRain, weakSynergy);
             // Weather Ball + Weather (Rain / Sun / Hail)
-            CalculateMoveSynergy((m) => m.effect == MoveData.MoveEffect.WeatherBall,
-                                 (m) => m.effect == MoveData.MoveEffect.WeatherRain || m.effect == MoveData.MoveEffect.WeatherSun 
-                                     || m.effect == MoveData.MoveEffect.WeatherHail, needSynergy);
+            CalculateMoveSynergy(m => m.effect == MoveEffect.WeatherBall,
+                                 m => m.effect == MoveEffect.WeatherRain || m.effect == MoveEffect.WeatherSun 
+                                     || m.effect == MoveEffect.WeatherHail, needSynergy);
             // Weather Ball + Sandstorm
-            CalculateMoveSynergy((m) => m.effect == MoveData.MoveEffect.WeatherBall,
-                                  (m) => m.effect == MoveData.MoveEffect.WeatherSandstorm, weakSynergy);
+            CalculateMoveSynergy(m => m.effect == MoveEffect.WeatherBall,
+                                  m => m.effect == MoveEffect.WeatherSandstorm, weakSynergy);
             // Choose fourth move
-            ret[3] = rand.Choice(new WeightedSet<Move>(availableMoves.Keys, (m) => LevelWeightScale(m) * Math.Max(1, metrics.Sum((metric) => metric(m)))));
+            ret[3] = rand.Choice(new WeightedSet<Move>(availableMoves.Keys, m => LevelWeightScale(m) * Math.Max(1, metrics.Sum((metric) => metric(m)))));
 
             return ret;
         }
