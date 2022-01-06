@@ -69,6 +69,9 @@ IDEAS //////////////////////////////////////////////////////////////////////////
 	- Choose priority for different heuristics for a category
 		- Heuristics can be on the same level
 	- Map categories can be for "Routes" (Maps with "Route" in the name) and named maps
+- Variant Randomization
+	- Palettes:
+		- Make the similar color / dection algo just fall back on the the simple color change for now, allow for a different fallback later
 - Special Pokemon Randomization
 	- Setting for legenary pokemon to always be legendary pokemon (when relevant)
 - 365 Mode
