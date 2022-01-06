@@ -1202,6 +1202,15 @@ namespace PokemonRandomizer.Backend.Randomization
             { Pokemon.LUGIA, new PaletteData(Range(1, 5), Range(6, 9))},
             { Pokemon.HOーOH, new PaletteData(Range(2, 5), Range(6, 9), null, Range(10, 12))},
             { Pokemon.CELEBI, new PaletteData(Range(2, 6), Range(8, 11))},
+            { Pokemon.TREECKO, new PaletteData(Range(11, 14), Range(5, 7), PalRange(4, 8, 9))},
+            { Pokemon.GROVYLE, new PaletteData(Range(2, 5), Range(6, 8), PalRange(1, 10, 13))},
+            { Pokemon.SCEPTILE, new PaletteData(PalRange(8, 11, 12, 13, 14), Range(5, 7))},
+            { Pokemon.TORCHIC, new PaletteData(Range(11, 14), Range(5, 8))},
+            { Pokemon.COMBUSKEN, new PaletteData(Range(11, 14), Range(1, 8))}, // might need to make all one color
+            { Pokemon.BLAZIKEN, new PaletteData(Range(5, 8), Range(9, 14))},
+            { Pokemon.MUDKIP, new PaletteData(Range(11, 14), Range(5, 8))},
+            { Pokemon.MARSHTOMP, new PaletteData(PalRange(4, 10, 11, 12, 13, 14), Range(5, 8))},
+            { Pokemon.SWAMPERT, new PaletteData(Range(11, 13), Range(5, 8), PalRange(3, 4,8, 10, 14))},
         };
 
         private static readonly Dictionary<PokemonType, TypeColorData> typeColorData = new Dictionary<PokemonType, TypeColorData>()
