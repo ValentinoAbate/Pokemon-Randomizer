@@ -1203,7 +1203,7 @@ namespace PokemonRandomizer.Backend.Randomization
             { Pokemon.HOーOH, new PaletteData(Range(2, 5), Range(6, 9), null, Range(10, 12))},
             { Pokemon.CELEBI, new PaletteData(Range(2, 6), Range(8, 11))},
             { Pokemon.TREECKO, new PaletteData(Range(11, 14), Range(5, 7), PalRange(4, 8, 9))},
-            { Pokemon.GROVYLE, new PaletteData(Range(2, 5), Range(6, 8), PalRange(1, 10, 13))},
+            { Pokemon.GROVYLE, new PaletteData(Range(2, 5), PalRange(6, 7, 8, 11), PalRange(1, 10, 13))},
             { Pokemon.SCEPTILE, new PaletteData(PalRange(8, 11, 12, 13, 14), Range(5, 7))},
             { Pokemon.TORCHIC, new PaletteData(Range(11, 14), Range(5, 8))},
             { Pokemon.COMBUSKEN, new PaletteData(Range(11, 14), Range(1, 8))}, // might need to make all one color
@@ -1211,6 +1211,15 @@ namespace PokemonRandomizer.Backend.Randomization
             { Pokemon.MUDKIP, new PaletteData(Range(11, 14), Range(5, 8))},
             { Pokemon.MARSHTOMP, new PaletteData(PalRange(4, 10, 11, 12, 13, 14), Range(5, 8))},
             { Pokemon.SWAMPERT, new PaletteData(Range(11, 13), Range(5, 8), PalRange(3, 4,8, 10, 14))},
+            { Pokemon.POOCHYENA, new PaletteData(PalRange(1, 5, 6, 7, 8, 9), PalRange(3, 12, 13))},
+            { Pokemon.MIGHTYENA, new PaletteData(Range(3, 9), Range(11, 13))},
+            { Pokemon.ZIGZAGOON, new PaletteData(Range(1, 4), PalRange(5, 7, 8, 9, 13, 14))},
+            { Pokemon.LINOONE, new PaletteData(Range(1, 4), PalRange(5, 7, 8, 9, 10, 13, 14, 15))},
+            { Pokemon.WURMPLE, new PaletteData(PalRange(1, 2, 5, 6, 7))},
+            { Pokemon.SILCOON, new PaletteData(Range(5, 8))},
+            { Pokemon.BEAUTIFLY, new PaletteData(Range(7, 11), Range(4, 6), PalRange(13), PalRange(14)) },
+            { Pokemon.CASCOON, new PaletteData(Range(5, 8))},
+            { Pokemon.DUSTOX, new PaletteData(Range(5, 7), Range(11, 12), PalRange(1, 2, 3, 8, 9, 10), Range(13, 14)) },
         };
 
         private static readonly Dictionary<PokemonType, TypeColorData> typeColorData = new Dictionary<PokemonType, TypeColorData>()
