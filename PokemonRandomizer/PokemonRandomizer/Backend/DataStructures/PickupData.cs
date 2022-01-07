@@ -19,6 +19,10 @@ namespace PokemonRandomizer.Backend.DataStructures
         {
             public Item item;
             public int chance;
+            public override string ToString()
+            {
+                return $"{item}: {chance}";
+            }
         }
     }
 }
