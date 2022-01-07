@@ -292,6 +292,9 @@ namespace PokemonRandomizer.AppSettings
         public override double HiddenItemRandChance => RandomChance(itemData.RandomizeHiddenItems, itemData.HiddenItemRandChance);
         public override ItemRandomizer.Settings HiddenItemSettings => itemData.HiddenItemSettings;
 
+        public override double PickupItemRandChance => RandomChance(itemData.RandomizePickupItems, itemData.PickupItemRandChance);
+        public override ItemRandomizer.Settings PickupItemSettings => itemData.PickupItemSettings;
+
         #endregion
 
         #region Dream Team

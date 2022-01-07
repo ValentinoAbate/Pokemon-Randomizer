@@ -723,6 +723,7 @@ namespace PokemonRandomizer.Backend.Randomization
             #endregion
 
             #region Items
+
             // Field items happen in map scripts
 
             // Randomize PC starting item
@@ -734,6 +735,35 @@ namespace PokemonRandomizer.Backend.Randomization
             {
                 data.PcStartItem = settings.CustomPcItem;
             }
+
+            // Randomize Pickup Items
+            if (settings.PickupItemRandChance > 0) // if randomize
+            {
+                if(data.PickupItems.DataType == PickupData.Type.ItemsWithChances)
+                {
+                    for (int i = 0; i < data.PickupItems.ItemChances.Count; i++)
+                    {
+                        var itemChance = data.PickupItems.ItemChances[i];
+                        data.PickupItems.ItemChances[i] = new PickupData.ItemChance()
+                        {
+                            item = itemRand.RandomItem(items, itemChance.item, settings.PickupItemSettings),
+                            chance = itemChance.chance
+                        };
+                    }
+                }
+                else // Rare + Common table
+                {
+                    for (int i = 0; i < data.PickupItems.Items.Count; i++)
+                    {
+                        data.PickupItems.Items[i] = itemRand.RandomItem(items, data.PickupItems.Items[i], settings.PickupItemSettings);
+                    }
+                    for (int i = 0; i < data.PickupItems.RareItems.Count; i++)
+                    {
+                        data.PickupItems.RareItems[i] = itemRand.RandomItem(items, data.PickupItems.RareItems[i], settings.PickupItemSettings);
+                    }
+                }
+            }
+
             #endregion
 
 #if DEBUG

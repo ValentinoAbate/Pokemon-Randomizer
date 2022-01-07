@@ -438,6 +438,12 @@ namespace PokemonRandomizer.AppSettings
             SamePocketChance = 0.75,
         };
 
+        public override double PickupItemRandChance => 1;
+        public override ItemRandomizer.Settings PickupItemSettings { get; } = new ItemRandomizer.Settings()
+        {
+            SamePocketChance = 0.75,
+        };
+
         #endregion
 
         #region Misc

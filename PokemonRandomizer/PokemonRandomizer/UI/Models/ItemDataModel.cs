@@ -21,7 +21,7 @@ namespace PokemonRandomizer.UI.Models
         public Box<bool> OverrideCustomMartItemPrice { get; set; } = new Box<bool>(false);
         public Box<double> CustomMartItemPrice { get; set; } = new Box<double>(4800);
 
-        public Box<bool> RandomizeFieldItems { get; set; } = new Box<bool>(true);
+        public Box<bool> RandomizeFieldItems { get; set; } = new Box<bool>(false);
         public Box<double> FieldItemRandChance { get; set; } = new Box<double>(1);
         public ItemSettings FieldItemSettings { get; set; } = new ItemSettings()
         {
@@ -31,6 +31,13 @@ namespace PokemonRandomizer.UI.Models
         public Box<bool> RandomizeHiddenItems { get; set; } = new Box<bool>(true);
         public Box<double> HiddenItemRandChance { get; set; } = new Box<double>(1);
         public  ItemSettings HiddenItemSettings { get; set; } = new ItemSettings()
+        {
+            SamePocketChance = 0.75,
+        };
+
+        public Box<bool> RandomizePickupItems { get; set; } = new Box<bool>(false);
+        public Box<double> PickupItemRandChance { get; set; } = new Box<double>(1);
+        public ItemSettings PickupItemSettings { get; set; } = new ItemSettings()
         {
             SamePocketChance = 0.75,
         };

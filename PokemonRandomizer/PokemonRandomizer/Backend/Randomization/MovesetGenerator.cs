@@ -62,13 +62,6 @@ namespace PokemonRandomizer.Backend.Randomization
                 }
             }
 
-            //var highestPower = availableMoves.Max(m => data.MoveData[(int)m].power);
-            //for (int i = 0; i < pokemon.TMCompat.Length; ++i)
-            //{
-            //    if (pokemon.TMCompat.Get(i) && data.MoveData[(int)data.TMMoves[i]].power <= highestPower)
-            //        availableMoves.Add(data.TMMoves[i]);
-            //}
-
             // Initialize returns
             Move[] ret = new Move[4] { Move.None, Move.None, Move.None, Move.None };
             if (availableMoves.Count <= 0)

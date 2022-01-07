@@ -106,8 +106,7 @@ FEATURES ///////////////////////////////////////////////////////////////////////
 - Gen IV compatibility
 - ROM Data XML export (randomized rom exports its offsets so it can be re-randomized)
 	- Include data in a human-readable format
-- Item randomization 
-	- pickup items
+- Item randomization
 	- stores
 	- vending machines
 	- statics / gift items (partially complete)

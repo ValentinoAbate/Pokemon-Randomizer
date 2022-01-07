@@ -317,6 +317,9 @@ namespace PokemonRandomizer
         public abstract double HiddenItemRandChance { get; }
         public abstract ItemRandomizer.Settings HiddenItemSettings { get; }
 
+        public abstract double PickupItemRandChance { get; }
+        public abstract ItemRandomizer.Settings PickupItemSettings { get; }
+
         #endregion
 
         #region Misc
