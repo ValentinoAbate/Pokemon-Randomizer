@@ -685,7 +685,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 // Randomize Wally starter if applicable
                 if (settings.RandomizeWallyAce)
                 {
-                    // Remove all legendaries (the tutorial cutscene seems to crash if the catching tut pokemon is a legendary)
+                    // Remove all pokemon that cannot be male (the tutorial cutscen crashes if the catching tut pokemon isn't able to be male)
                     var possibleCatchingTutPokemon = new List<Pokemon>(pokemonSet);
                     possibleCatchingTutPokemon.RemoveAll(p => data.GetBaseStats(p).genderRatio > 0xFD);
                     data.CatchingTutPokemon = pokeRand.RandomPokemon(possibleCatchingTutPokemon, data.CatchingTutPokemon, rivalSettings.PokemonSettings, 5);

@@ -34,6 +34,8 @@ IDEAS //////////////////////////////////////////////////////////////////////////
 	- Difficulty: All trainers use good AI
 	- Difficulty: Trainers use held items
 	- Trainers can use battle items?
+- Catching Tut ideas
+	- Make the catching tut pokemon that wally is given the unevolved form of a pokemon that normal actually has in battle
 - Learnset Randomization
 	- Add other options for level choosing alg (specifically just power, intelligent, or totally random)
 	- Add other move choosing options (from TM compats, from STAB, from Status, from Damaging, from a moveset of a pokemon of the same type)
