@@ -1,13 +1,41 @@
 ﻿using PokemonRandomizer.Backend.EnumTypes;
+using PokemonRandomizer.Backend.Utilities;
 
 namespace PokemonRandomizer.Backend.DataStructures
 {
-    using Utilities;
     public class ItemData
     {
         public const string unusedName = "????????";
         // Name length limit in RSE
         public const int nameLength = 14;
+
+        [System.Flags]
+        public enum Categories
+        {
+            None          = 0,
+            KeyItem       = 1 << 0,
+            Ball          = 1 << 1,
+            Medicine      = 1 << 2,
+            TM            = 1 << 3,
+            HM            = 1 << 4,
+            Mail          = 1 << 5,
+            Berry         = 1 << 6,
+            HeldItem      = 1 << 7,
+            BattleItem    = 1 << 8,
+            BattleBerry   = 1 << 9,
+            EVBerry       = 1 << 10,
+            MinigameBerry = 1 << 11, // Berry that are only used for pokeblocks, powder, poffins, etc.
+            SellItem      = 1 << 12,
+            StatIncrease  = 1 << 13, // (Protein, PP up, Rare Candy, etc)
+            ExchangeItem  = 1 << 14, // (Shards (RSE), Heart Scale (RSE), TinyMushroom (FRLG), Shoal Items (RSE))
+            ContestScarf  = 1 << 15,
+            Utility       = 1 << 16, // (Escape Rope, Repels, Poke Doll, Etc)
+            Breeding      = 1 << 17, // (Inscence, Light Ball, etc)
+            LuckyEgg      = 1 << 18,
+            EvolutionItem = 1 << 19,
+            Special       = 1 << 20,
+        }
+
         public bool IsUnused => Name == unusedName;
         public string Name { get; set;  }
         public Item Item { get; set; }
@@ -47,6 +75,7 @@ namespace PokemonRandomizer.Backend.DataStructures
 
         public string OriginalDescription { get; private set; }
         public bool ReformatDescription { get; set; } = false;
+        public Categories ItemCategories { get; set; } = Categories.None;
 
         public override string ToString()
         {
@@ -72,11 +101,78 @@ namespace PokemonRandomizer.Backend.DataStructures
             other.spriteOffset = spriteOffset;
             other.paletteOffset = paletteOffset;
             other.OriginalDescription = OriginalDescription;
+            other.ItemCategories = ItemCategories;
         }
 
         public void SetOriginalValues()
         {
             OriginalDescription = Description;
+        }
+
+        // Later can add specific items that count as certain things for this ROM, etc
+        public void SetCategoryFlags()
+        {
+            if (IsUnused)
+            {
+                return;
+            }
+            if (IsKeyItem)
+            {
+                ItemCategories = Categories.KeyItem;
+            }
+            else if (Item.IsPokeBall())
+            {
+                ItemCategories = Categories.Ball;
+            }
+            else if (Item.IsTM())
+            {
+                ItemCategories = Categories.TM;
+            }
+            else if (Item.IsMail())
+            {
+                ItemCategories = Categories.Mail;
+            }
+            else if(Item.IsExchangeItem())
+            {
+                ItemCategories = Categories.ExchangeItem;
+            }
+            else if (Item.IsContestScarf())
+            {
+                ItemCategories = Categories.ContestScarf;
+            }
+            else if (Item.IsSellItem())
+            {
+                ItemCategories = Categories.SellItem;
+            }
+            else if (Item.IsStatBoostItem())
+            {
+                ItemCategories = Categories.StatIncrease;
+            }
+            else if (Item.IsBattleItem())
+            {
+                ItemCategories = Categories.BattleItem;
+            }
+            else if (Item.IsBerry())
+            {
+                ItemCategories = Categories.Berry;
+                if (Item.IsEvBerry())
+                {
+                    ItemCategories |= Categories.EVBerry;
+                }
+                else if (Item.IsMinigameBerry())
+                {
+                    ItemCategories |= Categories.MinigameBerry;
+                }
+            }
+
+            if (Item.IsSpecialItem())
+            {
+                ItemCategories |= Categories.Special;
+            }
+            if (Item.IsHeldItem())
+            {
+                ItemCategories |= Categories.HeldItem;
+            }
         }
     }
 }

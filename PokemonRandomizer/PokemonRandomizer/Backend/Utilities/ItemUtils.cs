@@ -62,5 +62,51 @@ namespace PokemonRandomizer.Backend.Utilities
             Item.Net_Ball, Item.Premier_Ball, Item.Repeat_Ball, Item.Safari_Ball, Item.Timer_Ball, Item.Ultra_Ball
         };
         public static bool IsPokeBall(this Item item) => pokeBalls.Contains(item);
+
+        private static readonly HashSet<Item> contestScarves = new HashSet<Item>
+        {
+            Item.Blue_Scarf, Item.Green_Scarf, Item.Pink_Scarf, Item.Red_Scarf, Item.Yellow_Scarf
+        };
+        public static bool IsContestScarf(this Item item) => contestScarves.Contains(item);
+
+        public static bool IsShoalMaterial(this Item item) => item == Item.Shoal_Salt || item == Item.Shoal_Shell;
+
+        private static readonly HashSet<Item> shards = new HashSet<Item>
+        {
+            Item.Blue_Shard, Item.Green_Shard, Item.Red_Shard, Item.Yellow_Shard
+        };
+        public static bool IsShard(this Item item) => shards.Contains(item);
+
+        public static bool IsExchangeItem(this Item item) => item.IsShard() || item.IsShoalMaterial() || item == Item.Heart_Scale || item == Item.TinyMushroom;
+
+        private static readonly HashSet<Item> sellItems = new HashSet<Item>
+        {
+            Item.Nugget, Item.Pearl, Item.Big_Pearl, Item.Stardust, Item.Star_Piece, Item.Big_Mushroom
+        };
+        public static bool IsSellItem(this Item item) => sellItems.Contains(item);
+
+        private static readonly HashSet<Item> statBoostItems = new HashSet<Item>
+        {
+            Item.PP_Up, Item.PP_Max, Item.Rare_Candy, Item.Protein, Item.Zinc, Item.Calcium, Item.Carbos, Item.Iron, Item.HP_Up
+        };
+        public static bool IsStatBoostItem(this Item item) => statBoostItems.Contains(item);
+
+        private static readonly HashSet<Item> specialItems = new HashSet<Item>
+        {
+            Item.PP_Max, Item.Master_Ball, Item.Liechi_Berry
+        };
+        public static bool IsSpecialItem(this Item item) => specialItems.Contains(item);
+
+        private static readonly HashSet<Item> battleItems = new HashSet<Item>
+        {
+            Item.X_Attack, Item.X_Defend, Item.X_Special, Item.X_Speed, Item.Guard_Spec, Item.Dire_Hit
+        };
+        public static bool IsBattleItem(this Item item) => battleItems.Contains(item);
+
+        public static bool IsBerry(this Item item) => item >= Item.Cheri_Berry && item <= Item.Enigma_Berry;
+        public static bool IsEvBerry(this Item item) => item >= Item.Pomeg_Berry && item <= Item.Tamato_Berry;
+        public static bool IsMinigameBerry(this Item item) => (item >= Item.Razz_Berry && item <= Item.Pinap_Berry) || (item >= Item.Cornn_Berry && item <= Item.Durin_Berry) || item == Item.Enigma_Berry;
+
+        public static bool IsHeldItem(this Item item) => (item >= Item.BrightPowder && item <= Item.Stick);
     }
 }

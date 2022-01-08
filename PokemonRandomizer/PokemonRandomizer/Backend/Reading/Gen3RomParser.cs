@@ -665,7 +665,7 @@ namespace PokemonRandomizer.Backend.Reading
             var itemData = new List<ItemData>(numItemDefinitions);
             for(int i = 0; i < numItemDefinitions; ++i)
             {
-                itemData.Add(new ItemData
+                var item = new ItemData
                 {
                     Name = rom.ReadFixedLengthString(ItemData.nameLength),
                     Item = (Item)rom.ReadUInt16(),
@@ -681,9 +681,11 @@ namespace PokemonRandomizer.Backend.Reading
                     battleUsage = rom.ReadUInt32(),
                     battleEffectOffset = rom.ReadPointer(),
                     extraData = rom.ReadUInt32(),
-                });
-                itemData[i].Description = rom.ReadString(itemData[i].descriptionOffset);
-                itemData[i].SetOriginalValues();
+                };
+                item.Description = rom.ReadString(item.descriptionOffset);
+                item.SetCategoryFlags();
+                item.SetOriginalValues();
+                itemData.Add(item);
             }
             // If we have the offset for the item sprites, read the item sprite data
             if (!info.FindAndSeekOffset(ElementNames.itemSprites, rom))
