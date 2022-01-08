@@ -684,7 +684,13 @@ namespace PokemonRandomizer.Backend.Randomization
             {
                 // Randomize Wally starter if applicable
                 if (settings.RandomizeWallyAce)
-                    data.CatchingTutPokemon = pokeRand.RandomPokemon(pokemonSet, data.CatchingTutPokemon, rivalSettings.PokemonSettings, 5);
+                {
+                    // Remove all legendaries (the tutorial cutscene seems to crash if the catching tut pokemon is a legendary)
+                    var possibleCatchingTutPokemon = new List<Pokemon>(pokemonSet);
+                    possibleCatchingTutPokemon.RemoveAll(PokemonUtils.IsLegendary);
+                    data.CatchingTutPokemon = pokeRand.RandomPokemon(possibleCatchingTutPokemon, data.CatchingTutPokemon, rivalSettings.PokemonSettings, 5);
+                }
+
                 var wallyBattles = new List<Trainer>(data.SpecialTrainers[wallyName]);
                 wallyBattles.Sort((a, b) => a.AvgLvl.CompareTo(b.AvgLvl));
                 var firstBattle = wallyBattles[0];
