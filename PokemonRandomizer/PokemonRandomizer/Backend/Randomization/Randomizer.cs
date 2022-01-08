@@ -24,6 +24,8 @@ namespace PokemonRandomizer.Backend.Randomization
         private readonly MoveCompatibilityRandomizer compatRand;
         private readonly PokemonVariantRandomizer variantRand;
         private readonly BonusMoveGenerator bonusMoveGenerator;
+        private readonly List<Action> delayedRandomizationCalls;
+
         /// <summary>
         /// Create a new randomizer with given data and settings
         /// Input data will be mutated by randomizer calls
@@ -49,11 +51,13 @@ namespace PokemonRandomizer.Backend.Randomization
             compatRand = new MoveCompatibilityRandomizer(rand, data);
             bonusMoveGenerator = new BonusMoveGenerator(rand, data, settings);
             variantRand = new PokemonVariantRandomizer(rand, data, bonusMoveGenerator);
+            delayedRandomizationCalls = new List<Action>();
         }
         // Apply mutations based on program settings.
         public RomData Randomize()
         {
             Timer.main.Start();
+            delayedRandomizationCalls.Clear();
             var pokemonSet = DefinePokemonSet();
             var fossilSet = pokemonSet.Where(PokemonUtils.IsFossil).ToHashSet();
             if (settings.CountRelicanthAsFossil && pokemonSet.Contains(Pokemon.RELICANTH))
@@ -474,16 +478,19 @@ namespace PokemonRandomizer.Backend.Randomization
                 }
                 if (rand.RollSuccess(settings.TradeHeldItemRandChance))
                 {
-                    trade.heldItem = itemRand.RandomItem(items, trade.heldItem, settings.TradeHeldItemSettings);
-                    if (trade.heldItem.IsMail())
+                    delayedRandomizationCalls.Add(() =>
                     {
-                        if (trade.mailNum == 0xFF)
-                            trade.mailNum = 0;
-                    }
-                    else
-                    {
-                        trade.mailNum = 0xFF;
-                    }
+                        trade.heldItem = itemRand.RandomItem(items, trade.heldItem, settings.TradeHeldItemSettings);
+                        if (trade.heldItem.IsMail())
+                        {
+                            if (trade.mailNum == 0xFF)
+                                trade.mailNum = 0;
+                        }
+                        else
+                        {
+                            trade.mailNum = 0xFF;
+                        }
+                    });
                 }
             }
             #endregion
@@ -517,7 +524,7 @@ namespace PokemonRandomizer.Backend.Randomization
                         case GiveItemCommand giveItem:
                             if (giveItem.type == GiveItemCommand.Type.Normal && rand.RollSuccess(settings.FieldItemRandChance))
                             {
-                                giveItem.item = itemRand.RandomItem(items, giveItem.item, settings.FieldItemSettings);
+                                delayedRandomizationCalls.Add(() => giveItem.item = itemRand.RandomItem(items, giveItem.item, settings.FieldItemSettings));
                             }
                             break;
                         case GivePokemonCommand givePokemon:
@@ -572,12 +579,12 @@ namespace PokemonRandomizer.Backend.Randomization
                         {
                             if (rand.RollSuccess(settings.HiddenItemRandChance))
                             {
-                                sEvent.hiddenItem = itemRand.RandomItem(items, sEvent.hiddenItem, settings.HiddenItemSettings);
+                                delayedRandomizationCalls.Add(() => sEvent.hiddenItem = itemRand.RandomItem(items, sEvent.hiddenItem, settings.HiddenItemSettings));
                             }
                         }
                         else if(rand.RollSuccess(settings.FieldItemRandChance))
                         {
-                            sEvent.hiddenItem = itemRand.RandomItem(items, sEvent.hiddenItem, settings.FieldItemSettings);
+                            delayedRandomizationCalls.Add(() => sEvent.hiddenItem = itemRand.RandomItem(items, sEvent.hiddenItem, settings.FieldItemSettings));
                         }
                     }
                 }
@@ -729,7 +736,7 @@ namespace PokemonRandomizer.Backend.Randomization
             // Randomize PC starting item
             if (settings.PcPotionOption == Settings.PcItemOption.Random)
             {
-                data.PcStartItem = itemRand.RandomItem(items, data.PcStartItem, settings.PcItemSettings);
+                delayedRandomizationCalls.Add(() => data.PcStartItem = itemRand.RandomItem(items, data.PcStartItem, settings.PcItemSettings));                
             }
             else if (settings.PcPotionOption == Settings.PcItemOption.Custom)
             {
@@ -743,28 +750,50 @@ namespace PokemonRandomizer.Backend.Randomization
                 {
                     for (int i = 0; i < data.PickupItems.ItemChances.Count; i++)
                     {
-                        var itemChance = data.PickupItems.ItemChances[i];
-                        data.PickupItems.ItemChances[i] = new PickupData.ItemChance()
+                        int index = i;
+                        var itemChance = data.PickupItems.ItemChances[index];
+                        delayedRandomizationCalls.Add(() =>
                         {
-                            item = itemRand.RandomItem(items, itemChance.item, settings.PickupItemSettings),
-                            chance = itemChance.chance
-                        };
+                            data.PickupItems.ItemChances[index] = new PickupData.ItemChance()
+                            {
+                                item = itemRand.RandomItem(items, itemChance.item, settings.PickupItemSettings),
+                                chance = itemChance.chance
+                            };
+                        });
                     }
                 }
                 else // Rare + Common table
                 {
                     for (int i = 0; i < data.PickupItems.Items.Count; i++)
                     {
-                        data.PickupItems.Items[i] = itemRand.RandomItem(items, data.PickupItems.Items[i], settings.PickupItemSettings);
+                        int index = i;
+                        delayedRandomizationCalls.Add(() =>
+                        {
+                            data.PickupItems.Items[index] = itemRand.RandomItem(items, data.PickupItems.Items[index], settings.PickupItemSettings);
+                        });
+                        //data.PickupItems.Items[i] = itemRand.RandomItem(items, data.PickupItems.Items[i], settings.PickupItemSettings);
                     }
                     for (int i = 0; i < data.PickupItems.RareItems.Count; i++)
                     {
-                        data.PickupItems.RareItems[i] = itemRand.RandomItem(items, data.PickupItems.RareItems[i], settings.PickupItemSettings);
+                        int index = i;
+                        delayedRandomizationCalls.Add(() =>
+                        {
+                            data.PickupItems.RareItems[index] = itemRand.RandomItem(items, data.PickupItems.RareItems[index], settings.PickupItemSettings);
+                        });
+                        //data.PickupItems.RareItems[i] = itemRand.RandomItem(items, data.PickupItems.RareItems[i], settings.PickupItemSettings);
                     }
                 }
             }
 
             #endregion
+
+            // Invoke delayed item randomizations in a random order
+            while (delayedRandomizationCalls.Count > 0)
+            {
+                int i = rand.RandomInt(0, delayedRandomizationCalls.Count);
+                delayedRandomizationCalls[i].Invoke();
+                delayedRandomizationCalls.RemoveAt(i);
+            }
 
 #if DEBUG
             #region Debugging / Testing
