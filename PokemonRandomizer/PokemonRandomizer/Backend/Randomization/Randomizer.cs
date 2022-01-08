@@ -687,7 +687,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 {
                     // Remove all legendaries (the tutorial cutscene seems to crash if the catching tut pokemon is a legendary)
                     var possibleCatchingTutPokemon = new List<Pokemon>(pokemonSet);
-                    possibleCatchingTutPokemon.RemoveAll(PokemonUtils.IsLegendary);
+                    possibleCatchingTutPokemon.RemoveAll(p => data.GetBaseStats(p).genderRatio > 0xFD);
                     data.CatchingTutPokemon = pokeRand.RandomPokemon(possibleCatchingTutPokemon, data.CatchingTutPokemon, rivalSettings.PokemonSettings, 5);
                 }
 
