@@ -318,7 +318,7 @@ namespace PokemonRandomizer.Backend.Randomization
                         // Carry over new primary type and generate new secondary type
                         evolvedPokemon.PrimaryType = pokemon.PrimaryType;
                         evolvedPokemon.SecondaryType = RandomSecondaryTypeAndRemove(newTypes, evolvedPokemon.SecondaryType);
-                        newTransformationType = TypeTransformation.SecondaryTypeReplacement;
+                        newTransformationType = TypeTransformation.DoubleTypeReplacement;
                     }
                     else // type loss
                     {
@@ -1220,6 +1220,15 @@ namespace PokemonRandomizer.Backend.Randomization
             { Pokemon.BEAUTIFLY, new PaletteData(Range(7, 11), Range(4, 6), PalRange(13), PalRange(14)) },
             { Pokemon.CASCOON, new PaletteData(PalRange(1, 2, 3, 5, 6, 7, 8))},
             { Pokemon.DUSTOX, new PaletteData(Range(5, 7), Range(11, 12), PalRange(1, 2, 3, 8, 9, 10), Range(13, 14)) },
+            { Pokemon.LOTAD, new PaletteData(Range(5, 10), PalRange(4, 11, 12, 13))},
+            { Pokemon.LOMBRE, new PaletteData(PalRange(1, 2, 8, 9, 10, 12), Range(4, 6))},
+            { Pokemon.LUDICOLO, new PaletteData(Range(1, 5))}, // Other colors are too shared, may be able to come back to this one
+            { Pokemon.SEEDOT, new PaletteData(PalRange(1 ,4, 5, 6), PalRange(3, 7, 8, 9))},
+            { Pokemon.NUZLEAF, new PaletteData(PalRange(1, 7, 8, 9, 13), Range(10, 12))},
+            { Pokemon.SHIFTRY, new PaletteData(Range(4, 6), Range(11, 13))},
+            { Pokemon.NINCADA, new PaletteData(PalRange(1, 8, 10, 11, 12, 13, 14), PalRange(5, 6, 9))},
+            { Pokemon.NINJASK, new PaletteData(Range(2, 4), Range(5, 8))}, // Range 1 should possibly include index 1, although it affects the wings too
+            { Pokemon.SHEDINJA, new PaletteData(PalRange(1, 2, 3, 4, 5, 9, 10), Range(11, 14))},
         };
 
         private static readonly Dictionary<PokemonType, TypeColorData> typeColorData = new Dictionary<PokemonType, TypeColorData>()
