@@ -81,11 +81,21 @@ namespace PokemonRandomizer
 
         public Settings AppSettings => UseHardCodedSettings ? hardCodedSettings : appSettings;
 
+        public bool UseHardCodedSettings 
+        { 
+            get => useHardcodedSettings;
+            set
+            {
+                useHardcodedSettings = value;
+                HardcodedSettingsIndicator.Text = value ? "(Hardcoded Mode)" : string.Empty;
+            } 
+        }
 #if DEBUG
-        public bool UseHardCodedSettings { get; set; } = true;
+        private bool useHardcodedSettings = true;
 #else
-        public bool UseHardCodedSettings { get; set; } = false;
+        private bool useHardcodedSettings;
 #endif
+
         private HardCodedSettings hardCodedSettings;
         private AppSettings.AppSettings appSettings;
 

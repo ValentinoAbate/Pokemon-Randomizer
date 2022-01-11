@@ -26,30 +26,37 @@
             <!--<ColumnDefinition  Name="TabSelectorCol" Width="Auto"></ColumnDefinition>
             <ColumnDefinition Name="RomButtons" Width="*"></ColumnDefinition>-->
         </Grid.ColumnDefinitions>
-        <Menu Name="MainMenu" Grid.Row="0">
-            <MenuItem Header="File">
-                <MenuItem Header="Open ROM" Click="OpenROM"/>
-                <MenuItem Name="menuSaveROM" IsEnabled="{Binding IsROMLoaded}" Header="Randomize (Save)" Click="SaveROM"/>
-                <MenuItem Name="menuGenerateInfoDoc" IsEnabled="{Binding IsROMLoaded}" Header="Save ROM Info" Click="GenerateInfoDoc"/>
-                <MenuItem Visibility="Collapsed" Header="_Convert Table" Click="ConvertTable" />
-            </MenuItem>
-            <MenuItem Header="Settings" IsEnabled="{Binding IsROMLoaded}">
-                <MenuItem Name="menuLoadPreset" IsEnabled="{Binding IsROMLoaded}" Header="Load Settings" Click="LoadPreset"/>
-                <MenuItem Name="menuSavePreset" IsEnabled="{Binding IsROMLoaded}" Header="Save Settings" Click="SavePreset"/>
-            </MenuItem>
-            <MenuItem Visibility="Visible" Header="Debug">
-                <MenuItem Name="menuUseHardCodedSettings" Header="Use Hardcoded Settings" IsCheckable="True" IsChecked="{Binding UseHardCodedSettings}"/>
-                <MenuItem Name="menuDebugSaveLog" IsEnabled="{Binding LogNotEmpty}" Header="Save Debug Log" Click="SaveLog"/>
-                <MenuItem Name="menuDebugClearLog" IsEnabled="{Binding LogNotEmpty}" Header="Clear Debug Log" Click="ClearLog"/>
-                <MenuItem Name="menuDebugSaveCleanRom" IsEnabled="{Binding IsROMLoaded}" Header="Save Clean ROM" Click="SaveCleanROM"/>
-                <MenuItem Name="menuDebugDiffRoms" IsEnabled="{Binding IsROMLoaded}" Header="Diff Roms" Click="DiffRoms"/>
-            </MenuItem>
-            <MenuItem Header="Help">
-                <MenuItem Header="About" Click="ShowAboutWindow"/>
-                <MenuItem Header="Open Download Page in Browser" Click="GoToDownloadPage"/>
-            </MenuItem>
-        </Menu>
-        
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <Menu Name="MainMenu" Grid.Column="0">
+                <MenuItem Header="File">
+                    <MenuItem Header="Open ROM" Click="OpenROM"/>
+                    <MenuItem Name="menuSaveROM" IsEnabled="{Binding IsROMLoaded}" Header="Randomize (Save)" Click="SaveROM"/>
+                    <MenuItem Name="menuGenerateInfoDoc" IsEnabled="{Binding IsROMLoaded}" Header="Save ROM Info" Click="GenerateInfoDoc"/>
+                    <MenuItem Visibility="Collapsed" Header="_Convert Table" Click="ConvertTable" />
+                </MenuItem>
+                <MenuItem Header="Settings" IsEnabled="{Binding IsROMLoaded}">
+                    <MenuItem Name="menuLoadPreset" IsEnabled="{Binding IsROMLoaded}" Header="Load Settings" Click="LoadPreset"/>
+                    <MenuItem Name="menuSavePreset" IsEnabled="{Binding IsROMLoaded}" Header="Save Settings" Click="SavePreset"/>
+                </MenuItem>
+                <MenuItem Visibility="Visible" Header="Debug">
+                    <MenuItem Name="menuUseHardCodedSettings" Header="Use Hardcoded Settings" IsCheckable="True" IsChecked="{Binding UseHardCodedSettings}"/>
+                    <MenuItem Name="menuDebugSaveLog" IsEnabled="{Binding LogNotEmpty}" Header="Save Debug Log" Click="SaveLog"/>
+                    <MenuItem Name="menuDebugClearLog" IsEnabled="{Binding LogNotEmpty}" Header="Clear Debug Log" Click="ClearLog"/>
+                    <MenuItem Name="menuDebugSaveCleanRom" IsEnabled="{Binding IsROMLoaded}" Header="Save Clean ROM" Click="SaveCleanROM"/>
+                    <MenuItem Name="menuDebugDiffRoms" IsEnabled="{Binding IsROMLoaded}" Header="Diff Roms" Click="DiffRoms"/>
+                </MenuItem>
+                <MenuItem Header="Help">
+                    <MenuItem Header="About" Click="ShowAboutWindow"/>
+                    <MenuItem Header="Open Download Page in Browser" Click="GoToDownloadPage"/>
+                </MenuItem>
+            </Menu>
+            <TextBlock Name="HardcodedSettingsIndicator" Margin="5,0,5,0" Text="(Hardcoded Mode)" Grid.Column="1"/>
+        </Grid>
+
         <!--Tabs-->
 
         <TabControl Name="MainTabControl" IsEnabled="{Binding IsROMLoaded}" Grid.Row="1">
