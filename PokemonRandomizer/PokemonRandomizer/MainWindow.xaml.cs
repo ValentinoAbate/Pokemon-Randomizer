@@ -344,7 +344,10 @@ namespace PokemonRandomizer
             var saveFileDialog = new SaveFileDialog
             {
                 Filter = filter,
-                Title = saveRomPrompt
+                Title = saveRomPrompt,
+#if DEBUG
+                FileName = "testRom"
+#endif
             };
             if (saveFileDialog.ShowDialog() == true)
             {
