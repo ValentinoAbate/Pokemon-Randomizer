@@ -74,6 +74,9 @@ IDEAS //////////////////////////////////////////////////////////////////////////
 - Variant Randomization
 	- Palettes:
 		- Make the similar color / dection algo just fall back on the the simple color change for now, allow for a different fallback later
+	- Typing
+		- Disallow all future original types from being new added types
+		- Maybe: prevent single type pokemon that evolve into dual-typed pokemon from becoming dual-typed? (or maybe as an option at least)
 - Special Pokemon Randomization
 	- Setting for legenary pokemon to always be legendary pokemon (when relevant)
 - 365 Mode
