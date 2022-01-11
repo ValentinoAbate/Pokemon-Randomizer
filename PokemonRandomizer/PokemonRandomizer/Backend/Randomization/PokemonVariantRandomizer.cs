@@ -1229,6 +1229,17 @@ namespace PokemonRandomizer.Backend.Randomization
             { Pokemon.NINCADA, new PaletteData(PalRange(1, 8, 10, 11, 12, 13, 14), PalRange(5, 6, 9))},
             { Pokemon.NINJASK, new PaletteData(Range(2, 4), Range(5, 8))}, // Range 1 should possibly include index 1, although it affects the wings too
             { Pokemon.SHEDINJA, new PaletteData(PalRange(1, 2, 3, 4, 5, 9, 10), Range(11, 14))},
+            { Pokemon.TAILLOW, new PaletteData(Range(1, 4), PalRange(5, 9, 10, 11, 14))},
+            { Pokemon.SWELLOW, new PaletteData(Range(1, 4), PalRange(5, 9, 10, 11, 14))},
+            { Pokemon.SHROOMISH, new PaletteData(Range(7, 12))}, // 1 - 6 brown colors
+            { Pokemon.BRELOOM, new PaletteData(PalRange(7, 9, 10, 11))}, // 2-6, 8, 12, 13, 15 other colors
+            { Pokemon.SPINDA, new PaletteData(PalRange(1, 2, 3, 4, 13, 14), Range(5, 10))},
+            { Pokemon.WINGULL, new PaletteData(PalRange(6, 10, 11), Range(1, 5))}, // 7-9 beak
+            { Pokemon.PELIPPER, new PaletteData(PalRange(6, 7, 8, 15), PalRange(9, 10, 14))}, // 1-5, 12 beak
+            { Pokemon.SURSKIT, new PaletteData(Range(1, 4), PalRange(5, 6, 7, 11), null, Range(9, 10))},
+            { Pokemon.MASQUERAIN, new PaletteData(Range(1, 4), Range(5, 7), Range(10, 11), Range(12, 13))},
+            { Pokemon.WAILMER, new PaletteData(PalRange(2, 3, 4, 10, 11), PalRange(5, 6, 7, 9, 12))},
+            { Pokemon.WAILORD, new PaletteData(PalRange(6, 7, 8, 9, 10, 14, 15), PalRange(2, 3, 4, 5, 11, 12))},
         };
 
         private static readonly Dictionary<PokemonType, TypeColorData> typeColorData = new Dictionary<PokemonType, TypeColorData>()
