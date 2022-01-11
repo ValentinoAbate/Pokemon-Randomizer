@@ -382,7 +382,7 @@ namespace PokemonRandomizer.Backend.Randomization
             }
             if (evolvedPokemon.PrimaryType == evolvedPokemon.OriginalPrimaryType && evolvedPokemon.SecondaryType == evolvedPokemon.OriginalSecondaryType)
             {
-                Logger.main.Error($"None transformation type detected for {pokemon.Name} -> {evolvedPokemon.Name}");
+                Logger.main.Warning($"None transformation type detected for {pokemon.Name} -> {evolvedPokemon.Name}");
                 return TypeTransformation.None;
             }
             return newTransformationType;
@@ -814,7 +814,7 @@ namespace PokemonRandomizer.Backend.Randomization
             var eligibleMoves = availibleMoves.Where(m => m.EffectivePower >= minPower && m.EffectivePower <= maxPower);
             if (eligibleMoves.Count() <= 0)
             {
-                Logger.main.Warning($"Variant Generator: Attemping to add a move to {pokemon.Name} but no eligible move found. Move add will be skipped");
+                Logger.main.Warning($"Attemping to add a variant move to {pokemon.Name} but no eligible move found. Move add will be skipped");
                 return;
             }
             // Choose the move
