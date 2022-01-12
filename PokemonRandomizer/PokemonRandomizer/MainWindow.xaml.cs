@@ -356,7 +356,7 @@ namespace PokemonRandomizer
                 Filter = filter,
                 Title = saveRomPrompt,
 #if DEBUG
-                FileName = "testRom"
+                FileName = "testROM"
 #endif
             };
             if (saveFileDialog.ShowDialog() == true)
