@@ -1255,6 +1255,15 @@ namespace PokemonRandomizer.Backend.Randomization
             { Pokemon.CRAWDAUNT, new PaletteData(Range(2, 10), Range(11, 14))},
             { Pokemon.FEEBAS, new PaletteData(PalRange(1, 2, 3, 4, 7), Range(10, 15), null, Range(8, 9))},
             { Pokemon.MILOTIC, new PaletteData(Range(1, 5), Range(11, 13), Range(8, 10), Range(6, 7))}, // PALETTE: Might need to recude marked colors
+            { Pokemon.CARVANHA, new PaletteData(PalRange(1, 2, 4, 5, 6), PalRange(3, 10, 11, 12))}, // PalRange(7, 8, 9, 13) belly
+            { Pokemon.SHARPEDO, new PaletteData(Range(1, 4), Range(6, 7))}, // 10-12 fins
+            { Pokemon.TRAPINCH, new PaletteData(PalRange(1, 2, 3, 4, 12), Range(6, 8))},
+            { Pokemon.VIBRAVA, new PaletteData(Range(1, 3), PalRange(4, 5, 6, 10))},
+            { Pokemon.FLYGON, new PaletteData(Range(5, 7), PalRange(1, 3, 4, 8, 9, 10), null, PalRange(2, 11, 12, 13))}, // not sure which colors should be which here
+            { Pokemon.MAKUHITA, new PaletteData(PalRange(5, 6, 7, 12, 13), Range(1, 4))},
+            { Pokemon.HARIYAMA, new PaletteData(Range(1, 4), Range(5, 8), Range(11, 13), Range(9, 10))},
+            { Pokemon.ELECTRIKE, new PaletteData(Range(1, 4), Range(5, 7))},
+            { Pokemon.MANECTRIC, new PaletteData(Range(1, 4), Range(5, 8))},
         };
 
         private static readonly Dictionary<PokemonType, TypeColorData> typeColorData = new Dictionary<PokemonType, TypeColorData>()
