@@ -1264,6 +1264,17 @@ namespace PokemonRandomizer.Backend.Randomization
             { Pokemon.HARIYAMA, new PaletteData(Range(1, 4), Range(5, 8), Range(11, 13), Range(9, 10))},
             { Pokemon.ELECTRIKE, new PaletteData(Range(1, 4), Range(5, 7))},
             { Pokemon.MANECTRIC, new PaletteData(Range(1, 4), Range(5, 8))},
+            { Pokemon.NUMEL, new PaletteData(Range(1, 4), Range(8, 12), null, Range(5, 7))},
+            { Pokemon.CAMERUPT, new PaletteData(Range(2, 5), Range(10, 14))},
+            { Pokemon.SPHEAL, new PaletteData(PalRange(2, 3, 4, 5, 12), Range(7, 11))},
+            { Pokemon.SEALEO, new PaletteData(PalRange(1, 2, 3, 4, 12, 13), PalRange(9, 10, 11, 14))},
+            { Pokemon.WALREIN, new PaletteData(PalRange(1, 2, 3, 4, 11), Range(5, 8))}, // May take color 2 out for this whole fam
+            { Pokemon.CACNEA, new PaletteData(Range(1, 5), Range(6, 10), null, Range(12, 14))},
+            { Pokemon.CACTURNE, new PaletteData(PalRange(1, 2, 3, 4, 11), Range(5, 10))},
+            { Pokemon.SNORUNT, new PaletteData(Range(5, 7), Range(2, 4))},
+            { Pokemon.GLALIE, new PaletteData(Range(1, 6), Range(7, 9))},
+            { Pokemon.LUNATONE, new PaletteData(Range(1, 10), Range(11, 14))},
+            { Pokemon.SOLROCK, new PaletteData(PalRange(1, 2, 3, 4, 9, 10), PalRange(5, 6, 7,9, 11))},
         };
 
         private static readonly Dictionary<PokemonType, TypeColorData> typeColorData = new Dictionary<PokemonType, TypeColorData>()
