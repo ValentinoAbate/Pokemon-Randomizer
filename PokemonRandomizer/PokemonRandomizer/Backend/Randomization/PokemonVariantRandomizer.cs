@@ -347,7 +347,7 @@ namespace PokemonRandomizer.Backend.Randomization
                         // Carry over new secondary type and generate new primary type
                         evolvedPokemon.PrimaryType = RandomPrimaryTypeAndRemove(newTypes, evolvedPokemon.PrimaryType);
                         evolvedPokemon.SecondaryType = pokemon.SecondaryType;
-                        newTransformationType = TypeTransformation.PrimaryTypeReplacement;
+                        newTransformationType = TypeTransformation.DoubleTypeReplacement;
                     }
                     else // type loss
                     {
@@ -1274,7 +1274,24 @@ namespace PokemonRandomizer.Backend.Randomization
             { Pokemon.SNORUNT, new PaletteData(Range(5, 7), Range(2, 4))},
             { Pokemon.GLALIE, new PaletteData(Range(1, 6), Range(7, 9))},
             { Pokemon.LUNATONE, new PaletteData(Range(1, 10), Range(11, 14))},
-            { Pokemon.SOLROCK, new PaletteData(PalRange(1, 2, 3, 4, 9, 10), PalRange(5, 6, 7,9, 11))},
+            { Pokemon.SOLROCK, new PaletteData(PalRange(1, 2, 3, 4, 9, 10), PalRange(5, 6, 7, 9, 11))},
+            { Pokemon.AZURILL, new PaletteData(PalRange(1, 2, 3, 4, 5, 8, 11, 12), PalRange(6, 7, 9))},
+            { Pokemon.SPOINK, new PaletteData(PalRange(1, 2, 3, 4, 12), Range(5, 9))},
+            { Pokemon.GRUMPIG, new PaletteData(PalRange(8, 9, 10, 11, 13), PalRange(5, 6, 7, 12))},
+            { Pokemon.PLUSLE, new PaletteData(Range(1, 5), Range(6, 8))},
+            { Pokemon.MINUN, new PaletteData(Range(1, 5), Range(6, 8))},
+            { Pokemon.MAWILE, new PaletteData(Range(12, 15), Range(7, 10))}, // 3-5 tongue
+            { Pokemon.MEDITITE, new PaletteData(Range(12, 15), PalRange(6))},
+            { Pokemon.MEDICHAM, new PaletteData(Range(2, 5), Range(10, 11))},
+            { Pokemon.SWABLU, new PaletteData(PalRange(4, 8, 9, 10, 11, 12, 13), PalRange(1, 5, 7, 14, 15))},
+            { Pokemon.ALTARIA, new PaletteData(PalRange(7, 8, 9, 10, 14), PalRange(2, 3, 11, 12, 13))},
+            { Pokemon.WYNAUT, new PaletteData(PalRange(1, 2, 3, 4, 12))}, // 5, 6, 13 Mouth
+            { Pokemon.DUSKULL, new PaletteData(PalRange(1, 2, 3, 4, 11), Range(5, 9))}, // 5, 6, 13 Mouth
+            { Pokemon.DUSCLOPS, new PaletteData(PalRange(1, 2, 4, 5, 6), Range(7, 9))}, // 5, 6, 13 Mouth
+            { Pokemon.ROSELIA, new PaletteData(PalRange(2, 5, 7, 8), Range(10, 12), null, Range(13, 15))}, // 5, 6, 13 Mouth
+            { Pokemon.SLAKOTH, new PaletteData(PalRange(4, 13, 14, 15), Range(9, 12))},
+            { Pokemon.VIGOROTH, new PaletteData(PalRange(6, 7, 8, 9, 12), Range(10, 11))},
+            { Pokemon.SLAKING, new PaletteData(Range(1, 6), Range(11, 13))},
         };
 
         private static readonly Dictionary<PokemonType, TypeColorData> typeColorData = new Dictionary<PokemonType, TypeColorData>()
