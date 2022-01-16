@@ -34,6 +34,7 @@ namespace PokemonRandomizer.Backend.DataStructures
             LuckyEgg      = 1 << 18,
             EvolutionItem = 1 << 19,
             Special       = 1 << 20,
+            Flute         = 1 << 21,
         }
 
         public bool IsUnused => Name == unusedName;
@@ -119,6 +120,14 @@ namespace PokemonRandomizer.Backend.DataStructures
             if (IsKeyItem)
             {
                 ItemCategories = Categories.KeyItem;
+                if (Item.IsHM())
+                {
+                    ItemCategories |= Categories.HM;
+                }
+            }
+            else if (Item.IsMedicine())
+            {
+                ItemCategories = Categories.Medicine;
             }
             else if (Item.IsPokeBall())
             {
@@ -152,9 +161,17 @@ namespace PokemonRandomizer.Backend.DataStructures
             {
                 ItemCategories = Categories.BattleItem;
             }
+            else if (Item.IsUtilityItem())
+            {
+                ItemCategories = Categories.Utility;
+            }
             else if (Item.IsBerry())
             {
                 ItemCategories = Categories.Berry;
+                if (holdEffect != 0x00)
+                {
+                    ItemCategories |= Categories.BattleBerry;
+                }
                 if (Item.IsEvBerry())
                 {
                     ItemCategories |= Categories.EVBerry;
@@ -172,7 +189,24 @@ namespace PokemonRandomizer.Backend.DataStructures
             if (Item.IsHeldItem())
             {
                 ItemCategories |= Categories.HeldItem;
+                if (Item.IsBreedingItem())
+                {
+                    ItemCategories |= Categories.Breeding;
+                }
+                if (Item == Item.Lucky_Egg)
+                {
+                    ItemCategories |= Categories.LuckyEgg;
+                }
             }
+            if (Item.IsFlute())
+            {
+                ItemCategories |= Categories.Flute;
+            }
+            if (Item.IsEvolutionItem())
+            {
+                ItemCategories |= Categories.EvolutionItem;
+            }
+
         }
     }
 }

@@ -56,6 +56,13 @@ namespace PokemonRandomizer.Backend.Utilities
             return tms.Contains(item);
         }
 
+        private static readonly HashSet<Item> hms = new HashSet<Item>
+        {
+            Item.HM01, Item.HM02, Item.HM03, Item.HM04, Item.HM05,
+            Item.HM06, Item.HM07, Item.HM08, 
+        };
+        public static bool IsHM(this Item item) => hms.Contains(item);
+
         private static readonly HashSet<Item> pokeBalls = new HashSet<Item>
         {
             Item.Poké_Ball, Item.Great_Ball, Item.Dive_Ball, Item.Luxury_Ball, Item.Master_Ball, Item.Nest_Ball,
@@ -99,7 +106,7 @@ namespace PokemonRandomizer.Backend.Utilities
 
         private static readonly HashSet<Item> battleItems = new HashSet<Item>
         {
-            Item.X_Attack, Item.X_Defend, Item.X_Special, Item.X_Speed, Item.Guard_Spec, Item.Dire_Hit
+            Item.X_Attack, Item.X_Defend, Item.X_Special, Item.X_Speed, Item.X_Accuracy, Item.Guard_Spec, Item.Dire_Hit
         };
         public static bool IsBattleItem(this Item item) => battleItems.Contains(item);
 
@@ -107,6 +114,33 @@ namespace PokemonRandomizer.Backend.Utilities
         public static bool IsEvBerry(this Item item) => item >= Item.Pomeg_Berry && item <= Item.Tamato_Berry;
         public static bool IsMinigameBerry(this Item item) => (item >= Item.Razz_Berry && item <= Item.Pinap_Berry) || (item >= Item.Cornn_Berry && item <= Item.Durin_Berry) || item == Item.Enigma_Berry;
 
-        public static bool IsHeldItem(this Item item) => (item >= Item.BrightPowder && item <= Item.Stick);
+        public static bool IsHeldItem(this Item item) => (item >= Item.BrightPowder && item <= Item.Stick) && item != Item.Upーgrade && item != Item.Dragon_Scale;
+
+        private static readonly HashSet<Item> flutes = new HashSet<Item>
+        {
+            Item.Black_Flute, Item.White_Flute, Item.Blue_Flute, Item.Red_Flute, Item.Yellow_Flute, Item.Poke_Flute
+        };
+        public static bool IsFlute(this Item item) => flutes.Contains(item);
+
+        private static readonly HashSet<Item> utilityItems = new HashSet<Item>
+        {
+            Item.Repel, Item.Super_Repel, Item.Max_Repel, Item.Escape_Rope, Item.Fluffy_Tail, Item.Poké_Doll
+        };
+        public static bool IsUtilityItem(this Item item) => utilityItems.Contains(item);
+
+        public static bool IsMedicine(this Item item) => (item >= Item.Potion && item <= Item.Lava_Cookie) || item == Item.Berry_Juice || item == Item.Sacred_Ash;
+
+        private static readonly HashSet<Item> evolutionItems = new HashSet<Item>
+        {
+            Item.Fire_Stone, Item.Leaf_Stone, Item.Water_Stone, Item.ThunderStone, Item.Moon_Stone, Item.Sun_Stone,
+            Item.Metal_Coat, Item.Dragon_Scale, Item.Kings_Rock, Item.Upーgrade, Item.DeepSeaScale, Item.DeepSeaTooth
+        };
+        public static bool IsEvolutionItem(this Item item) => evolutionItems.Contains(item);
+
+        private static readonly HashSet<Item> breedingItems = new HashSet<Item>
+        { 
+            Item.Lax_Incense, Item.Sea_Incense, Item.Light_Ball
+        };
+        public static bool IsBreedingItem(this Item item) => breedingItems.Contains(item);
     }
 }
