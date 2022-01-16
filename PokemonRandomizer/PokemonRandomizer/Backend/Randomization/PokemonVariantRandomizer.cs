@@ -1100,7 +1100,7 @@ namespace PokemonRandomizer.Backend.Randomization
             { Pokemon.DRATINI, new PaletteData(Range(11, 14))},
             { Pokemon.DRAGONAIR, new PaletteData(Range(11, 14), Range(5, 7))},
             { Pokemon.DRAGONITE, new PaletteData(Range(2, 5), Range(6, 8))},
-            { Pokemon.MEWTWO, new PaletteData(Range(1, 4), Range(5, 8))},
+            { Pokemon.MEWTWO, new PaletteData(PalRange(1, 2, 3, 4, 15), Range(5, 8))},
             { Pokemon.MEW, new PaletteData(Range(10, 14), Range(3, 4))},
             { Pokemon.CHIKORITA, new PaletteData(Range(2, 5), Range(6, 9))},
             { Pokemon.BAYLEEF, new PaletteData(Range(2, 6), Range(7, 10))},
@@ -1291,7 +1291,18 @@ namespace PokemonRandomizer.Backend.Randomization
             { Pokemon.ROSELIA, new PaletteData(PalRange(2, 5, 7, 8), Range(10, 12), null, Range(13, 15))}, // 5, 6, 13 Mouth
             { Pokemon.SLAKOTH, new PaletteData(PalRange(4, 13, 14, 15), Range(9, 12))},
             { Pokemon.VIGOROTH, new PaletteData(PalRange(6, 7, 8, 9, 12), Range(10, 11))},
-            { Pokemon.SLAKING, new PaletteData(Range(1, 6), Range(11, 13))},
+            { Pokemon.GULPIN, new PaletteData(Range(1, 5), Range(9, 12))},
+            { Pokemon.SWALOT, new PaletteData(PalRange(1, 2, 3, 4, 14), PalRange(10, 11, 13))},
+            { Pokemon.TROPIUS, new PaletteData(PalRange(1, 2, 3, 4, 15), Range(5, 8), null, Range(9, 10))},
+            { Pokemon.WHISMUR, new PaletteData(Range(2, 6), Range(8, 11))},
+            { Pokemon.LOUDRED, new PaletteData(Range(2, 5), Range(6, 8), null, Range(9, 12))},
+            { Pokemon.EXPLOUD, new PaletteData(Range(2, 5), Range(6, 8), null, Range(9, 12))},
+            { Pokemon.CLAMPERL, new PaletteData(Range(8, 11), Range(13, 15), null, Range(4, 7))},
+            { Pokemon.HUNTAIL, new PaletteData(Range(2, 4), Range(5, 9))},
+            { Pokemon.GOREBYSS, new PaletteData(Range(4, 9), PalRange(9, 10, 13, 14, 15))},
+            { Pokemon.ABSOL, new PaletteData(Range(1, 4), Range(11, 14))},
+            { Pokemon.SHUPPET, new PaletteData(Range(1, 5), Range(6, 7), null, Range(8, 9))},
+            { Pokemon.BANETTE, new PaletteData(Range(11, 14))},
         };
 
         private static readonly Dictionary<PokemonType, TypeColorData> typeColorData = new Dictionary<PokemonType, TypeColorData>()
