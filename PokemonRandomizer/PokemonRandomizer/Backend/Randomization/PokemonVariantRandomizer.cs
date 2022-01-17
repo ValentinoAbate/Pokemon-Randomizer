@@ -1303,6 +1303,25 @@ namespace PokemonRandomizer.Backend.Randomization
             { Pokemon.ABSOL, new PaletteData(Range(1, 4), Range(11, 14))},
             { Pokemon.SHUPPET, new PaletteData(Range(1, 5), Range(6, 7), null, Range(8, 9))},
             { Pokemon.BANETTE, new PaletteData(Range(11, 14))},
+            { Pokemon.SEVIPER, new PaletteData(PalRange(1, 3, 4, 9), PalRange(7, 8, 15), PalRange(5, 14))},
+            { Pokemon.ZANGOOSE, new PaletteData(PalRange(1, 2, 3, 4, 5, 12), Range(6, 9), null, PalRange(10, 11, 14, 15))},
+            { Pokemon.RELICANTH, new PaletteData(Range(1, 5), PalRange(6, 8, 9, 10, 11))},
+            { Pokemon.ARON, new PaletteData(Range(6, 10), PalRange(14))},
+            { Pokemon.LAIRON, new PaletteData(Range(6, 10), PalRange(14))},
+            { Pokemon.AGGRON, new PaletteData(Range(6, 10), PalRange(14))},
+            { Pokemon.CASTFORM, new PaletteData(PalRange(1, 2, 3, 4, 12))},
+            { Pokemon.VOLBEAT, new PaletteData(Range(5, 8), Range(12, 14), Range(9, 11))},
+            { Pokemon.ILLUMISE, new PaletteData(Range(5, 8), Range(12, 14), Range(9, 11))},
+            { Pokemon.LILEEP, new PaletteData(Range(2, 5), PalRange(1, 6, 7, 8))}, // 9-11 eyes
+            { Pokemon.CRADILY, new PaletteData(Range(2, 5), PalRange(6, 7, 8, 14))}, // 9-11 eyes
+            { Pokemon.ANORITH, new PaletteData(Range(2, 5), Range(9, 11))}, // 6-8 highlights
+            { Pokemon.ARMALDO, new PaletteData(PalRange(2, 3, 4, 5, 9), Range(10, 11))}, // 6-8 highlights
+            { Pokemon.RALTS, new PaletteData(Range(11, 14), Range(5, 8))}, // 1-4 dress
+            { Pokemon.KIRLIA, new PaletteData(Range(11, 14), Range(5, 8))}, // 1-4 dress
+            { Pokemon.GARDEVOIR, new PaletteData(Range(11, 14), Range(5, 8))}, // 1-4 dress
+            { Pokemon.BAGON, new PaletteData(Range(1, 4), Range(8, 10))},
+            { Pokemon.SHELGON, new PaletteData(Range(1, 4), PalRange(8, 9, 10, 11, 14))}, // may need to switch
+            { Pokemon.SALAMENCE, new PaletteData(Range(1, 4), Range(5, 8))},
         };
 
         private static readonly Dictionary<PokemonType, TypeColorData> typeColorData = new Dictionary<PokemonType, TypeColorData>()
