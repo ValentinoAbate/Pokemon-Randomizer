@@ -1322,6 +1322,20 @@ namespace PokemonRandomizer.Backend.Randomization
             { Pokemon.BAGON, new PaletteData(Range(1, 4), Range(8, 10))},
             { Pokemon.SHELGON, new PaletteData(Range(1, 4), PalRange(8, 9, 10, 11, 14))}, // may need to switch
             { Pokemon.SALAMENCE, new PaletteData(Range(1, 4), Range(5, 8))},
+            { Pokemon.BELDUM, new PaletteData(PalRange(9, 11, 12, 13, 14))}, // 1, 2, 3, 4, 10 claws
+            { Pokemon.METANG, new PaletteData(PalRange(9, 11, 12, 13, 14))}, // 1-5 claws
+            { Pokemon.METAGROSS, new PaletteData(Range(9, 14))}, // 1-5 claws
+            { Pokemon.REGIROCK, new PaletteData(Range(1, 10), Range(13, 14))},
+            { Pokemon.REGICE, new PaletteData(Range(1, 7), Range(12, 14))},
+            { Pokemon.REGISTEEL, new PaletteData(PalRange(1, 2, 3, 4, 5, 11), Range(6, 8), null, Range(12, 14))},
+            { Pokemon.KYOGRE, new PaletteData(PalRange(5, 9, 11, 12, 13, 14), Range(6, 8))},
+            { Pokemon.GROUDON, new PaletteData(PalRange(1, 5, 6, 7, 8, 12), Range(2, 4))}, // may take 2nd color out
+            { Pokemon.RAYQUAZA, new PaletteData(Range(1, 5), Range(13, 14), null, Range(9, 10))},
+            { Pokemon.LATIAS, new PaletteData(PalRange(9, 11, 12, 13, 14), Range(1, 4))},
+            { Pokemon.LATIOS, new PaletteData(PalRange(9, 11, 12, 13, 14), Range(1, 5))},
+            { Pokemon.JIRACHI, new PaletteData(Range(10, 13), PalRange(3, 5, 6))},
+            { Pokemon.DEOXYS, new PaletteData(Range(1, 4), Range(5, 7))}, // May need to add body (12)
+            { Pokemon.CHIMECHO, new PaletteData(PalRange(3, 4, 5, 10), PalRange(2, 11, 12, 13))},
         };
 
         private static readonly Dictionary<PokemonType, TypeColorData> typeColorData = new Dictionary<PokemonType, TypeColorData>()
