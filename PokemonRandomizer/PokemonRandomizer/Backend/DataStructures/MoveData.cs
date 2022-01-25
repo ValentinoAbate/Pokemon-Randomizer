@@ -245,6 +245,7 @@ namespace PokemonRandomizer.Backend.DataStructures
             { Move.WHIRLWIND, new PokemonType[] { PokemonType.FLY } },
             { Move.HARDEN, new PokemonType[] { PokemonType.RCK, PokemonType.BUG } },
             { Move.GROWTH, new PokemonType[] { PokemonType.GRS } },
+            { Move.SWEET_SCENT, new PokemonType[] { PokemonType.GRS } },
             { Move.MEAN_LOOK, new PokemonType[] { PokemonType.GHO } },
             { Move.CURSE, new PokemonType[] { PokemonType.GHO } }
         };
