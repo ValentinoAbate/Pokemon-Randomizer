@@ -683,7 +683,7 @@ namespace PokemonRandomizer.Backend.Randomization
             if (moveData.IsStatus || moveData.IsCounterAttack)
                 return false;
             int effectivePower = moveData.EffectivePower;
-            return IsType(moveData, type) && effectivePower >= minPower && effectivePower <= maxPower;
+            return moveData.IsType(type) && effectivePower >= minPower && effectivePower <= maxPower;
         }
 
         public bool HasAttackingMoveOfType(LearnSet learnSet, PokemonType type, int minPower = 0, int maxPower = 0xFF)
@@ -698,7 +698,7 @@ namespace PokemonRandomizer.Backend.Randomization
 
         private List<MoveData> GetAvailibleTypeMoves(IEnumerable<MoveData> allMoves, PokemonType type, LearnSet learnSet)
         {
-            var moves = allMoves.Where(m => IsType(m, type) && !learnSet.Learns(m.move)).ToList();
+            var moves = allMoves.Where(m => m.IsType(type) && !learnSet.Learns(m.move)).ToList();
             moves.Sort((m1, m2) => m1.EffectivePower.CompareTo(m2.EffectivePower));
             return moves;
         }
@@ -747,8 +747,8 @@ namespace PokemonRandomizer.Backend.Randomization
                 var newMoveData = dataT.GetMoveData(moveReplacement.newMove);
                 var oldMoveData = dataT.GetMoveData(moveReplacement.oldMove);
                 // If the pokemon is not currently the type of the new move and was the type of the old move, don't make the replacement
-                // This move will be reaplaced with a different move later
-                if (!IsType(newMoveData, pokemon.types) && IsType(oldMoveData, pokemon.OriginalTypes.ToArray()))
+                // This move will be replaced with a different move later
+                if (!newMoveData.IsType(pokemon) && oldMoveData.IsOriginalType(pokemon))
                     continue;
                 foreach (var entry in pokemon.learnSet.Where(entry => entry.move == moveReplacement.oldMove))
                 {
@@ -759,7 +759,7 @@ namespace PokemonRandomizer.Backend.Randomization
             {
                 var bonusMoveData = dataT.GetMoveData(bonusMove.move);
                 // If the pokemon is no longer this type, don't apply the bonus move
-                if (!IsType(bonusMoveData, pokemon.types))
+                if (!bonusMoveData.IsType(pokemon))
                     continue;
                 pokemon.learnSet.Add(bonusMove);
             }
@@ -786,7 +786,7 @@ namespace PokemonRandomizer.Backend.Randomization
             }
             foreach (var gainedType in data.GainedTypes)
             {
-                if (data.BonusMoves.Any(entry => IsType(dataT.GetMoveData(entry.move), gainedType)))
+                if (data.BonusMoves.Any(entry => dataT.GetMoveData(entry.move).IsType(gainedType)))
                     continue;
                 // Add moves in at an appropriate level
                 var availibleTypeMoves = GetAvailibleTypeMoves(availableAddMoves, gainedType, pokemon.learnSet);
@@ -878,24 +878,6 @@ namespace PokemonRandomizer.Backend.Randomization
             availibleMoves.RemoveAll(m => m.move == newMove);
             data.MoveReplacements.Add((move, newMove));
             return newMove;
-        }
-
-        private static readonly HashSet<(Move move, PokemonType type)> moveTypeOverrides = new HashSet<(Move move, PokemonType type)>()
-        {
-            (Move.SMOKESCREEN, PokemonType.FIR),
-            (Move.WHIRLWIND, PokemonType.FLY),
-            (Move.HARDEN, PokemonType.RCK),
-            (Move.HARDEN, PokemonType.BUG),
-            (Move.GROWTH, PokemonType.GRS),
-            (Move.MEAN_LOOK, PokemonType.GHO),
-            (Move.CURSE, PokemonType.GHO)
-        };
-
-        private bool IsType(MoveData move, params PokemonType[] types)
-        {
-            if (types.Any(type => moveTypeOverrides.Contains((move.move, type))))
-                return true;
-            return types.Any(type => move.type == type);
         }
 
         private Move ChooseAttackingMove(IEnumerable<MoveData> allMoves, int oldMovePower, int powerDiffTolerance)

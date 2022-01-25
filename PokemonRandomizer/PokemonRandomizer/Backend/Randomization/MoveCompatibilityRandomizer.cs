@@ -80,7 +80,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 return false;
             if (pokemon.originalTmHmMtMoves.Contains(move))
                 return true;
-            if (pokemon.IsType(moveData.type))
+            if (moveData.IsType(pokemon))
                 return true;
             if (pokemon.eggMoves.Contains(move))
                 return true;

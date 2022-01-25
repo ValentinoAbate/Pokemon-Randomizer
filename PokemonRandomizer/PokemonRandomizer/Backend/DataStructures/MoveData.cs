@@ -2,6 +2,7 @@
 using PokemonRandomizer.Backend.Utilities;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace PokemonRandomizer.Backend.DataStructures
 {
@@ -13,7 +14,6 @@ namespace PokemonRandomizer.Backend.DataStructures
             Special,
             Status,
         }
-
         public enum MoveEffect
         {
             Damage,
@@ -227,7 +227,6 @@ namespace PokemonRandomizer.Backend.DataStructures
             Camouflage,
             //See Move effects.txt
         }
-
         public enum Targets
         {
             SelectedTarget = 0,
@@ -238,6 +237,45 @@ namespace PokemonRandomizer.Backend.DataStructures
             Self = 16,
             EnemiesAndPartner = 32,
             OpponentField = 64, // For moves like spikes
+        }
+
+        private static readonly Dictionary<Move, PokemonType[]> moveTypeOverrides = new Dictionary<Move, PokemonType[]>()
+        {
+            { Move.SMOKESCREEN, new PokemonType[] { PokemonType.FIR } },
+            { Move.WHIRLWIND, new PokemonType[] { PokemonType.FLY } },
+            { Move.HARDEN, new PokemonType[] { PokemonType.RCK, PokemonType.BUG } },
+            { Move.GROWTH, new PokemonType[] { PokemonType.GRS } },
+            { Move.MEAN_LOOK, new PokemonType[] { PokemonType.GHO } },
+            { Move.CURSE, new PokemonType[] { PokemonType.GHO } }
+        };
+
+        public bool IsType(PokemonType t)
+        {
+            // Check for a type override
+            if (moveTypeOverrides.ContainsKey(move))
+            {
+                foreach(var t2 in moveTypeOverrides[move])
+                {
+                    if (t == t2)
+                    {
+                        return true;
+                    }
+                }
+                return false;
+            }
+            return t == type;
+        }
+        public bool IsType(PokemonBaseStats pokemon)
+        {
+            if (IsType(pokemon.PrimaryType))
+                return true;
+            return pokemon.IsSingleTyped ? false : IsType(pokemon.SecondaryType);
+        }
+        public bool IsOriginalType(PokemonBaseStats pokemon)
+        {
+            if (IsType(pokemon.OriginalPrimaryType))
+                return true;
+            return pokemon.OriginallySingleType ? false : IsType(pokemon.OriginalSecondaryType);
         }
 
         // Data structure documentation: https://bulbapedia.bulbagarden.net/wiki/Move_data_structure_in_Generation_III
