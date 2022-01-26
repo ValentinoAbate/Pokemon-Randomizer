@@ -120,6 +120,10 @@ namespace PokemonRandomizer.AppSettings
                 _ => throw new NotImplementedException(),
             },
             InvertChanceOfSecondaryTypeChangingForFlyingTypes = true,
+            AdjustAttackStats = variantData.AdjustAttackStats,
+            GiveBonusStats = variantData.GiveBonusStats,
+            StatChangeMean = variantData.BonusStatAmountMean,
+            StatChangeStdDev = variantData.BonusStatAmountStdDev,
         };
 
         public override double VariantChance => RandomChance(variantData.CreateVariants, variantData.VariantChance);
