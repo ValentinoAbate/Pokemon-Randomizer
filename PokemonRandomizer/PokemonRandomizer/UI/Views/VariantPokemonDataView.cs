@@ -21,8 +21,8 @@ namespace PokemonRandomizer.UI.Views
             var stack = CreateMainStack();
             stack.Header("Variant Pokemon");
             stack.Description("This feature creates type variants of Pokemon, and edits their movesets, color palettes, base stats, and EV yields to fit their new type!", "This feature is designed to be configured at a 10-25% chance.");
-            stack.Add(new RandomChanceUI("Generate Variant Pokemon", model.CreateVariants, model.VariantChance));
-            var optionTabs = stack.Add(new TabControl() { MinHeight = 288, Margin = new System.Windows.Thickness(5) });
+            var generateVariant = stack.Add(new RandomChanceUI("Generate Variant Pokemon", model.CreateVariants, model.VariantChance));
+            var optionTabs = generateVariant.BindEnabled(stack.Add(new TabControl() { MinHeight = 288, Margin = new System.Windows.Thickness(5) }));
             optionTabs.Add(TypeWeightTab(model));
             optionTabs.Add(BaseStatTab(model));
         }

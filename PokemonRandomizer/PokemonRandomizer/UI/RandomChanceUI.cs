@@ -44,7 +44,7 @@ namespace PokemonRandomizer.UI
             OnCheckBox(enabled);
         }
 
-        public UIElement BindEnabled(UIElement element)
+        public T BindEnabled<T>(T element) where T : UIElement
         {
             enableOnCheckElement = element;
             element.IsEnabled = checkBox.IsChecked ?? false;
