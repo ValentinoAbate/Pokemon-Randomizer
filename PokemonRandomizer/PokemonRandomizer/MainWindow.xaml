@@ -7,15 +7,15 @@
         xmlns:converter="clr-namespace:PokemonRandomizer.Converters"
         mc:Ignorable="d"
         Title="Procedural Pokemon Randomizer (Beta)" Height="560" Width="900">
-    
+
     <!--Main Window Resources-->
-    
+
     <Window.Resources>
         <converter:PercentConverter x:Key="PercentConverter" />
     </Window.Resources>
-    
+
     <!--Main Grid-->
-    
+
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Name="Toolbar" Height="Auto" ></RowDefinition>
@@ -60,9 +60,9 @@
         <!--Tabs-->
 
         <TabControl Name="MainTabControl" IsEnabled="{Binding IsROMLoaded}" Grid.Row="1">
-            
+
             <!--General Settings-->
-            
+
             <TabItem Name="RandomizerView" Header="Randomizer">
 
             </TabItem>
@@ -86,13 +86,143 @@
             <TabItem Name="SpecialPokemonView" Header="Special Pokemon">
 
             </TabItem>
-            
+
             <!--Wild Pokemon-->
 
             <TabItem Name="WildPokemonView" Header="Wild Pokemon">
 
             </TabItem>
-            
+
+            <TabItem Name="BigChungus" Header="Oh he big" Visibility="Collapsed">
+                <StackPanel Orientation="Vertical">
+                    <Label Content="Item Randomization Settings" FontSize="16"/>
+                    <Separator Height="5"/>
+                    <StackPanel Orientation="Horizontal" Margin="10,5">
+                        <Label Content="Banned Items" FontSize="14" VerticalAlignment="Center" Width="125"/>
+                        <ListBox Margin = "10,0,10,0" SelectionMode="Multiple" Height="50">
+                            <ListBox.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel IsItemsHost="True" Orientation="Horizontal" Width="710" VerticalAlignment="Center"/>
+                                </ItemsPanelTemplate>
+                            </ListBox.ItemsPanel>
+                            <ListBoxItem Content = "Poké Balls" />
+                            <ListBoxItem Content = "Medicine" />
+                            <ListBoxItem Content = "Stat Boost Items" />
+                            <ListBoxItem Content = "TMs" />
+                            <ListBoxItem Content = "Utility Items" />
+                            <ListBoxItem Content = "Sell Items" />
+                            <ListBoxItem Content = "Exchange Items" />
+                            <ListBoxItem Content = "Battle Items" />
+                            <ListBoxItem Content = "Held Items" />
+                            <ListBoxItem Content = "Contest Scarves" />
+                            <ListBoxItem Content = "Lucky Egg" />
+                            <ListBoxItem Content = "Mail" />
+                            <ListBoxItem Content = "All Berries" />
+                            <ListBoxItem Content = "Minigame Berries" />
+                            <ListBoxItem Content = "Battle Berries" />
+                            <ListBoxItem Content = "EV Berries" />
+                            <ListBoxItem Content = "Evolution Items" />
+                            <ListBoxItem Content = "Breeding Items" />
+                            <ListBoxItem Content = "Special Items" />
+                            <ListBoxItem Content = "Flutes"/>
+                        </ListBox>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="10,5">
+                        <Label Content="Skipped Items" FontSize="14" VerticalAlignment="Center" Width="125"/>
+                        <ListBox Margin = "10,0,10,0" SelectionMode="Multiple" Height="50">
+                            <ListBox.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel IsItemsHost="True" Orientation="Horizontal" Width="710" VerticalAlignment="Center"/>
+                                </ItemsPanelTemplate>
+                            </ListBox.ItemsPanel>
+                            <ListBoxItem Content = "Poké Balls" />
+                            <ListBoxItem Content = "Medicine" />
+                            <ListBoxItem Content = "Stat Boost Items" />
+                            <ListBoxItem Content = "TMs" />
+                            <ListBoxItem Content = "Utility Items" />
+                            <ListBoxItem Content = "Sell Items" />
+                            <ListBoxItem Content = "Exchange Items" />
+                            <ListBoxItem Content = "Battle Items" />
+                            <ListBoxItem Content = "Held Items" />
+                            <ListBoxItem Content = "Contest Scarves" />
+                            <ListBoxItem Content = "Lucky Egg" />
+                            <ListBoxItem Content = "Mail" />
+                            <ListBoxItem Content = "All Berries" />
+                            <ListBoxItem Content = "Minigame Berries" />
+                            <ListBoxItem Content = "Battle Berries" />
+                            <ListBoxItem Content = "EV Berries" />
+                            <ListBoxItem Content = "Evolution Items" />
+                            <ListBoxItem Content = "Breeding Items" />
+                            <ListBoxItem Content = "Special Items" />
+                            <ListBoxItem Content = "Flutes"/>
+                        </ListBox>
+                    </StackPanel>
+                    <Label Content="Duplicate Reduction" FontSize="16"/>
+                    <StackPanel Orientation="Horizontal" Margin="10">
+                        <Label Content="Reduce Duplicates" FontSize="14" VerticalAlignment="Center" Width="125"/>
+                        <ListBox Margin = "10,0,10,0" SelectionMode="Multiple" Height="50">
+                            <ListBox.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel IsItemsHost="True" Orientation="Horizontal" Width="710" VerticalAlignment="Center"/>
+                                </ItemsPanelTemplate>
+                            </ListBox.ItemsPanel>
+                            <ListBoxItem Content = "Poké Balls" />
+                            <ListBoxItem Content = "Medicine" />
+                            <ListBoxItem Content = "Stat Boost Items" />
+                            <ListBoxItem Content = "TMs" />
+                            <ListBoxItem Content = "Utility Items" />
+                            <ListBoxItem Content = "Sell Items" />
+                            <ListBoxItem Content = "Exchange Items" />
+                            <ListBoxItem Content = "Battle Items" />
+                            <ListBoxItem Content = "Held Items" />
+                            <ListBoxItem Content = "Contest Scarves" />
+                            <ListBoxItem Content = "Lucky Egg" />
+                            <ListBoxItem Content = "Mail" />
+                            <ListBoxItem Content = "All Berries" />
+                            <ListBoxItem Content = "Minigame Berries" />
+                            <ListBoxItem Content = "Battle Berries" />
+                            <ListBoxItem Content = "EV Berries" />
+                            <ListBoxItem Content = "Evolution Items" />
+                            <ListBoxItem Content = "Breeding Items" />
+                            <ListBoxItem Content = "Special Items" />
+                            <ListBoxItem Content = "Flutes"/>
+                        </ListBox>
+                    </StackPanel>
+                    <Label Content="Category Preservation" FontSize="16"/>
+                    <StackPanel Orientation="Horizontal" Margin="10,5">
+                        <Label Content="Keep Category" FontSize="14" VerticalAlignment="Center" Width="125"/>
+                        <ListBox Margin = "10,0,10,0" SelectionMode="Multiple" Height="50">
+                            <ListBox.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel IsItemsHost="True" Orientation="Horizontal" Width="710" VerticalAlignment="Center"/>
+                                </ItemsPanelTemplate>
+                            </ListBox.ItemsPanel>
+                            <ListBoxItem Content = "Poké Balls" />
+                            <ListBoxItem Content = "Medicine" />
+                            <ListBoxItem Content = "Stat Boost Items" />
+                            <ListBoxItem Content = "TMs" />
+                            <ListBoxItem Content = "Utility Items" />
+                            <ListBoxItem Content = "Sell Items" />
+                            <ListBoxItem Content = "Exchange Items" />
+                            <ListBoxItem Content = "Battle Items" />
+                            <ListBoxItem Content = "Held Items" />
+                            <ListBoxItem Content = "Contest Scarves" />
+                            <ListBoxItem Content = "Lucky Egg" />
+                            <ListBoxItem Content = "Mail" />
+                            <ListBoxItem Content = "All Berries" />
+                            <ListBoxItem Content = "Minigame Berries" />
+                            <ListBoxItem Content = "Battle Berries" />
+                            <ListBoxItem Content = "EV Berries" />
+                            <ListBoxItem Content = "Evolution Items" />
+                            <ListBoxItem Content = "Breeding Items" />
+                            <ListBoxItem Content = "Special Items" />
+                            <ListBoxItem Content = "Flutes"/>
+                        </ListBox>
+                    </StackPanel>
+                </StackPanel>
+
+            </TabItem>
+
             <TabItem Header="Trainers">
                 <Grid>
                     <Grid.ColumnDefinitions>
@@ -103,7 +233,7 @@
                     <DockPanel Name="TrainerView" Grid.Column="1"/>
                 </Grid>
             </TabItem>
-            
+
             <TabItem Name="ItemsView" Header="Items">
 
             </TabItem>
@@ -116,9 +246,9 @@
 
             </TabItem>
         </TabControl>
-        
+
         <!--Message Box-->
-        
+
         <StatusBar Name="InfoBox" Grid.Row="2" Height="45">
             <StatusBar.ItemsPanel>
                 <ItemsPanelTemplate>
@@ -138,5 +268,5 @@
             </StatusBarItem>
         </StatusBar>
     </Grid>
-    
+
 </Window>
