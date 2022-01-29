@@ -5,7 +5,6 @@ using System.Linq;
 
 namespace PokemonRandomizer.UI
 {
-    using System.Collections.Generic;
     using System.Windows;
     using Utilities;
     public class BoundComboBoxUI : StackPanel
@@ -37,19 +36,6 @@ namespace PokemonRandomizer.UI
         {
             ComboBox.SelectionChanged += (_, _2) => element.SetVisibility(indices.Contains(ComboBox.SelectedIndex));
             element.SetVisibility(indices.Contains(ComboBox.SelectedIndex));
-        }
-    }
-
-    public class EnumComboBoxUI<T> : BoundComboBoxUI where T : Enum
-    {
-        public EnumComboBoxUI(string label, IEnumerable items, Box<T> index, Orientation orientation = Orientation.Horizontal) 
-            : base(label, items, Convert.ToInt32(index.Value), i => index.Value = (T)Enum.Parse(typeof(T), i.ToString()), orientation)
-        {
-        }
-
-        public EnumComboBoxUI(string label, IEnumerable displayOptions, Box<T> current, List<T> options, Orientation orientation = Orientation.Horizontal)
-            : base(label, displayOptions, options.IndexOf(current), i => current.Value = options[i], orientation)
-        {
         }
     }
 }
