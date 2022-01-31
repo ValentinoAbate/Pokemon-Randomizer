@@ -52,6 +52,18 @@ namespace PokemonRandomizer.Backend.Randomization
             if (validCategories != Categories.None && rand.RollSuccess(randomizerSettings.SameCategoryChance))
             {
                 itemWeights.RemoveWhere(i => !HasAnyCategory(i.ItemCategories, validCategories));
+                if (randomizerSettings.AllowBannedItemsWhenKeepingCategory && HasAnyCategory(validCategories, randomizerSettings.BannedCategories))
+                {
+                    var itemsToAddBack = possibleItems.Where(item => ReAddWhenKeepingCategory(item, validCategories));
+                    if (randomizerSettings.OccurenceWeightMultiplier > 0)
+                    {
+                        itemWeights.AddRange(itemsToAddBack, OccurenceWeight);
+                    }
+                    else
+                    {
+                        itemWeights.AddRange(itemsToAddBack);
+                    }
+                }
             }
             if (itemWeights.Count <= 0)
             {
@@ -83,7 +95,15 @@ namespace PokemonRandomizer.Backend.Randomization
 
         private bool IsNotBanned(ItemData i)
         {
-            return i.ItemCategories == Categories.None || ((randomizerSettings.BannedCategories & i.ItemCategories) == Categories.None);
+            return ((randomizerSettings.BannedCategories & i.ItemCategories) == Categories.None) || i.ItemCategories == Categories.None;
+        }
+
+        private bool ReAddWhenKeepingCategory(ItemData i, Categories validCategories)
+        {
+            // Need to re-add if is a valid category but is also banned
+            return i.ItemCategories != Categories.None
+                && HasAnyCategory(i.ItemCategories, validCategories)
+                && HasAnyCategory(i.ItemCategories, randomizerSettings.BannedCategories);
         }
 
         private bool IsSkipped(ItemData i) => HasAnyCategory(randomizerSettings.SkipCategories, i.ItemCategories);
@@ -110,11 +130,12 @@ namespace PokemonRandomizer.Backend.Randomization
             // Items in these categories will not be selected from the random pool
             public Categories BannedCategories { get; set; } = Categories.KeyItem | Categories.ContestScarf | Categories.Mail | Categories.MinigameBerry;
             // Items in these categories will be less likely to be chosen if they have been chosed before
-            public Categories OccurenceWeightedCategories { get; set; }// = Categories.TM | Categories.HeldItem;
+            public Categories OccurenceWeightedCategories { get; set; } = Categories.TM | Categories.HeldItem;
             public double OccurenceWeightMultiplier { get; set; } = 10;
             // Items in this categories will be more like to be replaced with an item from the same category when replaced
             public Categories SameCategoryCategories { get; set; }
             public double SameCategoryChance { get; set; } = 0.75;
+            public bool AllowBannedItemsWhenKeepingCategory { get; set; } = true;
         }
 
         public class Settings

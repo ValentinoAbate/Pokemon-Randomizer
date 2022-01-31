@@ -279,7 +279,15 @@ namespace PokemonRandomizer.AppSettings
 
         #region Items
 
-        //public override bool DontRandomizeTms => false; // Not actually implemented seems like
+        public override ItemRandomizer.RandomizerSettings ItemRandomizationSettings => new ItemRandomizer.RandomizerSettings()
+        {
+            SkipCategories = ItemData.Categories.KeyItem | itemData.SkipCategories,
+            BannedCategories = ItemData.Categories.KeyItem | itemData.BannedCategories,
+            OccurenceWeightedCategories = itemData.ReduceDuplicatesCategories,
+            SameCategoryCategories = itemData.KeepCategoryCategories,
+            SameCategoryChance = itemData.SameCategoryChance,
+            AllowBannedItemsWhenKeepingCategory = itemData.AllowBannedItemsWhenKeepingCategory,
+        };
 
         public override PcItemOption PcPotionOption => itemData.PcPotionOption;
         public override Item CustomPcItem => itemData.CustomPcItem;

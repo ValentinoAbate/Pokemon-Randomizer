@@ -22,7 +22,6 @@ namespace PokemonRandomizer.UI
 
         private float CbWidth { get; }
 
-        private readonly Func<IReadOnlyList<MenuBoxItem>> getChoiceList;
         private readonly List<WeightUI> weights = new List<WeightUI>();
         private readonly StackPanel mainStack;
         private readonly WeightedSet<T> set;
@@ -34,7 +33,6 @@ namespace PokemonRandomizer.UI
         public WeightedSetUI(string name, WeightedSet<T> set, Func<IReadOnlyList<MenuBoxItem>> getChoiceList, float cbWidth = 150)
         {
             CbWidth = cbWidth;
-            this.getChoiceList = getChoiceList;
             this.set = set;
             referenceList = getChoiceList();
             mainStack = new StackPanel() { Orientation = Orientation.Vertical };

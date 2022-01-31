@@ -1,11 +1,13 @@
 ﻿using System.Windows.Controls;
 using System.Windows.Data;
+using static PokemonRandomizer.Backend.DataStructures.ItemData;
 
 namespace PokemonRandomizer.UI.Views
 {
     using Backend.EnumTypes;
     using Models;
     using PokemonRandomizer.Backend.Utilities;
+    using System.Collections.Generic;
     using System.Linq;
     using static Settings;
 
@@ -15,9 +17,10 @@ namespace PokemonRandomizer.UI.Views
         {
             var tabs = new TabControl();
 
-            tabs.Items.Add(CreateFieldItemsTab(model));
+            tabs.Add(CreateItemRandomizerSettingsTab(model));
+            tabs.Add(CreateFieldItemsTab(model));
             //tabs.Items.Add(CreateShopsTab(model));
-            tabs.Items.Add(CreateMiscTab(model));
+            tabs.Add(CreateMiscTab(model));
 
             Content = tabs;
         }
@@ -28,6 +31,55 @@ namespace PokemonRandomizer.UI.Views
             new ComboBoxItem() {Content="Random"},
             new ComboBoxItem() {Content="Custom"},
         };
+
+        private List<BoundFlagsEnumListBoxUI<Categories>.MenuBoxItem> GetItemCategoryDropDown() => new List<BoundFlagsEnumListBoxUI<Categories>.MenuBoxItem>
+        {
+            new BoundFlagsEnumListBoxUI<Categories>.MenuBoxItem { Item = Categories.Ball, Content="Poké Balls"},
+            new BoundFlagsEnumListBoxUI<Categories>.MenuBoxItem { Item = Categories.Medicine, Content="Medicine"},
+            new BoundFlagsEnumListBoxUI<Categories>.MenuBoxItem { Item = Categories.StatIncrease, Content="Stat Boost Items"},
+            new BoundFlagsEnumListBoxUI<Categories>.MenuBoxItem { Item = Categories.TM, Content="TMs"},
+            new BoundFlagsEnumListBoxUI<Categories>.MenuBoxItem { Item = Categories.Utility, Content="Utility Items"},
+            new BoundFlagsEnumListBoxUI<Categories>.MenuBoxItem { Item = Categories.SellItem, Content="Sell Items"},
+            new BoundFlagsEnumListBoxUI<Categories>.MenuBoxItem { Item = Categories.ExchangeItem, Content="Exchange Items"},
+            new BoundFlagsEnumListBoxUI<Categories>.MenuBoxItem { Item = Categories.BattleItem, Content="Battle Items"},
+            new BoundFlagsEnumListBoxUI<Categories>.MenuBoxItem { Item = Categories.HeldItem, Content="Held Items"},
+            new BoundFlagsEnumListBoxUI<Categories>.MenuBoxItem { Item = Categories.ContestScarf, Content="Contest Scarves"},
+            new BoundFlagsEnumListBoxUI<Categories>.MenuBoxItem { Item = Categories.LuckyEgg, Content="Lucky Egg"},
+            new BoundFlagsEnumListBoxUI<Categories>.MenuBoxItem { Item = Categories.Mail, Content="Mail"},
+            new BoundFlagsEnumListBoxUI<Categories>.MenuBoxItem { Item = Categories.Berry, Content="All Berries"},
+            new BoundFlagsEnumListBoxUI<Categories>.MenuBoxItem { Item = Categories.MinigameBerry, Content="Minigame Berries"},
+            new BoundFlagsEnumListBoxUI<Categories>.MenuBoxItem { Item = Categories.BattleBerry, Content="Battle Berries"},
+            new BoundFlagsEnumListBoxUI<Categories>.MenuBoxItem { Item = Categories.EVBerry, Content="EV Berries"},
+            new BoundFlagsEnumListBoxUI<Categories>.MenuBoxItem { Item = Categories.EvolutionItem, Content="Evolution Items"},
+            new BoundFlagsEnumListBoxUI<Categories>.MenuBoxItem { Item = Categories.Breeding, Content="Breeding Items"},
+            new BoundFlagsEnumListBoxUI<Categories>.MenuBoxItem { Item = Categories.Special, Content="Special Items"},
+            new BoundFlagsEnumListBoxUI<Categories>.MenuBoxItem { Item = Categories.Flute, Content="Flutes"},
+        };
+
+        private TabItem CreateItemRandomizerSettingsTab(ItemDataModel model)
+        {
+            var stack = CreateStack();
+            stack.Header("General Randomization");
+            SetItemCategorySize(stack.Add(new BoundFlagsEnumListBoxUI<Categories>("Banned Items", model.BannedCategories, GetItemCategoryDropDown, CategoryOrEquals)).ListBox);
+            SetItemCategorySize(stack.Add(new BoundFlagsEnumListBoxUI<Categories>("Skipped Items", model.SkipCategories, GetItemCategoryDropDown, CategoryOrEquals)).ListBox);
+            stack.Header("Duplicate Reduction");
+            SetItemCategorySize(stack.Add(new BoundFlagsEnumListBoxUI<Categories>("Reduce Duplicates", model.ReduceDuplicatesCategories, GetItemCategoryDropDown, CategoryOrEquals)).ListBox);
+            stack.Header("Category Preservation");
+            SetItemCategorySize(stack.Add(new BoundFlagsEnumListBoxUI<Categories>("Keep Category", model.KeepCategoryCategories, GetItemCategoryDropDown, CategoryOrEquals)).ListBox);
+            stack.Add(new BoundSliderUI("Keep Category Chance", model.SameCategoryChance));
+            stack.Add(new BoundCheckBoxUI(model.AllowBannedItemsWhenKeepingCategory, "Allow Banned Items When Keeping Category"));
+            return CreateTabItem("Item Randomization Settings", stack);
+        }
+
+        private void SetItemCategorySize(ListBox box)
+        {
+            box.Height = 50;
+        }
+
+        private Categories CategoryOrEquals(Categories c1, Categories c2)
+        {
+            return c1 |= c2;
+        }
 
         private TabItem CreateMiscTab(ItemDataModel model)
         {

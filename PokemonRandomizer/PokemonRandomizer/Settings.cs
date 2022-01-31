@@ -294,7 +294,7 @@ namespace PokemonRandomizer
 
         #region Items
 
-        public abstract bool DontRandomizeTms { get; }
+        public abstract ItemRandomizer.RandomizerSettings ItemRandomizationSettings { get; }
 
         public enum PcItemOption
         {

@@ -198,6 +198,7 @@
     <Compile Include="Search\Kmp.cs" />
     <Compile Include="Statistics\Distribution.cs" />
     <Compile Include="UI\BoundCheckBoxUI.cs" />
+    <Compile Include="UI\BoundFlagsEnumListBoxUI.cs" />
     <Compile Include="UI\BoundTextBoxUI.cs" />
     <Compile Include="UI\EnumComboBoxUI.cs" />
     <Compile Include="UI\ItemSettingsUI.cs" />

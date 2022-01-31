@@ -103,6 +103,13 @@ namespace PokemonRandomizer.Backend.Randomization
             foreach (var key in keys)
                 Add(key, m(key));
         }
+        public void AddRange(IEnumerable<T> items, float weight = 1)
+        {
+            foreach (var item in items)
+            {
+                Add(item, weight);
+            }
+        }
         public void AddRange(IEnumerable<T> items, Func<T, float> weight)
         {
             foreach(var item in items)

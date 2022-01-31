@@ -414,7 +414,7 @@ namespace PokemonRandomizer.AppSettings
 
         #region Items
 
-        public override bool DontRandomizeTms => false;
+        public override ItemRandomizer.RandomizerSettings ItemRandomizationSettings => new ItemRandomizer.RandomizerSettings();
 
         public override PcItemOption PcPotionOption => PcItemOption.Custom;
         public override Item CustomPcItem => Item.Metal_Coat;
