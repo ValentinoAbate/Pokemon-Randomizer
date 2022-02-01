@@ -89,6 +89,8 @@ namespace PokemonRandomizer.Backend.DataStructures
 
         public List<Item> NewEvolutionStones { get; set; } = new List<Item>();
 
+        public string PaletteOverrideKey { get; set; }
+
         public PokemonBaseStats GetBaseStats(Pokemon p) => PokemonLookup[p];
         public MoveData GetMoveData(Move m) => MoveData[(int)m];
         public ItemData GetItemData(Item i) => ItemData[(int)i];

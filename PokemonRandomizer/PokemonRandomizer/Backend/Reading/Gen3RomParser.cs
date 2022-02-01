@@ -79,6 +79,8 @@ namespace PokemonRandomizer.Backend.Reading
             data.PickupItems = ReadPickupData(rom, info, metadata);
             // Calculate the balance metrics from the loaded data
             data.CalculateMetrics();
+            // Set PaletteOverrideKey for variant generator until I figure out a better way to do this
+            data.PaletteOverrideKey = metadata.IsFireRedOrLeafGreen ? Randomization.PokemonVariantRandomizer.FRLGPalKey : string.Empty;
             Timer.main.Stop();
             Timer.main.Log("ROM Parsing");
             return data;

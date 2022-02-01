@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using PokemonRandomizer.Backend.DataStructures;
 using PokemonRandomizer.Backend.EnumTypes;
 using PokemonRandomizer.Backend.Utilities;
@@ -12,6 +10,7 @@ namespace PokemonRandomizer.Backend.Randomization
 {
     public class PokemonVariantRandomizer
     {
+        public const string FRLGPalKey = "FRLG";
         public enum TypeTransformation
         {
             None,
@@ -47,11 +46,13 @@ namespace PokemonRandomizer.Backend.Randomization
         private readonly IDataTranslator dataT;
         private readonly BonusMoveGenerator bonusMoveGenerator;
         private readonly List<PokemonType> types;
-        public PokemonVariantRandomizer(Random rand, IDataTranslator dataT, BonusMoveGenerator bonusMoveGenerator)
+        private readonly string paletteKey;
+        public PokemonVariantRandomizer(Random rand, IDataTranslator dataT, BonusMoveGenerator bonusMoveGenerator, string paletteKey)
         {
             this.rand = rand;
             this.dataT = dataT;
             this.bonusMoveGenerator = bonusMoveGenerator;
+            this.paletteKey = paletteKey;
             types = new List<PokemonType>(EnumUtils.GetValues<PokemonType>());
             types.Remove(PokemonType.FAI);
             types.Remove(PokemonType.Unknown);
@@ -928,29 +929,50 @@ namespace PokemonRandomizer.Backend.Randomization
             return indices;
         }
 
+        private static readonly Dictionary<string, Dictionary<Pokemon, PaletteData>> variantPaletteDataOverrides = new Dictionary<string, Dictionary<Pokemon, PaletteData>>() 
+        {
+            {FRLGPalKey, new Dictionary<Pokemon, PaletteData>()
+            {
+                { Pokemon.SQUIRTLE, new PaletteData(Range(11, 14), PalRange(2, 3, 4, 6, 7, 8, 9, 10))},
+                { Pokemon.WARTORTLE, new PaletteData(Range(11, 14), Range(5, 10))},
+                { Pokemon.BLASTOISE, new PaletteData(Range(11, 14), Range(4, 10))},
+                { Pokemon.SANDSHREW, new PaletteData(Range(3, 7))},
+                { Pokemon.NIDOKING, new PaletteData(PalRange(7, 11, 12, 13, 14), Range(8, 10))},
+                { Pokemon.NINETALES, new PaletteData(Range(9, 14), Range(2, 4))},
+                { Pokemon.PARASECT, new PaletteData(PalRange(4, 5, 11, 12, 13, 14), Range(6, 9))},
+                { Pokemon.BELLSPROUT, new PaletteData(PalRange(1, 6, 7, 8), PalRange(2, 9, 10, 11), null, Range(3, 5))},
+                { Pokemon.HYPNO, new PaletteData(Range(1, 5), Range(12, 13))}, // may also want to include 6 in primary. secondary may be unneccessary
+                { Pokemon.LICKITUNG, new PaletteData(PalRange(5, 10, 11, 12, 13, 14), Range(6, 8))}, // 5 is shared between belly and tongue
+                { Pokemon.STARYU, new PaletteData(PalRange(6, 7, 8, 9, 14), Range(2, 5), Range(10, 13))},
+                { Pokemon.MR_MIME, new PaletteData(Range(5, 8), Range(9, 13))},
+                { Pokemon.SNORLAX, new PaletteData(Range(1, 4), Range(5, 9), Range(10, 11))},
+                { Pokemon.DRATINI, new PaletteData(PalRange(9, 11, 12, 13, 14))},
+                { Pokemon.DRAGONITE, new PaletteData(Range(1, 5), Range(6, 8))},
+                { Pokemon.MEW, new PaletteData(Range(9, 14), Range(3, 4))},
+            }
+            }
+        };
+
         private static readonly Dictionary<Pokemon, PaletteData> variantPaletteData = new Dictionary<Pokemon, PaletteData>()
         {
-            { Pokemon.BULBASAUR, new PaletteData(new int[]{ 2, 3, 4, 5 }, new int[]{ 11, 12, 13, 14 }) }, // Needs outline check
-            { Pokemon.IVYSAUR, new PaletteData(new int[]{ 6, 7, 10, 12 }, new int[]{ 2, 8, 9, }, null,  new int[]{ 3, 4, 5, 13, 14, 15 }) },
-            // 1 is a shared outline color
-            { Pokemon.VENUSAUR, new PaletteData(new int[]{ 1, 2, 3, 4 }, new int[]{ 10, 13, 14, }, null,  new int[]{ 5, 6, 8, 9 }) },
-            //{ Pokemon.CHARMANDER, new PaletteData(new int[]{ 9, 10, 11, 12 }, new int[]{ 4, 5, 6, 7, 8}) },
-            { Pokemon.CHARMANDER, new PaletteData(new int[]{ 9, 10, 11, 12 }) },
-            //{ Pokemon.CHARMELEON, new PaletteData(new int[]{ 10, 11, 12, 13 }, new int[]{ 4, 5, 6, 7, 8}) },
-            { Pokemon.CHARMELEON, new PaletteData(new int[]{ 10, 11, 12, 13 }) },
-            { Pokemon.CHARIZARD, new PaletteData(new int[]{ 10, 11, 12, 13 }, new int[]{ 1, 2, 6, 7, 8 }, null, new int[]{ 3, 4, 5 }) },
-            { Pokemon.SQUIRTLE, new PaletteData(new int[]{ 11, 12, 13, 14 }, new int[]{ 2, 3, 4 })},
-            { Pokemon.WARTORTLE, new PaletteData(new int[]{ 11, 12, 13, 14 }, new int[]{ 5, 6, 7 })},
-            { Pokemon.BLASTOISE, new PaletteData(new int[]{ 11, 12, 13, 14 }, new int[]{ 4, 8, 9, 10 })},
-            { Pokemon.CATERPIE, new PaletteData(new int[]{ 9, 10, 11, 12 }, new int[]{ 3, 4, 8 }, null, new int[]{ 2, 5, 6, 7 })},
-            { Pokemon.METAPOD, new PaletteData(new int[]{ 2, 3, 4, 5 })},
-            { Pokemon.BUTTERFREE, new PaletteData(new int[]{ 4, 5, 6, 7 },  new int[]{ 14, 15 })},
-            { Pokemon.WEEDLE, new PaletteData(new int[]{ 4, 5, 6, 7, 13 },  new int[]{ 2, 3 })},
-            { Pokemon.KAKUNA, new PaletteData(new int[]{ 2, 3, 4, 5, 6 })},
-            { Pokemon.BEEDRILL, new PaletteData(Range(2, 5), new int[]{ 10, 11, 12 })},
+            { Pokemon.BULBASAUR, new PaletteData(Range(2, 5), Range(11, 14)) },
+            { Pokemon.IVYSAUR, new PaletteData(PalRange(6, 7, 10, 12), PalRange(2, 8, 9), null, PalRange(3, 4, 5, 13, 14, 15)) },
+            { Pokemon.VENUSAUR, new PaletteData(Range(1, 4), PalRange(10, 13, 14), null, PalRange(5, 6, 8, 9)) }, // 1 is a shared outline color
+            { Pokemon.CHARMANDER, new PaletteData(Range(9, 12)) }, // 4-8 Body and Flame
+            { Pokemon.CHARMELEON, new PaletteData(Range(10, 13)) }, // 4-8 Body and Flame
+            { Pokemon.CHARIZARD, new PaletteData(Range(10, 13), PalRange(1, 2, 6, 7, 8), null, Range(3, 5)) },
+            { Pokemon.SQUIRTLE, new PaletteData(Range(11, 14), Range(2, 4))},
+            { Pokemon.WARTORTLE, new PaletteData(Range(11, 14), Range(5, 7))},
+            { Pokemon.BLASTOISE, new PaletteData(Range(11, 14), PalRange(4, 8, 9, 10))},
+            { Pokemon.CATERPIE, new PaletteData(Range(9, 12), PalRange(3, 4, 8), null, PalRange(2, 5, 6, 7))},
+            { Pokemon.METAPOD, new PaletteData(Range(2, 5))},
+            { Pokemon.BUTTERFREE, new PaletteData(Range(4, 7),  Range(14, 15))},
+            { Pokemon.WEEDLE, new PaletteData(PalRange(4, 5, 6, 7, 13), Range(2, 3))},
+            { Pokemon.KAKUNA, new PaletteData(Range(2, 6))},
+            { Pokemon.BEEDRILL, new PaletteData(Range(2, 5), Range(10, 12 ))},
             { Pokemon.PIDGEY, new PaletteData(Range(6, 12), Range(3, 5))}, // Pidgey line doesn't do well with light primary / dark secondary colors
             { Pokemon.PIDGEOTTO, new PaletteData(Range(6, 11), Range(3, 5))},
-            { Pokemon.PIDGEOT, new PaletteData(new int[]{ 6, 7, 8, 11, 12, 13, 14 }, new int[]{ 3, 4, 5, 9, 10 })},
+            { Pokemon.PIDGEOT, new PaletteData(PalRange(6, 7, 8, 11, 12, 13, 14), PalRange(3, 4, 5, 9, 10))},
             { Pokemon.RATTATA, new PaletteData(Range(7, 10))},
             { Pokemon.RATICATE, new PaletteData(Range(8, 11), Range(2, 7))},
             { Pokemon.SPEAROW, new PaletteData(Range(10, 13), PalRange(6, 7, 8, 9, 14), Range(2, 5)) },
@@ -958,7 +980,7 @@ namespace PokemonRandomizer.Backend.Randomization
             { Pokemon.EKANS, new PaletteData(Range(12, 15), Range(6, 9))},
             { Pokemon.ARBOK, new PaletteData(Range(9, 12), Range(5, 7))},
             { Pokemon.PIKACHU, new PaletteData(Range(2, 6), Range(10, 12))}, // , Range(10, 12) // Cheeks
-            { Pokemon.RAICHU, new PaletteData(Range(2, 4), Range(6, 12))},
+            { Pokemon.RAICHU, new PaletteData(Range(2, 5), Range(6, 12))},
             { Pokemon.SANDSHREW, new PaletteData(Range(3, 6))},
             { Pokemon.SANDSLASH, new PaletteData(Range(2, 5), Range(10, 13))},
             { Pokemon.NIDORAN_GAL, new PaletteData(Range(1, 5), Range(8, 10))},
@@ -1001,11 +1023,11 @@ namespace PokemonRandomizer.Backend.Randomization
             { Pokemon.MACHOP, new PaletteData(Range(11, 14), Range(2, 5))},
             { Pokemon.MACHOKE, new PaletteData(Range(11, 14), Range(2, 5), null, Range(7, 9))},
             { Pokemon.MACHAMP, new PaletteData(Range(11, 14))}, // Mouth and fins Range(2, 5)
-            { Pokemon.BELLSPROUT, new PaletteData(Range(6, 8), Range(9, 11), null, Range(3, 5))},
+            { Pokemon.BELLSPROUT, new PaletteData(Range(6, 8), PalRange(2, 9, 10, 11), null, Range(3, 5))},
             { Pokemon.WEEPINBELL, new PaletteData(Range(6, 8), Range(9, 11), null, Range(2, 5))},
             { Pokemon.VICTREEBEL, new PaletteData(PalRange(2, 6, 7, 8), Range(9, 11), null, Range(4, 5))},
-            { Pokemon.TENTACOOL, new PaletteData(Range(11, 14), Range(3, 5))},
-            { Pokemon.TENTACRUEL, new PaletteData(Range(11, 14), Range(3, 5))},
+            { Pokemon.TENTACOOL, new PaletteData(Range(11, 14), Range(2, 5))},
+            { Pokemon.TENTACRUEL, new PaletteData(Range(11, 14), Range(2, 5))},
             { Pokemon.GEODUDE, new PaletteData(Range(11, 14))},
             { Pokemon.GRAVELER, new PaletteData(Range(12, 15))},
             { Pokemon.GOLEM, new PaletteData(Range(5, 8), Range(9, 12))},
@@ -1015,11 +1037,11 @@ namespace PokemonRandomizer.Backend.Randomization
             { Pokemon.SLOWBRO, new PaletteData(Range(11, 14), Range(7, 9), null, Range(2, 5))},
             { Pokemon.MAGNEMITE, new PaletteData(Range(11, 14), Range(3, 4), Range(5, 6))},
             { Pokemon.MAGNETON, new PaletteData(Range(11, 14), Range(3, 4), Range(5, 6))},
-            { Pokemon.FARFETCHD, new PaletteData(Range(11, 14), Range(3, 4), null, Range(9, 10))}, // 5-6 break and feet
+            { Pokemon.FARFETCHD, new PaletteData(Range(11, 14), Range(3, 4), null, Range(8, 10))}, // 5-6 break and feet
             { Pokemon.DODUO, new PaletteData(Range(5, 8), Range(9, 11))},
             { Pokemon.DODRIO, new PaletteData(Range(1, 3), Range(4, 7), null, Range(8, 10))},
-            { Pokemon.SEEL, new PaletteData(Range(1, 4), Range(5, 7))},
-            { Pokemon.DEWGONG, new PaletteData(Range(1, 4))},
+            { Pokemon.SEEL, new PaletteData(PalRange(1, 2, 3, 4, 15), Range(5, 7))},
+            { Pokemon.DEWGONG, new PaletteData(PalRange(1, 2, 3, 4, 12, 13, 15))},
             { Pokemon.GRIMER, new PaletteData(Range(5, 8))}, // Mouth 2-4
             { Pokemon.MUK, new PaletteData(Range(1, 5))}, // Mouth 7-9
             { Pokemon.SHELLDER, new PaletteData(Range(1, 5))}, // Tounge 6-8
@@ -1054,7 +1076,7 @@ namespace PokemonRandomizer.Backend.Randomization
             { Pokemon.SEAKING, new PaletteData(PalRange(5, 6, 9, 10, 11, 12), null, PalRange(13))},
             { Pokemon.STARYU, new PaletteData(Range(6, 9), Range(2, 5), Range(10, 13))},
             { Pokemon.STARMIE, new PaletteData(Range(1, 4), Range(5, 8), Range(10, 13))},
-            { Pokemon.MR_MIME, new PaletteData(Range(5, 8), Range(10, 12))},
+            { Pokemon.MR_MIME, new PaletteData(Range(5, 8), Range(9, 12))},
             { Pokemon.SCYTHER, new PaletteData(Range(11, 14), Range(7, 10), null, Range(5, 6))},
             { Pokemon.JYNX, new PaletteData(Range(10, 13), Range(6, 8))},
             { Pokemon.ELECTABUZZ, new PaletteData(Range(11, 15))},
@@ -1080,7 +1102,7 @@ namespace PokemonRandomizer.Backend.Randomization
             { Pokemon.ZAPDOS, new PaletteData(Range(11, 15))}, // 8-10 beak and feet
             { Pokemon.MOLTRES, new PaletteData(Range(4, 7), Range(11, 14), Range(8, 10))},
             { Pokemon.DRATINI, new PaletteData(Range(11, 14))},
-            { Pokemon.DRAGONAIR, new PaletteData(Range(11, 14), Range(5, 7))},
+            { Pokemon.DRAGONAIR, new PaletteData(Range(11, 14), Range(5, 8))},
             { Pokemon.DRAGONITE, new PaletteData(Range(2, 5), Range(6, 8))},
             { Pokemon.MEWTWO, new PaletteData(PalRange(1, 2, 3, 4, 15), Range(5, 8))},
             { Pokemon.MEW, new PaletteData(Range(10, 14), Range(3, 4))},
@@ -1343,25 +1365,38 @@ namespace PokemonRandomizer.Backend.Randomization
 
         private static readonly int[] allIndices = new int[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
 
+        private PaletteData GetPaletteData(Pokemon pokemon)
+        {
+            if (variantPaletteDataOverrides.ContainsKey(paletteKey))
+            {
+                var overrides = variantPaletteDataOverrides[paletteKey];
+                if (overrides.ContainsKey(pokemon))
+                {
+                    return overrides[pokemon];
+                }
+            }
+            return variantPaletteData.ContainsKey(pokemon) ? variantPaletteData[pokemon] : null;
+        }
+
         private void ModifyPalette(PokemonBaseStats pokemon, Settings settings, VariantData data)
         {
             if (data.TransformationType == TypeTransformation.None)
                 return;
             // If we don't have specific palette data or type color data to support this pokemon / type combo, return
             // Perhaps I should add a fallback for pokemon I haven't done specific work for
-            if (!variantPaletteData.ContainsKey(pokemon.species))
+            var paletteData = GetPaletteData(pokemon.species);
+            if (paletteData == null)
             {
                 ApplyColorChanges(pokemon.palette, allIndices, typeColorData[data.VariantTypes[0]]);
                 return;
             }
-            ApplyColorsFirstSecond(pokemon, data);
+            ApplyColorsFirstSecond(pokemon, data, paletteData);
         }
 
-        private void ApplyColorsFirstSecond(PokemonBaseStats pokemon, VariantData data)
+        private void ApplyColorsFirstSecond(PokemonBaseStats pokemon, VariantData data, PaletteData paletteData)
         {
             var firstVariantType = data.VariantTypes[0];
             var typeData = typeColorData[firstVariantType];
-            var paletteData = variantPaletteData[pokemon.species];
             ApplyColorChanges(pokemon.palette, paletteData.PrimaryVariantColorIndices, paletteData.PrimaryVariantColorIndices2, typeData);
             if(data.VariantTypes.Length > 1)
             {
@@ -1372,11 +1407,10 @@ namespace PokemonRandomizer.Backend.Randomization
         }
 
 
-        private void ApplyColorsPrimarySecondary(PokemonBaseStats pokemon, VariantData data)
+        private void ApplyColorsPrimarySecondary(PokemonBaseStats pokemon, VariantData data, PaletteData paletteData)
         {
             var firstVariantType = data.VariantTypes[0];
             var typeData = typeColorData[firstVariantType];
-            var paletteData = variantPaletteData[pokemon.species];
             if (pokemon.IsSingleTyped)
             {
                 ApplyColorChanges(pokemon.palette, paletteData.PrimaryVariantColorIndices, paletteData.PrimaryVariantColorIndices2, typeData);

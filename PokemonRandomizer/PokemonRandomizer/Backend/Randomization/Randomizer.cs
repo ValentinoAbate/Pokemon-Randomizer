@@ -50,7 +50,7 @@ namespace PokemonRandomizer.Backend.Randomization
             trainerRand = new TrainerRandomizer(rand, pokeRand, evoUtils, data);
             compatRand = new MoveCompatibilityRandomizer(rand, data);
             bonusMoveGenerator = new BonusMoveGenerator(rand, data, settings);
-            variantRand = new PokemonVariantRandomizer(rand, data, bonusMoveGenerator);
+            variantRand = new PokemonVariantRandomizer(rand, data, bonusMoveGenerator, data.PaletteOverrideKey);
             delayedRandomizationCalls = new List<Action>();
         }
         // Apply mutations based on program settings.
