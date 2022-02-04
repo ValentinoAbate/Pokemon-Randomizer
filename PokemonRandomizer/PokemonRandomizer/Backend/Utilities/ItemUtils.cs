@@ -136,7 +136,7 @@ namespace PokemonRandomizer.Backend.Utilities
 
         private static readonly HashSet<Item> breedingItems = new HashSet<Item>
         { 
-            Item.Lax_Incense, Item.Sea_Incense, Item.Light_Ball
+            Item.Lax_Incense, Item.Sea_Incense, Item.Light_Ball, Item.Everstone
         };
         public static bool IsBreedingItem(this Item item) => breedingItems.Contains(item);
     }
