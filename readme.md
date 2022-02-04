@@ -6,14 +6,14 @@ Procedural Pokemon Randomizer is a Pokemon randomizer I'm creating as a fun side
 - It also allows you to partially randomize most things. Want to randomize 5% of trainer's pokemon for an experience that is mostly the same but with some surprises? You got it.
 
 - Some of my favorite new features are:
-	- Variant Pokemon: Random type-variants of pokemon with corresponding moveset, base stat, and other modifications!
-	- Intelligent trainer pokemon choices: Challenge runs are more fun when you can plan for a fisherman to usually have WATER pokemon!
-	- Intelligent wild pokemon choices: Find pokemon where they make sense (water pokemon when fishing, electric pokemon in the power plant, etc)!
-	- Reoccuring trainer generation: trainers that you see multiple times (like rivals, etc.) will raise a team that keeps members but grows and evolves over the course of the game
-	- Battle type randomization: randomize the battle type of trainers you encounter! I prefer all double battles.
-	- Trainer settings per trainer category: Use different randomization settings for Gym Leaders, Ace Trainers, Team Leaders, and more!
-	- The Dunsparse Plague: anything can evolve into Dunspare... half of the time. Affects NPCs too!
-	- Bonus Moves: add bonus moves to pokemon movesets at a level that makes sense. Can draw moves from the pokemon's egg moves or make a random choice!
+	- ***Variant Pokemon***: Random type-variants of pokemon with corresponding moveset, base stat, and other modifications!
+	- ***Intelligent trainer pokemon choices***: Challenge runs are more fun when you can plan for a fisherman to usually have WATER pokemon!
+	- ***Intelligent wild pokemon choices***: Find pokemon where they make sense (water pokemon when fishing, electric pokemon in the power plant, etc)!
+	- ***Reoccuring trainer logic***: trainers that you see multiple times (like rivals, etc.) will raise a team that keeps members but grows and evolves over the course of the game
+	- ***Battle type randomization***: randomize the battle type of trainers you encounter! I prefer all double battles.
+	- ***Trainer settings per trainer category***: Use different randomization settings for Gym Leaders, Ace Trainers, Team Leaders, and more!
+	- ***The Dunsparse Plague***: anything can evolve into Dunspare... half of the time. Affects NPCs too!
+	- ***Bonus Moves***: add bonus moves to pokemon movesets at a level that makes sense. Can draw moves from the pokemon's egg moves or make a random choice!
 	- ...And much more!
 
 - Currently supports a small amount of Gen III ROMS (English Emerald and Fire Red v1.0), but I plan to support at least Gen IV and Gen II in the future
