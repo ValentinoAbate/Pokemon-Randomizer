@@ -110,6 +110,7 @@ namespace PokemonRandomizer
             serializerOptions.Converters.Add(new WeightedSetJsonConverter());
             AppData = new ApplicationDataModel();
             InitializeAppData();
+            UseHardCodedSettings = useHardcodedSettings;
 
             Logger.main.OnLog += OnLog;
         }
