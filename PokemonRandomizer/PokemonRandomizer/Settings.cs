@@ -355,8 +355,10 @@ namespace PokemonRandomizer
         public enum DreamTeamBstTotalOption
         {
             None,
-            Min,
-            Max
+            TotalMin,
+            TotalMax,
+            IndividualMin,
+            IndividualMax
         }
 
         public abstract DreamTeamSetting DreamTeamOption { get; }
@@ -373,6 +375,7 @@ namespace PokemonRandomizer
             public float BstLimit { get; set; } = 2200;
             public bool UseTypeFilter { get; set; } = false;
             public PokemonType[] TypeFilter { get; set; } = new PokemonType[0];
+            public bool PrioritizeVariants { get; set; } = false;
         }
 
         #endregion

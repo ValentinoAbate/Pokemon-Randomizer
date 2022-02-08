@@ -317,10 +317,18 @@ namespace PokemonRandomizer.AppSettings
 
         public override DreamTeamSettings DreamTeamOptions => new DreamTeamSettings()
         {
+            PrioritizeVariants = dreamTeamData.PrioritizeVariants,
             BanLegendaries = dreamTeamData.BanLegendaries,
             BanIllegalEvolutions = dreamTeamData.BanIllegalEvolutions,
             BstSetting = dreamTeamData.UseTotalBST,
-            BstLimit = (float)(dreamTeamData.UseTotalBST == DreamTeamBstTotalOption.Max ? dreamTeamData.BstTotalUpperBound : dreamTeamData.BstTotalLowerBound),
+            BstLimit = dreamTeamData.UseTotalBST.Value switch
+            {
+                DreamTeamBstTotalOption.TotalMax => (float)dreamTeamData.BstTotalUpperBound,
+                DreamTeamBstTotalOption.TotalMin => (float)dreamTeamData.BstTotalLowerBound,
+                DreamTeamBstTotalOption.IndividualMax => (float)dreamTeamData.BstIndividualUpperBound,
+                DreamTeamBstTotalOption.IndividualMin => (float)dreamTeamData.BstIndividualLowerBound,
+                _ => 0
+            },
             UseTypeFilter = dreamTeamData.UseTypeFilter,
             TypeFilter = (new List<PokemonType>() { dreamTeamData.AllowedType1, dreamTeamData.AllowedType2, dreamTeamData.AllowedType3 }).Where(t => t != (PokemonType)19).ToArray()
         };

@@ -23,8 +23,10 @@ namespace PokemonRandomizer.UI.Views
         public CompositeCollection DreamTeamBstOption => new CompositeCollection()
         {
             new ComboBoxItem() {Content="None" },
-            new ComboBoxItem() {Content="Fully Evolved Base Stat Total Must be Greater Than Limit" },
-            new ComboBoxItem() {Content="Fully Evolved Base Stat Total Must be Less Than Limit" },
+            new ComboBoxItem() {Content="Fully Evolved Party Base Stat Total Must be Greater Than Limit" },
+            new ComboBoxItem() {Content="Fully Evolved Party Base Stat Total Must be Less Than Limit" },
+            new ComboBoxItem() {Content="Fully Evolved Individual Base Stat Total Must be Greater Than Limit" },
+            new ComboBoxItem() {Content="Fully Evolved Individual Base Stat Total Must be Less Than Limit" },
         };
 
         private static List<TypedComboBoxItem<PokemonType>> GetTypeDropdown() => new List<TypedComboBoxItem<PokemonType>>
@@ -69,13 +71,16 @@ namespace PokemonRandomizer.UI.Views
             optionCb.BindVisibility(customStack, (int)DreamTeamSetting.Custom);
 
             var genStack = stack.Add(CreateStack());
-            var useTotalBstCb = genStack.Add(new EnumComboBoxUI<DreamTeamBstTotalOption>("Base State Total Limitation", DreamTeamBstOption, model.UseTotalBST));
-            useTotalBstCb.BindVisibility(genStack.Add(new BoundSliderUI("Base Stat Total Lower Limit", model.BstTotalLowerBound, false, 50, 1900, 4050)), (int)DreamTeamBstTotalOption.Min);
-            useTotalBstCb.BindVisibility(genStack.Add(new BoundSliderUI("Base Stat Total Upper Limit", model.BstTotalUpperBound, false, 50, 1900, 4050)), (int)DreamTeamBstTotalOption.Max);
+            var useTotalBstCb = genStack.Add(new EnumComboBoxUI<DreamTeamBstTotalOption>("Base Stat Total Limitation", DreamTeamBstOption, model.UseTotalBST));
+            useTotalBstCb.BindVisibility(genStack.Add(new BoundSliderUI("Base Stat Total Lower Limit", model.BstTotalLowerBound, false, 50, 1900, 4050)), (int)DreamTeamBstTotalOption.TotalMin);
+            useTotalBstCb.BindVisibility(genStack.Add(new BoundSliderUI("Base Stat Total Upper Limit", model.BstTotalUpperBound, false, 50, 1900, 4050)), (int)DreamTeamBstTotalOption.TotalMax);
+            useTotalBstCb.BindVisibility(genStack.Add(new BoundSliderUI("Individual Base Stat Lower Limit", model.BstIndividualLowerBound, false, 10, 400, 600)), (int)DreamTeamBstTotalOption.IndividualMin);
+            useTotalBstCb.BindVisibility(genStack.Add(new BoundSliderUI("Individual Base Stat Upper Limit", model.BstIndividualUpperBound, false, 10, 400, 600)), (int)DreamTeamBstTotalOption.IndividualMax);
             var typeFilterCb = genStack.Add(new BoundCheckBoxUI(model.UseTypeFilter, "Type Limitiation"));
             typeFilterCb.BindVisibility(genStack.Add(new BoundComboBoxUI("Allowed Type 1", GetTypeDropdown(), ReferenceDropdown.FindIndex(i => i.Item == model.AllowedType1.Value), i => model.AllowedType1.Value = ReferenceDropdown[i].Item)));
             typeFilterCb.BindVisibility(genStack.Add(new BoundComboBoxUI("Allowed Type 2", GetTypeDropdown(), ReferenceDropdown.FindIndex(i => i.Item == model.AllowedType2.Value), i => model.AllowedType2.Value = ReferenceDropdown[i].Item)));
             typeFilterCb.BindVisibility(genStack.Add(new BoundComboBoxUI("Allowed Type 3", GetTypeDropdown(), ReferenceDropdown.FindIndex(i => i.Item == model.AllowedType3.Value), i => model.AllowedType3.Value = ReferenceDropdown[i].Item)));
+            genStack.Add(new BoundCheckBoxUI(model.PrioritizeVariants, "Prioritize Variants"));
             genStack.Add(new BoundCheckBoxUI(model.BanLegendaries, "Ban Legendaries"));
             genStack.Add(new BoundCheckBoxUI(model.BanIllegalEvolutions, "Ban Illegal Evolutions"));
             optionCb.BindVisibility(genStack, (int)DreamTeamSetting.Random);

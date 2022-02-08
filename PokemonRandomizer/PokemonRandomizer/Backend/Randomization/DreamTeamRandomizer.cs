@@ -4,8 +4,9 @@ namespace PokemonRandomizer.Backend.Randomization
 {
     using EnumTypes;
     using DataStructures;
-    using Utilities;
     using System.Linq;
+    using System.Collections;
+    using System;
 
     public class DreamTeamRandomizer
     {
@@ -27,6 +28,7 @@ namespace PokemonRandomizer.Backend.Randomization
             {
                 choices.RemoveAll(p => !p.IsBasicOrEvolvesFromBaby);
             }
+            // Type Restrictions
             if (settings.UseTypeFilter)
             {
                 bool TypeFilter(PokemonBaseStats p)
@@ -41,23 +43,60 @@ namespace PokemonRandomizer.Backend.Randomization
             }
             var party = new List<(Pokemon pokemon, int maxBst)>(6);
             var bstDict = choices.ToDictionary(p => p.species, GetMaxBst);
-            while(choices.Count > 0)
+            // Individual BST restrictions
+            if(settings.BstSetting == Settings.DreamTeamBstTotalOption.IndividualMax)
             {
-                var pokemon = rand.Choice(choices);
-                choices.Remove(pokemon);
+                bool IndividualMaxFilter(PokemonBaseStats p)
+                {
+                    return bstDict[p.species] > settings.BstLimit;
+                }
+                choices.RemoveAll(IndividualMaxFilter);
+            }
+            else if(settings.BstSetting == Settings.DreamTeamBstTotalOption.IndividualMin)
+            {
+                bool IndividualMinFilter(PokemonBaseStats p)
+                {
+                    return bstDict[p.species] < settings.BstLimit;
+                }
+                choices.RemoveAll(IndividualMinFilter);
+            }
+
+            // Construct pool
+            PriorityPool<PokemonBaseStats> pool;
+            if (settings.PrioritizeVariants) 
+            {
+                pool = new PriorityPool<PokemonBaseStats>(choices.Where(p => p.IsVariant).ToList(), choices.Where(p => !p.IsVariant).ToList());
+            }
+            else
+            {
+                pool = new PriorityPool<PokemonBaseStats>(choices);
+            }
+            
+            // Generate party
+            while(!pool.Empty)
+            {
+                var pokemon = pool.GetRandom(rand);
                 party.Add((pokemon.species, bstDict[pokemon.species]));
+                // Continue until the party is full
                 if (party.Count < 6)
+                {
                     continue;
-                if (settings.BstSetting == Settings.DreamTeamBstTotalOption.None)
+                }
+                // If there is no Party BST limitation, break
+                if (settings.BstSetting != Settings.DreamTeamBstTotalOption.TotalMax 
+                    && settings.BstSetting != Settings.DreamTeamBstTotalOption.TotalMin)
+                {
                     break;
+                }
+                // Party BST limitations
                 int bstTotal = party.Sum(t => t.maxBst);
-                if(settings.BstSetting == Settings.DreamTeamBstTotalOption.Max)
+                if(settings.BstSetting == Settings.DreamTeamBstTotalOption.TotalMax)
                 {
                     if (bstTotal > settings.BstLimit)
                     {
                         party.Sort((t1, t2) => t2.maxBst.CompareTo(t1.maxBst));
-                        choices.RemoveAll(p => bstDict[p.species] >= party[0].maxBst);
-                        if (choices.Count <= 0)
+                        pool.RemoveAll(p => bstDict[p.species] >= party[0].maxBst);
+                        if (pool.Empty)
                             break;
                         party.RemoveAt(0);
                     }
@@ -66,13 +105,13 @@ namespace PokemonRandomizer.Backend.Randomization
                         break;
                     }
                 }
-                else if (settings.BstSetting == Settings.DreamTeamBstTotalOption.Min)
+                else if (settings.BstSetting == Settings.DreamTeamBstTotalOption.TotalMin)
                 {
                     if (bstTotal < settings.BstLimit)
                     {
                         party.Sort((t1, t2) => t1.maxBst.CompareTo(t2.maxBst));
-                        choices.RemoveAll(p => bstDict[p.species] <= party[0].maxBst);
-                        if (choices.Count <= 0)
+                        pool.RemoveAll(p => bstDict[p.species] <= party[0].maxBst);
+                        if (pool.Empty)
                             break;
                         party.RemoveAt(0);
                     }
@@ -106,5 +145,50 @@ namespace PokemonRandomizer.Backend.Randomization
                 encounterSet.encounters[i].pokemon = team[i % team.Length];
             }
         }
+
+        public class PriorityPool<T>
+        {
+            public bool Empty => poolList.Count <= 0;
+            private readonly List<List<T>> poolList;
+
+            public PriorityPool(params List<T>[] pools)
+            {
+                poolList = new List<List<T>>(pools);
+                CullPoolList();
+            }
+
+            public T GetRandom(Random rand)
+            {
+                if(Empty)
+                {
+                    return default;
+                }
+                var pool = poolList[0];
+                int index = rand.RandomInt(0, pool.Count);
+                var choice = pool[index];
+                pool.RemoveAt(index);
+                CullPoolList();
+                return choice;
+            }
+
+            public void RemoveAll(Predicate<T> pred)
+            {
+                if (Empty)
+                {
+                    return;
+                }
+                poolList[0].RemoveAll(pred);
+                CullPoolList();
+            }
+
+            private void CullPoolList()
+            {
+                while(!Empty && poolList[0].Count <= 0)
+                {
+                    poolList.RemoveAt(0);
+                }
+            }
+        }
+
     }
 }
