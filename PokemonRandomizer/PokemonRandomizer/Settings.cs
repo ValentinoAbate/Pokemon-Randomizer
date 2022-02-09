@@ -68,12 +68,6 @@ namespace PokemonRandomizer
 
         #endregion
 
-        #region Typing
-        public abstract double SingleTypeRandChance { get; }
-        public abstract double DualTypePrimaryRandChance { get; }
-        public abstract double DualTypeSecondaryRandChance { get; }
-        #endregion
-
         #region Evolution
 
         public abstract bool FixImpossibleEvos { get; }

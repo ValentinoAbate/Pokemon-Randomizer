@@ -21,16 +21,6 @@ namespace PokemonRandomizer.UI.Views
             tabs.Add(CreateExpYieldTab(model));
         }
 
-        private TabItem CreateTypesTab(PokemonTraitsModel model)
-        {
-            var stack = CreateStack();
-            stack.Header("Type Randomization");
-            stack.Add(new RandomChanceUI("Single Type", model.RandomizeSingleType, model.SingleTypeRandChance));
-            stack.Add(new RandomChanceUI("Dual Type (Primary)", model.RandomizeDualTypePrimary, model.DualTypePrimaryRandChance));
-            stack.Add(new RandomChanceUI("Dual Type (Secondary)", model.RandomizeDualTypeSecondary, model.DualTypeSecondaryRandChance));
-            return CreateTabItem("Type", stack);
-        }
-
         private CompositeCollection CompatOptionDropdown => new CompositeCollection()
         {
             new ComboBoxItem() { Content="Level Up", ToolTip = "Pokemon that normally evolve by trading with an item will evolve by level-up. Slowpoke and Clamperl will evolve with wurmple logic" },

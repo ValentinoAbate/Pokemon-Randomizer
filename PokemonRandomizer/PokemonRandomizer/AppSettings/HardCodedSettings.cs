@@ -95,12 +95,6 @@ namespace PokemonRandomizer.AppSettings
 
         #endregion
 
-        #region Typing
-        public override double SingleTypeRandChance => 0.0;
-        public override double DualTypePrimaryRandChance => 0.0;
-        public override double DualTypeSecondaryRandChance => 0.0;
-        #endregion
-
         #region Evolution
 
         public override bool FixImpossibleEvos => true;

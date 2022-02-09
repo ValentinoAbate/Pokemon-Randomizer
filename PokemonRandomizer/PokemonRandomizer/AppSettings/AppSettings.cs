@@ -130,12 +130,6 @@ namespace PokemonRandomizer.AppSettings
 
         #endregion
 
-        #region Typing
-        public override double SingleTypeRandChance => RandomChance(pokemonData.RandomizeSingleType, pokemonData.SingleTypeRandChance);
-        public override double DualTypePrimaryRandChance => RandomChance(pokemonData.RandomizeDualTypePrimary, pokemonData.DualTypePrimaryRandChance);
-        public override double DualTypeSecondaryRandChance => RandomChance(pokemonData.RandomizeDualTypeSecondary, pokemonData.DualTypeSecondaryRandChance);
-        #endregion
-
         #region Evolution
 
         public override bool FixImpossibleEvos => pokemonData.FixImpossibleEvos;

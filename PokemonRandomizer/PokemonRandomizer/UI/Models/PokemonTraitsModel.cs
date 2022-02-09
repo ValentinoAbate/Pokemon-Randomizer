@@ -7,15 +7,6 @@ namespace PokemonRandomizer.UI.Models
     using CatchRateOption = Settings.CatchRateOption;
     public class PokemonTraitsModel : DataModel
     {
-        private const double defaultTypeRandChance = 0.1;
-        // Type parameters
-        public Box<bool> RandomizeSingleType { get; set; } = new Box<bool>();
-        public Box<double> SingleTypeRandChance { get; set; } = new Box<double>(defaultTypeRandChance);
-        public Box<bool> RandomizeDualTypePrimary { get; set; } = new Box<bool>();
-        public Box<double> DualTypePrimaryRandChance { get; set; } = new Box<double>(defaultTypeRandChance);
-        public Box<bool> RandomizeDualTypeSecondary { get; set; } = new Box<bool>();
-        public Box<double> DualTypeSecondaryRandChance { get; set; } = new Box<double>(defaultTypeRandChance);
-
         // Evolution parameters
         public Box<bool> FixImpossibleEvos { get; set; } = new Box<bool>(true);
         public Box<double> ImpossibleEvoLevelStandardDev { get; set; } = new Box<double>(1);

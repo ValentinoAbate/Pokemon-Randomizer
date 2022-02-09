@@ -318,24 +318,6 @@ namespace PokemonRandomizer.Backend.Randomization
                 }
                 #endregion
 
-                #region Types
-                // Mutate Pokemon Type
-                if (pokemon.IsSingleTyped)
-                {
-                    if (rand.RollSuccess(settings.SingleTypeRandChance))
-                    {
-                        pokemon.SetSingleType(rand.Choice(data.Metrics.TypeRatiosSingle));
-                    };
-                }
-                else
-                {
-                    if (rand.RollSuccess(settings.DualTypePrimaryRandChance))
-                        pokemon.PrimaryType = rand.Choice(data.Metrics.TypeRatiosDualPrimary);
-                    if (rand.RollSuccess(settings.DualTypeSecondaryRandChance))
-                        pokemon.SecondaryType = rand.Choice(data.Metrics.TypeRatiosDualSecondary);
-                }
-                #endregion
-
                 #region Learn Sets
                 if (settings.BanSelfdestruct)
                 {
