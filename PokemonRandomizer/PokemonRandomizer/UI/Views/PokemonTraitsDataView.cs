@@ -18,6 +18,7 @@ namespace PokemonRandomizer.UI.Views
             tabs.Add(CreateEvolutionTab(model));
             tabs.Add(CreateLearnsetsTab(model));
             tabs.Add(CreateCatchRateTab(model));
+            tabs.Add(CreateExpYieldTab(model));
         }
 
         private TabItem CreateTypesTab(PokemonTraitsModel model)
@@ -70,6 +71,16 @@ namespace PokemonRandomizer.UI.Views
             optionCb.BindVisibility(stack.Add(new BoundSliderUI("Constant Difficulty", model.CatchRateConstantDifficulty, false)), (int)CatchRateOption.Constant);
             stack.Add(new BoundCheckBoxUI(model.KeepLegendaryCatchRates, "Keep Legendary Catch Rates"));
             return CreateTabItem("Catch Rate", stack);
+        }
+
+        private TabItem CreateExpYieldTab(PokemonTraitsModel model)
+        {
+            var stack = CreateStack();
+            stack.Description("Modify the base EXP given by pokemon. Setting this to 0% will make every pokemon give only 1 EXP!");
+            stack.Add(new BoundSliderUI("Base Exp Yield Modifier", model.BaseExpYieldMultiplier, true, 0.1, 0, 2));
+            stack.Description("Set the base EVs for every pokemon to 0. This will disable EV gain through normal means!");
+            stack.Add(new BoundCheckBoxUI(model.ZeroBaseEVs, "Set Base EV Yield to 0"));
+            return CreateTabItem("Exp / EV Yields", stack);
         }
 
         private const string banSelfdestructTooltip = "Removes selfdestruct and explosion from all learnsets. Other settings that modify learnsets will not add selfdestruct or explosion. Useful for more forgiving Nuzlockes!";

@@ -109,6 +109,13 @@ namespace PokemonRandomizer
 
         #endregion
 
+        #region Exp / EV Yields
+
+        public abstract double BaseExpYieldMultiplier { get; }
+        public abstract bool ZeroBaseEVs { get; }
+
+        #endregion
+
         #region Learnsets
 
         public abstract bool BanSelfdestruct { get; }

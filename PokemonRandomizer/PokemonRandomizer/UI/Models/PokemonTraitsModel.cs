@@ -24,9 +24,14 @@ namespace PokemonRandomizer.UI.Models
         public Box<bool> DunsparsePlague { get; set; } = new Box<bool>();
         public Box<double> DunsparsePlaugeChance { get; set; } = new Box<double>(0.1);
 
+        // Catch rate parameters
         public Box<CatchRateOption> CatchRateSetting { get; set; } = new Box<CatchRateOption>(CatchRateOption.Unchanged);
         public Box<bool> KeepLegendaryCatchRates { get; set; } = new Box<bool>(true);
         public Box<double> CatchRateConstantDifficulty { get; set; } = new Box<double>(0.5);
+        
+        // Yield parameters
+        public Box<double> BaseExpYieldMultiplier { get; set; } = new Box<double>(1);
+        public Box<bool> ZeroBaseEVs { get; set; } = new Box<bool>(false);
 
         // Learnset parameters
 

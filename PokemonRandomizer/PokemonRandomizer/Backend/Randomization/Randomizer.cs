@@ -222,7 +222,7 @@ namespace PokemonRandomizer.Backend.Randomization
 
                 #region Evolutions
                 // Fix Impossible Evolutions
-                if(settings.FixImpossibleEvos)
+                if (settings.FixImpossibleEvos)
                 {
                     // Make a non-levelup evoltion into a level up one. Resolves some conflicts but not all
                     void MakeEvolutionByLevelUp(Evolution evo)
@@ -267,7 +267,7 @@ namespace PokemonRandomizer.Backend.Randomization
                                 MakeEvolutionByLevelUp(evo);
                             }
                         }
-                        else if(evo.Type == EvolutionType.Beauty && settings.ConsiderEvolveByBeautyImpossible)
+                        else if (evo.Type == EvolutionType.Beauty && settings.ConsiderEvolveByBeautyImpossible)
                         {
                             MakeEvolutionByLevelUp(evo);
                         }
@@ -291,18 +291,18 @@ namespace PokemonRandomizer.Backend.Randomization
                             return -1;
                         }
                         // Add the plague
-                        if(evo.Type == EvolutionType.LevelUp)
+                        if (evo.Type == EvolutionType.LevelUp)
                         {
                             evo.Type = EvolutionType.LevelUpWithPersonality1;
                             int index = FirstEmptyEvo(pokemon.evolvesTo);
-                            if(index >= 0)
+                            if (index >= 0)
                             {
                                 pokemon.evolvesTo[index].Pokemon = Pokemon.DUNSPARCE;
                                 pokemon.evolvesTo[index].Type = EvolutionType.LevelUpWithPersonality2;
                                 pokemon.evolvesTo[index].parameter = evo.parameter;
                             }
                         }
-                        else if(evo.Type == EvolutionType.Friendship)
+                        else if (evo.Type == EvolutionType.Friendship)
                         {
                             evo.Type = rand.RandomBool() ? EvolutionType.FriendshipDay : EvolutionType.FriendshipNight;
                             int index = FirstEmptyEvo(pokemon.evolvesTo);
@@ -337,11 +337,11 @@ namespace PokemonRandomizer.Backend.Randomization
                 #endregion
 
                 #region Learn Sets
-                if(settings.BanSelfdestruct)
+                if (settings.BanSelfdestruct)
                 {
                     pokemon.learnSet.RemoveWhere(m => data.GetMoveData(m.move).IsSelfdestruct);
                 }
-                if(settings.AddMoves && pokemon.IsBasic && !pokemon.IsVariant && rand.RollSuccess(settings.AddMovesChance))
+                if (settings.AddMoves && pokemon.IsBasic && !pokemon.IsVariant && rand.RollSuccess(settings.AddMovesChance))
                 {
                     int numMoves = rand.RandomGaussianPositiveNonZeroInt(settings.NumMovesMean, settings.NumMovesStdDeviation);
                     bonusMoveGenerator.GenerateBonusMoves(pokemon, numMoves, settings.AddMoveSourceWeights);
@@ -357,10 +357,10 @@ namespace PokemonRandomizer.Backend.Randomization
                 #endregion
 
                 #region Catch Rates
-                if(settings.CatchRateSetting != Settings.CatchRateOption.Unchanged)
+                if (settings.CatchRateSetting != Settings.CatchRateOption.Unchanged)
                 {
                     // Do not change if KeepLegendaryCatchRates is on AND this pokemon is a legendary
-                    if(!settings.KeepLegendaryCatchRates || !pokemon.IsLegendary)
+                    if (!settings.KeepLegendaryCatchRates || !pokemon.IsLegendary)
                     {
                         if (settings.CatchRateSetting == Settings.CatchRateOption.CompletelyRandom)
                             pokemon.catchRate = rand.RandomByte();
@@ -384,6 +384,23 @@ namespace PokemonRandomizer.Backend.Randomization
                         }
                     }
                 }
+                #endregion
+
+                #region Exp / EV Yields
+
+                if(settings.BaseExpYieldMultiplier != 1)
+                {
+                    pokemon.baseExpYield = (byte)Math.Max(byte.MinValue, Math.Min(byte.MaxValue, Math.Floor(pokemon.baseExpYield * settings.BaseExpYieldMultiplier)));
+                }
+
+                if (settings.ZeroBaseEVs)
+                {
+                    for (int i = 0; i < pokemon.evYields.Length; i++)
+                    {
+                        pokemon.evYields[i] = 0;
+                    }
+                }
+
                 #endregion
             }
 

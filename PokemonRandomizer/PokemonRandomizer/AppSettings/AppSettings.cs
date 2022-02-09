@@ -154,6 +154,13 @@ namespace PokemonRandomizer.AppSettings
 
         #endregion
 
+        #region Exp / EV Yields
+
+        public override double BaseExpYieldMultiplier => pokemonData.BaseExpYieldMultiplier;
+        public override bool ZeroBaseEVs => pokemonData.ZeroBaseEVs;
+
+        #endregion
+
         #region Learnsets
 
         public override bool BanSelfdestruct => pokemonData.BanSelfdestruct;
