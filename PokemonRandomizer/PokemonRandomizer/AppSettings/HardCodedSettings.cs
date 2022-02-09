@@ -73,7 +73,7 @@ namespace PokemonRandomizer.AppSettings
 
         #region Variants
 
-        public override double VariantChance => 1; 
+        public override double VariantChance => 0.2; 
 
         public override PokemonVariantRandomizer.Settings VariantSettings { get; } = new PokemonVariantRandomizer.Settings()
         {
@@ -361,7 +361,7 @@ namespace PokemonRandomizer.AppSettings
 
         #region Maps
 
-        public override WeatherOption WeatherSetting => WeatherOption.CustomWeighting;
+        public override WeatherOption WeatherSetting => WeatherOption.CompletelyRandom;
         /// <summary>
         /// If true, ensures that underwater weather won't be put anywhere except for underwater maps
         /// </summary>
@@ -388,7 +388,6 @@ namespace PokemonRandomizer.AppSettings
         /// Controls which gen 3 snow weathers will affect battle
         /// </summary>
         public override HailHackOption HailHackSetting => HailHackOption.Both;
-        private const double defaultWeatherRandChance = 1;
         /// <summary>
         /// The chance any given map type will have its weather randomized. If the map type is not in this map, that type of map will not be randomized
         /// </summary>
@@ -398,7 +397,13 @@ namespace PokemonRandomizer.AppSettings
         };
         protected override WeightedSet<Map.Weather> CustomWeatherWeights { get; } = new WeightedSet<Map.Weather>
         {
-            { Map.Weather.Snow, 1f },
+            { Map.Weather.Rain, 0.85f },
+            { Map.Weather.RainThunderstorm, 0.125f },
+            { Map.Weather.RainHeavyThunderstrorm, 0.025f },
+            { Map.Weather.Snow, 0.85f },
+            { Map.Weather.SnowSteady, 0.1f },
+            { Map.Weather.StrongSunlight, 0.7f },
+            { Map.Weather.Sandstorm, 0.85f },
         };
         protected override WeightedSet<Map.Weather> BattleWeatherBalancedWeights { get; } = new WeightedSet<Map.Weather>
         {
@@ -468,7 +473,6 @@ namespace PokemonRandomizer.AppSettings
 
         #endregion
 
-        // This feature will generate 6 pokemon
         #region Dream Team
 
         public override DreamTeamSetting DreamTeamOption => DreamTeamSetting.None;
