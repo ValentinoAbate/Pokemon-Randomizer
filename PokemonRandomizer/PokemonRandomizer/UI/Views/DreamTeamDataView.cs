@@ -80,7 +80,7 @@ namespace PokemonRandomizer.UI.Views
             typeFilterCb.BindVisibility(genStack.Add(new BoundComboBoxUI("Allowed Type 1", GetTypeDropdown(), ReferenceDropdown.FindIndex(i => i.Item == model.AllowedType1.Value), i => model.AllowedType1.Value = ReferenceDropdown[i].Item)));
             typeFilterCb.BindVisibility(genStack.Add(new BoundComboBoxUI("Allowed Type 2", GetTypeDropdown(), ReferenceDropdown.FindIndex(i => i.Item == model.AllowedType2.Value), i => model.AllowedType2.Value = ReferenceDropdown[i].Item)));
             typeFilterCb.BindVisibility(genStack.Add(new BoundComboBoxUI("Allowed Type 3", GetTypeDropdown(), ReferenceDropdown.FindIndex(i => i.Item == model.AllowedType3.Value), i => model.AllowedType3.Value = ReferenceDropdown[i].Item)));
-            genStack.Add(new BoundCheckBoxUI(model.PrioritizeVariants, "Prioritize Variants"));
+            genStack.Add(new BoundCheckBoxUI(model.PrioritizeVariants, "Prioritize Variants") { ToolTip = "Choose Variant Pokemon first when possible"});
             genStack.Add(new BoundCheckBoxUI(model.BanLegendaries, "Ban Legendaries"));
             genStack.Add(new BoundCheckBoxUI(model.BanIllegalEvolutions, "Ban Illegal Evolutions"));
             optionCb.BindVisibility(genStack, (int)DreamTeamSetting.Random);
