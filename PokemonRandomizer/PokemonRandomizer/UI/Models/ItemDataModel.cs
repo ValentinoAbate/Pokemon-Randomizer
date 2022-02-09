@@ -45,15 +45,15 @@ namespace PokemonRandomizer.UI.Models
         };
 
         // Items in these categories will not be randomized
-        public Box<Categories> SkipCategories { get; set; } = new Box<Categories>(Categories.ContestScarf);
+        public Box<Categories> SkipCategories { get; set; } = new Box<Categories>(Categories.ContestScarf | Categories.ExchangeItem);
         // Items in these categories will not be selected from the random pool
-        public Box<Categories> BannedCategories { get; set; } = new Box<Categories>(Categories.ContestScarf | Categories.Mail | Categories.MinigameBerry);
+        public Box<Categories> BannedCategories { get; set; } = new Box<Categories>(Categories.ContestScarf | Categories.Mail | Categories.Berry | Categories.ExchangeItem);
         // Items in these categories will be less likely to be chosen if they have been chosed before
-        public Box<Categories> ReduceDuplicatesCategories { get; set; } = new Box<Categories>(Categories.TM | Categories.HeldItem);
+        public Box<Categories> ReduceDuplicatesCategories { get; set; } = new Box<Categories>(Categories.TM | Categories.HeldItem | Categories.Flute | Categories.Special);
         //public Box<double> OccurenceWeightMultiplier { get; set; } = new Box<double>(10);
         // Items in this categories will be more like to be replaced with an item from the same category when replaced
-        public Box<Categories> KeepCategoryCategories { get; set; } = new Box<Categories>();
-        public Box<double> SameCategoryChance { get; set; } = new Box<double>(0.75);
+        public Box<Categories> KeepCategoryCategories { get; set; } = new Box<Categories>(Categories.BattleBerry | Categories.EVBerry);
+        public Box<double> SameCategoryChance { get; set; } = new Box<double>(0.9);
         public Box<bool> AllowBannedItemsWhenKeepingCategory { get; set; } = new Box<bool>(true);
     }
 }
