@@ -142,13 +142,6 @@ namespace PokemonRandomizer
 
         #region Trainers
 
-        public enum TrainerOption
-        {
-            CompletelyRandom,
-            KeepAce,
-            Procedural,
-        }
-
         public enum TrainerCategory
         {
             Trainer,
@@ -402,6 +395,11 @@ namespace PokemonRandomizer
             public double BattleTypeRandChance { get; set; } = 1;
             public BattleTypePcgStrategy BattleTypeStrategy { get; set; } = BattleTypePcgStrategy.KeepSameType;
             public double DoubleBattleChance { get; set; } = 1;
+
+            // Difficulty Settings
+            public double LevelMultiplier { get; set; } = 0;
+            public int PokemonIVModifier { get; set; } = 0;
+            public bool UseSmartAI { get; set; } = true;
         }
 
         public class PokemonSettings

@@ -67,23 +67,26 @@ namespace PokemonRandomizer.Backend.Randomization
         public void Randomize(Trainer trainer, IEnumerable<Pokemon> pokemonSet, TrainerSettings settings, bool safe = true)
         {
             // Set data type
-            // Set AI flags
+            // Apply level scaling
+            ApplyLevelScaling(trainer, settings);
             // Set item stock (if applicable)
             // Set Battle Type
             if (rand.RollSuccess(settings.BattleTypeRandChance))
             {
                 trainer.isDoubleBattle = rand.RollSuccess(settings.DoubleBattleChance);
             }
-            // Set pokemon
-            if (rand.RollSuccess(settings.PokemonRandChance))
-            {
-                RandomizeTrainerPokemon(trainer, pokemonSet, settings.PokemonSettings);
-            }
             // Fix any unsafe values if safe is set to true
             if (safe)
             {
                 // Set 1-pokemon battle to solo if appropriate
                 trainer.EnsureSafeBattleType();
+            }
+            // Set AI flags
+            ApplyAISettings(trainer, settings);
+            // Set pokemon
+            if (rand.RollSuccess(settings.PokemonRandChance))
+            {
+                RandomizeTrainerPokemon(trainer, pokemonSet, settings.PokemonSettings);
             }
         }
 
@@ -114,7 +117,23 @@ namespace PokemonRandomizer.Backend.Randomization
                     battle.isDoubleBattle = firstBattle.isDoubleBattle;
                 }
             }
+            // Ensure Battle Type Safety
+            foreach (var battle in battles)
+            {
+                battle.EnsureSafeBattleType();
+            }
+            firstBattle.EnsureSafeBattleType();
 
+            // Apply AI settings
+            foreach (var battle in battles)
+            {
+                ApplyAISettings(battle, settings);
+            }
+            // Apply level scaling
+            foreach (var battle in battles)
+            {
+                ApplyLevelScaling(battle, settings);
+            }
             // Pokemon
             if (settings.PokemonStrategy == TrainerSettings.PokemonPcgStrategy.None)
             {
@@ -162,12 +181,46 @@ namespace PokemonRandomizer.Backend.Randomization
                     lastBattle = battle;
                 }
             }
+        }
 
-            foreach (var battle in battles)
+        private void ApplyLevelScaling(Trainer trainer, TrainerSettings settings)
+        {
+            // Apply Difficulty Settings
+            if (settings.LevelMultiplier > 0)
             {
-                battle.EnsureSafeBattleType();
+                foreach (var pokemon in trainer.pokemon)
+                {
+                    pokemon.level = (int)Math.Max(0, Math.Min(100, pokemon.level * settings.LevelMultiplier));
+                }
             }
-            firstBattle.EnsureSafeBattleType();
+            if(settings.PokemonIVModifier != 0)
+            {
+                foreach (var pokemon in trainer.pokemon)
+                {
+                    pokemon.IVLevel = Math.Max(byte.MinValue, Math.Min(byte.MaxValue, pokemon.IVLevel + settings.PokemonIVModifier));
+                }
+            }
+
+        }
+
+        private void ApplyAISettings(Trainer trainer, TrainerSettings settings)
+        {
+            if (settings.UseSmartAI)
+            {
+                // Move failure check (basic)
+                trainer.AIFlags.Set(0, true);
+                // Go for KO
+                trainer.AIFlags.Set(1, true);
+                // Move failure check (advanced)
+                trainer.AIFlags.Set(2, true);
+                // If double battle, set double battle strats
+                if (trainer.isDoubleBattle)
+                {
+                    trainer.AIFlags.Set(7, true);
+                }
+                // HP Awareness
+                trainer.AIFlags.Set(8, true);
+            }
         }
 
         #endregion
