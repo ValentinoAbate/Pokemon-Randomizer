@@ -7,6 +7,7 @@ namespace PokemonRandomizer.Backend.Utilities
     public class InfoFileGenerator
     {
         private const string divider = "===============================================================================================================================================";
+        private const string subdivider = "---------------------------------------------------------------------------------------------------------------------------------------";
         private const string unrandomized = "None (unrandomized)";
         public string[] GenerateInfoFile(RomData data, RomMetadata metadata)
         {
@@ -17,6 +18,16 @@ namespace PokemonRandomizer.Backend.Utilities
             lines.Add($"ROM                : {metadata.Name} ({metadata.Code})");
             lines.Add($"Generation         : {metadata.Gen}");
 
+            if(data.RandomizationResults.Count > 0)
+            {
+                Header(ref lines, "Randomization Results", false);
+                foreach(var kvp in data.RandomizationResults)
+                {
+                    SubHeader(ref lines, kvp.Key);
+                    lines.AddRange(kvp.Value);
+                }
+            }
+
             GeneratePokemonInfo(data, ref lines);
 
             return lines.ToArray();
@@ -24,13 +35,23 @@ namespace PokemonRandomizer.Backend.Utilities
         }
 
         private const string indent = "   ";
-        private static void Header(ref List<string> lines, string text)
+        private static void Header(ref List<string> lines, string text, bool emptyLineAfterHeader = true)
         {
             lines.Add(string.Empty);
             lines.Add(divider);
             lines.Add(indent + text);
             lines.Add(divider);
+            if (emptyLineAfterHeader)
+            {
+                lines.Add(string.Empty);
+            }
+        }
+
+        private static void SubHeader(ref List<string> lines, string text)
+        {
             lines.Add(string.Empty);
+            lines.Add(text);
+            lines.Add(subdivider);
         }
 
         private void GeneratePokemonInfo(RomData data, ref List<string> lines)

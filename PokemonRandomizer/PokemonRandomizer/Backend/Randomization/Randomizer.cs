@@ -617,6 +617,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 if(team.Length > 0)
                 {
                     dreamTeamRandomizer.ApplyDreamTeam(data.FirstEncounterSet, team);
+                    data.RandomizationResults.Add("Dream Team", new List<string> { string.Join(", ", team.Select(EnumUtils.ToDisplayString).ToArray()) });
                 }
                 else
                 {

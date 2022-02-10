@@ -8,8 +8,6 @@ namespace PokemonRandomizer.Backend.DataStructures
 {
     public class RomData : IDataTranslator
     {
-
-
         // A metrics database calculated from the input ROM data (the base game if the rom being loaded is normal)
         public RomMetrics Metrics { get; private set; }
         public string Seed { get; set; }
@@ -90,6 +88,9 @@ namespace PokemonRandomizer.Backend.DataStructures
         public List<Item> NewEvolutionStones { get; set; } = new List<Item>();
 
         public string PaletteOverrideKey { get; set; }
+
+        // Container for data to be written to the info file that cannot be inferred from the general rom data
+        public Dictionary<string, List<string>> RandomizationResults { get; } = new Dictionary<string, List<string>>();
 
         public PokemonBaseStats GetBaseStats(Pokemon p) => PokemonLookup[p];
         public MoveData GetMoveData(Move m) => MoveData[(int)m];
