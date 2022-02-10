@@ -1,0 +1,142 @@
+﻿<Window x:Class="PokemonRandomizer.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:PokemonRandomizer"
+        xmlns:converter="clr-namespace:PokemonRandomizer.Converters"
+        mc:Ignorable="d"
+        Title="Procedural Pokemon Randomizer (Beta)" Height="560" Width="900">
+
+    <!--Main Window Resources-->
+
+    <Window.Resources>
+        <converter:PercentConverter x:Key="PercentConverter" />
+    </Window.Resources>
+
+    <!--Main Grid-->
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Name="Toolbar" Height="Auto" ></RowDefinition>
+            <RowDefinition Name="TabSelector" Height="*" ></RowDefinition>
+            <RowDefinition Name="Msg" Height="Auto"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <!--<ColumnDefinition  Name="TabSelectorCol" Width="Auto"></ColumnDefinition>
+            <ColumnDefinition Name="RomButtons" Width="*"></ColumnDefinition>-->
+        </Grid.ColumnDefinitions>
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <Menu Name="MainMenu" Grid.Column="0">
+                <MenuItem Header="File">
+                    <MenuItem Header="Open ROM" Click="OpenROM"/>
+                    <MenuItem Name="menuSaveROM" IsEnabled="{Binding IsROMLoaded}" Header="Randomize (Save)" Click="SaveROM"/>
+                    <MenuItem Name="menuGenerateInfoDoc" IsEnabled="{Binding IsROMLoaded}" Header="Save ROM Info" Click="GenerateInfoDoc"/>
+                    <MenuItem Visibility="Collapsed" Header="_Convert Table" Click="ConvertTable" />
+                </MenuItem>
+                <MenuItem Header="Settings" IsEnabled="{Binding IsROMLoaded}">
+                    <MenuItem Name="menuLoadPreset" IsEnabled="{Binding IsROMLoaded}" Header="Load Settings" Click="LoadPreset"/>
+                    <MenuItem Name="menuSavePreset" IsEnabled="{Binding IsROMLoaded}" Header="Save Settings" Click="SavePreset"/>
+                </MenuItem>
+                <MenuItem Visibility="Visible" Header="Debug">
+                    <MenuItem Name="menuUseHardCodedSettings" Header="Use Hardcoded Settings" IsCheckable="True" IsChecked="{Binding UseHardCodedSettings}"/>
+                    <MenuItem Name="menuDebugSaveLog" IsEnabled="{Binding LogNotEmpty}" Header="Save Debug Log" Click="SaveLog"/>
+                    <MenuItem Name="menuDebugClearLog" IsEnabled="{Binding LogNotEmpty}" Header="Clear Debug Log" Click="ClearLog"/>
+                    <MenuItem Name="menuDebugSaveCleanRom" IsEnabled="{Binding IsROMLoaded}" Header="Save Clean ROM" Click="SaveCleanROM"/>
+                    <MenuItem Name="menuDebugDiffRoms" IsEnabled="{Binding IsROMLoaded}" Header="Diff Roms" Click="DiffRoms"/>
+                </MenuItem>
+                <MenuItem Header="Help">
+                    <MenuItem Header="About" Click="ShowAboutWindow"/>
+                    <MenuItem Header="Open Download Page in Browser" Click="GoToDownloadPage"/>
+                </MenuItem>
+            </Menu>
+            <TextBlock Name="HardcodedSettingsIndicator" Margin="5,0,5,0" Text="(Hardcoded Mode)" Grid.Column="1"/>
+        </Grid>
+
+        <!--Tabs-->
+
+        <TabControl Name="MainTabControl" IsEnabled="{Binding IsROMLoaded}" Grid.Row="1">
+
+            <!--General Settings-->
+
+            <TabItem Name="RandomizerView" Header="Randomizer">
+
+            </TabItem>
+
+            <TabItem Name="TmHmTutorView" Header="Tm/Hm/Tutors">
+
+            </TabItem>
+
+            <TabItem Name="VariantPokemonView" Header="Variant Pokemon">
+
+            </TabItem>
+
+            <!-- Pokemon Traits -->
+
+            <TabItem Name="PokemonTraitsView" Header="Pokemon Traits">
+
+            </TabItem>
+
+            <!--Starter Pokemon-->
+
+            <TabItem Name="SpecialPokemonView" Header="Special Pokemon">
+
+            </TabItem>
+
+            <!--Wild Pokemon-->
+
+            <TabItem Name="WildPokemonView" Header="Wild Pokemon">
+
+            </TabItem>
+
+            <TabItem Header="Trainers">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <DockPanel Name="TrainerGroups" Grid.Column="0" Width="105"/>
+                    <DockPanel Name="TrainerView" Grid.Column="1"/>
+                </Grid>
+            </TabItem>
+
+            <TabItem Name="ItemsView" Header="Items">
+
+            </TabItem>
+
+            <TabItem Name="WeatherView" Header="Weather">
+
+            </TabItem>
+
+            <TabItem Name="MiscView" Header="Misc">
+
+            </TabItem>
+        </TabControl>
+
+        <!--Message Box-->
+
+        <StatusBar Name="InfoBox" Grid.Row="2" Height="45">
+            <StatusBar.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                    </Grid>
+                </ItemsPanelTemplate>
+            </StatusBar.ItemsPanel>
+            <StatusBarItem>
+                <Label Name="lblInfoBoxContent" Content="Please open a Rom! use file-&gt;Open Rom." MaxWidth="{Binding}"/>
+            </StatusBarItem>
+            <StatusBarItem HorizontalAlignment="Right" Grid.Column="2">
+                <Label Name="lblInfoBoxErrorCount" Content="" MinWidth="50"/>
+            </StatusBarItem>
+        </StatusBar>
+    </Grid>
+
+</Window>

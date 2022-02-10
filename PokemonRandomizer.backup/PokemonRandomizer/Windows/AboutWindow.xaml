@@ -1,0 +1,34 @@
+﻿<Window x:Class="PokemonRandomizer.Windows.AboutWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:PokemonRandomizer.Windows"
+        mc:Ignorable="d"
+        Title="About" Height="165" Width="250" WindowStartupLocation="CenterOwner" WindowStyle="SingleBorderWindow" ShowInTaskbar="False" ResizeMode="NoResize">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Name="ContentRow" Height="*" ></RowDefinition>
+            <RowDefinition Name="Controls" Height="Auto" ></RowDefinition>
+        </Grid.RowDefinitions>
+        <StackPanel Grid.Row="0" Orientation="Vertical" Margin="5">
+            <StackPanel Orientation="Horizontal">
+                <Label Content="Version: " FontSize="13"/>
+                <Label Name="VersionText" FontSize="13"/>
+            </StackPanel>
+            <Label Content="Support:" Margin="0,-5,0,5" FontSize="13"/>
+            <TextBlock TextWrapping="WrapWithOverflow" VerticalAlignment="Center" Margin="5,-5,5,5" FontSize="11">
+                Emerald (BPEE), FireRed v1.0 (BPRE-01)
+            </TextBlock>
+            <TextBlock Margin="5,2,0,5" FontSize="10">           
+                <Hyperlink NavigateUri="https://github.com/ValentinoAbate/Pokemon-Randomizer/releases" RequestNavigate="GoToDownloadPage">
+                    Download page (check for updates)
+                </Hyperlink>
+            </TextBlock>
+        </StackPanel>
+        <StackPanel Grid.Row="1" >
+            <Button  Content="Ok" Click="CloseWindow" Width="80" Margin="0,0,0,5"/>
+        </StackPanel>
+    </Grid>
+
+</Window>
