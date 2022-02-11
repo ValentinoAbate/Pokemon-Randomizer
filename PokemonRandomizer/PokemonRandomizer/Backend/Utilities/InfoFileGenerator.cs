@@ -9,7 +9,7 @@ namespace PokemonRandomizer.Backend.Utilities
         private const string divider = "===============================================================================================================================================";
         private const string subdivider = "---------------------------------------------------------------------------------------------------------------------------------------";
         private const string unrandomized = "None (unrandomized)";
-        public string[] GenerateInfoFile(RomData data, RomMetadata metadata)
+        public string[] GenerateInfoFile(RomData data, RomMetadata metadata, string settingsString = null)
         {
             var lines = new List<string>(1000);
             Header(ref lines, "Randomizer Info");
@@ -18,7 +18,13 @@ namespace PokemonRandomizer.Backend.Utilities
             lines.Add($"ROM                : {metadata.Name} ({metadata.Code})");
             lines.Add($"Generation         : {metadata.Gen}");
 
-            if(data.RandomizationResults.Count > 0)
+            if (!string.IsNullOrEmpty(settingsString))
+            {
+                Header(ref lines, "Settings String");
+                lines.Add(settingsString);
+            }
+
+            if (data.RandomizationResults.Count > 0)
             {
                 Header(ref lines, "Randomization Results", false);
                 foreach(var kvp in data.RandomizationResults)

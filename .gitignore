@@ -271,3 +271,6 @@ local.properties
 .cache-main
 .scala_dependencies
 .worksheet
+PokemonRandomizer/.vs/PokemonRandomizer/v17/.futdcache.v1
+PokemonRandomizer/.vs/PokemonRandomizer/project-colors.json
+PokemonRandomizer/.vs/PokemonRandomizer/DesignTimeBuild/.dtbcache.v2

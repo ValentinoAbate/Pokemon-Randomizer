@@ -17,6 +17,8 @@ namespace PokemonRandomizer
     using Backend.Writing;
     using PokemonRandomizer.AppSettings;
     using System.Diagnostics;
+    using System.IO.Compression;
+    using System.Text;
     using UI;
     using UI.Json;
     using UI.Models;
@@ -206,9 +208,16 @@ namespace PokemonRandomizer
             MiscView.Content = new MiscDataView(AppData.MiscData, metadata);
         }
 
-        private void SetLastRandomizationInfo(RomData data, RomMetadata metadata)
+        private void SetLastRandomizationInfo(RomData data, RomMetadata metadata, bool includeSettingsString)
         {
-            LastRandomizationInfo = infoFileGenerator.GenerateInfoFile(data, metadata);
+            if (includeSettingsString)
+            {
+                LastRandomizationInfo = infoFileGenerator.GenerateInfoFile(data, metadata, UseHardCodedSettings ? "Hardcoded" : GenerateCompressedPresetString());
+            }
+            else
+            {
+                LastRandomizationInfo = infoFileGenerator.GenerateInfoFile(data, metadata);
+            }
         }
 
         private bool GetRomData(byte[] rawRom)
@@ -235,7 +244,7 @@ namespace PokemonRandomizer
             }
 
             // Cache metadata and last randomization 
-            SetLastRandomizationInfo(RomData, metadata);
+            SetLastRandomizationInfo(RomData, metadata, false);
             Metadata = metadata;
             return true;
         }
@@ -245,7 +254,7 @@ namespace PokemonRandomizer
             var copyData = Parser.Parse(Rom, Metadata, RomInfo);
             var randomzier = new Backend.Randomization.Randomizer(copyData, AppSettings);
             var randomizedData = randomzier.Randomize();
-            SetLastRandomizationInfo(randomizedData, Metadata);
+            SetLastRandomizationInfo(randomizedData, Metadata, true);
             if(Metadata.Gen == Generation.III)
             {
                 var writer = new Gen3RomWriter();
@@ -543,11 +552,56 @@ namespace PokemonRandomizer
             };
             if (saveFileDialog.ShowDialog() == true)
             {
-                SaveFile(saveFileDialog.FileName, "Settings", new string[] { JsonSerializer.Serialize(AppData, serializerOptions) }, File.WriteAllLines, null, onComplete);
+                SaveFile(saveFileDialog.FileName, "Settings", () => new string[] { GenerateCompressedPresetString() }, File.WriteAllLines, null, onComplete);
             }
             else
             {
                 onComplete?.Invoke(false);
+            }
+        }
+
+        private void CopyPresetStringToClipboard(object sender, RoutedEventArgs e)
+        {
+            Clipboard.SetText(GenerateCompressedPresetString());
+        }
+
+        private string GeneratePresetString()
+        {
+            return JsonSerializer.Serialize(AppData, serializerOptions);
+        }
+
+        private string GenerateCompressedPresetString()
+        {
+            var compressed = CompressBytes(Encoding.Unicode.GetBytes(GeneratePresetString()));
+            return Convert.ToBase64String(compressed);
+        }
+
+        private static byte[] CompressBytes(byte[] bytes)
+        {
+            using (var outputStream = new MemoryStream())
+            {
+                using (var compressStream = new BrotliStream(outputStream, CompressionLevel.Optimal))
+                {
+                    compressStream.Write(bytes, 0, bytes.Length);
+                }
+                outputStream.Flush();
+                return outputStream.ToArray();
+            }
+        }
+
+        private static byte[] DecompressBytes(byte[] bytes)
+        {
+            using (var inputStream = new MemoryStream(bytes))
+            {
+                using (var outputStream = new MemoryStream())
+                {
+                    using (var decompressStream = new BrotliStream(inputStream, CompressionMode.Decompress))
+                    {
+                        decompressStream.CopyTo(outputStream);
+                    }
+                    outputStream.Flush();
+                    return outputStream.ToArray();
+                }
             }
         }
 
@@ -565,22 +619,71 @@ namespace PokemonRandomizer
                     var file = File.ReadAllLines(openFileDialog.FileName);
                     if (file.Length <= 0)
                     {
-                        throw new IOException("Empty preset file");
+                        throw new IOException("Preset load error: Empty preset file");
                     }
-                    AppData = JsonSerializer.Deserialize<ApplicationDataModel>(file[0], serializerOptions);
+                    try
+                    {
+                        DecompressAndApplyPreset(file[0]);
+                    }
+                    catch
+                    {
+                        ApplyPreset(file[0]);
+                    }
                 }
                 void Error(Exception e) => LogError($"Preset load error: {e.Message}");
                 void Success()
                 {
-                    IsROMLoaded = true;
-                    // Log open and set info box
-                    string msg = $"Preset loaded: {openFileDialog.FileName}";
-                    LogInfo(msg);
-                    SetInfoBox(msg);
-                    InitializeAppData();
+                    OnPresetLoaded($"Preset loaded: {openFileDialog.FileName}");
                 }
                 PauseUIAndRunInBackground("Loading preset...", Load, Success, Error);
             }
+        }
+
+        private void LoadPresetString(object sender, RoutedEventArgs e)
+        {
+            var stringPrompt = new InputPromptWindow
+            {
+                Owner = this
+            };
+            SetUIEnabled(false);
+            if(stringPrompt.ShowDialog("Load Settings String?", "Paste Settings String", "Ok", "Cancel") == true && !string.IsNullOrWhiteSpace(stringPrompt.Output))
+            {
+                void Load()
+                {
+                    DecompressAndApplyPreset(stringPrompt.Output);
+                }
+                void Error(Exception e) => LogError($"Preset load error: {e.Message}");
+                void Success()
+                {
+                    OnPresetLoaded("Preset string loaded successfully");
+                }
+                PauseUIAndRunInBackground("Loading preset...", Load, Success, Error);
+            }
+            else
+            {
+                SetUIEnabled(true);
+            }
+        }
+
+        private void OnPresetLoaded(string msg)
+        {
+            // Log open and set info box
+            LogInfo(msg);
+            SetInfoBox(msg);
+            InitializeAppData();
+        }
+
+        private void DecompressAndApplyPreset(string compressedPreset)
+        {
+            var compressed = Convert.FromBase64String(compressedPreset);
+            var decompressed = DecompressBytes(compressed);
+            ApplyPreset(Encoding.Unicode.GetString(decompressed));
+
+        }
+
+        private void ApplyPreset(string preset)
+        {
+            AppData = JsonSerializer.Deserialize<ApplicationDataModel>(preset, serializerOptions);
         }
 
         private void ShowAboutWindow(object sender, RoutedEventArgs e)
