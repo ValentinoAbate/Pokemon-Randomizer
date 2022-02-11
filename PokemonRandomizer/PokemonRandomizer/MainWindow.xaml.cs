@@ -379,30 +379,26 @@ namespace PokemonRandomizer
         {
             if (!success)
                 return;
-            void AskToSaveSetttingsFile(bool success)
-            {
-                var promptWindow = new PromptWindow()
-                {
-                    Owner = this
-                };
-                bool? result = promptWindow.ShowDialog("Save Settings File?", "The Settings File contains the randomizer settings you used.");
-                if(result == true)
-                {
-                    SavePreset(null);
-                }
-            }
+            //void AskToSaveSetttingsFile(bool success)
+            //{
+            //    var promptWindow = new PromptWindow()
+            //    {
+            //        Owner = this
+            //    };
+            //    bool? result = promptWindow.ShowDialog("Save Settings File?", "The Settings File contains the randomizer settings you used.");
+            //    if(result == true)
+            //    {
+            //        SavePreset(null);
+            //    }
+            //}
             var promptWindow = new PromptWindow()
             {
                 Owner = this
             };
-            bool? result = promptWindow.ShowDialog("Save Randomization Info File?", "The Randomization Info File contains info such as your seed, randomizer version, and randomization results.");
+            bool? result = promptWindow.ShowDialog("Save Randomization Info File?", "The Randomization Info File contains your seed, settings string, and randomization results.");
             if (result == true)
             {
-                GenerateInfoDoc(AskToSaveSetttingsFile);
-            }
-            else
-            {
-                AskToSaveSetttingsFile(true);
+                GenerateInfoDoc(null);
             }
         }
 
