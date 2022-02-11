@@ -4,7 +4,6 @@ namespace PokemonRandomizer.UI.Models
 {
     public class ApplicationDataModel
     {
-        public RandomizerDataModel RandomizerData { get; set; } = new RandomizerDataModel();
         public TmHmTutorModel TmHmTutorData { get; set; } = new TmHmTutorModel();
         public VariantPokemonDataModel VariantPokemonData { get; set; } = new VariantPokemonDataModel();
         public SpecialPokemonDataModel SpecialPokemonData { get; set; } = new SpecialPokemonDataModel();

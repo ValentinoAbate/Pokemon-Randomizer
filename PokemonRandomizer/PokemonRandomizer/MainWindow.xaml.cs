@@ -188,7 +188,6 @@ namespace PokemonRandomizer
 
         private void InitializeUI()
         {
-            RandomizerView.Content = new RandomizerDataView(AppData.RandomizerData);
             VariantPokemonView.Content = new VariantPokemonDataView(AppData.VariantPokemonData);
             PokemonTraitsView.Content = new PokemonTraitsDataView(AppData.PokemonData);
             TmHmTutorView.Content = new TmHmTutorDataView(AppData.TmHmTutorData);
@@ -249,10 +248,10 @@ namespace PokemonRandomizer
             return true;
         }
 
-        private byte[] GetRandomizedRom()
+        private byte[] GetRandomizedRom(string seed)
         {
             var copyData = Parser.Parse(Rom, Metadata, RomInfo);
-            var randomzier = new Backend.Randomization.Randomizer(copyData, AppSettings);
+            var randomzier = new Backend.Randomization.Randomizer(copyData, AppSettings, seed);
             var randomizedData = randomzier.Randomize();
             SetLastRandomizationInfo(randomizedData, Metadata, true);
             if(Metadata.Gen == Generation.III)
@@ -405,13 +404,26 @@ namespace PokemonRandomizer
         private const string randomizingProgressMessage = "Randomizing...";
         private void SaveROM(object sender, RoutedEventArgs e)
         {
-            if (UseHardCodedSettings)
+            var inputWindow = new InputPromptWindow()
             {
-                WriteRom(GetRandomizedRom, randomizingProgressMessage);
+                Owner = this
+            };
+            SetUIEnabled(false);
+            if(inputWindow.ShowDialog("Use Seed?", "Enter a seed, or leave blank for a random seed", "Confirm", "Cancel") == true)
+            {
+                
+                if (UseHardCodedSettings)
+                {
+                    WriteRom(() => GetRandomizedRom(inputWindow.Output), randomizingProgressMessage);
+                }
+                else
+                {
+                    WriteRom(() => GetRandomizedRom(inputWindow.Output), randomizingProgressMessage, PostRandomizationUIFlow);
+                }
             }
             else
             {
-                WriteRom(GetRandomizedRom, randomizingProgressMessage, PostRandomizationUIFlow);
+                SetUIEnabled(true);
             }
         }
 

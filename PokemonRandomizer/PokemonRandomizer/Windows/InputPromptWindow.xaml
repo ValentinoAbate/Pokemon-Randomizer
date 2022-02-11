@@ -5,14 +5,14 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PokemonRandomizer.Windows"
         mc:Ignorable="d"
-        Title="InputPrompt" Height="150" Width="275" WindowStartupLocation="CenterOwner" WindowStyle="SingleBorderWindow" ShowInTaskbar="False" ResizeMode="NoResize">
+        Title="InputPrompt" Height="150" Width="300" WindowStartupLocation="CenterOwner" WindowStyle="SingleBorderWindow" ShowInTaskbar="False" ResizeMode="NoResize">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Name="ContentRow" Height="*" ></RowDefinition>
             <RowDefinition Name="Controls" Height="Auto" ></RowDefinition>
         </Grid.RowDefinitions>
         <StackPanel Grid.Row="0" Orientation="Vertical" Margin="5" >
-            <TextBlock Name="MessageTb" Text="Message goes here" FontSize="12" TextWrapping="Wrap" Margin="5" TextAlignment="Center"/>
+            <TextBlock Name="MessageTb" Text="Enter a seed, or leave blank for a random seed" FontSize="12" TextWrapping="Wrap" Margin="5" TextAlignment="Center"/>
             <TextBox Name="InputTb" Margin="10"/>
         </StackPanel>
         <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">

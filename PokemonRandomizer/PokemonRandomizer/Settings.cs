@@ -8,10 +8,6 @@ namespace PokemonRandomizer
 {
     public abstract class Settings
     {
-        #region Seeding
-        public abstract string Seed { get; }
-        public abstract bool SetSeed { get; }
-        #endregion
 
         #region Type Relation Definitions
 

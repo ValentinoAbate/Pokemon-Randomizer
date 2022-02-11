@@ -65,10 +65,6 @@
 
             <!--General Settings-->
 
-            <TabItem Name="RandomizerView" Header="Randomizer">
-
-            </TabItem>
-
             <TabItem Name="TmHmTutorView" Header="Tm/Hm/Tutors">
 
             </TabItem>

@@ -30,12 +30,12 @@ namespace PokemonRandomizer.Backend.Randomization
         /// Create a new randomizer with given data and settings
         /// Input data will be mutated by randomizer calls
         /// </summary>
-        public Randomizer(RomData data, Settings settings)
+        public Randomizer(RomData data, Settings settings, string seed)
         {
             this.data = data;
             this.settings = settings;
             // Initialize random generator
-            rand = settings.SetSeed ? new Random(settings.Seed.Trim()) : new Random();
+            rand = !string.IsNullOrEmpty(seed) ? new Random(seed) : new Random();
             data.Seed = rand.Seed;
             // Intialize evolution helper
             evoUtils = new EvolutionUtils(rand, data);

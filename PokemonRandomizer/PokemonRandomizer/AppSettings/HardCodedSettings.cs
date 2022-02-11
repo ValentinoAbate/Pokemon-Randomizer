@@ -8,8 +8,6 @@ namespace PokemonRandomizer.AppSettings
     using UI.Models;
     public class HardCodedSettings : Settings
     {
-        protected RandomizerDataModel randomizerData;
-
         public HardCodedSettings(ApplicationDataModel data)
         {
             UpdateData(data);
@@ -17,13 +15,8 @@ namespace PokemonRandomizer.AppSettings
 
         public virtual void UpdateData(ApplicationDataModel data)
         {
-            randomizerData = data.RandomizerData;
-        }
 
-        #region Randomizer
-        public override string Seed => randomizerData.Seed;
-        public override bool SetSeed => randomizerData.UseSeed;
-        #endregion
+        }
 
         #region Type Relation Definitions
 
