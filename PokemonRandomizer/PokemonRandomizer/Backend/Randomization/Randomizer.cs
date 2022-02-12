@@ -856,13 +856,14 @@ namespace PokemonRandomizer.Backend.Randomization
             void ChooseWeather(Map m, Settings s2, bool gymOverride)
             {
                 var choices = new WeightedSet<Map.Weather>(s2.WeatherWeights);
+                // Always unsafe unless map is specifically layered for this weather
+                choices.RemoveIfContains(Map.Weather.ClearWithCloudsInWater);
                 if (s2.SafeUnderwaterWeather && !(m.mapType == Map.Type.Underwater))
                 {
                     choices.RemoveIfContains(Map.Weather.UnderwaterMist);
                 }
                 if (!gymOverride && s2.SafeInsideWeather && !m.IsOutdoors)
                 {
-                    choices.RemoveIfContains(Map.Weather.ClearWithCloudsInWater);
                     choices.RemoveIfContains(Map.Weather.Clear);
                     choices.RemoveIfContains(Map.Weather.Cloudy);
                     choices.RemoveIfContains(Map.Weather.Rain);
