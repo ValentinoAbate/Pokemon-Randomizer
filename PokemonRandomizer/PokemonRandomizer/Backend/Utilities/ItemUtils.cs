@@ -109,7 +109,7 @@ namespace PokemonRandomizer.Backend.Utilities
 
         public static bool IsBerry(this Item item) => item >= Item.Cheri_Berry && item <= Item.Enigma_Berry;
         public static bool IsEvBerry(this Item item) => item >= Item.Pomeg_Berry && item <= Item.Tamato_Berry;
-        public static bool IsMinigameBerry(this Item item) => (item >= Item.Razz_Berry && item <= Item.Pinap_Berry) || (item >= Item.Cornn_Berry && item <= Item.Durin_Berry) || item == Item.Enigma_Berry;
+        public static bool IsMinigameBerry(this Item item) => (item >= Item.Razz_Berry && item <= Item.Pinap_Berry) || (item >= Item.Cornn_Berry && item <= Item.Belue_Berry) || item == Item.Enigma_Berry;
 
         public static bool IsHeldItem(this Item item) => (item >= Item.BrightPowder && item <= Item.Stick) && item != Item.Upーgrade && item != Item.Dragon_Scale;
 
