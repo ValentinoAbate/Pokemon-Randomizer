@@ -63,7 +63,7 @@ namespace PokemonRandomizer.Backend.Writing
                         rom.WriteByte(Gen3Command.setberrytree);
                         rom.WriteByte(setBerryTreeCommand.treeId);
                         rom.WriteByte((byte)((setBerryTreeCommand.berry + 1) - Item.Cheri_Berry));
-                        rom.WriteByte(setBerryTreeCommand.unknown);
+                        rom.WriteByte(setBerryTreeCommand.growthStage);
                         break;
                     case Gen3Command gen3Command:
                         rom.WriteByte(gen3Command.code);

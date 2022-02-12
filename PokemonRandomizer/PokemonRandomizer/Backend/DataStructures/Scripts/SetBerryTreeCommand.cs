@@ -12,7 +12,7 @@ namespace PokemonRandomizer.Backend.DataStructures.Scripts
     {
         public byte treeId;
         public Item berry;
-        public byte unknown; // I believe this might be growth stage, but I need to test that
+        public byte growthStage; // 1 (seed) - 5 (fully grown)
 
         public override string ToString()
         {

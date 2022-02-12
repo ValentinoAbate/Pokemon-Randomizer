@@ -159,6 +159,7 @@ namespace PokemonRandomizer.Backend.Reading
                 treeId = (byte)command.ArgData(0),
                 berry = (Item)(command.ArgData(1) + (int)Item.Cheri_Berry - 1),
                 unknown = (byte)command.ArgData(2)
+                growthStage = (byte)command.ArgData(2)
             };
         }
 
