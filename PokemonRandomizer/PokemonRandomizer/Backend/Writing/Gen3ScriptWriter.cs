@@ -15,6 +15,10 @@ namespace PokemonRandomizer.Backend.Writing
         }
         public void Write(Script script, Rom rom, int offset, RomMetadata metadata)
         {
+            if(script == null)
+            {
+                return;
+            }
             rom.SaveOffset();
             rom.Seek(offset);
             foreach(var command in script)
@@ -44,6 +48,9 @@ namespace PokemonRandomizer.Backend.Writing
                         rom.WriteUInt16(giveItem.amount);
                         rom.WriteByte(Gen3Command.callstd);
                         rom.WriteByte((byte)giveItem.messageType);
+                        break;
+                    case TrainerBattleCommand trainerBattle:
+                        WriteTrainerBattleCommand(rom, trainerBattle, metadata);
                         break;
                     case GivePokemonCommand givePokemon:
                         rom.WriteByte(Gen3Command.givePokemon);
@@ -91,6 +98,48 @@ namespace PokemonRandomizer.Backend.Writing
             rom.LoadOffset();
         }
 
+        private void WriteTrainerBattleCommand(Rom rom, TrainerBattleCommand battle, RomMetadata metadata)
+        {
+            rom.WriteByte(Gen3Command.trainerbattle);
+            rom.WriteByte((byte)battle.trainerType);
+            rom.WriteUInt16(battle.trainerIndex);
+            rom.WriteUInt16(battle.unknown); // Blank word
+            if (battle.trainerType == TrainerBattleCommand.Type.ContinueScriptAfterBattle)
+            {
+                rom.WritePointer(battle.defeatedTextOffset);
+                return;
+            }
+            if (battle.trainerType == TrainerBattleCommand.Type.ProfessorOakTutorial)
+            {
+                rom.WritePointer(battle.defeatedTextOffset);
+                rom.WritePointer(battle.winTextOffset);
+                return;
+            }
+            // Standard Args 3 and 4
+            rom.WritePointer(battle.encounterTextOffset);
+            rom.WritePointer(battle.defeatedTextOffset);
+            // Return if there are no extra arguments
+            if (battle.trainerType == TrainerBattleCommand.Type.Standard || battle.trainerType == TrainerBattleCommand.Type.Rematch)
+            {
+                return;
+            }
+            // Post-battle script argument
+            if (battle.trainerType == TrainerBattleCommand.Type.GymLeader || battle.trainerType == TrainerBattleCommand.Type.MatchCallRegister)
+            {
+                rom.WritePointer(battle.postBattleScriptOffset);
+                Write(battle.postBattleScript, rom, battle.postBattleScriptOffset, metadata);
+                return;
+            }
+            // Double battles
+            rom.WritePointer(battle.onlyOnePokemonTextOffset);
+            // Double battle with Post-Battle script argument
+            if (battle.trainerType == TrainerBattleCommand.Type.DoubleBattleWithExtraScript || battle.trainerType == TrainerBattleCommand.Type.DoubleBattleGymLeader)
+            {
+                rom.WritePointer(battle.postBattleScriptOffset);
+                Write(battle.postBattleScript, rom, battle.postBattleScriptOffset, metadata);
+            }
+        }
+
         private void WriteShopCommand(Rom rom, ShopCommand command)
         {
             rom.WriteByte(command.code);
@@ -118,7 +167,7 @@ namespace PokemonRandomizer.Backend.Writing
                 // Attempt to write shop data block in free space
                 var newOffset = rom.WriteInFreeSpace(dataBlock.File);
                 // If successful, write the new offset, else write the old one
-                rom.WritePointer(newOffset != null ? (int)newOffset : command.shopOffset);
+                rom.WritePointer(newOffset ?? command.shopOffset);
             }
         }
 

@@ -76,6 +76,10 @@ namespace PokemonRandomizer.Backend.Reading
                         script.Add(command);
                     }
                 }
+                else if (command.code == Gen3Command.trainerbattle)
+                {
+                    script.Add(ParseTrainerBattleCommand(rom, command, metadata, ref visited));
+                }
                 else if(command.code == Gen3Command.givePokemon)
                 {
                     var givePokemonCommand = new GivePokemonCommand()
@@ -150,6 +154,57 @@ namespace PokemonRandomizer.Backend.Reading
             }
             rom.DumpOffset();
             return true;
+        }
+
+        private TrainerBattleCommand ParseTrainerBattleCommand(Rom rom, Gen3Command command, RomMetadata metadata, ref HashSet<int> visited)
+        {
+            var battle = new TrainerBattleCommand()
+            {
+                trainerType = (TrainerBattleCommand.Type)command.ArgData(0),
+                trainerIndex = command.ArgData(1),
+                unknown = command.ArgData(2),
+            };
+            if(battle.trainerType == TrainerBattleCommand.Type.ContinueScriptAfterBattle)
+            {
+                battle.defeatedTextOffset = command.ArgData(3);
+                return battle;
+            }
+            if(battle.trainerType == TrainerBattleCommand.Type.ProfessorOakTutorial)
+            {
+                battle.defeatedTextOffset = command.ArgData(3);
+                battle.winTextOffset = command.ArgData(4);
+                return battle;
+            }
+            // Standard Args 3 and 4
+            battle.encounterTextOffset = command.ArgData(3);
+            battle.defeatedTextOffset = command.ArgData(4);
+            // Return if there are no extra arguments
+            if(battle.trainerType == TrainerBattleCommand.Type.Standard || battle.trainerType == TrainerBattleCommand.Type.Rematch)
+            {
+                return battle;
+            }
+            // Post-battle script argument
+            if (battle.trainerType == TrainerBattleCommand.Type.GymLeader || battle.trainerType == TrainerBattleCommand.Type.MatchCallRegister)
+            {
+                battle.postBattleScriptOffset = command.ArgData(5);
+                if (!visited.Contains(battle.postBattleScriptOffset))
+                {
+                    battle.postBattleScript = Parse(rom, battle.postBattleScriptOffset, metadata, ref visited);
+                }
+                return battle;
+            }
+            // Double battles
+            battle.onlyOnePokemonTextOffset = command.ArgData(5);
+            // Double battle with Post-Battle script argument
+            if (battle.trainerType == TrainerBattleCommand.Type.DoubleBattleWithExtraScript || battle.trainerType == TrainerBattleCommand.Type.DoubleBattleGymLeader)
+            {
+                battle.postBattleScriptOffset = command.ArgData(6);
+                if (!visited.Contains(battle.postBattleScriptOffset))
+                {
+                    battle.postBattleScript = Parse(rom, battle.postBattleScriptOffset, metadata, ref visited);
+                }
+            }
+            return battle;
         }
 
         private SetBerryTreeCommand ParseBerryTreeCommand(Rom rom, Gen3Command command)
