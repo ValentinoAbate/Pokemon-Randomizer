@@ -102,6 +102,10 @@ namespace PokemonRandomizer.Backend.Reading
                     // Add new poke mart event
                     script.Add(ParseShopCommand(rom, command));
                 }
+                else if(command.code == Gen3Command.setberrytree)
+                {
+                    script.Add(ParseBerryTreeCommand(rom, command));
+                }
                 else // Not a special code, just push the command
                 {
                     script.Add(command);
@@ -146,6 +150,16 @@ namespace PokemonRandomizer.Backend.Reading
             }
             rom.DumpOffset();
             return true;
+        }
+
+        private SetBerryTreeCommand ParseBerryTreeCommand(Rom rom, Gen3Command command)
+        {
+            return new SetBerryTreeCommand()
+            {
+                treeId = (byte)command.ArgData(0),
+                berry = (Item)(command.ArgData(1) + (int)Item.Cheri_Berry - 1),
+                unknown = (byte)command.ArgData(2)
+            };
         }
 
         private ShopCommand ParseShopCommand(Rom rom, Gen3Command command)

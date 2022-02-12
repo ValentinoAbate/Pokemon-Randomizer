@@ -41,6 +41,7 @@ namespace PokemonRandomizer.Backend.GenIII.Constants.ElementNames
         public const string stoneEffect = "stoneEffect";
         public const string trainerBattles = "trainerBattles";
         public const string trades = "trades";
+        public const string setBerryTreeScript = "setBerryTreeScript";
 
         // Hacks and Tweaks / Misc
         public const string pcPotion = "pcPotion";

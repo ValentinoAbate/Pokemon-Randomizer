@@ -310,6 +310,10 @@ namespace PokemonRandomizer
         public abstract double PickupItemRandChance { get; }
         public abstract ItemRandomizer.Settings PickupItemSettings { get; }
 
+        public abstract double BerryTreeRandChance { get; }
+        public abstract bool BanMinigameBerries { get; }
+        public abstract bool BanEvBerries { get; }
+
         #endregion
 
         #region Misc

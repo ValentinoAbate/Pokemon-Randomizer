@@ -443,6 +443,10 @@ namespace PokemonRandomizer.AppSettings
             SamePocketChance = 0.75,
         };
 
+        public override double BerryTreeRandChance => 1;
+        public override bool BanMinigameBerries => true;
+        public override bool BanEvBerries => false;
+
         #endregion
 
         #region Misc

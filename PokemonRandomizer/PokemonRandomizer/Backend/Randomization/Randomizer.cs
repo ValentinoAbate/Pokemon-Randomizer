@@ -120,7 +120,6 @@ namespace PokemonRandomizer.Backend.Randomization
             int tmInd = 0;
             foreach (var item in data.ItemData)
             {
-                // Remap TM Pallets
                 if (item.IsTM())
                 {
                     var moveData = data.GetMoveData(data.TMMoves[tmInd++]);
@@ -791,6 +790,9 @@ namespace PokemonRandomizer.Backend.Randomization
                 }
             }
 
+            // Randomize Berry Trees
+            RandomizeBerryTress(data.SetBerryTreeScript, settings, items);
+
             #endregion
 
             // Invoke delayed item randomizations in a random order
@@ -887,6 +889,31 @@ namespace PokemonRandomizer.Backend.Randomization
                 if(rand.RollSuccess(s.WeatherRandChance[map.mapType]))
                 {
                     ChooseWeather(map, s, false);
+                }
+            }
+        }
+
+        private void RandomizeBerryTress(Script berryTreeScript, Settings s, IEnumerable<ItemData> allItems)
+        {
+            if (berryTreeScript == null || s.BerryTreeRandChance <= 0)
+                return;
+            var berries = allItems.Where(i => i.ItemCategories.HasFlag(ItemData.Categories.Berry)).ToList();
+            // Remove EV berries if applicable
+            if (s.BanEvBerries)
+            {
+                berries.RemoveAll(i => i.ItemCategories.HasFlag(ItemData.Categories.EVBerry));
+            }
+            // Remove Minigame berries if applicable
+            if (s.BanMinigameBerries)
+            {
+                berries.RemoveAll(i => i.ItemCategories.HasFlag(ItemData.Categories.MinigameBerry));
+            }
+            // Randomize berry tree commands
+            foreach (var command in data.SetBerryTreeScript)
+            {
+                if (command is SetBerryTreeCommand berryTreeCommand && rand.RollSuccess(s.BerryTreeRandChance))
+                {
+                    berryTreeCommand.berry = rand.Choice(berries).Item;
                 }
             }
         }

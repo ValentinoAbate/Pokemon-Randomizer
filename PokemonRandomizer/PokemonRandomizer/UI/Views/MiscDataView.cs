@@ -25,6 +25,10 @@ namespace PokemonRandomizer.UI.Views
                 stack.Header("Emerald Options");
                 stack.Add(new BoundCheckBoxUI(model.RandomizeWallyAce, "Randomize Catching Tutorial Pokemon / Wally Ace"));
                 stack.Add(new BoundCheckBoxUI(model.EasyFirstRivalbattle, "Easy First Rival Battle") { ToolTip = easyRivalBattleTooltip });
+                var berryRand = stack.Add(new RandomChanceUI("Randomize Berry Trees", model.RandomizeBerryTrees, model.BerryTreeRandomizationChance) { ToolTip = "Randomize which berry trees start in the berry tree slots. WARNING: this only works for new save files. Loading a save state of an old save file will bypass the script that sets the starting berry trees." });
+                var berryStack = stack.Add(berryRand.BindEnabled(new StackPanel{ Orientation = Orientation.Horizontal }));
+                berryStack.Add(new BoundCheckBoxUI(model.BanEvBerries, "Ban EV Berries") { ToolTip = "Prevent EV-Lowering berries from appearing in randomized berry trees" });
+                berryStack.Add(new BoundCheckBoxUI(model.BanMinigameBerries, "Ban Pokéblock / Minigame Berries") { ToolTip = "Prevent Pokéblock / Minigame berries from appearing in randomized berry trees" });
             }
             else if (metadata.IsFireRed)
             {

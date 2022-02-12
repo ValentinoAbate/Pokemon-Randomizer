@@ -10,5 +10,10 @@
         // RSE Only
         public Box<bool> RandomizeWallyAce { get; set; } = new Box<bool>(true);
         public Box<bool> EasyFirstRivalbattle { get; set; } = new Box<bool>(true);
+
+        public Box<bool> RandomizeBerryTrees { get; set; } = new Box<bool>(false);
+        public Box<double> BerryTreeRandomizationChance { get; set; } = new Box<double>(1);
+        public Box<bool> BanEvBerries { get; set; } = new Box<bool>(false);
+        public Box<bool> BanMinigameBerries { get; set; } = new Box<bool>(true);
     }
 }

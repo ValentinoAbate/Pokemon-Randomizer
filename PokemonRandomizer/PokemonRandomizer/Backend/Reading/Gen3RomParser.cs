@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System;
 using static PokemonRandomizer.Backend.DataStructures.MoveData;
+using PokemonRandomizer.Backend.DataStructures.Scripts;
 
 namespace PokemonRandomizer.Backend.Reading
 {
@@ -77,6 +78,8 @@ namespace PokemonRandomizer.Backend.Reading
             data.ItemData = ReadItemData(rom, info);
             // Read in the pickup items
             data.PickupItems = ReadPickupData(rom, info, metadata);
+            // Read berry tree script (if applicable)
+            data.SetBerryTreeScript = ReadSetBerryTreeScript(rom, info, metadata);
             // Calculate the balance metrics from the loaded data
             data.CalculateMetrics();
             // Set PaletteOverrideKey for variant generator until I figure out a better way to do this
@@ -732,6 +735,17 @@ namespace PokemonRandomizer.Backend.Reading
                 }
             }
             return data;
+        }
+
+        private Script ReadSetBerryTreeScript(Rom rom, XmlManager info, RomMetadata metadata)
+        {
+            // Read the set berry tre script (if applicable)
+            int offset = info.FindOffset(ElementNames.setBerryTreeScript, rom);
+            if (offset != Rom.nullPointer)
+            {
+                return scriptParser.Parse(rom, offset, metadata);
+            }
+            return null;
         }
     }
 }

@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using PokemonRandomizer.Backend.Scripting.GenIII;
 using PokemonRandomizer.Backend.Utilities.Debug;
+using PokemonRandomizer.Backend.DataStructures.Scripts;
 
 namespace PokemonRandomizer.Backend.Writing
 {
@@ -54,6 +55,7 @@ namespace PokemonRandomizer.Backend.Writing
             mapWriter.WriteMapData(data, rom, info, metadata);
             WriteItemData(data.ItemData, rom, info);
             WritePickupData(data.PickupItems, rom, info, metadata);
+            WriteSetBerryTreeScript(data.SetBerryTreeScript, rom, info, metadata);
             // Special Pokemon
             // Write the starter pokemon
             WriteStarters(data, rom, info);
@@ -804,6 +806,16 @@ namespace PokemonRandomizer.Backend.Writing
                     rom.WriteUInt16(item.chance);
                 }
             }
+        }
+
+        private void WriteSetBerryTreeScript(Script script, Rom rom, XmlManager info, RomMetadata metadata)
+        {
+            if (script == null)
+                return;
+            int offset = info.FindOffset(ElementNames.setBerryTreeScript, rom);
+            if (offset == Rom.nullPointer)
+                return;
+            scriptWriter.Write(script, rom, offset, metadata);
         }
 
         public class RepointList : List<(int, int)>

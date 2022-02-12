@@ -308,6 +308,10 @@ namespace PokemonRandomizer.AppSettings
         public override double PickupItemRandChance => RandomChance(itemData.RandomizePickupItems, itemData.PickupItemRandChance);
         public override ItemRandomizer.Settings PickupItemSettings => itemData.PickupItemSettings;
 
+        public override double BerryTreeRandChance => RandomChance(miscData.RandomizeBerryTrees, miscData.BerryTreeRandomizationChance);
+        public override bool BanMinigameBerries => miscData.BanMinigameBerries;
+        public override bool BanEvBerries => miscData.BanEvBerries;
+
         #endregion
 
         #region Dream Team

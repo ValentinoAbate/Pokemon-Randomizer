@@ -59,6 +59,12 @@ namespace PokemonRandomizer.Backend.Writing
                     case ShopCommand shopCommand:
                         WriteShopCommand(rom, shopCommand);
                         break;
+                    case SetBerryTreeCommand setBerryTreeCommand:
+                        rom.WriteByte(Gen3Command.setberrytree);
+                        rom.WriteByte(setBerryTreeCommand.treeId);
+                        rom.WriteByte((byte)((setBerryTreeCommand.berry + 1) - Item.Cheri_Berry));
+                        rom.WriteByte(setBerryTreeCommand.unknown);
+                        break;
                     case Gen3Command gen3Command:
                         rom.WriteByte(gen3Command.code);
                         foreach(var arg in gen3Command.args)

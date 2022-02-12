@@ -155,6 +155,7 @@
     <itemEvents spriteSetIndex="59"/>
     <pickupItems pointer="0x055DF4" num="18"/>
     <pickupRareItems pointer="0x055D2C" num="11"/>
+    <setBerryTreeScript offset="0x27149D"/>
     
     <!-- from dabomstew's UP randomizer source https://github.com/Dabomstew/universal-pokemon-randomizer -->
     <starterItems offset="0xB117A"/>

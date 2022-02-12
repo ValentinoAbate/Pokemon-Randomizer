@@ -1,4 +1,5 @@
-﻿using PokemonRandomizer.Backend.EnumTypes;
+﻿using PokemonRandomizer.Backend.DataStructures.Scripts;
+using PokemonRandomizer.Backend.EnumTypes;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -80,6 +81,8 @@ namespace PokemonRandomizer.Backend.DataStructures
         public Move[] HMMoves;
         public Move[] tutorMoves;
         #endregion
+
+        public Script SetBerryTreeScript { get; set; }
 
         public int[] RivalRemap { get; set; }
 
