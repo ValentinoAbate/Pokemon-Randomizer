@@ -313,6 +313,7 @@ namespace PokemonRandomizer
         public abstract double BerryTreeRandChance { get; }
         public abstract bool BanMinigameBerries { get; }
         public abstract bool BanEvBerries { get; }
+        public abstract bool RemapBerries { get; }
 
         #endregion
 

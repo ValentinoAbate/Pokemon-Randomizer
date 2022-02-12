@@ -909,12 +909,62 @@ namespace PokemonRandomizer.Backend.Randomization
             {
                 berries.RemoveAll(i => i.ItemCategories.HasFlag(ItemData.Categories.MinigameBerry));
             }
-            // Randomize berry tree commands
-            foreach (var command in data.SetBerryTreeScript)
+            if (s.RemapBerries)
             {
-                if (command is SetBerryTreeCommand berryTreeCommand && rand.RollSuccess(s.BerryTreeRandChance))
+                var berrySet = berries.Select(i => i.Item).ToHashSet();
+                var map = new Dictionary<Item, Item>(berrySet.Count);
+                // Construct Remapping
+                foreach (var command in data.SetBerryTreeScript)
                 {
-                    berryTreeCommand.berry = rand.Choice(berries).Item;
+                    if (command is SetBerryTreeCommand berryTreeCommand && !map.ContainsKey(berryTreeCommand.berry))
+                    {
+                        var berry = berryTreeCommand.berry;
+                        if (rand.RollSuccess(s.BerryTreeRandChance))
+                        {
+                            bool addBack = berrySet.Contains(berry);
+                            if (addBack)
+                            {
+                                berrySet.Remove(berry);
+                            }
+                            if(berrySet.Count > 0)
+                            {
+                                var newBerry = rand.Choice(berrySet);
+                                map.Add(berry, newBerry);
+                                berrySet.Remove(newBerry);
+                                if (addBack)
+                                {
+                                    berrySet.Add(berry);
+                                }
+                            }
+                            else
+                            {
+                                map.Add(berryTreeCommand.berry, berryTreeCommand.berry);
+                            }
+                        }
+                        else
+                        {
+                            map.Add(berryTreeCommand.berry, berryTreeCommand.berry);
+                        }
+                    }
+                }
+                // Perform remap
+                foreach (var command in data.SetBerryTreeScript)
+                {
+                    if (command is SetBerryTreeCommand berryTreeCommand && map.ContainsKey(berryTreeCommand.berry))
+                    {
+                        berryTreeCommand.berry = map[berryTreeCommand.berry];
+                    }
+                }
+            }
+            else
+            {
+                // Randomize berry tree commands
+                foreach (var command in data.SetBerryTreeScript)
+                {
+                    if (command is SetBerryTreeCommand berryTreeCommand && rand.RollSuccess(s.BerryTreeRandChance))
+                    {
+                        berryTreeCommand.berry = rand.Choice(berries).Item;
+                    }
                 }
             }
         }

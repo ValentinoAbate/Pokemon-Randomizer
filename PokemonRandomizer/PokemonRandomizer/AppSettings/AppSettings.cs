@@ -311,6 +311,7 @@ namespace PokemonRandomizer.AppSettings
         public override double BerryTreeRandChance => RandomChance(miscData.RandomizeBerryTrees, miscData.BerryTreeRandomizationChance);
         public override bool BanMinigameBerries => miscData.BanMinigameBerries;
         public override bool BanEvBerries => miscData.BanEvBerries;
+        public override bool RemapBerries => miscData.RemapBerries;
 
         #endregion
 

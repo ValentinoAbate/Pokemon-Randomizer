@@ -15,5 +15,6 @@
         public Box<double> BerryTreeRandomizationChance { get; set; } = new Box<double>(1);
         public Box<bool> BanEvBerries { get; set; } = new Box<bool>(false);
         public Box<bool> BanMinigameBerries { get; set; } = new Box<bool>(true);
+        public Box<bool> RemapBerries { get; set; } = new Box<bool>(true);
     }
 }

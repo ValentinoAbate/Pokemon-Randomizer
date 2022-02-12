@@ -446,6 +446,7 @@ namespace PokemonRandomizer.AppSettings
         public override double BerryTreeRandChance => 1;
         public override bool BanMinigameBerries => true;
         public override bool BanEvBerries => false;
+        public override bool RemapBerries => true;
 
         #endregion
 

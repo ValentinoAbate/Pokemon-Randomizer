@@ -29,6 +29,7 @@ namespace PokemonRandomizer.UI.Views
                 var berryStack = stack.Add(berryRand.BindEnabled(new StackPanel{ Orientation = Orientation.Horizontal }));
                 berryStack.Add(new BoundCheckBoxUI(model.BanEvBerries, "Ban EV Berries") { ToolTip = "Prevent EV-Lowering berries from appearing in randomized berry trees" });
                 berryStack.Add(new BoundCheckBoxUI(model.BanMinigameBerries, "Ban Pokéblock / Minigame Berries") { ToolTip = "Prevent Pokéblock / Minigame berries from appearing in randomized berry trees" });
+                berryStack.Add(new BoundCheckBoxUI(model.RemapBerries, "Remap Berry Trees Global One-To-One") { ToolTip = "If checked, all berry trees of a certain type will randomize to the same new type" });
             }
             else if (metadata.IsFireRed)
             {
