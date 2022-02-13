@@ -546,13 +546,31 @@ namespace PokemonRandomizer.Backend.Scripting.GenIII
             {0x09, word2Pointer2},
         };
 
+        public int Size
+        {
+            get
+            {
+                int size = 1;
+                foreach (var arg in args)
+                {
+                    size += arg.type switch
+                    {
+                        Arg.Byte => 1,
+                        Arg.Word => 2,
+                        Arg.Long or Arg.Pointer => 4,
+                        _ => throw new System.NotImplementedException(),
+                    };
+                }
+                return size;
+            }
+        }
+
         public byte code;
         public List<Argument> args = new List<Argument>(8);
 
         public int ArgData(int index) => args[index].data;
         public struct Argument 
         { 
-
             public int data;
             public readonly Arg type;
 
