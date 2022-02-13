@@ -20,9 +20,9 @@ namespace PokemonRandomizer.Backend.DataStructures
         /// <summary>The byte that WriteInFreeSpace(byte[] data) considers free space </summary>
         public byte FreeSpaceByte { get; }
         /// <summary>The offset that WriteInFreeSpace(byte[] data) starts searching at </summary>
-        public int SearchStartOffset { get; }
+        private int SearchStartOffset { get; set; }
         /// <summary>The byte that WriteInFreeSpace(byte[] data) can explicitly consider not to be free space</summary>
-        public byte PaddingByte { get; }
+        private byte PaddingByte { get; }
         public int InternalOffset { get; private set; }
         public Stack<int> SavedOffsets { get; } = new Stack<int>();
         public int Length { get => File.Length; }
@@ -109,46 +109,61 @@ namespace PokemonRandomizer.Backend.DataStructures
 
         #region Free Space and Hacking Utils
         /// <summary>Scans for the first open block of free space above a certain size (in bytes).
-        /// Returns null if no big enough block is found, else returns the offset of the block</summary>
-        public int? FindFreeSpaceOffset(int? startAddy = null, int minSize = 10000)
+        /// Returns null if no big enough block is found, else returns the offset of the block
+        /// If reserve is true and a valid block is found, the space will be reserved and will no longer be considered to be free</summary>
+        public int? FindFreeSpaceOffset(int minSize, bool reserve = true)
         {
-            return FindFreeSpaceOffset(FreeSpaceByte, startAddy, minSize);
+            var offset = FindFreeSpaceOffset(FreeSpaceByte, SearchStartOffset, minSize);
+            if(reserve && offset.HasValue)
+            {
+                UpdateSearchStartOffset(offset.Value + minSize + 1);
+            }
+            return offset;
         }
+
         /// <summary>Scans for the first open block of free space above a certain size (in bytes).
         /// Returns null if no big enough block is found, else returns the offset of the block</summary>
-        private int? FindFreeSpaceOffset(byte freeSpace, int? startAddy = null, int minSize = 10000)
+        private int? FindFreeSpaceOffset(byte freeSpace, int startAddy, int minSize)
         {
-            for (int offset = startAddy ?? SearchStartOffset; offset < File.Length; ++offset)
+            for (int offset = startAddy; offset < File.Length; ++offset)
             {
                 if (File[offset] != freeSpace || offset % 4 != 0)
                     continue;
                 int start = offset;
                 while (++offset < File.Length && File[offset] == freeSpace)
+                {
                     if (offset - start >= minSize)
                         return start;
+                }
             }
             return null;
         }
         /// <summary> <para>Write a chunk of data into the first availible block of free space. </para>
         /// <para>Uses the offset "SearchStartOffset" and the  byte "FreeSpaceByte" which are set in the Rom constructor</para> 
         /// Returns null if no big enough block is found, else returns the ROM offset of the block </summary>
-        public int? WriteInFreeSpace(byte[] data, int? startOffset = null)
+        public int? WriteInFreeSpace(byte[] data)
         {
             if(data.Length <=0)
                 return null;
+            // Padding calculations
             bool lastByteIsFreeSpace = data[data.Length - 1] == FreeSpaceByte;
-            int? blockOffset = FindFreeSpaceOffset(FreeSpaceByte, startOffset, lastByteIsFreeSpace ? data.Length + 1 : data.Length);
+            int dataLength = lastByteIsFreeSpace ? data.Length + 1 : data.Length;
+            // Find free space block and reserve it (if availible)
+            int? blockOffset = FindFreeSpaceOffset(dataLength);
             if (blockOffset == null)
                 return null;
-            Array.Copy(data, 0, File, (int)blockOffset, data.Length);
+            // Write the data to the block
+            Array.Copy(data, 0, File, blockOffset.Value, data.Length);
+            // If padding was needed, add the padding
             if (lastByteIsFreeSpace)
             {
-                WriteByte((int)blockOffset + data.Length, PaddingByte);
+                WriteByte(blockOffset.Value + data.Length, PaddingByte);   
             }
             return blockOffset;
         }
         /// <summary> Repoint all pointers to an offset to a target offset. 
         /// Argument given is assumed to be a 24-bit ROM address, and is converted to a 32-bit RAM address</summary>
+        [Obsolete("Performing an individual repoint is very inefficient. Please use the RepointMany function instead")]
         public void Repoint(int originalOffset, int newOffset)
         {
             //The offset with the ramOffset component
@@ -174,9 +189,13 @@ namespace PokemonRandomizer.Backend.DataStructures
                 {
                     int ptrValue = ReadPointer(i);
                     if (locations.ContainsKey(ptrValue))
+                    {
                         locations[ptrValue].Add(i);
+                    }
                     else
+                    {
                         locations.Add(ptrValue, new List<int>() { i });
+                    }
                 }
             }
             // Preform repoints
@@ -190,13 +209,14 @@ namespace PokemonRandomizer.Backend.DataStructures
             }
         }
 
-        public int? WriteInFreeSpaceAndRepoint(byte[] data, int originalOffset, int? startOffset = null)
+        // Used to update the free space search start offset after writing to free space
+        // This ensures that data written in free space doesn't get overwritten by new data
+        private void UpdateSearchStartOffset(int newOffset)
         {
-            var newOffset = WriteInFreeSpace(data, startOffset);
-            if (newOffset == null)
-                return null;
-            Repoint(originalOffset, (int)newOffset);
-            return newOffset;
+            if(newOffset > SearchStartOffset)
+            {
+                SearchStartOffset = newOffset;
+            }
         }
 
         /// <summary> Set entire block to a given byte value at Internal offset</summary>
