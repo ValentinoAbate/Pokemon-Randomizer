@@ -24,7 +24,9 @@ namespace PokemonRandomizer.Backend.Randomization
         private readonly MoveCompatibilityRandomizer compatRand;
         private readonly PokemonVariantRandomizer variantRand;
         private readonly BonusMoveGenerator bonusMoveGenerator;
+        private readonly WeatherRandomizer weatherRand;
         private readonly List<Action> delayedRandomizationCalls;
+        private readonly ScriptRandomizer scriptRand;
 
         /// <summary>
         /// Create a new randomizer with given data and settings
@@ -51,7 +53,9 @@ namespace PokemonRandomizer.Backend.Randomization
             compatRand = new MoveCompatibilityRandomizer(rand, data);
             bonusMoveGenerator = new BonusMoveGenerator(rand, data, settings);
             variantRand = new PokemonVariantRandomizer(rand, data, bonusMoveGenerator, data.PaletteOverrideKey);
+            weatherRand = new WeatherRandomizer(rand);
             delayedRandomizationCalls = new List<Action>();
+            scriptRand = new ScriptRandomizer(rand, pokeRand, itemRand, data, delayedRandomizationCalls);
         }
         // Apply mutations based on program settings.
         public RomData Randomize()
@@ -504,52 +508,13 @@ namespace PokemonRandomizer.Backend.Randomization
             #endregion
 
             #region Maps
-            void RandomizeScript(Script script)
+            var scriptRandomizationArgs = new ScriptRandomizer.Args
             {
-                foreach (var command in script)
-                {
-                    switch (command)
-                    {
-                        case GotoCommand @goto:
-                            RandomizeScript(@goto.script);
-                            break;
-                        case GivePokedexCommand givePokedex:
-                            if (settings.StartWithNationalDex)
-                            {
-                                givePokedex.Type = GivePokedexCommand.PokedexType.National;
-                            }
-                            break;
-                        case GiveItemCommand giveItem:
-                            if (giveItem.type == GiveItemCommand.Type.Normal && rand.RollSuccess(settings.FieldItemRandChance))
-                            {
-                                delayedRandomizationCalls.Add(() => giveItem.item = itemRand.RandomItem(items, giveItem.item, settings.FieldItemSettings));
-                            }
-                            break;
-                        case GivePokemonCommand givePokemon:
-                            if(givePokemon.type == GivePokemonCommand.Type.Normal && rand.RollSuccess(settings.GiftPokemonRandChance))
-                            {
-                                // Should choose from fossil set?
-                                bool fossil = settings.EnsureFossilRevivesAreFossilPokemon && fossilSet.Count > 0 && givePokemon.pokemon.IsFossil();
-                                givePokemon.pokemon = pokeRand.RandomPokemon(fossil ? fossilSet : pokemonSet, givePokemon.pokemon, settings.GiftSpeciesSettings, givePokemon.level);
-
-                            }
-                            break;
-                        case GiveEggCommand giveEgg:
-                            if(rand.RollSuccess(settings.GiftPokemonRandChance))
-                            {
-                                bool baby = settings.EnsureGiftEggsAreBabyPokemon && babySet.Count > 0;
-                                giveEgg.pokemon = pokeRand.RandomPokemon(baby ? babySet : pokemonSet, giveEgg.pokemon, settings.GiftSpeciesSettings, 1);
-                            }
-                            break;
-                        case ShopCommand shopCommand:
-                            if(settings.AddCustomItemToPokemarts && settings.CustomMartItem != Item.None && shopCommand.shop.items.Any(i => i == Item.Potion || i.IsPokeBall()))
-                            {
-                                shopCommand.shop.items.Add(settings.CustomMartItem);
-                            }
-                            break;
-                    }
-                }
-            }
+                babySet = babySet,
+                items = items,
+                pokemonSet = pokemonSet,
+                fossilSet = fossilSet,
+            };
             // Mutate Maps (currently just iterate though the maps, but may want to construct and traverse a graph later)
             foreach (var map in data.Maps)
             {
@@ -558,7 +523,7 @@ namespace PokemonRandomizer.Backend.Randomization
                     continue;
                 // Mutate Maps
                 // Mutate Weather
-                RandomizeWeather(map, settings);
+                weatherRand.RandomizeWeather(map, settings);
                 // Mutate tiles and layout (if applicable)
                 // Team magma/aqua/rocket takeover mode?
                 // Set metadata (environent, etc)
@@ -586,13 +551,14 @@ namespace PokemonRandomizer.Backend.Randomization
                         }
                     }
                 }
+                scriptRandomizationArgs.gymMetadata = map.IsGym ? new GymMetadata() : null;
                 // Randomize NPCs
                 foreach (var npc in map.eventData.npcEvents)
                 {
                     // Randomize NPC scripts
                     if(npc.script != null)
                     {
-                        RandomizeScript(npc.script);
+                        scriptRand.RandomizeScript(npc.script, settings, scriptRandomizationArgs);
                     }
                 }
                 //Mutate battle here later?
@@ -847,52 +813,6 @@ namespace PokemonRandomizer.Backend.Randomization
         }
 
         #endregion
-
-        private void RandomizeWeather(Map map, Settings s)
-        {
-            if (s.WeatherSetting == Settings.WeatherOption.Unchanged)
-                return;
-            // Local method to finish choosing the weather
-            void ChooseWeather(Map m, Settings s2, bool gymOverride)
-            {
-                var choices = new WeightedSet<Map.Weather>(s2.WeatherWeights);
-                // Always unsafe unless map is specifically layered for this weather
-                choices.RemoveIfContains(Map.Weather.ClearWithCloudsInWater);
-                if (s2.SafeUnderwaterWeather && !(m.mapType == Map.Type.Underwater))
-                {
-                    choices.RemoveIfContains(Map.Weather.UnderwaterMist);
-                }
-                if (!gymOverride && s2.SafeInsideWeather && !m.IsOutdoors)
-                {
-                    choices.RemoveIfContains(Map.Weather.Clear);
-                    choices.RemoveIfContains(Map.Weather.Cloudy);
-                    choices.RemoveIfContains(Map.Weather.Rain);
-                    choices.RemoveIfContains(Map.Weather.RainThunderstorm);
-                    choices.RemoveIfContains(Map.Weather.RainHeavyThunderstrorm);
-                    choices.RemoveIfContains(Map.Weather.Sandstorm);
-                    choices.RemoveIfContains(Map.Weather.Snow);
-                    choices.RemoveIfContains(Map.Weather.SnowSteady);
-                    choices.RemoveIfContains(Map.Weather.StrongSunlight);
-                }
-                if (choices.Count > 0)
-                    m.weather = rand.Choice(choices);
-            }
-            // If Gym override is set and the map is a gym, proceed with randomization
-            if (s.OverrideAllowGymWeather && map.battleField == 0x01)
-            {
-                if(rand.RollSuccess(s.GymWeatherRandChance))
-                {
-                    ChooseWeather(map, s, true);
-                }
-            }
-            else if((!s.OnlyChangeClearWeather || Map.IsWeatherClear(map.weather)) && s.WeatherRandChance.ContainsKey(map.mapType))
-            {
-                if(rand.RollSuccess(s.WeatherRandChance[map.mapType]))
-                {
-                    ChooseWeather(map, s, false);
-                }
-            }
-        }
 
         private void RandomizeBerryTress(Script berryTreeScript, Settings s, IEnumerable<ItemData> allItems)
         {

@@ -1,6 +1,7 @@
-﻿namespace PokemonRandomizer.Backend.EnumTypes
+﻿using PokemonRandomizer.Backend.EnumTypes;
+
+namespace PokemonRandomizer.Backend.DataStructures
 {
-    using DataStructures;
     public interface IDataTranslator
     {
         public PokemonBaseStats GetBaseStats(Pokemon p);
@@ -8,5 +9,7 @@
         public ItemData GetItemData(Item i);
 
         public MoveData GetMoveData(Move m);
+
+        public Trainer GetTrainer(int trainerIndex);
     }
 }

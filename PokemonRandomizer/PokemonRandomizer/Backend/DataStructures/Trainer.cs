@@ -19,9 +19,12 @@ namespace PokemonRandomizer.Backend.DataStructures
         public const int nameLength = 12;
         // The all of the class names (mostly for debugging)
         public List<string> classNames;
-        public string Class { get => trainerClass < classNames.Count ? classNames[trainerClass] : nullName; }
-        public double AvgLvl { get => pokemon.Length > 0 ? pokemon.Average((p) => p.level) : 0; }
-        // Actual data
+        public string Class => trainerClass < classNames.Count ? classNames[trainerClass] : nullName;
+        public double AvgLvl => pokemon.Length > 0 ? pokemon.Average((p) => p.level) : 0;
+        public bool IsGymLeader => Class.ToLower() == "leader";
+
+        public GymMetadata GymMetadata { get; set; }
+
         public int offset;
         public TrainerPokemon.DataType dataType;
         public TrainerPokemon[] pokemon;
@@ -34,6 +37,7 @@ namespace PokemonRandomizer.Backend.DataStructures
         public bool isDoubleBattle;
         public BitArray AIFlags;
         public int pokemonOffset;
+
         // Read a trainer from the rom's internal offset
         public Trainer(Rom rom, List<string> classNames)
         {
@@ -151,18 +155,12 @@ namespace PokemonRandomizer.Backend.DataStructures
 
         public override string ToString()
         {
-            return Class + " " + name;
+            var str = $"{Class} {name}";
+            if(GymMetadata != null && !IsGymLeader)
+            {
+                str += $" (GYM TRAINER)";
+            }
+            return str;
         }
-
-        //Commented code below from Dabomstew's Universal Randomizer source. Thanks Dabomstew!
-
-        //TrainerTable=310030
-        //NumberOfTrainers=854
-        //TrainerClasses=30FCD4
-        //NumberOfTrainerClasses = 66
-        //TrainerImageTable=305654
-        //NumberOfTrainerImages=92
-        //TrainerPaletteTable=30593C
-        //TrainerMoneyTable = 31AEB8
     }
 }

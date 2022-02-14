@@ -42,11 +42,6 @@
                 (w == Weather.SnowSteady && hailHack.HasFlag(Settings.HailHackOption.SteadySnow));
         }
 
-        public static bool IsWeatherClear(Weather w)
-        {
-            return w == Weather.Clear || w == Weather.Cloudy || w == Weather.House;
-        }
-
 
         // Header data!
 
@@ -165,6 +160,10 @@
         public string Name { get; set; }
 
         public bool IsOutdoors => mapType == Type.Route || mapType == Type.City || mapType == Type.Village;
+
+        public bool IsGym => battleField == 0x01;
+
+        public bool HasClearWeather => weather == Weather.Clear || weather == Weather.Cloudy || weather == Weather.House;
 
         public override string ToString()
         {

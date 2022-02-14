@@ -98,6 +98,7 @@ namespace PokemonRandomizer.Backend.DataStructures
         public PokemonBaseStats GetBaseStats(Pokemon p) => PokemonLookup[p];
         public MoveData GetMoveData(Move m) => MoveData[(int)m];
         public ItemData GetItemData(Item i) => ItemData[(int)i];
+        public Trainer GetTrainer(int trainerIndex) => Trainers[trainerIndex];
 
         // updates the metrics from the current data
         public void CalculateMetrics()
