@@ -279,6 +279,7 @@ namespace PokemonRandomizer
             MainMenu.IsEnabled = enabled;
             MainTabControl.IsEnabled = enabled;
         }
+
         private void PauseUIAndRunInBackground(string progressMsg, Action work, Action onSuccess, Action<Exception> onError)
         {
             SetUIEnabled(false);
@@ -372,12 +373,27 @@ namespace PokemonRandomizer
             {
                 SaveFile(saveFileDialog.FileName, "Rom", fileFn, File.WriteAllBytes, message, onComplete);     
             }
+            else
+            {
+                onComplete?.Invoke(false);
+            }
+        }
+
+        private void ReenableUIOnFailure(bool success)
+        {
+            if (!success)
+            {
+                SetUIEnabled(true);
+            }
         }
 
         private void PostRandomizationUIFlow(bool success)
         {
             if (!success)
+            {
+                SetUIEnabled(true);
                 return;
+            }
             //void AskToSaveSetttingsFile(bool success)
             //{
             //    var promptWindow = new PromptWindow()
@@ -414,7 +430,7 @@ namespace PokemonRandomizer
                 
                 if (UseHardCodedSettings)
                 {
-                    WriteRom(() => GetRandomizedRom(inputWindow.Output), randomizingProgressMessage);
+                    WriteRom(() => GetRandomizedRom(inputWindow.Output), randomizingProgressMessage, ReenableUIOnFailure);
                 }
                 else
                 {
