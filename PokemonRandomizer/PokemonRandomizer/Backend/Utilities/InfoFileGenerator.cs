@@ -1,6 +1,7 @@
 ﻿using PokemonRandomizer.Backend.DataStructures;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace PokemonRandomizer.Backend.Utilities
 {
@@ -71,10 +72,13 @@ namespace PokemonRandomizer.Backend.Utilities
                 lines.Add(pkmn.ToString());
             }
 
-            Header(ref lines, "Pokémon Moveset List");
+            Header(ref lines, "Pokémon Moveset and TM/Tutor Compatibility List");
             foreach (var pkmn in pkmnSorted)
             {
-                lines.Add($"{NameFormatted(pkmn)}| {pkmn.learnSet.ToString()}");
+                SubHeader(ref lines, NameFormatted(pkmn));
+                lines.Add($"Level Up: {pkmn.learnSet.ToString()}");
+                lines.Add($"TM: {TMCompatibility(pkmn, data)}");
+                lines.Add($"Tutor: {TutorCompatibility(pkmn, data)}");
             }
 
             Header(ref lines, "Evolution Info");
@@ -85,6 +89,38 @@ namespace PokemonRandomizer.Backend.Utilities
                     lines.Add($"{NameFormatted(pkmn)}| {string.Join(", ", pkmn.evolvesTo.Where(e => e.IsRealEvolution))}");
                 }
             }
+        }
+
+        private static string TMCompatibility(PokemonBaseStats pkmn, RomData data)
+        {
+            var str = new StringBuilder();
+            for (int i = 0; i < pkmn.TMCompat.Count && i < data.TMMoves.Length; i++)
+            {
+                if (!pkmn.TMCompat[i])
+                    continue;
+                if(str.Length > 0)
+                {
+                    str.Append(", ");
+                }
+                str.Append($"TM{i + 1} {data.TMMoves[i].ToDisplayString()}");
+            }
+            return str.Length > 0 ? str.ToString() : "None";
+        }
+
+        private static string TutorCompatibility(PokemonBaseStats pkmn, RomData data)
+        {
+            var str = new StringBuilder();
+            for (int i = 0; i < pkmn.moveTutorCompat.Count && i < data.tutorMoves.Length; i++)
+            {
+                if (!pkmn.moveTutorCompat[i])
+                    continue;
+                if (str.Length > 0)
+                {
+                    str.Append(", ");
+                }
+                str.Append(data.tutorMoves[i].ToDisplayString());
+            }
+            return str.Length > 0 ? str.ToString() : "None";
         }
 
         private static string NameFormatted(PokemonBaseStats pkmn)
