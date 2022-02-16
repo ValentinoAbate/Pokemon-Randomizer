@@ -63,7 +63,7 @@ namespace PokemonRandomizer.Backend.Randomization
         /// Returns 1 if single typed and the other is the same single type, or 0.8</summary>
         private static float TypeSimilarity(PokemonBaseStats self, PokemonBaseStats other)
         {
-            if (self.OriginallySingleType)
+            if (self.OriginallySingleTyped)
             {
                 return other.IsType(self.OriginalPrimaryType) ? 1 : 0;
             }
@@ -79,7 +79,7 @@ namespace PokemonRandomizer.Backend.Randomization
             foreach(var p in pokemon)
             {
                 set.Add(p.OriginalPrimaryType);
-                if (!p.OriginallySingleType)
+                if (!p.OriginallySingleTyped)
                 {
                     set.Add(p.OriginalSecondaryType);
                 }

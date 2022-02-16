@@ -14,6 +14,7 @@ namespace PokemonRandomizer.Backend.DataStructures
         #region Helper Properties
 
         public bool IsSingleTyped => types[0] == types[1];
+        public bool IsDualTyped => types[0] != types[1];
         public bool IsLegendary => species.IsLegendary();
         public bool HasRealEvolution => evolvesTo.Count(e => e.IsRealEvolution) > 0;
         public bool IsBasicOrEvolvesFromBaby => IsBasic || EvolvesFromBaby;
@@ -79,7 +80,8 @@ namespace PokemonRandomizer.Backend.DataStructures
 
         #region Types
 
-        public bool OriginallySingleType => OriginalPrimaryType == OriginalSecondaryType;
+        public bool OriginallySingleTyped => OriginalPrimaryType == OriginalSecondaryType;
+        public bool OriginallyDualTyped => OriginalPrimaryType != OriginalSecondaryType;
         public PokemonType OriginalPrimaryType
         {
             get => OriginalTypes[0];

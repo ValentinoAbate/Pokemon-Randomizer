@@ -247,7 +247,8 @@ namespace PokemonRandomizer.Backend.DataStructures
             { Move.GROWTH, new PokemonType[] { PokemonType.GRS } },
             { Move.SWEET_SCENT, new PokemonType[] { PokemonType.GRS } },
             { Move.MEAN_LOOK, new PokemonType[] { PokemonType.GHO } },
-            { Move.CURSE, new PokemonType[] { PokemonType.GHO } }
+            { Move.CURSE, new PokemonType[] { PokemonType.GHO } },
+            { Move.POISONPOWDER, new PokemonType[] { PokemonType.GRS, PokemonType.PSN } }
         };
 
         public bool IsType(PokemonType t)
@@ -268,15 +269,11 @@ namespace PokemonRandomizer.Backend.DataStructures
         }
         public bool IsType(PokemonBaseStats pokemon)
         {
-            if (IsType(pokemon.PrimaryType))
-                return true;
-            return pokemon.IsSingleTyped ? false : IsType(pokemon.SecondaryType);
+            return IsType(pokemon.PrimaryType) || (pokemon.IsDualTyped && IsType(pokemon.SecondaryType));
         }
         public bool IsOriginalType(PokemonBaseStats pokemon)
         {
-            if (IsType(pokemon.OriginalPrimaryType))
-                return true;
-            return pokemon.OriginallySingleType ? false : IsType(pokemon.OriginalSecondaryType);
+            return IsType(pokemon.OriginalPrimaryType) || (pokemon.OriginallyDualTyped && IsType(pokemon.OriginalSecondaryType));
         }
 
         // Data structure documentation: https://bulbapedia.bulbagarden.net/wiki/Move_data_structure_in_Generation_III

@@ -205,7 +205,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 evolvedPokemon.PrimaryType = pokemon.PrimaryType;
                 evolvedPokemon.SecondaryType = pokemon.SecondaryType;
             }
-            else if (pokemon.OriginallySingleType) // Pattern is either single replacement, gain type, or double replacement
+            else if (pokemon.OriginallySingleTyped) // Pattern is either single replacement, gain type, or double replacement
             {
                 // base pokemon was single typed, and evolved pokemon is a different single type (single replacement)
                 // E.g azurill -> marill
@@ -1524,7 +1524,7 @@ namespace PokemonRandomizer.Backend.Randomization
             {
                 get
                 {
-                    if (pokemon.OriginallySingleType)
+                    if (pokemon.OriginallySingleTyped)
                     {
                         return TransformationType switch
                         {
@@ -1553,7 +1553,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 get
                 {
                     // If the pokemon wasn't originally single type or is currently single types, no gained types
-                    if (!pokemon.OriginallySingleType || pokemon.IsSingleTyped)
+                    if (!pokemon.OriginallySingleTyped || pokemon.IsSingleTyped)
                         return Enumerable.Empty<PokemonType>();
                     return new PokemonType[] { TransformationType == TypeTransformation.GainPrimaryType ? pokemon.PrimaryType : pokemon.SecondaryType };
                 }
