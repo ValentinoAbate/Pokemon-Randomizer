@@ -33,7 +33,7 @@ namespace PokemonRandomizer.Backend.Utilities
                 foreach(var kvp in data.RandomizationResults)
                 {
                     SubHeader(ref lines, kvp.Key);
-                    lines.AddRange(kvp.Value);
+                    lines.Add(string.Join(", ", kvp.Value));
                 }
             }
 

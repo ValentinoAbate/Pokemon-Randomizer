@@ -161,6 +161,11 @@ namespace PokemonRandomizer.Backend.Randomization
                 if (settings.PreventDuplicateTMsAndTutors)
                     moves.Remove(data.TMMoves[i]);
             }
+            // Log results
+            if (settings.TMRandChance > 0)
+            {
+                data.RandomizationResults.Add("TM Moves", data.TMMoves.Select(EnumUtils.ToDisplayString).ToList());
+            }
             // Randomize Move Tutor mappings
             for (int i = 0; i < data.tutorMoves.Length; ++i)
             {
@@ -170,6 +175,11 @@ namespace PokemonRandomizer.Backend.Randomization
                     data.tutorMoves[i] = rand.Choice(moves);
                 if (settings.PreventDuplicateTMsAndTutors)
                     moves.Remove(data.tutorMoves[i]);
+            }
+            // Log results
+            if(settings.MoveTutorRandChance > 0)
+            {
+                data.RandomizationResults.Add("Move Tutors", data.tutorMoves.Select(EnumUtils.ToDisplayString).ToList());
             }
             // Remap TM Pallets
             tmInd = 0;
@@ -186,6 +196,7 @@ namespace PokemonRandomizer.Backend.Randomization
                     item.ReformatDescription = true;
                 }
             }
+            
             #endregion
 
             #region Item Definitions
