@@ -200,25 +200,28 @@ namespace PokemonRandomizer.Backend.Randomization
             #endregion
 
             #region Pokemon Base Attributes
-            var availableAddMoves = EnumUtils.GetValues<Move>().ToHashSet();
-            availableAddMoves.Remove(Move.None);
-            if(settings.BanSelfdestruct)
-            {
-                availableAddMoves.RemoveWhere(m => data.GetMoveData(m).IsSelfdestruct);
-            }
-            if(settings.DisableAddingHmMoves)
-            {
-                foreach (var move in data.HMMoves)
-                    availableAddMoves.Remove(move);
-            }
 
-            // Mutate Pokemon
+            // Evolution Line Pass
             foreach (PokemonBaseStats pokemon in data.Pokemon)
             {
-                if (pokemon.IsBasic && rand.RollSuccess(settings.VariantChance)) // || !pokemon.isBasic and not already a variant and chance
+                if (!pokemon.IsBasic)
+                    continue;
+                // Variant Generation
+                if (rand.RollSuccess(settings.VariantChance))
                 {
                     variantRand.CreateVariant(pokemon, settings.VariantSettings);
                 }
+                // Bonus Move Generation
+                if (settings.AddMoves && !pokemon.IsVariant && rand.RollSuccess(settings.AddMovesChance))
+                {
+                    int numMoves = rand.RandomGaussianPositiveNonZeroInt(settings.NumMovesMean, settings.NumMovesStdDeviation);
+                    bonusMoveGenerator.GenerateBonusMoves(pokemon, numMoves, settings.AddMoveSourceWeights);
+                }
+            }
+
+            // Individual Pokemon Pass
+            foreach (PokemonBaseStats pokemon in data.Pokemon)
+            {
 
                 #region Evolutions
                 // Fix Impossible Evolutions
@@ -318,35 +321,11 @@ namespace PokemonRandomizer.Backend.Randomization
                 }
                 #endregion
 
-                #region Types
-                // Mutate Pokemon Type
-                if (pokemon.IsSingleTyped)
-                {
-                    if (rand.RollSuccess(settings.SingleTypeRandChance))
-                    {
-                        pokemon.SetSingleType(rand.Choice(data.Metrics.TypeRatiosSingle));
-                    };
-                }
-                else
-                {
-                    if (rand.RollSuccess(settings.DualTypePrimaryRandChance))
-                        pokemon.PrimaryType = rand.Choice(data.Metrics.TypeRatiosDualPrimary);
-                    if (rand.RollSuccess(settings.DualTypeSecondaryRandChance))
-                        pokemon.SecondaryType = rand.Choice(data.Metrics.TypeRatiosDualSecondary);
-                }
-                #endregion
-
-                #region Learn Sets
-                if(settings.BanSelfdestruct)
+                // Selfdestruct ban
+                if (settings.BanSelfdestruct)
                 {
                     pokemon.learnSet.RemoveWhere(m => data.GetMoveData(m.move).IsSelfdestruct);
                 }
-                if(settings.AddMoves && pokemon.IsBasic && !pokemon.IsVariant && rand.RollSuccess(settings.AddMovesChance))
-                {
-                    int numMoves = rand.RandomGaussianPositiveNonZeroInt(settings.NumMovesMean, settings.NumMovesStdDeviation);
-                    bonusMoveGenerator.GenerateBonusMoves(pokemon, numMoves, settings.AddMoveSourceWeights);
-                }
-                #endregion
 
                 #region TM, HM, and Move tutor Compatibility
 
