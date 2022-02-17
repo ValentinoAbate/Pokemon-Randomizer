@@ -190,10 +190,6 @@ namespace PokemonRandomizer.Backend.Randomization
 
             #region Item Definitions
 
-            // Define Item Definitions
-            // Hack in new items if applicable
-            // Possible Hacks: Add GenIV items (some might not be possible), add fairy-related items
-            // Mutate item definitions
             // Modify Custom Shop Item Price (if applicable)
             if (settings.AddCustomItemToPokemarts && settings.OverrideCustomMartItemPrice && settings.CustomMartItem != Item.None)
             {
@@ -484,16 +480,6 @@ namespace PokemonRandomizer.Backend.Randomization
             }
             #endregion
 
-            #region Trainer Classes (NOTHING YET)
-            // Determine trainer class set
-            // Include FRLG classes in emerald (and vice-versa)?
-            // Mutate Trainer classes
-            // Theme: type?
-            // Theme: move strategy?
-            // Theme: hold item?
-            // Ace trainers have random theme?
-            #endregion
-
             #region Maps
             var scriptRandomizationArgs = new ScriptRandomizer.Args
             {
@@ -502,24 +488,14 @@ namespace PokemonRandomizer.Backend.Randomization
                 pokemonSet = pokemonSet,
                 fossilSet = fossilSet,
             };
-            // Mutate Maps (currently just iterate though the maps, but may want to construct and traverse a graph later)
+            // Randomize Maps (currently just iterate though the maps, but may want to construct and traverse a graph later)
             foreach (var map in data.Maps)
             {
                 // If the map names is empty, just continue
                 if (string.IsNullOrEmpty(map.Name))
                     continue;
-                // Mutate Maps
-                // Mutate Weather
+                // Randomize Weather
                 weatherRand.RandomizeWeather(map, settings);
-                // Mutate tiles and layout (if applicable)
-                // Team magma/aqua/rocket takeover mode?
-                // Set metadata (environent, etc)
-                // Mutate Trainers (should be per map later?)
-                // Set Trainer positions (and some base tags maybe) and add scripts
-                // Sleeper agents? (Random non-npc trainers become trainers)
-                // Set tags (gym trainer, gym leader, elite 4, rival, reoccuring, etc)
-                // Set class
-                // Natural trainers? (trainer types are based on environment type)
                 // Randomize Hidden Items
                 foreach(var sEvent in map.eventData.signEvents)
                 {
@@ -548,7 +524,6 @@ namespace PokemonRandomizer.Backend.Randomization
                         scriptRand.RandomizeScript(npc.script, settings, scriptRandomizationArgs);
                     }
                 }
-                //Mutate battle here later?
             }
             #endregion
 
@@ -729,7 +704,6 @@ namespace PokemonRandomizer.Backend.Randomization
                         {
                             data.PickupItems.Items[index] = itemRand.RandomItem(items, data.PickupItems.Items[index], settings.PickupItemSettings);
                         });
-                        //data.PickupItems.Items[i] = itemRand.RandomItem(items, data.PickupItems.Items[i], settings.PickupItemSettings);
                     }
                     for (int i = 0; i < data.PickupItems.RareItems.Count; i++)
                     {
@@ -738,7 +712,6 @@ namespace PokemonRandomizer.Backend.Randomization
                         {
                             data.PickupItems.RareItems[index] = itemRand.RandomItem(items, data.PickupItems.RareItems[index], settings.PickupItemSettings);
                         });
-                        //data.PickupItems.RareItems[i] = itemRand.RandomItem(items, data.PickupItems.RareItems[i], settings.PickupItemSettings);
                     }
                 }
             }
@@ -778,12 +751,6 @@ namespace PokemonRandomizer.Backend.Randomization
             //Start with all for now
             HashSet<Pokemon> pokemonSet = EnumUtils.GetValues<Pokemon>().ToHashSet();
             pokemonSet.Remove(Pokemon.None);
-            // Restrict pokemon if applicable
-            // Possible restrictions any combination of: GenI, GenI+ (GenI related pokemon from GenII, and/or possibly GenIV), GenII,
-            // GenII+ (GenII related from GenI, GenII and/or possilby GenIV), GenIII, GenIII+ (Gen II related pokemon from GenI and/or GenII
-            // Possibly other pkmn groups like starters, legendaries, maybe even arbitrary groups
-            // Hack in new pokemon if applicable
-            // Possible Hacks: Gen IV
             return pokemonSet;
         }
         /// <summary> Define and return the set of valid types (with applicable restrictions)</summary> 
