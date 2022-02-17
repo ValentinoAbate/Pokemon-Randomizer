@@ -28,15 +28,6 @@ namespace PokemonRandomizer.AppSettings
         /// Should the randomizer hack the ??? to make it usable with mooves (if possible)
         /// </summary>
         public override bool UseUnknownTypeForMoves => false;
-        /// <summary>
-        /// Should the randomizer override UNKNOWN (the pokemon)'s type to the ??? type?
-        /// </summary>
-        public override bool OverrideUnknownType => false;
-        /// <summary>
-        /// How often should the randomizer give UNKNOWN (the pokemon) a secondary type?
-        /// 0.0 - 1.0
-        /// </summary>
-        public override double UnknownDualTypeChance => 0.0;
 
         #endregion
 

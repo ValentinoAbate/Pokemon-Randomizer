@@ -386,16 +386,6 @@ namespace PokemonRandomizer.Backend.Randomization
                 #endregion
             }
 
-            // Set unknown typing if selected
-            if (settings.OverrideUnknownType)
-            {
-                var unknownPokeData = data.GetBaseStats(Pokemon.UNOWN);
-                unknownPokeData.types[0] = PokemonType.Unknown;
-                if (rand.RollSuccess(settings.UnknownDualTypeChance))
-                    unknownPokeData.types[1] = rand.Choice(data.Metrics.TypeRatiosDualSecondary);
-                else
-                    unknownPokeData.types[1] = PokemonType.Unknown;
-            }
             #endregion
 
             #region Starters
