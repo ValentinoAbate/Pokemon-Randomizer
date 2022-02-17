@@ -1,4 +1,6 @@
 ﻿using PokemonRandomizer.Backend.DataStructures;
+using PokemonRandomizer.Backend.EnumTypes;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -76,9 +78,10 @@ namespace PokemonRandomizer.Backend.Utilities
             foreach (var pkmn in pkmnSorted)
             {
                 SubHeader(ref lines, NameFormatted(pkmn));
-                lines.Add($"Level Up: {pkmn.learnSet.ToString()}");
-                lines.Add($"TM: {TMCompatibility(pkmn, data)}");
-                lines.Add($"Tutor: {TutorCompatibility(pkmn, data)}");
+                lines.Add($"Level Up: {pkmn.learnSet}");
+                lines.Add($"TM: {MoveCompatibility(pkmn.TMCompat, data.TMMoves, "TM")}");
+                lines.Add($"HM: {MoveCompatibility(pkmn.HMCompat, data.HMMoves, "HM")}");
+                lines.Add($"Tutor: {MoveCompatibility(pkmn.moveTutorCompat, data.tutorMoves)}");
             }
 
             Header(ref lines, "Evolution Info");
@@ -91,34 +94,26 @@ namespace PokemonRandomizer.Backend.Utilities
             }
         }
 
-        private static string TMCompatibility(PokemonBaseStats pkmn, RomData data)
+        private static string MoveCompatibility(BitArray compat, Move[] moves, string name = null)
         {
             var str = new StringBuilder();
-            for (int i = 0; i < pkmn.TMCompat.Count && i < data.TMMoves.Length; i++)
+            for (int i = 0; i < compat.Count && i < moves.Length; i++)
             {
-                if (!pkmn.TMCompat[i])
-                    continue;
-                if(str.Length > 0)
-                {
-                    str.Append(", ");
-                }
-                str.Append($"TM{i + 1} {data.TMMoves[i].ToDisplayString()}");
-            }
-            return str.Length > 0 ? str.ToString() : "None";
-        }
-
-        private static string TutorCompatibility(PokemonBaseStats pkmn, RomData data)
-        {
-            var str = new StringBuilder();
-            for (int i = 0; i < pkmn.moveTutorCompat.Count && i < data.tutorMoves.Length; i++)
-            {
-                if (!pkmn.moveTutorCompat[i])
+                if (!compat[i])
                     continue;
                 if (str.Length > 0)
                 {
                     str.Append(", ");
                 }
-                str.Append(data.tutorMoves[i].ToDisplayString());
+                if (!string.IsNullOrEmpty(name))
+                {
+                    str.Append($"{name}{i + 1} {moves[i].ToDisplayString()}");
+                }
+                else
+                {
+                    str.Append(moves[i].ToDisplayString());
+
+                }
             }
             return str.Length > 0 ? str.ToString() : "None";
         }
