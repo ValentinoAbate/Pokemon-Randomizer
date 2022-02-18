@@ -12,9 +12,10 @@ namespace PokemonRandomizer.Backend.Utilities
         private const string divider = "===============================================================================================================================================";
         private const string subdivider = "---------------------------------------------------------------------------------------------------------------------------------------";
         private const string unrandomized = "None (unrandomized)";
+        private const int headerLines = 5;
         public string[] GenerateInfoFile(RomData data, RomMetadata metadata, string settingsString = null)
         {
-            var lines = new List<string>(1000);
+            var lines = new List<string>((data.Pokemon.Count * 9) + (data.RandomizationResults.Count * 4) + (headerLines * 6) + 5);
             Header(ref lines, "Randomizer Info");
             lines.Add($"Randomizer Version : {MainWindow.version}");
             lines.Add($"Seed               : {(string.IsNullOrEmpty(data.Seed) ? unrandomized : data.Seed)}");
