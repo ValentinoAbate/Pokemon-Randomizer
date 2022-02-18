@@ -27,12 +27,31 @@ namespace PokemonRandomizer.Backend.Randomization
 
         public void RandomizeScript(Script script, Settings settings, Args args)
         {
+            var itemMap = new Dictionary<Item, List<GiveItemCommand>>(4);
+            RandomizeScript(script, settings, args, itemMap);
+            foreach(var kvp in itemMap)
+            {
+                delayedRandomizationCalls.Add(() => RemapItems(kvp.Key, kvp.Value, settings, args));
+            }
+        }
+
+        private void RemapItems(Item oldItem, IEnumerable<GiveItemCommand> commands, Settings settings, Args args)
+        {
+            var newItem = itemRand.RandomItem(args.items, oldItem, settings.FieldItemSettings);
+            foreach(var command in commands)
+            {
+                command.item = newItem;
+            }
+        }
+
+        private void RandomizeScript(Script script, Settings settings, Args args, Dictionary<Item, List<GiveItemCommand>> itemMap)
+        {
             foreach (var command in script)
             {
                 switch (command)
                 {
                     case GotoCommand @goto:
-                        RandomizeScript(@goto.script, settings, args);
+                        RandomizeScript(@goto.script, settings, args, itemMap);
                         break;
                     case TrainerBattleCommand trainerBattleCommand:
                         if (args.IsGym)
@@ -50,7 +69,7 @@ namespace PokemonRandomizer.Backend.Randomization
                         }
                         if (trainerBattleCommand.postBattleScript != null)
                         {
-                            RandomizeScript(trainerBattleCommand.postBattleScript, settings, args);
+                            RandomizeScript(trainerBattleCommand.postBattleScript, settings, args, itemMap);
                         }
                         break;
                     case GivePokedexCommand givePokedex:
@@ -62,7 +81,14 @@ namespace PokemonRandomizer.Backend.Randomization
                     case GiveItemCommand giveItem:
                         if (giveItem.type == GiveItemCommand.Type.Normal && rand.RollSuccess(settings.FieldItemRandChance))
                         {
-                            delayedRandomizationCalls.Add(() => giveItem.item = itemRand.RandomItem(args.items, giveItem.item, settings.FieldItemSettings));
+                            if (!itemMap.ContainsKey(giveItem.item))
+                            {
+                                itemMap.Add(giveItem.item, new List<GiveItemCommand> { giveItem });
+                            }
+                            else
+                            {
+                                itemMap[giveItem.item].Add(giveItem);
+                            }
                         }
                         break;
                     case GivePokemonCommand givePokemon:
