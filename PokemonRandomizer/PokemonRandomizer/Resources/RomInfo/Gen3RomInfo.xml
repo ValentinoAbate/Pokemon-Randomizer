@@ -172,7 +172,7 @@
 
     <!-- Trainer Battle Definitions -->
 
-    <trainerBattles num="854" offset="0x310030"/>
+    <trainerBattles num="854" pointer="0x03587C" offset="0x310030"/>
     <trainerClassNames num="66" length="13" offset="0x30FCD4"/>
     
     <!-- Special Trainer Battles -->
@@ -227,6 +227,9 @@
     <!-- Static Pokemon -->
 
     <trades num="3"/>
+
+	<!-- Trainer Battle Definitions -->
+	<trainerBattles num="694" pointer="0x00D890"/>
   </rsConstants>
 
   <!-- Ruby and Sapphire Rom Info -->
@@ -389,8 +392,8 @@
 
     <!-- Trainer Battle Definitions -->
 
-    <!-- from thethethethe's forum post: http://pokemonhackersonline.com/showthread.php?t=2586 -->
-    <trainerBattles num="742" offset="0x23EAF0"/>
+    <!-- offset from thethethethe's forum post: http://pokemonhackersonline.com/showthread.php?t=2586. Pointer from HMA info files-->
+    <trainerBattles num="743" pointer="0x00FC00" offset="0x23EAC8"/>
     <trainerClassNames num="107" length="13" offset="0x23E558"/>
 
     <mapBankPointers num="43" offset="0x3526A8" pointer="0x5524C"/>
@@ -426,6 +429,9 @@
     <!-- Items -->
 
     <pickupItems pointer="0x02CEF8"/>
+
+	<!-- Trainer Battle Definitions -->
+	<trainerBattles num="743" pointer="0x00FC14"/>
     
     <!-- Static Pokemon -->
 
