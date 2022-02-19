@@ -514,7 +514,7 @@ namespace PokemonRandomizer.Backend.Reading
             foreach (var trainer in data.Trainers)
             {
                 string name = trainer.name.ToLower();
-                if (string.IsNullOrWhiteSpace(name) || name == "??????")
+                if (string.IsNullOrWhiteSpace(name) || name == Trainer.nullName)
                     continue;
                 // All grunts have the same names but are not reoccuring trainers
                 if (data.TeamGruntNames.Contains(name))

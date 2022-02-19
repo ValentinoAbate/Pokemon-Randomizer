@@ -1,4 +1,5 @@
-﻿using PokemonRandomizer.Backend.EnumTypes;
+﻿using PokemonRandomizer.Backend.DataStructures.TrainerMetadata;
+using PokemonRandomizer.Backend.EnumTypes;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,6 +25,7 @@ namespace PokemonRandomizer.Backend.DataStructures
         public bool IsGymLeader => Class.ToLower() == "leader";
 
         public GymMetadata GymMetadata { get; set; }
+        public TrainerTypeMetadata TrainerTypeMetadata { get; set; }
 
         public int offset;
         public TrainerPokemon.DataType dataType;

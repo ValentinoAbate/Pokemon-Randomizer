@@ -6,6 +6,7 @@ namespace PokemonRandomizer.Backend.Randomization
 {
     using DataStructures;
     using EnumTypes;
+    using PokemonRandomizer.Backend.DataStructures.TrainerMetadata;
     using static Settings;
     public class TrainerRandomizer
     {
@@ -33,7 +34,7 @@ namespace PokemonRandomizer.Backend.Randomization
             foreach (var pokemon in trainer.pokemon)
             {
                 // Chose pokemon
-                var metrics = CreatePokemonMetrics(pokemonSet, pokemon.species, partyTypeOccurence, settings.Data);
+                var metrics = CreatePokemonMetrics(trainer, pokemonSet, pokemon.species, partyTypeOccurence, settings.Data);
                 pokemon.species = pokeRand.RandomPokemon(pokemonSet, pokemon.species, metrics, settings, pokemon.level);
 
                 // Reset special moves if necessary
@@ -45,8 +46,14 @@ namespace PokemonRandomizer.Backend.Randomization
             }
         }
 
-        private IEnumerable<Metric<Pokemon>> CreatePokemonMetrics(IEnumerable<Pokemon> all, Pokemon pokemon, WeightedSet<PokemonType> partyTypeOccurence, IReadOnlyList<MetricData> data)
+        private IEnumerable<Metric<Pokemon>> CreatePokemonMetrics(Trainer trainer, IEnumerable<Pokemon> all, Pokemon pokemon, WeightedSet<PokemonType> partyTypeOccurence, IReadOnlyList<MetricData> data)
         {
+            if(trainer.GymMetadata != null)
+            {
+                var gymTypeSet = trainer.GymMetadata.Untyped ? new WeightedSet<Pokemon>(all) 
+                    : new WeightedSet<Pokemon>(all.Where(p => MatchesTrainerOgranizationType(trainer.GymMetadata, p)));
+                return new List<Metric<Pokemon>>() { new Metric<Pokemon>(gymTypeSet, 0, 1) };
+            }
             var metrics = pokeRand.CreateBasicMetrics(all, pokemon, data, out List<MetricData> specialData);
             foreach (var d in specialData)
             {
@@ -61,6 +68,12 @@ namespace PokemonRandomizer.Backend.Randomization
                 }
             }
             return metrics;
+        }
+
+        private bool MatchesTrainerOgranizationType(TrainerOrganizationMetadata org, Pokemon p)
+        {
+            var baseStats = dataT.GetBaseStats(p);
+            return org.Types.Any(t => baseStats.IsType(t));
         }
 
         /// <summary> Radnomize the given trainer encounter </summary>
@@ -98,6 +111,15 @@ namespace PokemonRandomizer.Backend.Randomization
         public void RandomizeReoccurring(Trainer firstBattle, List<Trainer> battles, IEnumerable<Pokemon> pokemonSet, TrainerSettings settings)
         {
             var pkmnSettings = settings.PokemonSettings;
+
+            // Propogate gym metadata if the first battle has gym metadata
+            if (firstBattle.GymMetadata != null)
+            {
+                foreach(var battle in battles)
+                {
+                    battle.GymMetadata = firstBattle.GymMetadata;
+                }
+            }
 
             // Battle Type
             if (settings.BattleTypeStrategy == TrainerSettings.BattleTypePcgStrategy.None)

@@ -1,5 +1,6 @@
 ﻿using PokemonRandomizer.Backend.DataStructures;
 using PokemonRandomizer.Backend.DataStructures.Scripts;
+using PokemonRandomizer.Backend.DataStructures.TrainerMetadata;
 using PokemonRandomizer.Backend.EnumTypes;
 using PokemonRandomizer.Backend.Utilities;
 using System;

@@ -1,5 +1,6 @@
 ﻿using PokemonRandomizer.Backend.DataStructures;
 using PokemonRandomizer.Backend.DataStructures.Scripts;
+using PokemonRandomizer.Backend.DataStructures.TrainerMetadata;
 using PokemonRandomizer.Backend.EnumTypes;
 using PokemonRandomizer.Backend.Utilities;
 using PokemonRandomizer.Backend.Utilities.Debug;
@@ -499,6 +500,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 pokemonSet = pokemonSet,
                 fossilSet = fossilSet,
             };
+            // Initialize gym metadata
             var gymMetadataDict = new Dictionary<string, GymMetadata>(8); // 8 gyms
             // Randomize Maps (currently just iterate though the maps, but may want to construct and traverse a graph later)
             foreach (var map in data.Maps)
@@ -551,6 +553,11 @@ namespace PokemonRandomizer.Backend.Randomization
                         scriptRand.RandomizeScript(npc.script, settings, scriptRandomizationArgs);
                     }
                 }
+            }
+            // Calculate gym metadata types
+            foreach(var kvp in gymMetadataDict)
+            {
+                kvp.Value.CalculateType(data);
             }
             #endregion
 
