@@ -219,7 +219,7 @@ namespace PokemonRandomizer
             }
         }
 
-        private bool GetRomData(byte[] rawRom)
+        private void GetRomData(byte[] rawRom)
         {
             // Initialize ROM metadata
             RomMetadata metadata = new RomMetadata(rawRom);
@@ -238,14 +238,12 @@ namespace PokemonRandomizer
             }
             else
             {
-                LogError($"Failed to open rom - unsupported generation ({metadata.Gen})");
-                return false;
+                throw new Exception($"Unsupported generation (Gen {metadata.Gen}). Please check Help->About for a list of supported ROMs");
             }
 
             // Cache metadata and last randomization 
             SetLastRandomizationInfo(RomData, metadata, false);
             Metadata = metadata;
-            return true;
         }
 
         private byte[] GetRandomizedRom(string seed)
