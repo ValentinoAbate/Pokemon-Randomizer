@@ -501,7 +501,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 fossilSet = fossilSet,
             };
             // Initialize gym metadata
-            var gymMetadataDict = new Dictionary<string, GymMetadata>(8); // 8 gyms
+            var gymMetadataDict = new Dictionary<string, GymMetadata>(9); // 8 gyms + one temp space for invalid metadata
             // Randomize Maps (currently just iterate though the maps, but may want to construct and traverse a graph later)
             foreach (var map in data.Maps)
             {
@@ -551,6 +551,15 @@ namespace PokemonRandomizer.Backend.Randomization
                     if(npc.script != null)
                     {
                         scriptRand.RandomizeScript(npc.script, settings, scriptRandomizationArgs);
+                    }
+                }
+
+                // Remove invalid metadata
+                if (map.IsGym)
+                {
+                    if (!gymMetadataDict[map.Name].IsValid)
+                    {
+                        gymMetadataDict.Remove(map.Name);
                     }
                 }
             }
