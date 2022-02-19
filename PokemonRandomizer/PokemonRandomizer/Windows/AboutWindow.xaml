@@ -18,7 +18,7 @@
             </StackPanel>
             <Label Content="Support:" Margin="0,-5,0,5" FontSize="13"/>
             <TextBlock TextWrapping="WrapWithOverflow" VerticalAlignment="Center" Margin="5,-5,5,5" FontSize="11">
-                Emerald (BPEE), FireRed v1.0 (BPRE-01)
+                Emerald (BPEE0), FireRed (USA) (BPRE0)
             </TextBlock>
             <TextBlock Margin="5,2,0,5" FontSize="10">           
                 <Hyperlink NavigateUri="https://github.com/ValentinoAbate/Pokemon-Randomizer/releases" RequestNavigate="GoToDownloadPage">

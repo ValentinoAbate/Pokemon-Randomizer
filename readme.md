@@ -16,7 +16,7 @@ Procedural Pokemon Randomizer is a Pokemon randomizer I'm creating as a fun side
 	- Bonus Moves: add bonus moves to pokemon movesets at a level that makes sense. Can draw moves from the pokemon's egg moves or make a random choice!
 	- ...And much more!
 
-- Currently supports a small amount of Gen III ROMS (English Emerald and Fire Red v1.0), but I plan to support at least Gen IV and Gen II in the future
+- Currently supports a small amount of Gen III ROMS (Emerald BPEE0 and Fire Red (USA) BPRE0), but I plan to support at least Gen IV and Gen II in the future
 
 Originally based off of source code from Artemis251's Pokemon Emerald Randomizer (v.2.2 -- 13 April 2014) but I pivoted to C# so now its just a reference.
 Check out their website! http://artemis251.fobby.net/downloads/emerald/
