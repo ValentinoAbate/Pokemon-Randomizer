@@ -277,7 +277,7 @@ namespace PokemonRandomizer
         private void SetUIEnabled(bool enabled)
         {
             MainMenu.IsEnabled = enabled;
-            MainTabControl.IsEnabled = enabled;
+            MainTabControl.IsEnabled = enabled && IsROMLoaded;
         }
 
         private void PauseUIAndRunInBackground(string progressMsg, Action work, Action onSuccess, Action<Exception> onError)
