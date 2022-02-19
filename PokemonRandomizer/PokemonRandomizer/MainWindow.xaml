@@ -129,7 +129,7 @@
                 </ItemsPanelTemplate>
             </StatusBar.ItemsPanel>
             <StatusBarItem>
-                <Label Name="lblInfoBoxContent" Content="Please open a Rom! use file-&gt;Open Rom." MaxWidth="{Binding}"/>
+                <Label Name="lblInfoBoxContent" Content="Please open a Rom! use File-&gt;Open Rom." MaxWidth="{Binding}"/>
             </StatusBarItem>
             <StatusBarItem HorizontalAlignment="Right" Grid.Column="2">
                 <Label Name="lblInfoBoxErrorCount" Content="" MinWidth="50"/>
