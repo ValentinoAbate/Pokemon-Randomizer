@@ -499,10 +499,11 @@ namespace PokemonRandomizer.Backend.Randomization
                 pokemonSet = pokemonSet,
                 fossilSet = fossilSet,
             };
+            var gymMetadataDict = new Dictionary<string, GymMetadata>(8); // 8 gyms
             // Randomize Maps (currently just iterate though the maps, but may want to construct and traverse a graph later)
             foreach (var map in data.Maps)
             {
-                // If the map names is empty, just continue
+                // If the map name is empty, just continue
                 if (string.IsNullOrEmpty(map.Name))
                     continue;
                 // Randomize Weather
@@ -525,7 +526,22 @@ namespace PokemonRandomizer.Backend.Randomization
                         }
                     }
                 }
-                scriptRandomizationArgs.gymMetadata = map.IsGym ? new GymMetadata() : null;
+
+                // Set Proper metadata on script randomizer arguments arg
+                if (map.IsGym)
+                {
+                    // If the dictionary already contains the map name, it means this is a multi-map gym
+                    if (!gymMetadataDict.ContainsKey(map.Name))
+                    {
+                        gymMetadataDict.Add(map.Name, new GymMetadata());
+                    }
+                    scriptRandomizationArgs.gymMetadata = gymMetadataDict[map.Name];
+                }
+                else
+                {
+                    scriptRandomizationArgs.gymMetadata = null;
+                }
+
                 // Randomize NPCs
                 foreach (var npc in map.eventData.npcEvents)
                 {
