@@ -550,7 +550,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 {
                     Settings.DreamTeamSetting.Custom => settings.CustomDreamTeam.Where(p => p != Pokemon.None).ToArray(),
                     Settings.DreamTeamSetting.Random => dreamTeamRandomizer.GenerateDreamTeam(pokemonSet, settings.DreamTeamOptions),
-                    _ => new Pokemon[0],
+                    _ => Array.Empty<Pokemon>(),
                 };
                 if(team.Length > 0)
                 {
