@@ -289,7 +289,7 @@ namespace PokemonRandomizer.Backend.Reading
             var command = new Gen3Command() { code = rom.ReadByte() };
             if (!Gen3Command.commandMap.ContainsKey(command.code))
             {
-                Logger.main.Error("Unrecognized script command code: " + command.code);
+                Logger.main.Error($"Unrecognized script command code: {command.code:x2}");
                 return command;
             }
             ReadArgs(ref command, rom, Gen3Command.commandMap[command.code]);
