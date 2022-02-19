@@ -42,12 +42,17 @@ namespace PokemonRandomizer.Backend.Writing
                     case GiveItemCommand giveItem:
                         rom.WriteByte(Gen3Command.copyvarifnotzero);
                         rom.WriteUInt16(Gen3Command.itemTypeVar);
-                        rom.WriteUInt16((int)remapItem(giveItem.item));
+                        rom.WriteUInt16((int)remapItem(giveItem.Item));
                         rom.WriteByte(Gen3Command.copyvarifnotzero);
                         rom.WriteUInt16(Gen3Command.itemQuantityVar);
                         rom.WriteUInt16(giveItem.amount);
                         rom.WriteByte(Gen3Command.callstd);
                         rom.WriteByte((byte)giveItem.messageType);
+                        break;
+                    case CheckItemRoomCommand checkItemRoom:
+                        rom.WriteByte(Gen3Command.checkitemroom);
+                        rom.WriteUInt16((int)remapItem(checkItemRoom.Item));
+                        rom.WriteUInt16(checkItemRoom.quantity);
                         break;
                     case TrainerBattleCommand trainerBattle:
                         WriteTrainerBattleCommand(rom, trainerBattle, metadata);

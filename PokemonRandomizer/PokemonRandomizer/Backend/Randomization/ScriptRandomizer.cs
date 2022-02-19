@@ -27,7 +27,7 @@ namespace PokemonRandomizer.Backend.Randomization
 
         public void RandomizeScript(Script script, Settings settings, Args args)
         {
-            var itemMap = new Dictionary<Item, List<GiveItemCommand>>(4);
+            var itemMap = new Dictionary<Item, List<ItemCommand>>(4);
             RandomizeScript(script, settings, args, itemMap);
             foreach(var kvp in itemMap)
             {
@@ -35,16 +35,23 @@ namespace PokemonRandomizer.Backend.Randomization
             }
         }
 
-        private void RemapItems(Item oldItem, IEnumerable<GiveItemCommand> commands, Settings settings, Args args)
+        private void RemapItems(Item oldItem, IEnumerable<ItemCommand> commands, Settings settings, Args args)
         {
+            // No item sources, no need to randomize
+            if (!commands.Any(i => i.IsItemSource))
+                return;
+            // This script is going to be giving an item. Roll randomization
+            if (!rand.RollSuccess(settings.FieldItemRandChance))
+                return;
+            // Remap item commands
             var newItem = itemRand.RandomItem(args.items, oldItem, settings.FieldItemSettings);
             foreach(var command in commands)
             {
-                command.item = newItem;
+                command.Item = newItem;
             }
         }
 
-        private void RandomizeScript(Script script, Settings settings, Args args, Dictionary<Item, List<GiveItemCommand>> itemMap)
+        private void RandomizeScript(Script script, Settings settings, Args args, Dictionary<Item, List<ItemCommand>> itemMap)
         {
             foreach (var command in script)
             {
@@ -78,17 +85,10 @@ namespace PokemonRandomizer.Backend.Randomization
                             givePokedex.Type = GivePokedexCommand.PokedexType.National;
                         }
                         break;
-                    case GiveItemCommand giveItem:
-                        if (giveItem.type == GiveItemCommand.Type.Normal && rand.RollSuccess(settings.FieldItemRandChance))
+                    case ItemCommand itemCommand:
+                        if(itemCommand.ItemType == ItemCommand.Type.Normal)
                         {
-                            if (!itemMap.ContainsKey(giveItem.item))
-                            {
-                                itemMap.Add(giveItem.item, new List<GiveItemCommand> { giveItem });
-                            }
-                            else
-                            {
-                                itemMap[giveItem.item].Add(giveItem);
-                            }
+                            UpdateItemMap(itemCommand, itemMap);
                         }
                         break;
                     case GivePokemonCommand givePokemon:
@@ -114,6 +114,18 @@ namespace PokemonRandomizer.Backend.Randomization
                         }
                         break;
                 }
+            }
+        }
+
+        private void UpdateItemMap(ItemCommand command, Dictionary<Item, List<ItemCommand>> itemMap)
+        {
+            if (!itemMap.ContainsKey(command.Item))
+            {
+                itemMap.Add(command.Item, new List<ItemCommand> { command });
+            }
+            else
+            {
+                itemMap[command.Item].Add(command);
             }
         }
 

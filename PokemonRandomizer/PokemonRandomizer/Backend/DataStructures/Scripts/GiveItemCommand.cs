@@ -3,7 +3,7 @@ using PokemonRandomizer.Backend.Utilities;
 
 namespace PokemonRandomizer.Backend.DataStructures.Scripts
 {
-    public class GiveItemCommand : Command
+    public class GiveItemCommand : ItemCommand
     {
         public enum MessageType : byte
         {
@@ -11,21 +11,16 @@ namespace PokemonRandomizer.Backend.DataStructures.Scripts
             Find,
         }
 
-        public enum Type
-        {
-            Normal, // The give item event gives the item stored in item
-            Variable, // The command gives an item stored in the variable (int)item
-            Unknown // Unknown, happens in lilycove city once, can research more later
-        }
-
-        public Type type = Type.Normal;
-        public Item item;
+        public override Type ItemType { get; set; } = Type.Normal;
+        public override Item Item { get; set; }
         public int amount;
         public MessageType messageType;
 
+        public override bool IsItemSource => true;
+
         public override string ToString()
         {
-            return $"give {amount} {item.ToDisplayString()} ({messageType.ToDisplayString()})";
+            return $"give {amount} {Item.ToDisplayString()} ({messageType.ToDisplayString()})";
         }
     }
 }

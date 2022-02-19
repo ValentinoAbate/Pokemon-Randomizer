@@ -76,6 +76,16 @@ namespace PokemonRandomizer.Backend.Reading
                         script.Add(command);
                     }
                 }
+                else if (command.code == Gen3Command.checkitemroom)
+                {
+                    var checkItemRoomCommand = new CheckItemRoomCommand()
+                    {
+                        Item = (Item)command.ArgData(0),
+                        quantity = command.ArgData(1),
+                    };
+                    MarkItemCommandType(checkItemRoomCommand);
+                    script.Add(checkItemRoomCommand);
+                }
                 else if (command.code == Gen3Command.trainerbattle)
                 {
                     script.Add(ParseTrainerBattleCommand(rom, command, metadata, ref visited));
@@ -143,17 +153,26 @@ namespace PokemonRandomizer.Backend.Reading
             // Valid giveitem multicommand found
             giveItemMultiCommand = new GiveItemCommand()
             {
-                item = (Item)command1.ArgData(1),
+                Item = (Item)command1.ArgData(1),
                 amount = command2.ArgData(1),
                 messageType = (GiveItemCommand.MessageType)command3.ArgData(0),
             };
-            // Mark command type
-            if((int)giveItemMultiCommand.item > 10000)
-            {
-                giveItemMultiCommand.type = (int)giveItemMultiCommand.item > 32768 ? GiveItemCommand.Type.Variable : GiveItemCommand.Type.Unknown;
-            }
+            MarkItemCommandType(giveItemMultiCommand);
             rom.DumpOffset();
             return true;
+        }
+
+        private void MarkItemCommandType(ItemCommand command)
+        {
+            // Mark command type
+            if ((int)command.Item > 10000)
+            {
+                command.ItemType = (int)command.Item > 32768 ? ItemCommand.Type.Variable : ItemCommand.Type.Unknown;
+            }
+            else
+            {
+                command.ItemType = ItemCommand.Type.Normal;
+            }
         }
 
         private TrainerBattleCommand ParseTrainerBattleCommand(Rom rom, Gen3Command command, RomMetadata metadata, ref HashSet<int> visited)
