@@ -77,7 +77,8 @@ namespace PokemonRandomizer
         private const string csvFileFilter = "csv files (*.csv)|*.csv";
         private const string saveRomPrompt = "Save Rom";
         private const string openRomPrompt = "Open Rom";
-        private const string openRomError = "Failed to open rom: ";
+        private const string openRomError = "Failed to open Rom";
+        private const string checkAboutHelpMessage = "Please check Help->About for a list of supported ROMs";
 
         private ApplicationDataModel AppData { get; set; }
 
@@ -226,6 +227,10 @@ namespace PokemonRandomizer
             // Read ROM data
             if (metadata.Gen == Generation.III)
             {
+                if(!(metadata.IsEmerald || (metadata.IsFireRed && metadata.Version == 0)))
+                {
+                    throw new Exception($"Unsupported Rom (Code {metadata.Code}{metadata.Version}). {checkAboutHelpMessage}");
+                }
                 RomInfo = new XmlManager(PokemonRandomizer.Resources.RomInfo.RomInfo.Gen3RomInfo);
                 RomInfo.SetSearchRoot(metadata.Code + metadata.Version.ToString());
                 //Initalize Rom file wrapper
@@ -238,7 +243,7 @@ namespace PokemonRandomizer
             }
             else
             {
-                throw new Exception($"Unsupported generation (Gen {metadata.Gen}). Please check Help->About for a list of supported ROMs");
+                throw new Exception($"Unsupported generation (Gen {metadata.Gen}). {checkAboutHelpMessage}");
             }
 
             // Cache metadata and last randomization 
@@ -257,7 +262,7 @@ namespace PokemonRandomizer
                 var writer = new Gen3RomWriter();
                 return writer.Write(randomizedData, Rom, Metadata, RomInfo, AppSettings).File;
             }
-            throw new Exception($"Attempting to write randomized data to ROM of unsupported generation ({Metadata.Gen})");
+            throw new Exception($"Attempting to write randomized data to Rom of unsupported generation (Gen {Metadata.Gen})");
         }
 
 #region INotifyPropertyChanged Implementation
@@ -316,7 +321,7 @@ namespace PokemonRandomizer
             if (openFileDialog.ShowDialog() == true)
             {
                 void Open() => GetRomData(File.ReadAllBytes(openFileDialog.FileName));
-                void Error(Exception e) => LogError($"Failed to open rom: {e.Message}");
+                void Error(Exception e) => LogError($"{openRomError}: {e.Message}");
                 void Success()
                 {
                     IsROMLoaded = true;
@@ -326,7 +331,7 @@ namespace PokemonRandomizer
                     SetInfoBox(msg);
                     InitializeRomDependentUI(RomData, Metadata);
                 }
-                PauseUIAndRunInBackground("Opening rom...", Open, Success, Error);
+                PauseUIAndRunInBackground("Opening Rom...", Open, Success, Error);
             }
         }
 
@@ -491,7 +496,7 @@ namespace PokemonRandomizer
                 }
                 catch (IOException exception)
                 {
-                    LogError(openRomError + exception.Message);
+                    LogError($"{openRomError}: {exception.Message}");
                 }
             }
         }
