@@ -230,6 +230,8 @@ namespace PokemonRandomizer.Backend.Randomization
                 }
             }
 
+            var compatSettings = new MoveCompatibilityRandomizer.Data(settings.MoveCompatTrueChance, settings.IntelligentCompatNormalTrueChance, settings.IntelligentCompatTrueChance);
+
             // Individual Pokemon Pass
             foreach (PokemonBaseStats pokemon in data.Pokemon)
             {
@@ -340,9 +342,19 @@ namespace PokemonRandomizer.Backend.Randomization
 
                 #region TM, HM, and Move tutor Compatibility
 
-                compatRand.RandomizeCompatibility(pokemon.TMCompat, new MoveCompatibilityRandomizer.Data(settings.TmCompatSetting, settings.MoveCompatTrueChance, settings.MoveCompatNoise, pokemon, data.TMMoves));
-                compatRand.RandomizeCompatibility(pokemon.moveTutorCompat, new MoveCompatibilityRandomizer.Data(settings.MtCompatSetting, settings.MoveCompatTrueChance, settings.MoveCompatNoise, pokemon, data.tutorMoves));
-                compatRand.RandomizeCompatibility(pokemon.HMCompat, new MoveCompatibilityRandomizer.Data(settings.HmCompatSetting, settings.MoveCompatTrueChance, settings.MoveCompatNoise, pokemon, data.HMMoves));
+                compatRand.RandomizeCompatibility(settings.MoveCompatSetting, pokemon.TMCompat, data.TMMoves, pokemon, compatSettings);
+                compatRand.RandomizeCompatibility(settings.MoveCompatSetting, pokemon.moveTutorCompat, data.tutorMoves, pokemon, compatSettings);
+                // If all on, force all HM's on
+                // Else, if intelligent compatibility is on and the pokemon is a variant, intelligently set HM compat
+                if(settings.ForceFullHmCompatibility || settings.MoveCompatSetting == Settings.MoveCompatOption.AllOn)
+                {
+                    compatRand.RandomizeCompatibility(Settings.MoveCompatOption.AllOn, pokemon.HMCompat, data.HMMoves, pokemon, compatSettings);
+                }
+                else if(settings.MoveCompatSetting == Settings.MoveCompatOption.Intelligent && pokemon.IsVariant)
+                {
+                    compatRand.RandomizeCompatibility(Settings.MoveCompatOption.Intelligent, pokemon.HMCompat, data.HMMoves, pokemon, compatSettings);
+                }
+
 
                 #endregion
 

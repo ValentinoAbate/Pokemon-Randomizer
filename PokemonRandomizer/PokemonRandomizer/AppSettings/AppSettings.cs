@@ -54,11 +54,11 @@ namespace PokemonRandomizer.AppSettings
 
         #region TMs, HMs, and Move Tutors
 
-        public override MoveCompatOption TmCompatSetting => tmHmTutorData.TmCompatOption;
-        public override MoveCompatOption MtCompatSetting => tmHmTutorData.TutorCompatOption;
-        public override MoveCompatOption HmCompatSetting => tmHmTutorData.HmCompatOption;
+        public override MoveCompatOption MoveCompatSetting => tmHmTutorData.MoveCompatOption;
         public override double MoveCompatTrueChance => tmHmTutorData.RandomCompatTrueChance;
-        public override double MoveCompatNoise => tmHmTutorData.IntelligentCompatNoise;
+        public override double IntelligentCompatNormalTrueChance => tmHmTutorData.IntelligentCompatNormalRandChance;
+        public override double IntelligentCompatTrueChance => tmHmTutorData.IntelligentCompatNoise;
+        public override bool ForceFullHmCompatibility => tmHmTutorData.ForceFullHmCompat;
         public override bool PreventHmMovesInTMsAndTutors => tmHmTutorData.NoHmMovesInTMsAndTutors;
         public override bool PreventDuplicateTMsAndTutors => tmHmTutorData.NoDuplicateTMsAndTutors;
         public override bool KeepImportantTMsAndTutors => tmHmTutorData.KeepImportantTmsAndTutors;

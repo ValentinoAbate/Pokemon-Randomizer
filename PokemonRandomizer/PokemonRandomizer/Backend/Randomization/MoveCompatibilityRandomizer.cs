@@ -16,9 +16,9 @@ namespace PokemonRandomizer.Backend.Randomization
             this.dataT = dataT;
         }
 
-        public void RandomizeCompatibility(BitArray compat, Data data)
+        public void RandomizeCompatibility(MoveCompatOption setting, BitArray compat, Move[] moveList, PokemonBaseStats pokemon, Data data)
         {
-            switch (data.setting)
+            switch (setting)
             {
                 case MoveCompatOption.AllOn:
                     compat.SetAll(true);
@@ -34,14 +34,14 @@ namespace PokemonRandomizer.Backend.Randomization
                     break;
                 case MoveCompatOption.Intelligent:
                     // If the pokemon is intentionally designed to learn all TM/HM/MT moves (e.g Mew), set all true
-                    if (data.pokemon.originalUnlearnableTmHmMtMoves.Count == 0)
+                    if (pokemon.originalUnlearnableTmHmMtMoves.Count == 0)
                     {
                         compat.SetAll(true);
                         break;
                     }
                     for (int i = 0; i < compat.Length; ++i)
                     {
-                        compat[i] = IntelligentCompat(data.moveList[i], data);
+                        compat[i] = IntelligentCompat(moveList[i], pokemon, data);
                     }
                     break;
             }
@@ -69,10 +69,9 @@ namespace PokemonRandomizer.Backend.Randomization
             }
         }
 
-        private bool IntelligentCompat(Move move, Data data)
+        private bool IntelligentCompat(Move move, PokemonBaseStats pokemon, Data data)
         {
             var moveData = dataT.GetMoveData(move);
-            var pokemon = data.pokemon;
             if (pokemon.learnSet.Any(l => l.move == move))
                 return true;
             // If the pokemon is intentionally designed to not learn TM/HM/MT moves (e.g Magikarp, etc.), set all false (except moves in the moveset)
@@ -86,26 +85,22 @@ namespace PokemonRandomizer.Backend.Randomization
                 return true;
             if (pokemon.originalUnlearnableTmHmMtMoves.Contains(move))
                 return false;
-            if (moveData.type == PokemonType.NRM)
-                return rand.RollSuccess(data.randomChance);
-            return rand.RollSuccess(data.intelligentNoise);
+            if (moveData.IsType(PokemonType.NRM))
+                return rand.RollSuccess(data.intelligentNormalRandChance);
+            return rand.RollSuccess(data.intelligentRandChance);
         }
 
         public class Data
         {
-            public MoveCompatOption setting;
             public double randomChance;
-            public double intelligentNoise;
-            public PokemonBaseStats pokemon;
-            public Move[] moveList;
+            public double intelligentNormalRandChance;
+            public double intelligentRandChance;
 
-            public Data(MoveCompatOption setting, double randomChance, double intelligentNoise, PokemonBaseStats pokemon, Move[] moveList)
+            public Data(double randomChance, double intelligentNormalRandChance, double intelligentRandChance)
             {
-                this.setting = setting;
                 this.randomChance = randomChance;
-                this.intelligentNoise = intelligentNoise;
-                this.pokemon = pokemon;
-                this.moveList = moveList;
+                this.intelligentNormalRandChance = intelligentNormalRandChance;
+                this.intelligentRandChance = intelligentRandChance;
             }
         }
     }

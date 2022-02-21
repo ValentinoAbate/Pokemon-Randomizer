@@ -26,16 +26,18 @@ namespace PokemonRandomizer.UI
             Margin = new System.Windows.Thickness(0,2,2,2);
         }
 
-        public void BindVisibility(UIElement element, int index)
+        public T BindVisibility<T>(T element, int index) where T : UIElement
         {
             ComboBox.SelectionChanged += (_, _2) => element.SetVisibility(ComboBox.SelectedIndex == index);
             element.SetVisibility(ComboBox.SelectedIndex == index);
+            return element;
         }
 
-        public void BindVisibility(UIElement element, params int[] indices)
+        public T BindVisibility<T>(T element, params int[] indices) where T : UIElement
         {
             ComboBox.SelectionChanged += (_, _2) => element.SetVisibility(indices.Contains(ComboBox.SelectedIndex));
             element.SetVisibility(indices.Contains(ComboBox.SelectedIndex));
+            return element;
         }
     }
 }

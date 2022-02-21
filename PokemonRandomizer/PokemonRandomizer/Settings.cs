@@ -32,11 +32,11 @@ namespace PokemonRandomizer
             RandomKeepNumber,
             Intelligent
         }
-        public abstract MoveCompatOption TmCompatSetting { get; }
-        public abstract MoveCompatOption MtCompatSetting { get; }
-        public abstract MoveCompatOption HmCompatSetting { get; }
+        public abstract MoveCompatOption MoveCompatSetting { get; }
         public abstract double MoveCompatTrueChance { get; }
-        public abstract double MoveCompatNoise { get; }
+        public abstract double IntelligentCompatNormalTrueChance { get; }
+        public abstract double IntelligentCompatTrueChance { get; }
+        public abstract bool ForceFullHmCompatibility { get; }
         public abstract bool PreventHmMovesInTMsAndTutors {get; }
         public abstract bool PreventDuplicateTMsAndTutors {get; }
         public abstract bool KeepImportantTMsAndTutors { get; }
