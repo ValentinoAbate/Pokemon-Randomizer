@@ -9,7 +9,7 @@ namespace PokemonRandomizer.Backend.Utilities
     {
         public static void TableToDictFormat(string path, char separator, int maxWidth, int columns = 5)
         {
-            string[] text = File.ReadAllLines(path, Encoding.UTF7);
+            string[] text = File.ReadAllLines(path, Encoding.UTF8);
             List<string> newText = new List<string>();
             int i = 0;
             string last = string.Empty;
