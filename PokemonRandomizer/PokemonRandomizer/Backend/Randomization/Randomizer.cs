@@ -466,8 +466,10 @@ namespace PokemonRandomizer.Backend.Randomization
                 if (rand.RollSuccess(settings.TradePokemonRecievedRandChance))
                 {
                     trade.pokemonRecieved = pokeRand.RandomPokemon(pokemonSet, trade.pokemonRecieved, settings.TradeSpeciesSettingsReceive);
-                    var pokemonData = data.GetBaseStats(trade.pokemonRecieved);
-                    if (pokemonData.abilities[0] == pokemonData.abilities[1])
+                    var recievedPokemonData = data.GetBaseStats(trade.pokemonRecieved);
+                    // If the recieved pokemon only has one ability, ensure that the trade data uses ability index 0
+                    // If the recieved pokemon has two possible abilities, choose a random ability index
+                    if (recievedPokemonData.abilities[1] == Ability.NONE)
                     {
                         trade.abilityNum = 0;
                     }
