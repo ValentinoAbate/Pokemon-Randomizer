@@ -344,15 +344,15 @@ namespace PokemonRandomizer.Backend.Randomization
 
                 compatRand.RandomizeCompatibility(settings.MoveCompatSetting, pokemon.TMCompat, data.TMMoves, pokemon, compatSettings);
                 compatRand.RandomizeCompatibility(settings.MoveCompatSetting, pokemon.moveTutorCompat, data.tutorMoves, pokemon, compatSettings);
-                // If all on, force all HM's on
+                // If all on, force all HMs on
                 // Else, if intelligent compatibility is on and the pokemon is a variant, intelligently set HM compat
                 if(settings.ForceFullHmCompatibility || settings.MoveCompatSetting == Settings.MoveCompatOption.AllOn)
                 {
-                    compatRand.RandomizeCompatibility(Settings.MoveCompatOption.AllOn, pokemon.HMCompat, data.HMMoves, pokemon, compatSettings);
+                    compatRand.RandomizeHMCompat(Settings.MoveCompatOption.AllOn, pokemon.HMCompat, data.HMMoves, pokemon);
                 }
                 else if(settings.MoveCompatSetting == Settings.MoveCompatOption.Intelligent && pokemon.IsVariant)
                 {
-                    compatRand.RandomizeCompatibility(Settings.MoveCompatOption.Intelligent, pokemon.HMCompat, data.HMMoves, pokemon, compatSettings);
+                    compatRand.RandomizeHMCompat(Settings.MoveCompatOption.Intelligent, pokemon.HMCompat, data.HMMoves, pokemon);
                 }
 
 

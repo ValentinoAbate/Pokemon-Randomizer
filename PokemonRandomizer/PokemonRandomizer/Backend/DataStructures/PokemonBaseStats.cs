@@ -1,5 +1,7 @@
 ﻿using PokemonRandomizer.Backend.EnumTypes;
 using PokemonRandomizer.Backend.Utilities;
+using PokemonRandomizer.Backend.Utilities.Debug;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -148,6 +150,32 @@ namespace PokemonRandomizer.Backend.DataStructures
         public List<Evolution> evolvesFrom = new List<Evolution>();
         public int NationalDexIndex { get; set; }
         public bool IsVariant { get; set; } = false;
+        public IReadOnlyCollection<PokemonType> VariantTypes
+        {
+            get
+            {
+                if (!IsVariant)
+                {
+                    return Array.Empty<PokemonType>();
+                }
+                if (PrimaryType != OriginalPrimaryType)
+                {
+                    // If the pokemon is currently single typed or if the second type is the same as the original, there can only be one variant type
+                    if (IsSingleTyped || SecondaryType == OriginalSecondaryType)
+                    {
+                        return new PokemonType[] { PrimaryType };
+                    }
+                    // Both types must be variant types
+                    return types; // Safe because this property returns a read-only collection
+                }
+                if(SecondaryType != OriginalSecondaryType)
+                {
+                    return new PokemonType[] { SecondaryType };
+                }
+                Logger.main.Error($"Pokemon {Name} is marked as variant but has no variant types");
+                return Array.Empty<PokemonType>();
+            }
+        }
 
         public void SetOriginalValues()
         {

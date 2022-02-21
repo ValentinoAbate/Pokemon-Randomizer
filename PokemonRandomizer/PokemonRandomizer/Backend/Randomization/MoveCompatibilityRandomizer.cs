@@ -47,6 +47,32 @@ namespace PokemonRandomizer.Backend.Randomization
             }
         }
 
+        public void RandomizeHMCompat(MoveCompatOption setting, BitArray compat, Move[] moveList, PokemonBaseStats pokemon)
+        {
+            if(setting == MoveCompatOption.AllOn)
+            {
+                compat.SetAll(true);
+            }
+            else if(setting == MoveCompatOption.Intelligent && pokemon.IsVariant)
+            {
+                var variantTypes = pokemon.VariantTypes;
+                for (int i = 0; i < compat.Length; ++i)
+                {
+                    if (compat[i])
+                        continue;
+                    // Make the pokemon compatible with any HMs that are the same type as one of it's variant types
+                    var moveData = dataT.GetMoveData(moveList[i]);
+                    foreach (var type in variantTypes)
+                    {
+                        if (moveData.IsType(type))
+                        {
+                            compat[i] = true;
+                        }
+                    }
+                }
+            }
+        }
+
         private void RandomKeepNumber(BitArray arr)
         {
             int compatCount = 0;
