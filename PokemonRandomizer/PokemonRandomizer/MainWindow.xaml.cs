@@ -19,6 +19,7 @@ namespace PokemonRandomizer
     using System.Diagnostics;
     using System.IO.Compression;
     using System.Text;
+    using System.Windows.Controls;
     using UI;
     using UI.Json;
     using UI.Models;
@@ -110,6 +111,7 @@ namespace PokemonRandomizer
             IsROMLoaded = false;
             InitializeComponent();
             this.DataContext = this;
+            ToolTipService.ShowDurationProperty.OverrideMetadata(typeof(DependencyObject), new FrameworkPropertyMetadata(int.MaxValue));
             serializerOptions.Converters.Add(new WeightedSetJsonConverter());
             AppData = new ApplicationDataModel();
             InitializeAppData();
