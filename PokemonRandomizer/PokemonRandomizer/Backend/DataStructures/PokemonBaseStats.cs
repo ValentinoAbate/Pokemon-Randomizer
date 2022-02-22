@@ -172,7 +172,7 @@ namespace PokemonRandomizer.Backend.DataStructures
                 {
                     return new PokemonType[] { SecondaryType };
                 }
-                Logger.main.Error($"Pokemon {Name} is marked as variant but has no variant types");
+                Logger.main.Warning($"Pokemon {Name} is marked as variant but has no variant types");
                 return Array.Empty<PokemonType>();
             }
         }
