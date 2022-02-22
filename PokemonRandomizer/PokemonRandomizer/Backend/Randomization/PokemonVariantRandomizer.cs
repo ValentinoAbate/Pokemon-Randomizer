@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using PokemonRandomizer.Backend.DataStructures;
+﻿using PokemonRandomizer.Backend.DataStructures;
 using PokemonRandomizer.Backend.EnumTypes;
 using PokemonRandomizer.Backend.Utilities;
 using PokemonRandomizer.Backend.Utilities.Debug;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace PokemonRandomizer.Backend.Randomization
 {
@@ -47,15 +47,26 @@ namespace PokemonRandomizer.Backend.Randomization
         private readonly BonusMoveGenerator bonusMoveGenerator;
         private readonly List<PokemonType> types;
         private readonly string paletteKey;
-        public PokemonVariantRandomizer(Random rand, IDataTranslator dataT, BonusMoveGenerator bonusMoveGenerator, string paletteKey)
+        private readonly HashSet<Move> availableMoves;
+        public PokemonVariantRandomizer(Random rand, RomData data, PokemonRandomizer.Settings settings, BonusMoveGenerator bonusMoveGenerator, string paletteKey)
         {
             this.rand = rand;
-            this.dataT = dataT;
+            dataT = data;
             this.bonusMoveGenerator = bonusMoveGenerator;
             this.paletteKey = paletteKey;
             types = new List<PokemonType>(EnumUtils.GetValues<PokemonType>());
             types.Remove(PokemonType.FAI);
             types.Remove(PokemonType.Unknown);
+            availableMoves = EnumUtils.GetValues<Move>().ToHashSet();
+            availableMoves.Remove(Move.None);
+            if (settings.BanSelfdestruct)
+            {
+                availableMoves.RemoveWhere(m => data.GetMoveData(m).IsSelfdestruct);
+            }
+            foreach (var move in data.HMMoves)
+            {
+                availableMoves.Remove(move);
+            }
         }
 
         public void CreateVariant(PokemonBaseStats pokemon, Settings settings)
@@ -694,7 +705,7 @@ namespace PokemonRandomizer.Backend.Randomization
 
         private List<MoveData> GetAvailibleAddMoves(LearnSet learnSet)
         {
-            return EnumUtils.GetValues<Move>().Where(m => m != Move.None && !learnSet.Learns(m)).Select(m => dataT.GetMoveData(m)).ToList();
+            return availableMoves.Where(m => m != Move.None && !learnSet.Learns(m)).Select(m => dataT.GetMoveData(m)).ToList();
         }
 
         private List<MoveData> GetAvailibleTypeMoves(IEnumerable<MoveData> allMoves, PokemonType type, LearnSet learnSet)
@@ -706,7 +717,7 @@ namespace PokemonRandomizer.Backend.Randomization
 
         private LearnSet.Entry[] GetEntriesOfType(PokemonType type, LearnSet learnSet)
         {
-            return learnSet.Where(entry => dataT.GetMoveData(entry.move).type == type).ToArray();
+            return learnSet.Where(entry => dataT.GetMoveData(entry.move).IsType(type)).ToArray();
         }
 
         private void ModifyLearnsetSpecial(PokemonBaseStats pokemon, Settings settings, VariantData data)
@@ -715,12 +726,7 @@ namespace PokemonRandomizer.Backend.Randomization
             var availableAddMoves = GetAvailibleAddMoves(pokemon.learnSet);
             foreach (var typeReplacement in data.TypeReplacements)
             {
-                var availibleTypeMoves = GetAvailibleTypeMoves(availableAddMoves, typeReplacement.newType, pokemon.learnSet);
-                var movesToReplace = GetEntriesOfType(typeReplacement.originalType, pokemon.learnSet);
-                foreach (var entry in movesToReplace)
-                {
-                    entry.move = ReplaceMove(entry.move, data, ref availibleTypeMoves);
-                }
+                ApplyStandardReplacements(typeReplacement, availableAddMoves, pokemon, data);
             }
             // Replace normal type attacking moves
             var normalAttackingMoveEntries = pokemon.learnSet.Where(entry => IsAttackingMoveOfType(entry, PokemonType.NRM));
@@ -769,20 +775,15 @@ namespace PokemonRandomizer.Backend.Randomization
             // Replace Types
             foreach (var typeReplacement in data.TypeReplacements)
             {
-                var availibleTypeMoves = GetAvailibleTypeMoves(availableAddMoves, typeReplacement.newType, pokemon.learnSet);
-                var movesToReplace = GetEntriesOfType(typeReplacement.originalType, pokemon.learnSet);
-                foreach (var entry in movesToReplace)
-                {
-                    entry.move = ReplaceMove(entry.move, data, ref availibleTypeMoves);
-                }
+                var availableTypeMoves = ApplyStandardReplacements(typeReplacement, availableAddMoves, pokemon, data);
                 // Pokemon still doesn't have any attacking moves of the replacement type, add some!
                 if (!HasAttackingMoveOfType(pokemon.learnSet, typeReplacement.newType, 2, 50))
                 {
-                    AddMove(pokemon, 2, 50, 1, 18, data, ref availibleTypeMoves);
+                    AddMove(pokemon, 2, 50, 1, 18, data, ref availableTypeMoves);
                 }
                 if (!HasAttackingMoveOfType(pokemon.learnSet, typeReplacement.newType, 51))
                 {
-                    AddMove(pokemon, 51, 120, 22, 99, data, ref availibleTypeMoves);
+                    AddMove(pokemon, 51, 120, 22, 99, data, ref availableTypeMoves);
                 }
             }
             foreach (var gainedType in data.GainedTypes)
@@ -810,10 +811,45 @@ namespace PokemonRandomizer.Backend.Randomization
             }
         }
 
+        private List<MoveData> ApplyStandardReplacements((PokemonType originalType, PokemonType newType) typeReplacement, IEnumerable<MoveData> availableAddMoves, PokemonBaseStats pokemon, VariantData data)
+        {
+            var availibleTypeMoves = GetAvailibleTypeMoves(availableAddMoves, typeReplacement.newType, pokemon.learnSet);
+            var entriesToReplace = GetEntriesOfType(typeReplacement.originalType, pokemon.learnSet);
+            var moveReplacements = new Dictionary<Move, List<LearnSet.Entry>>(entriesToReplace.Length);
+            // Construct the move to entries map
+            foreach (var entry in entriesToReplace)
+            {
+                if (!moveReplacements.ContainsKey(entry.move))
+                {
+                    moveReplacements.Add(entry.move, new List<LearnSet.Entry>() { entry });
+                }
+                else
+                {
+                    moveReplacements[entry.move].Add(entry);
+                }
+            }
+            foreach (var kvp in moveReplacements)
+            {
+                // Dont apply replacement for moves that have multiple override typings if we are still a valid type
+                // For example, poisonpowder doesn need to be replaced if oddish becomes grass/fire, and harden doesn't need to be place if metapod becomes rock
+                if (dataT.GetMoveData(kvp.Key).IsType(pokemon))
+                {
+                    continue;
+                }
+                // Get the new move and set all relevant entries to the new move
+                var newMove = ReplaceMove(kvp.Key, data, ref availibleTypeMoves);
+                foreach (var entry in kvp.Value)
+                {
+                    entry.move = newMove;
+                }
+            }
+            return availibleTypeMoves;
+        }
+
         private void AddMove(PokemonBaseStats pokemon, int minPower, int maxPower, int minLevel, int maxLevel, VariantData data, ref List<MoveData> availibleMoves)
         {
             var eligibleMoves = availibleMoves.Where(m => m.EffectivePower >= minPower && m.EffectivePower <= maxPower);
-            if (eligibleMoves.Count() <= 0)
+            if (!eligibleMoves.Any())
             {
                 Logger.main.Warning($"Attemping to add a variant move to {pokemon.Name} but no eligible move found. Move add will be skipped");
                 return;
@@ -845,7 +881,7 @@ namespace PokemonRandomizer.Backend.Randomization
                     eligibleMoves = availibleMoves.Where(m => m.HasUndefinedRealPower && m.effect == oldMove.effect);
                 }
                 // Actually replace move
-                if (eligibleMoves.Count() > 0)
+                if (eligibleMoves.Any())
                 {
                     newMove = rand.Choice(eligibleMoves).move;
                 }
@@ -864,7 +900,7 @@ namespace PokemonRandomizer.Backend.Randomization
             }
             else if (oldMove.IsStatus)
             {
-                if (oldMove.type == PokemonType.NRM)
+                if (oldMove.IsType(PokemonType.NRM))
                     return move;
                 newMove = ChooseStatusMove(availibleMoves);
             }
@@ -885,7 +921,7 @@ namespace PokemonRandomizer.Backend.Randomization
         {
             var nonStatusMoves = allMoves.Where(m => !m.IsStatus && !m.IsOneHitKO);
             var eligibleMoves = nonStatusMoves.Where(m => m.EffectivePower >= oldMovePower - powerDiffTolerance && m.EffectivePower <= oldMovePower + powerDiffTolerance);
-            if (eligibleMoves.Count() > 0)
+            if (eligibleMoves.Any())
             {
                 return rand.Choice(eligibleMoves).move;
             }
@@ -909,7 +945,7 @@ namespace PokemonRandomizer.Backend.Randomization
         private Move ChooseStatusMove(IEnumerable<MoveData> allMoves)
         {
             var eligibleMoves = allMoves.Where(m => m.IsStatus);
-            if (eligibleMoves.Count() > 0)
+            if (eligibleMoves.Any())
             {
                 return rand.Choice(eligibleMoves).move;
             }
@@ -1476,7 +1512,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 return TypeProfile.Balanced;
             return primaryTypeSpecial ? TypeProfile.Special : TypeProfile.Physical;
         }
-        private bool IsSpecial(PokemonType type)
+        private static bool IsSpecial(PokemonType type)
         {
             return type > PokemonType.Unknown;
         }
