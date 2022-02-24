@@ -73,7 +73,7 @@ namespace PokemonRandomizer.Backend.Randomization
             if (rand.RollSuccess(settings.Noise))
                 return rand.Choice(all);
             // If there is no metric data
-            if (data.Count() <= 0)
+            if (!data.Any())
             {
                 if (settings.BanLegendaries) // Remove legendaries if banned
                     return rand.Choice(all.Where(p => !p.IsLegendary()));
