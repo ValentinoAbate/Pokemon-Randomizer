@@ -62,8 +62,45 @@ namespace PokemonRandomizer.AppSettings
         public override bool PreventHmMovesInTMsAndTutors => tmHmTutorData.NoHmMovesInTMsAndTutors;
         public override bool PreventDuplicateTMsAndTutors => tmHmTutorData.NoDuplicateTMsAndTutors;
         public override bool KeepImportantTMsAndTutors => tmHmTutorData.KeepImportantTmsAndTutors;
-        // TODO:
-        // public override HashSet<Move> ImportantTMsAndTutors => (No UI yet)
+        private static readonly HashSet<Move> rseImportantTMTutorMoves = new()
+        {
+            Move.SECRET_POWER, // Needed for secret bases
+            Move.DIG, // Needed to unlock the regis at buried relic
+        };
+        private static readonly HashSet<Move> genIVImportantTMTutorMoves = new()
+        {
+            Move.HEADBUTT, // Needed for headbutting trees in HGSS
+            Move.FLASH, // Not an HM in this gen
+        };
+        private static readonly HashSet<Move> genIIImportantTMTutorMoves = new()
+        {
+            Move.HEADBUTT, // Needed for headbutting trees
+            Move.ROCK_SMASH, // Not an HM in this gen
+        };
+        public override HashSet<Move> ImportantTMsAndTutors
+        {
+            get
+            {
+                if(Metadata == null)
+                {
+                    return new HashSet<Move>();
+                }
+                if (Metadata.IsRubySapphireOrEmerald)
+                {
+                    return rseImportantTMTutorMoves;
+                }
+                if (Metadata.Gen == Generation.IV)
+                {
+                    return genIVImportantTMTutorMoves;
+                }
+                if (Metadata.Gen == Generation.II)
+                {
+                    return genIIImportantTMTutorMoves;
+                }
+                return new HashSet<Move>();
+
+            }
+        }
         public override double TMRandChance => RandomChance(tmHmTutorData.RandomizeTMs, tmHmTutorData.TMRandChance);
         public override double MoveTutorRandChance => RandomChance(tmHmTutorData.RandomizeMoveTutors, tmHmTutorData.MoveTutorRandChance);
 

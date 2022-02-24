@@ -35,7 +35,7 @@ namespace PokemonRandomizer.UI.Views
             stack.Add(new RandomChanceUI("Random Tutor Moves", model.RandomizeMoveTutors, model.MoveTutorRandChance));
             stack.Add(new BoundCheckBoxUI(model.NoHmMovesInTMsAndTutors, "Prevent HM moves in TMs and Tutors"));
             stack.Add(new BoundCheckBoxUI(model.NoDuplicateTMsAndTutors, "Prevent duplicate moves in TMs and Tutors"));
-            stack.Add(new BoundCheckBoxUI(model.KeepImportantTmsAndTutors, "Keep important TMs and Tutors", "Ensures that important TMs and Tutors won't be randomized (Headbutt, Rock Smash, Secret Power, Flash, etc)"));
+            stack.Add(new BoundCheckBoxUI(model.KeepImportantTmsAndTutors, "Keep important TMs and Tutors", "Ensures that important TMs and Tutors won't be randomized (Secret Power + Dig in RSE)"));
             stack.Add(new Separator());
             stack.Add(new Label() { Content = "Compatibility" });
             stack.Add(new Separator());

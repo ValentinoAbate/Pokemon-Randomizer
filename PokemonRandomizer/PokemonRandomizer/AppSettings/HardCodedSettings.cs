@@ -47,6 +47,7 @@ namespace PokemonRandomizer.AppSettings
             Move.FLASH,
             Move.ROCK_SMASH,
             Move.SECRET_POWER,
+            Move.DIG,
         };
         public override double TMRandChance => 1;
         public override double MoveTutorRandChance => 1;
