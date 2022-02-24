@@ -314,10 +314,7 @@ namespace PokemonRandomizer.AppSettings
         };
         public override TradePokemonIVSetting TradePokemonIVOption => TradePokemonIVSetting.Randomize;
         public override double TradeHeldItemRandChance => 1;
-        public override ItemRandomizer.Settings TradeHeldItemSettings { get; } = new ItemRandomizer.Settings()
-        {
-            SamePocketChance = 0.75,
-        };
+        public override ItemRandomizer.Settings TradeHeldItemSettings { get; } = new ItemRandomizer.Settings();
 
         #endregion
 
@@ -410,31 +407,19 @@ namespace PokemonRandomizer.AppSettings
 
         public override PcItemOption PcPotionOption => PcItemOption.Custom;
         public override Item CustomPcItem => Item.Metal_Coat;
-        public override ItemRandomizer.Settings PcItemSettings { get; } = new ItemRandomizer.Settings()
-        {
-            SamePocketChance = 0.75,
-        };
+        public override ItemRandomizer.Settings PcItemSettings { get; } = new ItemRandomizer.Settings();
         public override bool AddCustomItemToPokemarts => false;
         public override Item CustomMartItem => Item.Rare_Candy;
         public override bool OverrideCustomMartItemPrice => false;
         public override int CustomMartItemPrice => 4800;
         public override double FieldItemRandChance => 1;
-        public override ItemRandomizer.Settings FieldItemSettings { get; } = new ItemRandomizer.Settings()
-        {
-            SamePocketChance = 0.75,
-        };
+        public override ItemRandomizer.Settings FieldItemSettings { get; } = new ItemRandomizer.Settings();
         public override bool UseSeperateHiddenItemSettings => true;
         public override double HiddenItemRandChance => 1;
-        public override ItemRandomizer.Settings HiddenItemSettings { get; } = new ItemRandomizer.Settings()
-        {
-            SamePocketChance = 0.75,
-        };
+        public override ItemRandomizer.Settings HiddenItemSettings { get; } = new ItemRandomizer.Settings();
 
         public override double PickupItemRandChance => 1;
-        public override ItemRandomizer.Settings PickupItemSettings { get; } = new ItemRandomizer.Settings()
-        {
-            SamePocketChance = 0.75,
-        };
+        public override ItemRandomizer.Settings PickupItemSettings { get; } = new ItemRandomizer.Settings();
 
         public override double BerryTreeRandChance => 1;
         public override bool BanMinigameBerries => true;

@@ -20,7 +20,6 @@ namespace PokemonRandomizer.UI.Models
         public Box<double> HeldItemRandChance { get; set; } = new Box<double>(1);
         public ItemRandomizer.Settings TradeHeldItemSettings { get; set; } = new ItemRandomizer.Settings()
         {
-            SamePocketChance = 0,
             NoneToOtherChance = 1,
         };
     }

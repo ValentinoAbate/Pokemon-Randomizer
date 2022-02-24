@@ -140,8 +140,6 @@ namespace PokemonRandomizer.Backend.Randomization
 
         public class Settings
         {
-            public bool BanMail { get; set; } = true;
-            public double SamePocketChance { get; set; } = 1;
             public double NoneToOtherChance { get; set; } = 0;
         }
     }
