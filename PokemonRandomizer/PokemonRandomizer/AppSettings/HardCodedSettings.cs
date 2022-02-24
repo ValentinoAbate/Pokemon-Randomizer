@@ -312,6 +312,7 @@ namespace PokemonRandomizer.AppSettings
                 new MetricData(PokemonMetric.powerIndividual)
             }
         };
+        public override TradePokemonIVSetting TradePokemonIVOption => TradePokemonIVSetting.Randomize;
         public override double TradeHeldItemRandChance => 1;
         public override ItemRandomizer.Settings TradeHeldItemSettings { get; } = new ItemRandomizer.Settings()
         {

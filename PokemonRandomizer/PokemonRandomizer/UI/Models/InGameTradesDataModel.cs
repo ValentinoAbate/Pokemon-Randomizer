@@ -9,24 +9,13 @@ namespace PokemonRandomizer.UI.Models
     {
         public Box<bool> RandomizeTradeGive { get; set; } = new Box<bool>();
         public Box<double> TradePokemonGiveRandChance { get; set; } = new Box<double>(1);
+        public Box<bool> BanLegendariesGive { get; set; } = new Box<bool>(true);
+        public Box<bool> TryMatchPowerGive { get; set; } = new Box<bool>(true);
         public Box<bool> RandomizeTradeRecieve { get; set; } = new Box<bool>();
         public Box<double> TradePokemonRecievedRandChance { get; set; } = new Box<double>(1);
-        public PokemonSettings TradeSpeciesSettingsGive { get; set; } = new PokemonSettings()
-        {
-            BanLegendaries = true,
-            Data = new List<MetricData>()
-            {
-                new MetricData(PokemonMetric.powerIndividual)
-            }
-        };
-        public PokemonSettings TradeSpeciesSettingsRecieve { get; set; } = new PokemonSettings()
-        {
-            BanLegendaries = true,
-            Data = new List<MetricData>()
-            {
-                new MetricData(PokemonMetric.powerIndividual)
-            }
-        };
+        public Box<bool> BanLegendariesRecieve { get; set; } = new Box<bool>(true);
+        public Box<bool> TryMatchPowerRecieve { get; set; } = new Box<bool>(true);
+        public Box<TradePokemonIVSetting> IVSetting { get; set; } = new Box<TradePokemonIVSetting>(TradePokemonIVSetting.Unchanged);
         public Box<bool> RandomizeHeldItems { get; set; } = new Box<bool>();
         public Box<double> HeldItemRandChance { get; set; } = new Box<double>(1);
         public ItemRandomizer.Settings TradeHeldItemSettings { get; set; } = new ItemRandomizer.Settings()

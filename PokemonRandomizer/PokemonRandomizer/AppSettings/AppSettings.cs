@@ -232,8 +232,21 @@ namespace PokemonRandomizer.AppSettings
 
         public override double TradePokemonGiveRandChance => RandomChance(tradeData.RandomizeTradeGive, tradeData.TradePokemonGiveRandChance);
         public override double TradePokemonRecievedRandChance => RandomChance(tradeData.RandomizeTradeRecieve, tradeData.TradePokemonRecievedRandChance);
-        public override PokemonSettings TradeSpeciesSettingsGive => tradeData.TradeSpeciesSettingsGive;
-        public override PokemonSettings TradeSpeciesSettingsReceive => tradeData.TradeSpeciesSettingsRecieve;
+        public override PokemonSettings TradeSpeciesSettingsGive => new PokemonSettings()
+        {
+            RestrictIllegalEvolutions = false,
+            ForceHighestLegalEvolution = false,
+            BanLegendaries = tradeData.BanLegendariesGive,
+            Data = tradeData.TryMatchPowerGive ? new List<MetricData>() { new MetricData(PokemonMetric.powerIndividual) } : new List<MetricData>(),
+        };
+        public override PokemonSettings TradeSpeciesSettingsReceive => new PokemonSettings()
+        {
+            RestrictIllegalEvolutions = false,
+            ForceHighestLegalEvolution = false,
+            BanLegendaries = tradeData.BanLegendariesRecieve,
+            Data = tradeData.TryMatchPowerRecieve ? new List<MetricData>() { new MetricData(PokemonMetric.powerIndividual) } : new List<MetricData>(),
+        };
+        public override TradePokemonIVSetting TradePokemonIVOption => tradeData.IVSetting;
         public override double TradeHeldItemRandChance => RandomChance(tradeData.RandomizeHeldItems, tradeData.HeldItemRandChance);
         public override ItemRandomizer.Settings TradeHeldItemSettings => tradeData.TradeHeldItemSettings;
 

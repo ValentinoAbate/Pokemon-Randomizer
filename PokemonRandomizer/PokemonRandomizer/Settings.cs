@@ -161,10 +161,17 @@ namespace PokemonRandomizer
         #endregion
 
         #region Trade Pokemon
+        public enum TradePokemonIVSetting
+        {
+            Unchanged,
+            Randomize,
+            Maximize
+        }
         public abstract double TradePokemonGiveRandChance { get; }
         public abstract double TradePokemonRecievedRandChance { get; }
         public abstract PokemonSettings TradeSpeciesSettingsGive { get; }
         public abstract PokemonSettings TradeSpeciesSettingsReceive { get; }
+        public abstract TradePokemonIVSetting TradePokemonIVOption { get; }
         public abstract double TradeHeldItemRandChance { get; }
         public abstract ItemRandomizer.Settings TradeHeldItemSettings { get; }
 

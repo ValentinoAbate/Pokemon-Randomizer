@@ -503,6 +503,20 @@ namespace PokemonRandomizer.Backend.Randomization
                         }
                     });
                 }
+                if (settings.TradePokemonIVOption == Settings.TradePokemonIVSetting.Maximize)
+                {
+                    for (int i = 0; i < trade.IVs.Length; ++i)
+                    {
+                        trade.IVs[i] = InGameTrade.maxIV;
+                    }
+                }
+                else if(settings.TradePokemonIVOption == Settings.TradePokemonIVSetting.Randomize)
+                {
+                    for (int i = 0; i < trade.IVs.Length; ++i)
+                    {
+                        trade.IVs[i] = (byte)rand.RandomInt(0, InGameTrade.maxIVPlus1);
+                    }
+                }
             }
             #endregion
 

@@ -5,7 +5,7 @@ namespace PokemonRandomizer.UI.Views
 {
     using Backend.EnumTypes;
     using Models;
-
+    using System.Windows.Data;
 
     public class SpecialPokemonDataView : DataView<SpecialPokemonDataModel>
     {
@@ -36,29 +36,35 @@ namespace PokemonRandomizer.UI.Views
             return CreateTabItem("Gift Pokemon", stack);
         }
 
+        private static CompositeCollection TradeIVDropdown => new()
+        {
+            new ComboBoxItem() { Content = "Unchanged" },
+            new ComboBoxItem() { Content = "Random", ToolTip = "Pokemon recieved from in-game trades normally have fixed IVs. This option sets them to random values" },
+            new ComboBoxItem() { Content = "Maximum", ToolTip = "Ensure all recieved pokemon have max IVs" },
+        };
+
         private TabItem CreateTradePokemonTab(InGameTradesDataModel model)
         {
-            var tabs = new TabControl();
-            // Required Pokemon Tab
+            // Required Pokemon
             var stack = CreateStack();
-            stack.Header("Randomization");
-            stack.Add(new RandomChanceUI("Randomize Pokemon Required by Trade", model.RandomizeTradeGive, model.TradePokemonGiveRandChance))
-                .BindEnabled(stack.Add(new PokemonSettingsUI(model.TradeSpeciesSettingsGive)));
-            tabs.Add(CreateTabItem("Required Pokemon", stack));
-            // Recieved Pokemon Tab
-            stack = CreateStack();
-            stack.Header("Randomization");
-            stack.Add(new RandomChanceUI("Randomize Pokemon Received by Trade", model.RandomizeTradeRecieve, model.TradePokemonRecievedRandChance))
-                .BindEnabled(stack.Add(new PokemonSettingsUI(model.TradeSpeciesSettingsRecieve)));
-            tabs.Add(CreateTabItem("Received Pokemon", stack));
-            // Held Item Tab
-            stack = CreateStack();
-            stack.Header("Randomization");
-            stack.Add(new RandomChanceUI("Randomize Held Items", model.RandomizeHeldItems, model.HeldItemRandChance))
-                .BindEnabled(stack.Add(new ItemSettingsUI(model.TradeHeldItemSettings)));
-            tabs.Add(CreateTabItem("Held Items", stack));
+            stack.Header("Required Pokemon");
+            var giveRand = stack.Add(new RandomChanceUI("Randomize Pokemon Required by Trade", model.RandomizeTradeGive, model.TradePokemonGiveRandChance));
+            var giveRandStack = stack.Add(giveRand.BindEnabled(CreateStack()));
+            giveRandStack.Add(new BoundCheckBoxUI(model.BanLegendariesGive, "Ban Legendaries"));
+            giveRandStack.Add(new BoundCheckBoxUI(model.TryMatchPowerGive, "Match Power") { ToolTip ="Make it more likely for the pokemon to randomize to one with a similar Base Stat Total, as in-game trades do not have a fixed level"});
 
-            return CreateTabItem("In-Game Trades", tabs);
+            // Recieved Pokemon
+            stack.Header("Recieved Pokemon");
+            var recieveRand = stack.Add(new RandomChanceUI("Randomize Pokemon Recieved from Trade", model.RandomizeTradeRecieve, model.TradePokemonRecievedRandChance));
+            var recieveRandStack = stack.Add(recieveRand.BindEnabled(CreateStack()));
+            recieveRandStack.Add(new BoundCheckBoxUI(model.BanLegendariesRecieve, "Ban Legendaries"));
+            recieveRandStack.Add(new BoundCheckBoxUI(model.TryMatchPowerRecieve, "Match Power") { ToolTip = "Make it more likely for the pokemon to randomize to one with a similar Base Stat Total, as in-game trades do not have a fixed level" });
+
+            stack.Add(new EnumComboBoxUI<Settings.TradePokemonIVSetting>("Recieved Pokemon IVs", TradeIVDropdown, model.IVSetting));
+            stack.Add(new RandomChanceUI("Randomize Held Items", model.RandomizeHeldItems, model.HeldItemRandChance))
+                .BindEnabled(stack.Add(new ItemSettingsUI(model.TradeHeldItemSettings, false)));
+
+            return CreateTabItem("In-Game Trades", stack);
         }
     }
 }
