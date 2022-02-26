@@ -21,7 +21,7 @@ namespace PokemonRandomizer.AppSettings
         private GiftPokemonDataModel giftData;
         private DreamTeamDataModel dreamTeamData;
         private WildEncounterDataModel wildEncounterData;
-        private Dictionary<TrainerCategory, TrainerDataModel> trainerData;
+        private TrainerDataModel trainerData;
         private ItemDataModel itemData;
         private WeatherDataModel weatherData;
         private MiscDataModel miscData;
@@ -40,7 +40,7 @@ namespace PokemonRandomizer.AppSettings
             tmHmTutorData = data.TmHmTutorData;
             pokemonData = data.PokemonData;
             wildEncounterData = data.WildEncounterData;
-            trainerData = data.TrainerDataModels.ToDictionary((tData) => tData.Category);
+            trainerData = data.TrainerData;
             itemData = data.ItemData;
             weatherData = data.WeatherData;
             miscData = data.MiscData;
@@ -268,15 +268,7 @@ namespace PokemonRandomizer.AppSettings
                     DoubleBattleChance = model.DoubleBattleChance,
                 };
             }
-            if (trainerData.ContainsKey(trainerClass))
-            {
-                return TrainerDataToSettings(trainerData[trainerClass]);
-            }
-            if(trainerData.ContainsKey(TrainerCategory.Trainer))
-            {
-                return TrainerDataToSettings(trainerData[TrainerCategory.Trainer]);
-            }
-            return base.GetTrainerSettings(trainerClass);
+            return TrainerDataToSettings(trainerData);
         }
 
         #endregion

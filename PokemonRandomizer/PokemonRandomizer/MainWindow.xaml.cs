@@ -193,8 +193,7 @@ namespace PokemonRandomizer
             PokemonTraitsView.Content = new PokemonTraitsDataView(AppData.PokemonData);
             TmHmTutorView.Content = new TmHmTutorDataView(AppData.TmHmTutorData);
             WildPokemonView.Content = new WildEncounterDataView(AppData.WildEncounterData);
-            var trainerTraitsGroup = new GroupUI<TrainerDataView, TrainerDataModel>(TrainerGroups, TrainerView, AppData.TrainerDataModels);
-            trainerTraitsGroup.SetAddButtonVisibility(Visibility.Hidden);
+            TrainerView.Content = new TrainerDataView(AppData.TrainerData);
             ItemsView.Content = new ItemDataView(AppData.ItemData);
             WeatherView.Content = new WeatherDataView(AppData.WeatherData);
         }

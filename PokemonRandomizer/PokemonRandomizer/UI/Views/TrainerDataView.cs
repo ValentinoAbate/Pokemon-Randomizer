@@ -11,7 +11,7 @@ namespace PokemonRandomizer.UI.Views
     using static Settings;
     using static Settings.TrainerSettings;
 
-    public class TrainerDataView : GroupDataView<TrainerDataModel>
+    public class TrainerDataView : DataView<TrainerDataModel>
     {
         public CompositeCollection PokemonStrategyDropdown => new CompositeCollection()
         {
@@ -31,51 +31,22 @@ namespace PokemonRandomizer.UI.Views
             //PokemonMetric.typeTrainerClass,
         });
 
-        public override Panel CreateModelView(TrainerDataModel model)
+        public TrainerDataView(TrainerDataModel model)
         {
-            var grid = new Grid();
-            //grid.RowDefinitions.Add(new RowDefinition() { Height = GridLength.Auto });
-            grid.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(1, GridUnitType.Star) });
- 
-            var tabs = new TabControl();
-            tabs.SetValue(Grid.RowProperty, 0);
-            grid.Children.Add(tabs);
-
-            tabs.Items.Add(CreatePokemonTab(model));
-            tabs.Items.Add(CreateBattleTypeTab(model));
-            return grid;
-        }
-
-        private TabItem CreatePokemonTab(TrainerDataModel model)
-        {
-            var tab = new TabItem() { Header = "Pokemon" };
-            var stack = new StackPanel() { Orientation = Orientation.Vertical };
-            var pokemonStack = new StackPanel() { Orientation = Orientation.Vertical };
-            pokemonStack.Add(new EnumComboBoxUI<PokemonPcgStrategy>("Recurring Trainer Pokemon Randomization Strategy", PokemonStrategyDropdown, model.PokemonStrategy));
+            var stack = CreateMainStack();
+            // Pokemon Randomization
+            stack.Header("Trainer Pokemon");
+            var pokemonRand = stack.Add(new RandomChanceUI("Randomize Pokemon", model.RandomizePokemon, model.PokemonRandChance));
+            var pokemonStack = stack.Add(pokemonRand.BindEnabled(CreateStack()));
             pokemonStack.Add(new PokemonSettingsUI(model.PokemonSettings, MetricTypes, model.InitializeMetric));
-            stack.Add(new RandomChanceUI("Random Pokemon", model.RandomizePokemon, model.PokemonRandChance, pokemonStack));
-            stack.Add(pokemonStack);
-            tab.Content = stack;
-            return tab;
-        }
-
-        private TabItem CreateBattleTypeTab(TrainerDataModel model)
-        {
-            var tab = new TabItem() { Header = "Battle Type" };
-            var stack = new StackPanel() { Orientation = Orientation.Vertical };
-            var typeStack = new StackPanel { Orientation = Orientation.Vertical };
-
-            typeStack.Add(new EnumComboBoxUI<BattleTypePcgStrategy>("Recurring Trainer Battle Type Strategy", BattleTypeStrategyDropdown, model.BattleTypeStrategy));
+            pokemonStack.Add(new EnumComboBoxUI<PokemonPcgStrategy>("Recurring Trainer Pokemon Randomization Strategy", PokemonStrategyDropdown, model.PokemonStrategy));
+            // Battle Type Randomization
+            stack.Header("Battle Type");
+            var battleTypeRand = stack.Add(new RandomChanceUI("Randomize Battle Type", model.RandomizeBattleType, model.BattleTypeRandChance));
+            var typeStack = stack.Add(battleTypeRand.BindEnabled(CreateStack()));
             typeStack.Add(new BoundSliderUI("Double Battle Chance", model.DoubleBattleChance) { ToolTip = "The chance that the battle type will be a double battle when randomized" });
-            stack.Add(new RandomChanceUI("Random Battle Type", model.RandomizeBattleType, model.BattleTypeRandChance, typeStack));
-            stack.Add(typeStack);
-            tab.Content = stack;
-            return tab;
-        }
+            typeStack.Add(new EnumComboBoxUI<BattleTypePcgStrategy>("Recurring Trainer Battle Type Strategy", BattleTypeStrategyDropdown, model.BattleTypeStrategy));
 
-        public override TrainerDataModel CloneModel(TrainerDataModel model)
-        {
-            throw new NotImplementedException();
         }
     }
 }

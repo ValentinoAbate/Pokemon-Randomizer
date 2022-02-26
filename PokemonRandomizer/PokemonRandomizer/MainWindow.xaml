@@ -93,15 +93,8 @@
 
             </TabItem>
 
-            <TabItem Header="Trainers">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
-                    <DockPanel Name="TrainerGroups" Grid.Column="0" Width="105"/>
-                    <DockPanel Name="TrainerView" Grid.Column="1"/>
-                </Grid>
+            <TabItem Name="TrainerView" Header="Trainers">
+
             </TabItem>
 
             <TabItem Name="ItemsView" Header="Items">
