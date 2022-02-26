@@ -337,9 +337,9 @@ namespace PokemonRandomizer.AppSettings
             OccurenceWeightedCategories = itemData.ReduceDuplicatesCategories,
             OccurenceWeightPower = itemData.DupeReductionStrength.Value switch
             {
-                ItemDataModel.DuplicateReductionOption.Weak => 1.25,
-                ItemDataModel.DuplicateReductionOption.Moderate => 2,
-                ItemDataModel.DuplicateReductionOption.Strong => 5,
+                ItemDataModel.DuplicateReductionOption.Weak => 1.5f,
+                ItemDataModel.DuplicateReductionOption.Moderate => 3,
+                ItemDataModel.DuplicateReductionOption.Strong => 10,
                 _ => 10,
             },
             SameCategoryCategories = itemData.KeepCategoryCategories,

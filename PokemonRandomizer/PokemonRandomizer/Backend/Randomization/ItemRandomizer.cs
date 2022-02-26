@@ -90,7 +90,7 @@ namespace PokemonRandomizer.Backend.Randomization
             {
                 return 1;
             }
-            return 1 / MathF.Pow(1 + occurences[i.Item], (float)randomizerSettings.OccurenceWeightPower);
+            return 1 / MathF.Pow(randomizerSettings.OccurenceWeightPower, occurences[i.Item]);
         }
 
         private bool IsNotBanned(ItemData i)
@@ -121,6 +121,15 @@ namespace PokemonRandomizer.Backend.Randomization
             {
                 Logger.main.Info($"{i.Key.ToDisplayString()}: {i.Value}");
             }
+            int sumTMs = 0;
+            foreach(var i in list)
+            {
+                if (i.Key.IsTM())
+                {
+                    sumTMs += i.Value;
+                }
+            }
+            Logger.main.Info($"Total TMs: {sumTMs}");
         }
 
         public class RandomizerSettings
@@ -131,7 +140,7 @@ namespace PokemonRandomizer.Backend.Randomization
             public Categories BannedCategories { get; set; } = Categories.KeyItem | Categories.ContestScarf | Categories.Mail | Categories.MinigameBerry;
             // Items in these categories will be less likely to be chosen if they have been chosed before
             public Categories OccurenceWeightedCategories { get; set; } = Categories.TM | Categories.HeldItem;
-            public double OccurenceWeightPower { get; set; } = 10;
+            public float OccurenceWeightPower { get; set; } = 10;
             public bool ShouldApplyOccurenceWeighting => OccurenceWeightedCategories != Categories.None && OccurenceWeightPower >= 1;
             // Items in this categories will be more like to be replaced with an item from the same category when replaced
             public Categories SameCategoryCategories { get; set; }
