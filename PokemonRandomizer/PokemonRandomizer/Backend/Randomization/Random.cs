@@ -31,7 +31,7 @@ namespace PokemonRandomizer.Backend.Randomization
         private static int StringToInt(string seed)
         {
             using var algo = SHA1.Create();
-            return BitConverter.ToInt32(algo.ComputeHash(Encoding.UTF8.GetBytes(seed)));
+            return BitConverter.ToInt32(algo.ComputeHash(Encoding.UTF8.GetBytes(seed)), 0);
         }
 
         #region Utility Functions
