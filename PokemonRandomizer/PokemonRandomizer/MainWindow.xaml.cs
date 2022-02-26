@@ -251,12 +251,18 @@ namespace PokemonRandomizer
             Metadata = metadata;
         }
 
-        private byte[] GetRandomizedRom(string seed)
+        private RomData Randomize(string seed)
         {
             var copyData = Parser.Parse(Rom, Metadata, RomInfo);
             var randomzier = new Backend.Randomization.Randomizer(copyData, AppSettings, seed);
             var randomizedData = randomzier.Randomize();
             SetLastRandomizationInfo(randomizedData, Metadata, true);
+            return randomizedData;
+        }
+
+        private byte[] GetRandomizedRom(string seed)
+        {
+            var randomizedData = Randomize(seed);
             if(Metadata.Gen == Generation.III)
             {
                 var writer = new Gen3RomWriter();
@@ -528,7 +534,7 @@ namespace PokemonRandomizer
 
         private void QuickRandomize(object sender, RoutedEventArgs e)
         {
-            void QuickRand() => GetRandomizedRom(debugSeed);
+            void QuickRand() => Randomize(debugSeed);
             void Error(Exception e)
             {
                 LogError($"Quick Randomization Error: {e.Message}");
