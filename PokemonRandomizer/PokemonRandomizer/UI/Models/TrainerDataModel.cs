@@ -7,60 +7,15 @@ namespace PokemonRandomizer.UI.Models
     using static Settings.TrainerSettings;
     public class TrainerDataModel : DataModel
     {
-        public TrainerCategory Category { get; set; }
-        public bool OverrideSettings { get; set; }
-        public TrainerCategory OverrideCategory { get; set; }
-        public override string Name { get; set; }
-
-        public TrainerDataModel() : this(TrainerCategory.Trainer, defaultName)
+        public TrainerDataModel()
         {
-
-        }
-
-        public TrainerDataModel(TrainerCategory category, string name)
-        {
-            Category = category;
-            Name = name;
-            switch (Category)
+            PokemonSettings.Data = new List<MetricData>()
             {
-                case TrainerCategory.Trainer:
-                    PokemonSettings.Data = new List<MetricData>()
-                    {
-                        new MetricData(PokemonMetric.typeIndividual),
-                        new MetricData(PokemonMetric.powerIndividual, 2),
-                        MetricData.Empty,
-                    };
-                    PokemonSettings.BanLegendaries = true;
-                    break;
-                case TrainerCategory.AceTrainer:
-                    PokemonSettings.BanLegendaries = true;
-                    goto case TrainerCategory.Rival;
-                case TrainerCategory.Rival:
-                    PokemonSettings.Data = new List<MetricData>()
-                    {
-                        MetricData.Empty,
-                        MetricData.Empty,
-                        MetricData.Empty,
-                    };
-                    break;
-                case TrainerCategory.GymLeader:
-                    PokemonSettings.Data = new List<MetricData>()
-                    {
-                        new MetricData(PokemonMetric.typeTrainerParty),
-                        new MetricData(PokemonMetric.powerIndividual, 3),
-                        MetricData.Empty,
-                    };
-                    break;
-                case TrainerCategory.EliteFour:
-                case TrainerCategory.Champion:
-                    PokemonSettings.Data = new List<MetricData>()
-                    {
-                        new MetricData(PokemonMetric.typeTrainerParty),
-                        MetricData.Empty,
-                        MetricData.Empty,
-                    };
-                    break;
-            }
+                new MetricData(PokemonMetric.typeIndividual),
+                new MetricData(PokemonMetric.powerIndividual, 2),
+                MetricData.Empty,
+            };
+            PokemonSettings.BanLegendaries = true;
             foreach(var metric in PokemonSettings.Data)
             {
                 InitializeMetric(metric);
