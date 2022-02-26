@@ -25,28 +25,28 @@ namespace PokemonRandomizer.UI.Views
             Content = tabs;
         }
 
-        public CompositeCollection PCPotionStrategyDropdown => new CompositeCollection()
+        private static CompositeCollection PCPotionStrategyDropdown => new CompositeCollection()
         {
             new ComboBoxItem() {Content="Unchanged"},
             new ComboBoxItem() {Content="Random"},
             new ComboBoxItem() {Content="Custom"},
         };
 
-        private List<BoundFlagsEnumListBoxUI<Categories>.MenuBoxItem> GetItemCategoryDropDown() => new List<BoundFlagsEnumListBoxUI<Categories>.MenuBoxItem>
+        private List<BoundFlagsEnumListBoxUI<Categories>.MenuBoxItem> GetItemCategoryDropDown() => new()
         {
-            new BoundFlagsEnumListBoxUI<Categories>.MenuBoxItem { Item = Categories.Ball, Content="Poké Balls"},
-            new BoundFlagsEnumListBoxUI<Categories>.MenuBoxItem { Item = Categories.Medicine, Content="Medicine"},
+            new BoundFlagsEnumListBoxUI<Categories>.MenuBoxItem { Item = Categories.Ball, Content="Poké Balls", ToolTip="All Poké Balls"},
+            new BoundFlagsEnumListBoxUI<Categories>.MenuBoxItem { Item = Categories.Medicine, Content="Medicine", ToolTip="Medicine (HP, PP, and Status Healing Items, Revives, etc.)"},
             new BoundFlagsEnumListBoxUI<Categories>.MenuBoxItem { Item = Categories.StatIncrease, Content="Stat Boost Items", ToolTip="Items that permanently boost stats (EV-Boosting Items, PP-Ups, and Rare Candies)"},
-            new BoundFlagsEnumListBoxUI<Categories>.MenuBoxItem { Item = Categories.TM, Content="TMs"},
+            new BoundFlagsEnumListBoxUI<Categories>.MenuBoxItem { Item = Categories.TM, Content="TMs", ToolTip="All TMs"},
             new BoundFlagsEnumListBoxUI<Categories>.MenuBoxItem { Item = Categories.Utility, Content="Utility Items", ToolTip="Miscellaneous utility items (Repels, Escape Ropes, Poké Dolls, etc.)"},
             new BoundFlagsEnumListBoxUI<Categories>.MenuBoxItem { Item = Categories.SellItem, Content="Sell Items", ToolTip="Items that have no purpose outside of being sold (Nuggets, Big Mushrooms, etc.)"},
             new BoundFlagsEnumListBoxUI<Categories>.MenuBoxItem { Item = Categories.ExchangeItem, Content="Exchange Items", ToolTip="Items that are exchanged for other items or services (Shards, Shoal Materials, Heart Scales, etc.)"},
             new BoundFlagsEnumListBoxUI<Categories>.MenuBoxItem { Item = Categories.BattleItem, Content="Battle Items", ToolTip="Items that are only used in battle (X Items, Dire Hits, and Guard Spec.)"},
             new BoundFlagsEnumListBoxUI<Categories>.MenuBoxItem { Item = Categories.HeldItem, Content="Held Items", ToolTip="Items that have effects when held by a Pokémon (except Berries and Berry Juice)"},
-            new BoundFlagsEnumListBoxUI<Categories>.MenuBoxItem { Item = Categories.ContestScarf, Content="Contest Scarves"},
+            new BoundFlagsEnumListBoxUI<Categories>.MenuBoxItem { Item = Categories.ContestScarf, Content="Contest Scarves", ToolTip="All Contest Scarves (does not include the Silk Scarf)"},
             new BoundFlagsEnumListBoxUI<Categories>.MenuBoxItem { Item = Categories.LuckyEgg, Content="Lucky Egg", ToolTip="Lucky Egg. Overlaps with Held Items"},
-            new BoundFlagsEnumListBoxUI<Categories>.MenuBoxItem { Item = Categories.Mail, Content="Mail"},
-            new BoundFlagsEnumListBoxUI<Categories>.MenuBoxItem { Item = Categories.Berry, Content="All Berries"},
+            new BoundFlagsEnumListBoxUI<Categories>.MenuBoxItem { Item = Categories.Mail, Content="Mail", ToolTip="All Mail"},
+            new BoundFlagsEnumListBoxUI<Categories>.MenuBoxItem { Item = Categories.Berry, Content="All Berries", ToolTip="All Berries. Selecting this category is the same as selecting the Minigame, Battle, and EV Berry categories separately"},
             new BoundFlagsEnumListBoxUI<Categories>.MenuBoxItem { Item = Categories.MinigameBerry, Content="Minigame Berries", ToolTip="Berries that have no purpose except in minigames for making Poké Blocks, Berry Powder, Poffins, etc. (Razz Berry, etc.)"},
             new BoundFlagsEnumListBoxUI<Categories>.MenuBoxItem { Item = Categories.BattleBerry, Content="Battle Berries", ToolTip="Berries that have effects when used on or held by a Pokémon (Oran Berries, etc.)"},
             new BoundFlagsEnumListBoxUI<Categories>.MenuBoxItem { Item = Categories.EVBerry, Content="EV Berries", ToolTip="Berries that lower a Pokémon's EVs (Pomeg Berries, etc.)"},
@@ -56,19 +56,32 @@ namespace PokemonRandomizer.UI.Views
             new BoundFlagsEnumListBoxUI<Categories>.MenuBoxItem { Item = Categories.Flute, Content="Flutes", ToolTip="Flutes (Blue Flute, etc.), except Key Items (Poké Flute, etc.)"},
         };
 
+        private static CompositeCollection DuplicateReductionOptionDropdown => new()
+        {
+            new ComboBoxItem() { Content = "Weak", ToolTip = "Duplicate-reduced items will usually appear 2-3 times" },
+            new ComboBoxItem() { Content = "Moderate", ToolTip = "Duplicate-reduced items will usually appear ~2 times" },
+            new ComboBoxItem() { Content = "Strong", ToolTip = "Duplicate-reduced items will usually appear 1 time" },
+        };
+
+        private const string banItemTooltip = "Items in banned categories will not be chosen as a random item. Skipped or otherwise unrandomized items may still be items from a banned category";
+        private const string skipItemTooltip = "Items in skipped categories will not be randomized and left as they are in the base game";
+        private const string reduceDuplicatesTooltip = "Items in the marked categories will be less likely to appear multiple times as random items. Skipped or otherwise unrandomized items will count towards duplicate reduction";
+        private const string keepSameCategoryTooltip = "Items in the marked categories will only randomize to an item in the same category a certain percentage of the time. For example, if TMs are marked, all TMs can only randomize to other TMs";
+
         private TabItem CreateItemRandomizerSettingsTab(ItemDataModel model)
         {
             var stack = CreateStack();
             stack.Header("General Randomization");
-            SetItemCategorySize(stack.Add(new BoundFlagsEnumListBoxUI<Categories>("Banned Items", model.BannedCategories, GetItemCategoryDropDown, CategoryOrEquals)).ListBox);
-            SetItemCategorySize(stack.Add(new BoundFlagsEnumListBoxUI<Categories>("Skipped Items", model.SkipCategories, GetItemCategoryDropDown, CategoryOrEquals)).ListBox);
+            SetItemCategorySize(stack.Add(new BoundFlagsEnumListBoxUI<Categories>("Banned Items", model.BannedCategories, GetItemCategoryDropDown, CategoryOrEquals, banItemTooltip)).ListBox);
+            SetItemCategorySize(stack.Add(new BoundFlagsEnumListBoxUI<Categories>("Skipped Items", model.SkipCategories, GetItemCategoryDropDown, CategoryOrEquals, skipItemTooltip)).ListBox);
             stack.Header("Duplicate Reduction");
-            SetItemCategorySize(stack.Add(new BoundFlagsEnumListBoxUI<Categories>("Reduce Duplicates", model.ReduceDuplicatesCategories, GetItemCategoryDropDown, CategoryOrEquals)).ListBox);
+            SetItemCategorySize(stack.Add(new BoundFlagsEnumListBoxUI<Categories>("Reduce Duplicates", model.ReduceDuplicatesCategories, GetItemCategoryDropDown, CategoryOrEquals, reduceDuplicatesTooltip)).ListBox);
+            stack.Add(new EnumComboBoxUI<ItemDataModel.DuplicateReductionOption>("Duplicate Reduction Strength", DuplicateReductionOptionDropdown, model.DupeReductionStrength));
             stack.Header("Category Preservation");
-            SetItemCategorySize(stack.Add(new BoundFlagsEnumListBoxUI<Categories>("Keep Category", model.KeepCategoryCategories, GetItemCategoryDropDown, CategoryOrEquals)).ListBox);
+            SetItemCategorySize(stack.Add(new BoundFlagsEnumListBoxUI<Categories>("Keep Category", model.KeepCategoryCategories, GetItemCategoryDropDown, CategoryOrEquals, keepSameCategoryTooltip)).ListBox);
             stack.Add(new BoundSliderUI("Keep Category Chance", model.SameCategoryChance));
-            stack.Add(new BoundCheckBoxUI(model.AllowBannedItemsWhenKeepingCategory, "Allow Banned Items When Keeping Category") { ToolTip="Allows Items to still randomized to a different Item in the same Category, even if that Item is Banned elsewhere." });
-            return CreateTabItem("Item Randomization Settings", stack);
+            stack.Add(new BoundCheckBoxUI(model.AllowBannedItemsWhenKeepingCategory, "Allow Banned Items When Keeping Category") { ToolTip="Allows Items in \"Keep Category\" categories to randomize to all Items in their own category, including Items in banned categories" });
+            return CreateTabItem("Item Category Settings", stack);
         }
 
         private void SetItemCategorySize(ListBox box)

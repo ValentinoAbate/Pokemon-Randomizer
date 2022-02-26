@@ -5,10 +5,15 @@ using ItemSettings = PokemonRandomizer.Backend.Randomization.ItemRandomizer.Sett
 namespace PokemonRandomizer.UI.Models
 {
     using Backend.EnumTypes;
-    using PokemonRandomizer.Backend.DataStructures;
     using Utilities;
     public class ItemDataModel : DataModel
     {
+        public enum DuplicateReductionOption
+        {
+            Weak,
+            Moderate,
+            Strong,
+        }
 
         public Box<bool> DontRandomizeTms { get; set; } = new Box<bool>(false);
 
@@ -36,9 +41,10 @@ namespace PokemonRandomizer.UI.Models
         public Box<Categories> SkipCategories { get; set; } = new Box<Categories>(Categories.ContestScarf | Categories.ExchangeItem);
         // Items in these categories will not be selected from the random pool
         public Box<Categories> BannedCategories { get; set; } = new Box<Categories>(Categories.ContestScarf | Categories.Mail | Categories.Berry | Categories.ExchangeItem);
-        // Items in these categories will be less likely to be chosen if they have been chosed before
+        // Items in these categories will be less likely to be chosen if they have been chosen before
         public Box<Categories> ReduceDuplicatesCategories { get; set; } = new Box<Categories>(Categories.TM | Categories.HeldItem | Categories.Flute | Categories.Special);
-        //public Box<double> OccurenceWeightMultiplier { get; set; } = new Box<double>(10);
+        public Box<DuplicateReductionOption> DupeReductionStrength { get; set; } = new Box<DuplicateReductionOption>(DuplicateReductionOption.Strong);
+
         // Items in this categories will be more like to be replaced with an item from the same category when replaced
         public Box<Categories> KeepCategoryCategories { get; set; } = new Box<Categories>(Categories.BattleBerry | Categories.EVBerry);
         public Box<double> SameCategoryChance { get; set; } = new Box<double>(0.9);

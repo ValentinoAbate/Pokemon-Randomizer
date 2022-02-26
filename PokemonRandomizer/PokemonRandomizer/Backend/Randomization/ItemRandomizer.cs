@@ -27,7 +27,7 @@ namespace PokemonRandomizer.Backend.Randomization
         {
             var itemWeights = new WeightedSet<ItemData>(possibleItems.Where(IsNotBanned));
             // Apply antiduplicate weights (if necessary)
-            if (randomizerSettings.OccurenceWeightMultiplier > 0)
+            if (randomizerSettings.OccurenceWeightedCategories != Categories.None && randomizerSettings.OccurenceWeightPower >= 1)
             {
                 itemWeights.Multiply(OccurenceWeight);
             }
@@ -55,7 +55,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 if (randomizerSettings.AllowBannedItemsWhenKeepingCategory && HasAnyCategory(validCategories, randomizerSettings.BannedCategories))
                 {
                     var itemsToAddBack = possibleItems.Where(item => ReAddWhenKeepingCategory(item, validCategories));
-                    if (randomizerSettings.OccurenceWeightMultiplier > 0)
+                    if (randomizerSettings.OccurenceWeightedCategories != Categories.None && randomizerSettings.OccurenceWeightPower >= 1)
                     {
                         itemWeights.AddRange(itemsToAddBack, OccurenceWeight);
                     }
@@ -90,7 +90,7 @@ namespace PokemonRandomizer.Backend.Randomization
             {
                 return 1;
             }
-            return 1 / (occurences[i.Item] * (float)randomizerSettings.OccurenceWeightMultiplier);
+            return 1 / MathF.Pow(1 + occurences[i.Item], (float)randomizerSettings.OccurenceWeightPower);
         }
 
         private bool IsNotBanned(ItemData i)
@@ -131,7 +131,7 @@ namespace PokemonRandomizer.Backend.Randomization
             public Categories BannedCategories { get; set; } = Categories.KeyItem | Categories.ContestScarf | Categories.Mail | Categories.MinigameBerry;
             // Items in these categories will be less likely to be chosen if they have been chosed before
             public Categories OccurenceWeightedCategories { get; set; } = Categories.TM | Categories.HeldItem;
-            public double OccurenceWeightMultiplier { get; set; } = 10;
+            public double OccurenceWeightPower { get; set; } = 10;
             // Items in this categories will be more like to be replaced with an item from the same category when replaced
             public Categories SameCategoryCategories { get; set; }
             public double SameCategoryChance { get; set; } = 0.75;

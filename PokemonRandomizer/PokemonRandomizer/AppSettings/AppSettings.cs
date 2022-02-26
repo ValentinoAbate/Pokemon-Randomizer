@@ -330,11 +330,18 @@ namespace PokemonRandomizer.AppSettings
 
         #region Items
 
-        public override ItemRandomizer.RandomizerSettings ItemRandomizationSettings => new ItemRandomizer.RandomizerSettings()
+        public override ItemRandomizer.RandomizerSettings ItemRandomizationSettings => new()
         {
             SkipCategories = ItemData.Categories.KeyItem | itemData.SkipCategories,
             BannedCategories = ItemData.Categories.KeyItem | itemData.BannedCategories,
             OccurenceWeightedCategories = itemData.ReduceDuplicatesCategories,
+            OccurenceWeightPower = itemData.DupeReductionStrength.Value switch
+            {
+                ItemDataModel.DuplicateReductionOption.Weak => 1.25,
+                ItemDataModel.DuplicateReductionOption.Moderate => 2,
+                ItemDataModel.DuplicateReductionOption.Strong => 5,
+                _ => 10,
+            },
             SameCategoryCategories = itemData.KeepCategoryCategories,
             SameCategoryChance = itemData.SameCategoryChance,
             AllowBannedItemsWhenKeepingCategory = itemData.AllowBannedItemsWhenKeepingCategory,

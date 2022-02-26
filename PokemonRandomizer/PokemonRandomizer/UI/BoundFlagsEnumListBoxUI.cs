@@ -27,12 +27,16 @@ namespace PokemonRandomizer.UI
             Template = (ItemsPanelTemplate)XamlReader.Load(xmlReader);
         }
 
-        public BoundFlagsEnumListBoxUI(string label, Box<T> combinedFlags, Func<IReadOnlyList<MenuBoxItem>> getChoiceList, Func<T, T, T> orEquals)
+        public BoundFlagsEnumListBoxUI(string label, Box<T> combinedFlags, Func<IReadOnlyList<MenuBoxItem>> getChoiceList, Func<T, T, T> orEquals, string tooltip = null)
         {
             Orientation = Orientation.Horizontal;
             this.orEquals = orEquals;
             referenceList = getChoiceList();
-            this.Add(new Label() { Content = label, Width = 125, FontSize = 14, VerticalAlignment = System.Windows.VerticalAlignment.Center });
+            var labelElement = this.Add(new Label() { Content = label, Width = 125, FontSize = 14, VerticalAlignment = System.Windows.VerticalAlignment.Center });
+            if(!string.IsNullOrWhiteSpace(tooltip))
+            {
+                labelElement.ToolTip = tooltip;
+            }
             ListBox = this.Add(new ListBox()
             {
                 ItemsSource = referenceList,

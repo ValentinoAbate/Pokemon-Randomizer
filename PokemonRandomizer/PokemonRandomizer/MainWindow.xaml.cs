@@ -80,6 +80,7 @@ namespace PokemonRandomizer
         private const string openRomPrompt = "Open Rom";
         private const string openRomError = "Failed to open Rom";
         private const string checkAboutHelpMessage = "Please check Help->About for a list of supported ROMs";
+        private const string debugSeed = "DEBUG";
 
         private ApplicationDataModel AppData { get; set; }
 
@@ -526,6 +527,23 @@ namespace PokemonRandomizer
             errorCount = 0;
             lblInfoBoxErrorCount.Content = string.Empty;
             OnPropertyChanged("LogNotEmpty");
+        }
+
+        private void QuickRandomize(object sender, RoutedEventArgs e)
+        {
+            void QuickRand() => GetRandomizedRom(debugSeed);
+            void Error(Exception e)
+            {
+                LogError($"Quick Randomization Error: {e.Message}");
+            }
+            void Success()
+            {
+                // Log open and set info box
+                string msg = "Quick randomization complete";
+                LogInfo(msg);
+                SetInfoBox(msg);
+            }
+            PauseUIAndRunInBackground("Quick randomizing...", QuickRand, Success, Error);
         }
 
         private void GenerateInfoDoc(object sender, RoutedEventArgs e)
