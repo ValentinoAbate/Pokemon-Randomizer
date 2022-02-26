@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace PokemonRandomizer.Backend.Randomization
 {
@@ -22,8 +24,14 @@ namespace PokemonRandomizer.Backend.Randomization
         public Random(string seed)
         {
             Seed = seed;
-            IntSeed = int.TryParse(seed, out int intSeed) ? intSeed : seed.GetHashCode();
+            IntSeed = int.TryParse(seed, out int intSeed) ? intSeed : StringToInt(seed);
             rand = new System.Random(IntSeed);
+        }
+
+        private static int StringToInt(string seed)
+        {
+            using var algo = SHA1.Create();
+            return BitConverter.ToInt32(algo.ComputeHash(Encoding.UTF8.GetBytes(seed)));
         }
 
         #region Utility Functions
