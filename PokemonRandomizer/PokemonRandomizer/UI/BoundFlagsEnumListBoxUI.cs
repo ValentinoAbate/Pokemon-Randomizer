@@ -1,4 +1,5 @@
-﻿using PokemonRandomizer.UI.Utilities;
+﻿using PokemonRandomizer.Backend.Utilities.Debug;
+using PokemonRandomizer.UI.Utilities;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -27,11 +28,19 @@ namespace PokemonRandomizer.UI
             Template = (ItemsPanelTemplate)XamlReader.Load(xmlReader);
         }
 
+        private readonly Box<T> combinedFlags;
+
         public BoundFlagsEnumListBoxUI(string label, Box<T> combinedFlags, Func<IReadOnlyList<MenuBoxItem>> getChoiceList, Func<T, T, T> orEquals, string tooltip = null)
         {
+            this.combinedFlags = combinedFlags;
             Orientation = Orientation.Horizontal;
             this.orEquals = orEquals;
             referenceList = getChoiceList();
+            foreach(var item in referenceList)
+            {
+                item.Selected += OnItemSelected;
+                item.Unselected += OnItemSelected;
+            }
             var labelElement = this.Add(new Label() { Content = label, Width = 125, FontSize = 14, VerticalAlignment = System.Windows.VerticalAlignment.Center });
             if(!string.IsNullOrWhiteSpace(tooltip))
             {
@@ -44,8 +53,12 @@ namespace PokemonRandomizer.UI
                 ItemsPanel = Template,
                 ItemContainerStyle = (System.Windows.Style)App.Current.FindResource("EnumListBoxItemStyle")
             });
-            SetSelectedFromCombinedFlags(combinedFlags.Value);
-            ListBox.SelectionChanged += (_, _2) => combinedFlags.Value = GetCombinedFlagFromSelected();
+            SetSelectedFromCombinedFlags(this.combinedFlags.Value);
+        }
+
+        private void OnItemSelected(object sender, System.Windows.RoutedEventArgs e)
+        {
+            combinedFlags.Value = GetCombinedFlagFromSelected();
         }
 
         private void SetSelectedFromCombinedFlags(T combinedFlags)
