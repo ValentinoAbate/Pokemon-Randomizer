@@ -95,11 +95,8 @@ namespace PokemonRandomizer
                 HardcodedSettingsIndicator.Text = value ? "(Hardcoded Mode)" : string.Empty;
             } 
         }
-#if DEBUG
-        private bool useHardcodedSettings = true;
-#else
+
         private bool useHardcodedSettings;
-#endif
 
         private HardCodedSettings hardCodedSettings;
         private AppSettings.AppSettings appSettings;
