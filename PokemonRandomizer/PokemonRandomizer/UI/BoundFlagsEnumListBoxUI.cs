@@ -1,4 +1,5 @@
-﻿using PokemonRandomizer.UI.Utilities;
+﻿using PokemonRandomizer.Backend.Utilities.Debug;
+using PokemonRandomizer.UI.Utilities;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -21,18 +22,30 @@ namespace PokemonRandomizer.UI
             string panelString = @"<ItemsPanelTemplate xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation'
                                                        xmlns:x='http://schemas.microsoft.com/winfx/2006/xaml'>";
             panelString += "<WrapPanel IsItemsHost=\"True\" Orientation=\"Horizontal\" Width=\"710\" VerticalAlignment=\"Center\"/>";
-            panelString += "</ItemsPanelTemplate>";               
+            panelString += "</ItemsPanelTemplate>";
             StringReader stringReader = new StringReader(panelString);
             XmlReader xmlReader = XmlReader.Create(stringReader);
             Template = (ItemsPanelTemplate)XamlReader.Load(xmlReader);
         }
 
-        public BoundFlagsEnumListBoxUI(string label, Box<T> combinedFlags, Func<IReadOnlyList<MenuBoxItem>> getChoiceList, Func<T, T, T> orEquals)
+        private readonly Box<T> combinedFlags;
+
+        public BoundFlagsEnumListBoxUI(string label, Box<T> combinedFlags, Func<IReadOnlyList<MenuBoxItem>> getChoiceList, Func<T, T, T> orEquals, string tooltip = null)
         {
+            this.combinedFlags = combinedFlags;
             Orientation = Orientation.Horizontal;
             this.orEquals = orEquals;
             referenceList = getChoiceList();
-            this.Add(new Label() { Content = label, Width = 125, FontSize = 14, VerticalAlignment = System.Windows.VerticalAlignment.Center });
+            foreach(var item in referenceList)
+            {
+                item.Selected += OnItemSelected;
+                item.Unselected += OnItemSelected;
+            }
+            var labelElement = this.Add(new Label() { Content = label, Width = 125, FontSize = 14, VerticalAlignment = System.Windows.VerticalAlignment.Center });
+            if(!string.IsNullOrWhiteSpace(tooltip))
+            {
+                labelElement.ToolTip = tooltip;
+            }
             ListBox = this.Add(new ListBox()
             {
                 ItemsSource = referenceList,
@@ -40,8 +53,12 @@ namespace PokemonRandomizer.UI
                 ItemsPanel = Template,
                 ItemContainerStyle = (System.Windows.Style)App.Current.FindResource("EnumListBoxItemStyle")
             });
-            SetSelectedFromCombinedFlags(combinedFlags.Value);
-            ListBox.SelectionChanged += (_, _2) => combinedFlags.Value = GetCombinedFlagFromSelected();
+            SetSelectedFromCombinedFlags(this.combinedFlags.Value);
+        }
+
+        private void OnItemSelected(object sender, System.Windows.RoutedEventArgs e)
+        {
+            combinedFlags.Value = GetCombinedFlagFromSelected();
         }
 
         private void SetSelectedFromCombinedFlags(T combinedFlags)
