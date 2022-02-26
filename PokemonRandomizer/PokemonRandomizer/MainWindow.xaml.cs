@@ -715,6 +715,12 @@ namespace PokemonRandomizer
             AppData = JsonSerializer.Deserialize<ApplicationDataModel>(preset, serializerOptions);
         }
 
+        private void LoadDefaultPreset(object sender, RoutedEventArgs e)
+        {
+            AppData = new ApplicationDataModel();
+            OnPresetLoaded("Default preset loaded successfully");
+        }
+
         private void ShowAboutWindow(object sender, RoutedEventArgs e)
         {
             var aboutWindow = new AboutWindow

@@ -43,6 +43,7 @@
                     <MenuItem Name="menuLoadPresetString" IsEnabled="{Binding IsROMLoaded}" Header="Load Settings String" Click="LoadPresetString"/>
                     <MenuItem Name="menuSavePreset" IsEnabled="{Binding IsROMLoaded}" Header="Save Settings" Click="SavePreset"/>
                     <MenuItem Name="menuCopyPresetToClipboard" IsEnabled="{Binding IsROMLoaded}" Header="Copy Settings String to Clipboard" Click="CopyPresetStringToClipboard"/>
+                    <MenuItem Name="menuLoadDefaultPreset" IsEnabled="{Binding IsROMLoaded}" Header="Reset to Default" Click="LoadDefaultPreset"/>
                 </MenuItem>
                 <MenuItem Visibility="Visible" Header="Debug">
                     <MenuItem Name="menuUseHardCodedSettings" Header="Use Hardcoded Settings" IsCheckable="True" IsChecked="{Binding UseHardCodedSettings}"/>
