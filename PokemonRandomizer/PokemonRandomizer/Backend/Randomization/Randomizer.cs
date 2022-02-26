@@ -201,6 +201,18 @@ namespace PokemonRandomizer.Backend.Randomization
 
             #region Pokemon Base Attributes
 
+            var availableAddMoves = EnumUtils.GetValues<Move>().ToHashSet();
+            availableAddMoves.Remove(Move.None);
+            if (settings.BanSelfdestruct)
+            {
+                availableAddMoves.RemoveWhere(m => data.GetMoveData(m).IsSelfdestruct);
+            }
+            if (settings.DisableAddingHmMoves)
+            {
+                foreach (var move in data.HMMoves)
+                    availableAddMoves.Remove(move);
+            }
+
             // Evolution Line Pass
             foreach (PokemonBaseStats pokemon in data.Pokemon)
             {
