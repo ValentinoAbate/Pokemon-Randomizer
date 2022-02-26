@@ -27,7 +27,7 @@ namespace PokemonRandomizer.Backend.Randomization
         {
             var itemWeights = new WeightedSet<ItemData>(possibleItems.Where(IsNotBanned));
             // Apply antiduplicate weights (if necessary)
-            if (randomizerSettings.OccurenceWeightedCategories != Categories.None && randomizerSettings.OccurenceWeightPower >= 1)
+            if (randomizerSettings.ShouldApplyOccurenceWeighting)
             {
                 itemWeights.Multiply(OccurenceWeight);
             }
@@ -55,7 +55,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 if (randomizerSettings.AllowBannedItemsWhenKeepingCategory && HasAnyCategory(validCategories, randomizerSettings.BannedCategories))
                 {
                     var itemsToAddBack = possibleItems.Where(item => ReAddWhenKeepingCategory(item, validCategories));
-                    if (randomizerSettings.OccurenceWeightedCategories != Categories.None && randomizerSettings.OccurenceWeightPower >= 1)
+                    if (randomizerSettings.ShouldApplyOccurenceWeighting)
                     {
                         itemWeights.AddRange(itemsToAddBack, OccurenceWeight);
                     }
@@ -132,6 +132,7 @@ namespace PokemonRandomizer.Backend.Randomization
             // Items in these categories will be less likely to be chosen if they have been chosed before
             public Categories OccurenceWeightedCategories { get; set; } = Categories.TM | Categories.HeldItem;
             public double OccurenceWeightPower { get; set; } = 10;
+            public bool ShouldApplyOccurenceWeighting => OccurenceWeightedCategories != Categories.None && OccurenceWeightPower >= 1;
             // Items in this categories will be more like to be replaced with an item from the same category when replaced
             public Categories SameCategoryCategories { get; set; }
             public double SameCategoryChance { get; set; } = 0.75;
