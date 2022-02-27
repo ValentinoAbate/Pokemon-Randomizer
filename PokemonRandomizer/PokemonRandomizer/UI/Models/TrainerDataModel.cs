@@ -26,6 +26,10 @@ namespace PokemonRandomizer.UI.Models
         public Box<double> BattleTypeRandChance { get; set; } = new Box<double>(1);
         public Box<BattleTypePcgStrategy> BattleTypeStrategy { get; set; } = new Box<BattleTypePcgStrategy>(BattleTypePcgStrategy.KeepSameType);
         public Box<double> DoubleBattleChance { get; set; } = new Box<double>(1);
+        // Difficulty
+        public Box<double> LevelMult { get; set; } = new Box<double>(1);
+        public Box<double> MinIVs { get; set; } = new Box<double>(0);
+        public Box<bool> SmartAI { get; set; } = new Box<bool>(false);
 
         public void InitializeMetric(MetricData metric)
         {

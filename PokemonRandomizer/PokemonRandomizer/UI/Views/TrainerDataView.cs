@@ -57,7 +57,10 @@ namespace PokemonRandomizer.UI.Views
             var typeStack = stack.Add(battleTypeRand.BindEnabled(CreateStack()));
             typeStack.Add(new BoundSliderUI("Double Battle Chance", model.DoubleBattleChance) { ToolTip = "The chance that the battle type will be a double battle when randomized" });
             typeStack.Add(new EnumComboBoxUI<BattleTypePcgStrategy>("Recurring Trainer Battle Type Strategy", BattleTypeStrategyDropdown, model.BattleTypeStrategy));
-
+            stack.Header("Difficulty");
+            stack.Add(new BoundSliderUI("Level Multiplier", model.LevelMult, true, 0.05, 0.5, 3));
+            stack.Add(new BoundSliderUI("Minimum Trainer Pokemon IVs", model.MinIVs, false, 1, 0, 31) { ToolTip = "The minimum value for trainer pokemon IVs. Set to 31 for maximum difficulty!" });
+            stack.Add(new BoundCheckBoxUI(model.SmartAI, "Smart Trainer AI") { ToolTip = "Use smart(er) trainer AI for all trainers, even ones who wouldn't normally have it" });
         }
     }
 }

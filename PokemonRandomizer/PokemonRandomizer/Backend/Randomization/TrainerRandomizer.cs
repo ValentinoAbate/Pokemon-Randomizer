@@ -215,11 +215,11 @@ namespace PokemonRandomizer.Backend.Randomization
                     pokemon.level = (int)Math.Max(0, Math.Min(100, pokemon.level * settings.LevelMultiplier));
                 }
             }
-            if(settings.PokemonIVModifier != 0)
+            if(settings.MinIV != 0)
             {
                 foreach (var pokemon in trainer.pokemon)
                 {
-                    pokemon.IVLevel = Math.Max(byte.MinValue, Math.Min(byte.MaxValue, pokemon.IVLevel + settings.PokemonIVModifier));
+                    pokemon.IVLevel = Math.Min(settings.MinIV, pokemon.IVLevel);
                 }
             }
 

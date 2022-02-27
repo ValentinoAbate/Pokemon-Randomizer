@@ -9,6 +9,7 @@ namespace PokemonRandomizer.AppSettings
     using UI.Models;
     using PokemonRandomizer.Backend.DataStructures;
     using static PokemonRandomizer.Backend.Randomization.PokemonVariantRandomizer;
+    using PokemonRandomizer.Backend.Utilities;
 
     public class AppSettings : HardCodedSettings
     {
@@ -262,8 +263,8 @@ namespace PokemonRandomizer.AppSettings
                 {
                     PokemonRandChance = RandomChance(model.RandomizePokemon, model.PokemonRandChance),
                     PokemonStrategy = model.PokemonStrategy,
-                    PokemonSettings = new PokemonSettings() 
-                    { 
+                    PokemonSettings = new PokemonSettings()
+                    {
                         BanLegendaries = model.BanLegendaries,
                         RestrictIllegalEvolutions = model.RestrictIllegalEvolutions,
                         ForceHighestLegalEvolution = model.ForceHighestLegalEvolution,
@@ -272,6 +273,9 @@ namespace PokemonRandomizer.AppSettings
                     BattleTypeRandChance = RandomChance(model.RandomizeBattleType, model.BattleTypeRandChance),
                     BattleTypeStrategy = model.BattleTypeStrategy,
                     DoubleBattleChance = model.DoubleBattleChance,
+                    LevelMultiplier = model.LevelMult,
+                    MinIV = MathUtils.MapToByte(31, model.MinIVs),
+                    UseSmartAI = model.SmartAI,
                 };
             }
             // Todo specify metrics

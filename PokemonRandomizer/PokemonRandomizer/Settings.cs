@@ -398,7 +398,7 @@ namespace PokemonRandomizer
 
             // Difficulty Settings
             public double LevelMultiplier { get; set; } = 0;
-            public int PokemonIVModifier { get; set; } = 0;
+            public int MinIV { get; set; } = 0;
             public bool UseSmartAI { get; set; } = true;
         }
 
