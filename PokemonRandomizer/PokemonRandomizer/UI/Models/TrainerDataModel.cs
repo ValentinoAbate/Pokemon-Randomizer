@@ -18,6 +18,8 @@ namespace PokemonRandomizer.UI.Models
         public Box<bool> TypeTheming { get; set; } = new Box<bool>(true);
         public Box<PokemonPcgStrategy> PokemonStrategy { get; set; } = new Box<PokemonPcgStrategy>(PokemonPcgStrategy.KeepParty);
         public Box<bool> BanLegendaries { get; set; } = new Box<bool>(true); 
+        public Box<bool> BanLegendariesMiniboss { get; set; } = new Box<bool>(true); 
+        public Box<bool> BanLegendariesBoss { get; set; } = new Box<bool>(false); 
         public Box<bool> RestrictIllegalEvolutions { get; set; } = new Box<bool>(true);
         public Box<bool> ForceHighestLegalEvolution { get; set; } = new Box<bool>(false);
         public Box<double> PokemonNoise { get; set; } = new Box<double>(0.003);

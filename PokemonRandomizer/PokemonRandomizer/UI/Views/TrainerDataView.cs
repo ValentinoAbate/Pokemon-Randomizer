@@ -46,9 +46,13 @@ namespace PokemonRandomizer.UI.Views
             var pokemonStack = stack.Add(pokemonRand.BindEnabled(CreateStack()));
             pokemonStack.Add(new BoundCheckBoxUI(model.TypeTheming, "Intelligent Type Theming") { ToolTip = typeThemingTooltip });
             var pokemonDetailsStack = pokemonStack.Add(new StackPanel() { Orientation = Orientation.Horizontal });
-            pokemonDetailsStack.Add(new BoundCheckBoxUI(model.BanLegendaries, "Ban Legendaries"));
             pokemonDetailsStack.Add(new BoundCheckBoxUI(model.RestrictIllegalEvolutions, "Ban Illegal Evolutions"));
             pokemonDetailsStack.Add(new BoundCheckBoxUI(model.ForceHighestLegalEvolution, "Force Highest Legal Evolution"));
+            pokemonStack.Add(new Label() { Content = "Ban Legendaries For: " });
+            var banLegendariesStack = pokemonStack.Add(new StackPanel() { Orientation = Orientation.Horizontal });
+            banLegendariesStack.Add(new BoundCheckBoxUI(model.BanLegendaries, "Normal Trainers"));
+            banLegendariesStack.Add(new BoundCheckBoxUI(model.BanLegendariesMiniboss, "Minibosses") { ToolTip = "Minibosses include Ace/CoolTrainers, Team Admins, and Rivals" });
+            banLegendariesStack.Add(new BoundCheckBoxUI(model.BanLegendariesBoss, "Bosses") { ToolTip = "Bosses include Team Leaders, Gym Leaders, the Elite Four, Champions, and Special bosses like Steven (Emerald) and Red (GS/HGSS)"});
             pokemonStack.Add(new BoundSliderUI("Ignore Restrictions Chance", model.PokemonNoise, true, 0.01, 0, 0.33) { ToolTip = ignoreRestrictionsTooltip }); ;
             pokemonStack.Add(new EnumComboBoxUI<PokemonPcgStrategy>("Recurring Trainer Pokemon Randomization Strategy", PokemonStrategyDropdown, model.PokemonStrategy));
             // Battle Type Randomization
@@ -57,6 +61,7 @@ namespace PokemonRandomizer.UI.Views
             var typeStack = stack.Add(battleTypeRand.BindEnabled(CreateStack()));
             typeStack.Add(new BoundSliderUI("Double Battle Chance", model.DoubleBattleChance) { ToolTip = "The chance that the battle type will be a double battle when randomized" });
             typeStack.Add(new EnumComboBoxUI<BattleTypePcgStrategy>("Recurring Trainer Battle Type Strategy", BattleTypeStrategyDropdown, model.BattleTypeStrategy));
+            // Difficulty
             stack.Header("Difficulty");
             stack.Add(new BoundSliderUI("Level Multiplier", model.LevelMult, true, 0.05, 0.5, 3));
             stack.Add(new BoundSliderUI("Minimum Trainer Pokemon IVs", model.MinIVs, false, 1, 0, 31) { ToolTip = "The minimum value for trainer pokemon IVs. Set to 31 for maximum difficulty!" });
