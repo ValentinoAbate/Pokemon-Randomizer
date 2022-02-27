@@ -262,12 +262,19 @@ namespace PokemonRandomizer.AppSettings
                 {
                     PokemonRandChance = RandomChance(model.RandomizePokemon, model.PokemonRandChance),
                     PokemonStrategy = model.PokemonStrategy,
-                    PokemonSettings = model.PokemonSettings,
+                    PokemonSettings = new PokemonSettings() 
+                    { 
+                        BanLegendaries = model.BanLegendaries,
+                        RestrictIllegalEvolutions = model.RestrictIllegalEvolutions,
+                        ForceHighestLegalEvolution = model.ForceHighestLegalEvolution,
+                        Noise = (float)model.PokemonNoise,
+                    },
                     BattleTypeRandChance = RandomChance(model.RandomizeBattleType, model.BattleTypeRandChance),
                     BattleTypeStrategy = model.BattleTypeStrategy,
                     DoubleBattleChance = model.DoubleBattleChance,
                 };
             }
+            // Todo specify metrics
             return TrainerDataToSettings(trainerData);
         }
 

@@ -9,27 +9,19 @@ namespace PokemonRandomizer.UI.Models
     {
         public TrainerDataModel()
         {
-            PokemonSettings.Data = new List<MetricData>()
-            {
-                new MetricData(PokemonMetric.typeIndividual),
-                new MetricData(PokemonMetric.powerIndividual, 2),
-                MetricData.Empty,
-            };
-            PokemonSettings.BanLegendaries = true;
-            foreach(var metric in PokemonSettings.Data)
-            {
-                InitializeMetric(metric);
-            }
+
         }
 
+        // Pokemon Settings
         public Box<bool> RandomizePokemon { get; set; } = new Box<bool>(false);
         public Box<double> PokemonRandChance { get; set; } = new Box<double>(1);
+        public Box<bool> TypeTheming { get; set; } = new Box<bool>(true);
         public Box<PokemonPcgStrategy> PokemonStrategy { get; set; } = new Box<PokemonPcgStrategy>(PokemonPcgStrategy.KeepParty);
-        public PokemonSettings PokemonSettings { get; set; } = new PokemonSettings()
-        {
-            Noise = 0.01f,
-            ForceHighestLegalEvolution = true,
-        };
+        public Box<bool> BanLegendaries { get; set; } = new Box<bool>(true); 
+        public Box<bool> RestrictIllegalEvolutions { get; set; } = new Box<bool>(true);
+        public Box<bool> ForceHighestLegalEvolution { get; set; } = new Box<bool>(false);
+        public Box<double> PokemonNoise { get; set; } = new Box<double>(0.003);
+        // Battle Type Settings
         public Box<bool> RandomizeBattleType { get; set; } = new Box<bool>(false);
         public Box<double> BattleTypeRandChance { get; set; } = new Box<double>(1);
         public Box<BattleTypePcgStrategy> BattleTypeStrategy { get; set; } = new Box<BattleTypePcgStrategy>(BattleTypePcgStrategy.KeepSameType);

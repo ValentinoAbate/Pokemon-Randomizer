@@ -16,13 +16,13 @@ namespace PokemonRandomizer.UI.Views
         private static CompositeCollection PokemonStrategyDropdown => new CompositeCollection()
         {
             new ComboBoxItem() {Content="Random", ToolTip="Pokemon in recurring battles will be chosen completely randomly"},
-            new ComboBoxItem() {Content="Keep Ace", ToolTip="Recurring battles with a trainer in this group will keep that trainers ace pokemon and evolve it if appropriate"},
-            new ComboBoxItem() {Content="Keep Party", ToolTip="Recurring battles with a trainer in this group will keep the pokemon from the previous battle and evolve them if appropriate. New pokemon will be added if the next battle has a bigger party." },
+            new ComboBoxItem() {Content="Keep Ace", ToolTip="Recurring battles with a trainer will keep that trainers ace pokemon and evolve it if appropriate"},
+            new ComboBoxItem() {Content="Keep Party", ToolTip="Recurring battles with a trainer will keep the pokemon from the previous battle and evolve them if appropriate. New pokemon will be added if the next battle has a bigger party." },
         };
         private static CompositeCollection BattleTypeStrategyDropdown => new CompositeCollection()
         {
-            new ComboBoxItem() {Content="Random", ToolTip="Recurring battles with a trainer in the group will have a random battle type"},
-            new ComboBoxItem() {Content="Keep Same Type", ToolTip="Recurring battles with a trainer in this group will keep the same battle type (if the last battle was a double battle, the next one will also be a double battle, etc)."},
+            new ComboBoxItem() {Content="Random", ToolTip="Recurring battles with a trainer will have a random battle type"},
+            new ComboBoxItem() {Content="Keep Same Type", ToolTip="Recurring battles with a trainer will keep the same battle type (if the last battle was a double battle, the next one will also be a double battle, etc)."},
         };
 
         public static IEnumerable<string> MetricTypes { get; } = PokemonSettingsUI.BasicPokemonMetricTypes.Concat(new List<string>()
@@ -31,6 +31,12 @@ namespace PokemonRandomizer.UI.Views
             //PokemonMetric.typeTrainerClass,
         });
 
+        private const string typeThemingTooltip = "Choose Pokemon based on their trainer's type theming. Most trainers will have their type theme determined by the types of their original party and their trainer class" +
+            "\nGym Leaders, Gym Trainers, the Elite Four, and the Chamption will have the type theme of their original Gym / Elite Four position unless that theme is randomized by other settings" +
+            "\nSpecial trainer classes like Rivals and Ace/Cool Trainers will have no type theme";
+
+        private const string ignoreRestrictionsTooltip = "The chance that all restrictions (Evolution Restrictions, Legendary Ban, Type Theming, etc.) will be ignored for any given pokemon";
+
         public TrainerDataView(TrainerDataModel model)
         {
             var stack = CreateMainStack();
@@ -38,7 +44,12 @@ namespace PokemonRandomizer.UI.Views
             stack.Header("Trainer Pokemon");
             var pokemonRand = stack.Add(new RandomChanceUI("Randomize Pokemon", model.RandomizePokemon, model.PokemonRandChance));
             var pokemonStack = stack.Add(pokemonRand.BindEnabled(CreateStack()));
-            pokemonStack.Add(new PokemonSettingsUI(model.PokemonSettings, MetricTypes, model.InitializeMetric));
+            pokemonStack.Add(new BoundCheckBoxUI(model.TypeTheming, "Intelligent Type Theming") { ToolTip = typeThemingTooltip });
+            var pokemonDetailsStack = pokemonStack.Add(new StackPanel() { Orientation = Orientation.Horizontal });
+            pokemonDetailsStack.Add(new BoundCheckBoxUI(model.BanLegendaries, "Ban Legendaries"));
+            pokemonDetailsStack.Add(new BoundCheckBoxUI(model.RestrictIllegalEvolutions, "Ban Illegal Evolutions"));
+            pokemonDetailsStack.Add(new BoundCheckBoxUI(model.ForceHighestLegalEvolution, "Force Highest Legal Evolution"));
+            pokemonStack.Add(new BoundSliderUI("Ignore Restrictions Chance", model.PokemonNoise, true, 0.01, 0, 0.33) { ToolTip = ignoreRestrictionsTooltip }); ;
             pokemonStack.Add(new EnumComboBoxUI<PokemonPcgStrategy>("Recurring Trainer Pokemon Randomization Strategy", PokemonStrategyDropdown, model.PokemonStrategy));
             // Battle Type Randomization
             stack.Header("Battle Type");
