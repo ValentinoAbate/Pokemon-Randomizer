@@ -1,6 +1,6 @@
 ﻿using PokemonRandomizer.Backend.DataStructures;
 using PokemonRandomizer.Backend.DataStructures.Scripts;
-using PokemonRandomizer.Backend.DataStructures.TrainerMetadata;
+using PokemonRandomizer.Backend.Metadata;
 using PokemonRandomizer.Backend.EnumTypes;
 using PokemonRandomizer.Backend.Utilities;
 using System;
@@ -65,7 +65,6 @@ namespace PokemonRandomizer.Backend.Randomization
                         if (args.IsGym)
                         {
                             var battle = dataT.GetTrainer(trainerBattleCommand.trainerIndex);
-                            battle.GymMetadata = args.gymMetadata;
                             if (battle.IsGymLeader)
                             {
                                 args.gymMetadata.Leaders.Add(battle);

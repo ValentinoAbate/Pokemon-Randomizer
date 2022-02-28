@@ -1,4 +1,4 @@
-﻿using PokemonRandomizer.Backend.DataStructures.TrainerMetadata;
+﻿using PokemonRandomizer.Backend.Metadata;
 using PokemonRandomizer.Backend.EnumTypes;
 using System.Collections;
 using System.Collections.Generic;
@@ -24,8 +24,7 @@ namespace PokemonRandomizer.Backend.DataStructures
         public double AvgLvl => pokemon.Length > 0 ? pokemon.Average((p) => p.level) : 0;
         public bool IsGymLeader => Class.ToLower() == "leader";
 
-        public GymMetadata GymMetadata { get; set; }
-        public TrainerTypeMetadata TrainerTypeMetadata { get; set; }
+        public TrainerMetadata Metadata { get; set; }
 
         public int offset;
         public TrainerPokemon.DataType dataType;
@@ -157,12 +156,7 @@ namespace PokemonRandomizer.Backend.DataStructures
 
         public override string ToString()
         {
-            var str = $"{Class} {name}";
-            if(GymMetadata != null && !IsGymLeader)
-            {
-                str += $" (GYM TRAINER)";
-            }
-            return str;
+            return $"{Class} {name}";
         }
     }
 }

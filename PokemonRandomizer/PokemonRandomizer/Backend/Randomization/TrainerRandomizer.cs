@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using PokemonRandomizer.Backend.Metadata;
 
 namespace PokemonRandomizer.Backend.Randomization
 {
     using DataStructures;
     using EnumTypes;
-    using PokemonRandomizer.Backend.DataStructures.TrainerMetadata;
     using static Settings;
     public class TrainerRandomizer
     {
@@ -48,11 +48,9 @@ namespace PokemonRandomizer.Backend.Randomization
 
         private IEnumerable<Metric<Pokemon>> CreatePokemonMetrics(Trainer trainer, IEnumerable<Pokemon> all, Pokemon pokemon, WeightedSet<PokemonType> partyTypeOccurence, IReadOnlyList<MetricData> data)
         {
-            if(trainer.GymMetadata != null)
+            if(trainer.Metadata != null)
             {
-                var gymTypeSet = trainer.GymMetadata.Untyped ? new WeightedSet<Pokemon>(all) 
-                    : new WeightedSet<Pokemon>(all.Where(p => MatchesTrainerOgranizationType(trainer.GymMetadata, p)));
-                return new List<Metric<Pokemon>>() { new Metric<Pokemon>(gymTypeSet, 0, 1) };
+                return trainer.Metadata.GetPokemonMetrics(all, pokemon, trainer, dataT);
             }
             var metrics = pokeRand.CreateBasicMetrics(all, pokemon, data, out List<MetricData> specialData);
             foreach (var d in specialData)
@@ -70,11 +68,7 @@ namespace PokemonRandomizer.Backend.Randomization
             return metrics;
         }
 
-        private bool MatchesTrainerOgranizationType(TrainerOrganizationMetadata org, Pokemon p)
-        {
-            var baseStats = dataT.GetBaseStats(p);
-            return org.Types.Any(t => baseStats.IsType(t));
-        }
+
 
         /// <summary> Radnomize the given trainer encounter </summary>
         public void Randomize(Trainer trainer, IEnumerable<Pokemon> pokemonSet, TrainerSettings settings, bool safe = true)
@@ -113,11 +107,14 @@ namespace PokemonRandomizer.Backend.Randomization
             var pkmnSettings = settings.PokemonSettings;
 
             // Propogate gym metadata if the first battle has gym metadata
-            if (firstBattle.GymMetadata != null)
+            if (firstBattle.Metadata != null)
             {
                 foreach(var battle in battles)
                 {
-                    battle.GymMetadata = firstBattle.GymMetadata;
+                    if (battle.Metadata == null)
+                    {
+                        battle.Metadata = firstBattle.Metadata;
+                    }
                 }
             }
 

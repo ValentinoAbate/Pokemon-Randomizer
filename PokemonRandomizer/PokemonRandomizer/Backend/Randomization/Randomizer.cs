@@ -1,6 +1,6 @@
 ﻿using PokemonRandomizer.Backend.DataStructures;
 using PokemonRandomizer.Backend.DataStructures.Scripts;
-using PokemonRandomizer.Backend.DataStructures.TrainerMetadata;
+using PokemonRandomizer.Backend.Metadata;
 using PokemonRandomizer.Backend.EnumTypes;
 using PokemonRandomizer.Backend.Utilities;
 using PokemonRandomizer.Backend.Utilities.Debug;
@@ -583,18 +583,10 @@ namespace PokemonRandomizer.Backend.Randomization
                 }
 
                 // Remove invalid metadata
-                if (map.IsGym)
+                if (map.IsGym && gymMetadataDict[map.Name].Invalid)
                 {
-                    if (!gymMetadataDict[map.Name].IsValid)
-                    {
-                        gymMetadataDict.Remove(map.Name);
-                    }
+                    gymMetadataDict.Remove(map.Name);
                 }
-            }
-            // Calculate gym metadata types
-            foreach(var kvp in gymMetadataDict)
-            {
-                kvp.Value.CalculateType(data);
             }
             #endregion
 
