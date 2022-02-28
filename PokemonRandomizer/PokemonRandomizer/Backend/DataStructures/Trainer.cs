@@ -29,6 +29,8 @@ namespace PokemonRandomizer.Backend.DataStructures
             CatchingTutTrainer, // Wally, Etc
         }
 
+        public bool Invalid => string.IsNullOrWhiteSpace(name) || name == nullName;
+
         public const string nullName = "??????";
         public const int nameLength = 12;
         // The all of the class names (mostly for debugging)

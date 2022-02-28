@@ -71,15 +71,6 @@ namespace PokemonRandomizer.Backend.Randomization
             var types = DefinePokemonTypes();
             var items = DefineItemSet();
 
-            #region Trainer Metadata
-
-            if (settings.TrainerTypeTheming)
-            {
-
-            }
-
-            #endregion
-
             #region Type Definitions
             // Randomize type traits
             // Generate ??? type traits (INCOMPLETE)
@@ -626,41 +617,97 @@ namespace PokemonRandomizer.Backend.Randomization
 
             #endregion
 
-            #region Trainer Battles
+            #region Trainer + Trainer Organization Metadata Preprocessing
 
             // Construct trainer by name map and separate rival + catching tut trainer battles
             var normalTrainersByName = new Dictionary<string, List<Trainer>>(data.Trainers.Count);
             var rivalTrainers = new Dictionary<string, List<Trainer>>(3);
             var catchingTutorialTrainers = new List<Trainer>();
-            foreach(var trainer in data.Trainers)
+            foreach (var trainer in data.Trainers)
             {
-                // Rivals
-                if(trainer.TrainerCategory == Trainer.Category.Rival)
+                if (trainer.Invalid)
                 {
-                    if (!rivalTrainers.ContainsKey(trainer.name))
+                    continue;
+                }
+                string name = trainer.name.ToLower();
+                // Rivals
+                if (trainer.TrainerCategory == Trainer.Category.Rival)
+                {
+                    if (!rivalTrainers.ContainsKey(name))
                     {
-                        rivalTrainers.Add(trainer.name, new List<Trainer>(10));
+                        rivalTrainers.Add(name, new List<Trainer>(10));
                     }
-                    rivalTrainers[trainer.name].Add(trainer);
+                    rivalTrainers[name].Add(trainer);
                     continue;
                 }
                 // Catching Tut Trainers (Wally, Etc.)
-                if(trainer.TrainerCategory == Trainer.Category.CatchingTutTrainer)
+                if (trainer.TrainerCategory == Trainer.Category.CatchingTutTrainer)
                 {
                     catchingTutorialTrainers.Add(trainer);
                     continue;
                 }
                 // All other trainers
-                if (!normalTrainersByName.ContainsKey(trainer.name))
+                if (!normalTrainersByName.ContainsKey(name))
                 {
-                    normalTrainersByName.Add(trainer.name, new List<Trainer>(10));
+                    normalTrainersByName.Add(name, new List<Trainer>(10));
                 }
-                normalTrainersByName[trainer.name].Add(trainer);
+                normalTrainersByName[name].Add(trainer);
             }
-            // Calculate and Procress Metadata
+
+            foreach (var kvp in normalTrainersByName)
+            {
+                // Calculate for a given trainer if we should use type theming.
+                var firstBattle = kvp.Value[0];
+                bool useTypeTheming = false; // TODO: Actually calculate
+                // If we aren't using type theming, there is no need to assign / calculate metadata
+                if (!useTypeTheming)
+                    continue;
+                // If there is a special override for the trainer with this name, use it to mark up the metadata
+                if (data.TrainerNameTypeOverrides.ContainsKey(kvp.Key))
+                {
+                    var overrideTypes = data.TrainerNameTypeOverrides[kvp.Key];
+                    var overrideMetadata = new TrainerThemeData()
+                    {
+                        Theme = overrideTypes.Length > 0 ? TrainerThemeData.TrainerTheme.Typed : TrainerThemeData.TrainerTheme.Untyped,
+                        Types = overrideTypes
+                    };
+                    foreach (var battle in kvp.Value)
+                    {
+                        battle.Metadata = overrideMetadata;
+                    }
+                    continue;
+                }
+                foreach(var battle in kvp.Value)
+                {
+                    // If there is a special override for the trainer's class, use it
+                    if (data.TrainerClassTypeOverrides.ContainsKey(battle.Class))
+                    {
+                        var overrideTypes = data.TrainerClassTypeOverrides[battle.Class];
+                        battle.Metadata = new TrainerThemeData()
+                        {
+                            Theme = overrideTypes.Length > 0 ? TrainerThemeData.TrainerTheme.Typed : TrainerThemeData.TrainerTheme.Untyped,
+                            Types = overrideTypes
+                        };
+                    }
+                    else if(battle.TrainerCategory is Trainer.Category.GymLeader or Trainer.Category.EliteFour or Trainer.Category.Champion)
+                    {
+                        // Calculate type for gym leaders, e4, and champion
+                    }
+                }
+            }
+
+            #endregion
+
+            #region Trainer Organizations
+
+
+
+            #endregion
+
+            #region Trainer Battles
 
             // Randomize trainers
-            foreach(var kvp in normalTrainersByName)
+            foreach (var kvp in normalTrainersByName)
             {
 
             }
