@@ -65,7 +65,7 @@ namespace PokemonRandomizer.Backend.Randomization
                         if (args.IsGym)
                         {
                             var battle = dataT.GetTrainer(trainerBattleCommand.trainerIndex);
-                            if (battle.IsGymLeader)
+                            if (battle.TrainerCategory == Trainer.Category.GymLeader)
                             {
                                 args.gymMetadata.Leaders.Add(battle);
                             }

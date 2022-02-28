@@ -477,74 +477,74 @@ namespace PokemonRandomizer.Backend.Reading
         /// </summary>
         private void SetSpecialTrainerData(RomData data, RomMetadata metadata, XmlManager info)
         {
-            data.SpecialTrainers = new Dictionary<string, List<Trainer>>();
-            string[] AddTrainersFromArrayAttr(string element)
-            {
-                var names = info.SafeArrayAttr(element, "names", info.ArrayAttr);
-                foreach (var name in names)
-                    data.SpecialTrainers.Add(name.ToLower(), new List<Trainer>());
-                return names;
-            };
-            // Add trainers from preset names in info file
-            data.RivalNames = AddTrainersFromArrayAttr("rivals");
-            data.RivalRemap = info.SafeArrayAttr("rivals", "remap", info.IntArrayAttr);
-            data.GymLeaderNames = AddTrainersFromArrayAttr("gymLeaders");
-            data.EliteFourNames = AddTrainersFromArrayAttr("eliteFour");
-            data.ChampionNames = AddTrainersFromArrayAttr("champion");
-            data.UberNames = AddTrainersFromArrayAttr("uber");
-            data.TeamAdminNames = AddTrainersFromArrayAttr("teamAdmins");
-            data.TeamLeaderNames = AddTrainersFromArrayAttr("teamLeaders");
-            // Find the normal trainers and calculated special trainers
-            data.ReoccuringTrainerNames = new List<string>();
-            data.AceTrainerNames = new List<string>();
-            // Fetch the Ace Trainer Class Numbers for this ROM
-            data.AceTrainerClasses = info.SafeArrayAttr("aceTrainers", "classNums", info.IntArrayAttr);
-            // Safely initialize the team grunt names if supported
-            data.TeamGruntNames = info.SafeArrayAttr("teamGrunts", "names", info.ArrayAttr).Select((name) => name.ToLower()).ToArray();
-            data.GruntBattles = new List<Trainer>();
-            const string wallyName = "wally";
-            // Add Wally as their own special category if in RSE
-            if (metadata.IsRubySapphireOrEmerald)
-            {
-                data.SpecialTrainers.Add(wallyName, new List<Trainer>());
-            }
-            // Initialize Normal Trainer List
-            data.NormalTrainers = new Dictionary<string, Trainer>();
-            // Classify trainers
-            foreach (var trainer in data.Trainers)
-            {
-                string name = trainer.name.ToLower();
-                if (string.IsNullOrWhiteSpace(name) || name == Trainer.nullName)
-                    continue;
-                // All grunts have the same names but are not reoccuring trainers
-                if (data.TeamGruntNames.Contains(name))
-                {
-                    data.GruntBattles.Add(trainer);
-                }
-                else if (data.SpecialTrainers.ContainsKey(name)) // Already a known special trainer, add to the special trainers dictionary
-                {
-                    data.SpecialTrainers[name].Add(trainer);
-                }
-                else if (data.AceTrainerClasses.Contains(trainer.trainerClass)) // new Ace trainer, add to speical trainers
-                {
-                    if (!data.SpecialTrainers.ContainsKey(name))
-                    {
-                        data.SpecialTrainers.Add(name, new List<Trainer>());
-                        data.AceTrainerNames.Add(name);
-                    }
-                    data.SpecialTrainers[name].Add(trainer);
-                }
-                else if (data.NormalTrainers.ContainsKey(name)) // new reocurring trainer
-                {
-                    data.SpecialTrainers.Add(name, new List<Trainer> { data.NormalTrainers[name], trainer });
-                    data.NormalTrainers.Remove(name);
-                    data.ReoccuringTrainerNames.Add(name);
-                }
-                else // Normal (or potentially reocurring trainer)
-                {
-                    data.NormalTrainers.Add(name, trainer);
-                }
-            }
+            //data.SpecialTrainers = new Dictionary<string, List<Trainer>>();
+            //string[] AddTrainersFromArrayAttr(string element)
+            //{
+            //    var names = info.SafeArrayAttr(element, "names", info.ArrayAttr);
+            //    foreach (var name in names)
+            //        data.SpecialTrainers.Add(name.ToLower(), new List<Trainer>());
+            //    return names;
+            //};
+            //// Add trainers from preset names in info file
+            //data.RivalNames = AddTrainersFromArrayAttr("rivals");
+            //data.RivalRemap = info.SafeArrayAttr("rivals", "remap", info.IntArrayAttr);
+            //data.GymLeaderNames = AddTrainersFromArrayAttr("gymLeaders");
+            //data.EliteFourNames = AddTrainersFromArrayAttr("eliteFour");
+            //data.ChampionNames = AddTrainersFromArrayAttr("champion");
+            //data.UberNames = AddTrainersFromArrayAttr("uber");
+            //data.TeamAdminNames = AddTrainersFromArrayAttr("teamAdmins");
+            //data.TeamLeaderNames = AddTrainersFromArrayAttr("teamLeaders");
+            //// Find the normal trainers and calculated special trainers
+            //data.ReoccuringTrainerNames = new List<string>();
+            //data.AceTrainerNames = new List<string>();
+            //// Fetch the Ace Trainer Class Numbers for this ROM
+            //data.AceTrainerClasses = info.SafeArrayAttr("aceTrainers", "classNums", info.IntArrayAttr);
+            //// Safely initialize the team grunt names if supported
+            //data.TeamGruntNames = info.SafeArrayAttr("teamGrunts", "names", info.ArrayAttr).Select((name) => name.ToLower()).ToArray();
+            //data.GruntBattles = new List<Trainer>();
+            //const string wallyName = "wally";
+            //// Add Wally as their own special category if in RSE
+            //if (metadata.IsRubySapphireOrEmerald)
+            //{
+            //    data.SpecialTrainers.Add(wallyName, new List<Trainer>());
+            //}
+            //// Initialize Normal Trainer List
+            //data.NormalTrainers = new Dictionary<string, Trainer>();
+            //// Classify trainers
+            //foreach (var trainer in data.Trainers)
+            //{
+            //    string name = trainer.name.ToLower();
+            //    if (string.IsNullOrWhiteSpace(name) || name == Trainer.nullName)
+            //        continue;
+            //    // All grunts have the same names but are not reoccuring trainers
+            //    if (data.TeamGruntNames.Contains(name))
+            //    {
+            //        data.GruntBattles.Add(trainer);
+            //    }
+            //    else if (data.SpecialTrainers.ContainsKey(name)) // Already a known special trainer, add to the special trainers dictionary
+            //    {
+            //        data.SpecialTrainers[name].Add(trainer);
+            //    }
+            //    else if (data.AceTrainerClasses.Contains(trainer.trainerClass)) // new Ace trainer, add to speical trainers
+            //    {
+            //        if (!data.SpecialTrainers.ContainsKey(name))
+            //        {
+            //            data.SpecialTrainers.Add(name, new List<Trainer>());
+            //            data.AceTrainerNames.Add(name);
+            //        }
+            //        data.SpecialTrainers[name].Add(trainer);
+            //    }
+            //    else if (data.NormalTrainers.ContainsKey(name)) // new reocurring trainer
+            //    {
+            //        data.SpecialTrainers.Add(name, new List<Trainer> { data.NormalTrainers[name], trainer });
+            //        data.NormalTrainers.Remove(name);
+            //        data.ReoccuringTrainerNames.Add(name);
+            //    }
+            //    else // Normal (or potentially reocurring trainer)
+            //    {
+            //        data.NormalTrainers.Add(name, trainer);
+            //    }
+            //}
         }
 
         // Read encounters

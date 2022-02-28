@@ -14,7 +14,7 @@ namespace PokemonRandomizer.Backend.Metadata
         public List<Trainer> Leaders { get; set; } = new List<Trainer>();
         public List<Trainer> GymTrainers { get; set; } = new List<Trainer>();
 
-        public TrainerMetadata TrainerMetadata { get; set; }
+        public TrainerThemeData TrainerMetadata { get; set; }
 
         public override void ApplyTrainerMetadata()
         {

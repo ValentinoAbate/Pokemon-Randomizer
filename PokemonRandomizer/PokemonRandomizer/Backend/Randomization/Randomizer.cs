@@ -71,6 +71,15 @@ namespace PokemonRandomizer.Backend.Randomization
             var types = DefinePokemonTypes();
             var items = DefineItemSet();
 
+            #region Trainer Metadata
+
+            if (settings.TrainerTypeTheming)
+            {
+
+            }
+
+            #endregion
+
             #region Type Definitions
             // Randomize type traits
             // Generate ??? type traits (INCOMPLETE)
@@ -619,27 +628,50 @@ namespace PokemonRandomizer.Backend.Randomization
 
             #region Trainer Battles
 
-            var trainerSpeciesSettings = settings.GetTrainerSettings(Settings.TrainerCategory.Trainer);
-            // Randomize Normal Trainers
-            foreach (var trainer in data.NormalTrainers.Values)
+            // Construct trainer by name map and separate rival + catching tut trainer battles
+            var normalTrainersByName = new Dictionary<string, List<Trainer>>(data.Trainers.Count);
+            var rivalTrainers = new Dictionary<string, List<Trainer>>(3);
+            var catchingTutorialTrainers = new List<Trainer>();
+            foreach(var trainer in data.Trainers)
             {
-                trainerRand.Randomize(trainer, pokemonSet, trainerSpeciesSettings);
+                // Rivals
+                if(trainer.TrainerCategory == Trainer.Category.Rival)
+                {
+                    if (!rivalTrainers.ContainsKey(trainer.name))
+                    {
+                        rivalTrainers.Add(trainer.name, new List<Trainer>(10));
+                    }
+                    rivalTrainers[trainer.name].Add(trainer);
+                    continue;
+                }
+                // Catching Tut Trainers (Wally, Etc.)
+                if(trainer.TrainerCategory == Trainer.Category.CatchingTutTrainer)
+                {
+                    catchingTutorialTrainers.Add(trainer);
+                    continue;
+                }
+                // All other trainers
+                if (!normalTrainersByName.ContainsKey(trainer.name))
+                {
+                    normalTrainersByName.Add(trainer.name, new List<Trainer>(10));
+                }
+                normalTrainersByName[trainer.name].Add(trainer);
             }
-            // Randomize Team Grunts (considered normal trainers currently)
-            foreach (var trainer in data.GruntBattles)
-            {
-                trainerRand.Randomize(trainer, pokemonSet, trainerSpeciesSettings);
-            }
+            // Calculate and Procress Metadata
 
-            #region Special Trainers
+            // Randomize trainers
+            foreach(var kvp in normalTrainersByName)
+            {
+
+            }
 
             #region Rivals
 
             var rivalSettings = settings.GetTrainerSettings(Settings.TrainerCategory.Rival);
             bool originalStarters = settings.StarterSetting == Settings.StarterPokemonOption.Unchanged;
-            foreach (var trainer in data.RivalNames)
+            foreach (var kvp in rivalTrainers)
             {
-                var allBattles = data.SpecialTrainers[trainer.ToLower()];
+                var allBattles = kvp.Value;
                 allBattles.Sort((a, b) => a.AvgLvl.CompareTo(b.AvgLvl));
                 // Split the rival battles into their three different options
                 var starters = new Pokemon[] { allBattles[0].pokemon[0].species, allBattles[1].pokemon[0].species, allBattles[2].pokemon[0].species };
@@ -652,12 +684,12 @@ namespace PokemonRandomizer.Backend.Randomization
                     // Randomize the first battle
                     trainerRand.Randomize(firstBattle, pokemonSet, rivalSettings, false);
                     // Set the appropriate starter as the ace
-                    firstBattle.pokemon[firstBattle.pokemon.Length - 1].species = data.Starters[originalStarters ? i: data.RivalRemap[i]];
+                    firstBattle.pokemon[firstBattle.pokemon.Length - 1].species = data.Starters[originalStarters ? i : data.RivalRemap[i]];
                     // Procedurally generate the rest of the battles
                     trainerRand.RandomizeReoccurring(firstBattle, battles, pokemonSet, rivalSettings);
                     if (settings.EasyFirstRivalBattle)
                     {
-                        foreach(var pokemon in firstBattle.pokemon)
+                        foreach (var pokemon in firstBattle.pokemon)
                         {
                             pokemon.level = 1;
                         }
@@ -667,21 +699,19 @@ namespace PokemonRandomizer.Backend.Randomization
 
             #endregion
 
-            #region Wally (TODO, make either gen-specific without metadata, or make gen-agnostic)
+            #region Catching Tut Trainers (Wally)
 
-            const string wallyName = "wally";
-            if(data.SpecialTrainers.ContainsKey(wallyName))
+            if (catchingTutorialTrainers.Count > 0)
             {
                 // Randomize Wally starter if applicable
                 if (settings.RandomizeWallyAce)
                 {
-                    // Remove all pokemon that cannot be male (the tutorial cutscen crashes if the catching tut pokemon isn't able to be male)
+                    // Remove all pokemon that cannot be male (the tutorial cutscene crashes if the catching tut pokemon isn't able to be male)
                     var possibleCatchingTutPokemon = new List<Pokemon>(pokemonSet);
                     possibleCatchingTutPokemon.RemoveAll(p => data.GetBaseStats(p).genderRatio > 0xFD);
                     data.CatchingTutPokemon = pokeRand.RandomPokemon(possibleCatchingTutPokemon, data.CatchingTutPokemon, rivalSettings.PokemonSettings, 5);
                 }
-
-                var wallyBattles = new List<Trainer>(data.SpecialTrainers[wallyName]);
+                var wallyBattles = new List<Trainer>(catchingTutorialTrainers);
                 wallyBattles.Sort((a, b) => a.AvgLvl.CompareTo(b.AvgLvl));
                 var firstBattle = wallyBattles[0];
                 wallyBattles.RemoveAt(0);
@@ -692,34 +722,6 @@ namespace PokemonRandomizer.Backend.Randomization
                 // Procedurally generate the rest of Wally's battles
                 trainerRand.RandomizeReoccurring(firstBattle, wallyBattles, pokemonSet, rivalSettings);
             }
-
-            #endregion
-
-            void SpecialTrainerRandomization(IEnumerable<string> names, Settings.TrainerSettings settings)
-            {
-                foreach(var name in names)
-                {
-                    var reoccuringBattles = new List<Trainer>(data.SpecialTrainers[name.ToLower()]);
-                    reoccuringBattles.Sort((a, b) => a.AvgLvl.CompareTo(b.AvgLvl));
-                    var firstBattle = reoccuringBattles[0];
-                    reoccuringBattles.RemoveAt(0);
-                    trainerRand.Randomize(firstBattle, pokemonSet, settings, false);
-                    trainerRand.RandomizeReoccurring(firstBattle, reoccuringBattles, pokemonSet, settings);
-                }
-            }
-
-            // Ubers use champion settings for now
-            SpecialTrainerRandomization(data.UberNames, settings.GetTrainerSettings(Settings.TrainerCategory.Champion));
-            SpecialTrainerRandomization(data.ChampionNames, settings.GetTrainerSettings(Settings.TrainerCategory.Champion));
-            SpecialTrainerRandomization(data.EliteFourNames, settings.GetTrainerSettings(Settings.TrainerCategory.EliteFour));
-            SpecialTrainerRandomization(data.GymLeaderNames, settings.GetTrainerSettings(Settings.TrainerCategory.GymLeader));
-            // Team Leaders use the same settings as gym leaders for now
-            SpecialTrainerRandomization(data.TeamLeaderNames, settings.GetTrainerSettings(Settings.TrainerCategory.GymLeader));
-            // Team Admins use the same settings as team leaders for now
-            SpecialTrainerRandomization(data.TeamAdminNames, settings.GetTrainerSettings(Settings.TrainerCategory.GymLeader));
-            SpecialTrainerRandomization(data.AceTrainerNames, settings.GetTrainerSettings(Settings.TrainerCategory.AceTrainer));
-            // Reoccurring Trainers use normal trainer settings
-            SpecialTrainerRandomization(data.ReoccuringTrainerNames, settings.GetTrainerSettings(Settings.TrainerCategory.Trainer));
 
             #endregion
 

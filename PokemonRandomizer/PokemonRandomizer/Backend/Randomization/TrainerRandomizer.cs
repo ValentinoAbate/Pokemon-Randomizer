@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using PokemonRandomizer.Backend.Metadata;
 
 namespace PokemonRandomizer.Backend.Randomization
 {
@@ -69,6 +68,24 @@ namespace PokemonRandomizer.Backend.Randomization
         }
 
 
+
+        public void RandomizeAll(List<Trainer> allBattles, IEnumerable<Pokemon> pokemonSet, TrainerSettings settings)
+        {
+            if(allBattles.Count <= 0)
+            {
+                return;
+            }
+            if(allBattles.Count == 1)
+            {
+                Randomize(allBattles[0], pokemonSet, settings);
+            }
+            var reoccuringBattles = new List<Trainer>(allBattles);
+            reoccuringBattles.Sort((a, b) => a.AvgLvl.CompareTo(b.AvgLvl));
+            var firstBattle = reoccuringBattles[0];
+            reoccuringBattles.RemoveAt(0);
+            Randomize(firstBattle, pokemonSet, settings, false);
+            RandomizeReoccurring(firstBattle, reoccuringBattles, pokemonSet, settings);
+        }
 
         /// <summary> Radnomize the given trainer encounter </summary>
         public void Randomize(Trainer trainer, IEnumerable<Pokemon> pokemonSet, TrainerSettings settings, bool safe = true)

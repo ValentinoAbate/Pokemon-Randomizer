@@ -48,20 +48,8 @@ namespace PokemonRandomizer.Backend.DataStructures
 
         #region Special Trainer Info
 
-        public Dictionary<string, Trainer> NormalTrainers { get; set; }
-        public Dictionary<string, List<Trainer>> SpecialTrainers { get; set; }
-        public List<Trainer> GruntBattles { get; set; }
-        public string[] RivalNames { get; set; }
-        public string[] GymLeaderNames { get; set; }
-        public string[] EliteFourNames { get; set; }
-        public string[] ChampionNames { get; set; }
-        public string[] UberNames { get; set; }
-        public string[] TeamGruntNames { get; set; }
-        public string[] TeamAdminNames { get; set; }
-        public string[] TeamLeaderNames { get; set; }
-        public List<string> ReoccuringTrainerNames { get; set; }
-        public List<string> AceTrainerNames { get; set; }
-        public int[] AceTrainerClasses { get; set; }
+        public Dictionary<string, PokemonType[]> TrainerNameTypeOverrides { get; set; }
+        public Dictionary<string, PokemonType[]> TrainerClassTypeOverrides { get; set; }
 
         #endregion
 

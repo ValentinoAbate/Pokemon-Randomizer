@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace PokemonRandomizer.Backend.Metadata
 {
-    public class TrainerMetadata
+    public class TrainerThemeData
     {
         public enum TrainerTheme 
         {

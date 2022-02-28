@@ -16,15 +16,29 @@ namespace PokemonRandomizer.Backend.DataStructures
 
     public class Trainer
     {
+        public enum Category
+        {
+            Trainer,
+            AceTrainer,
+            Rival,
+            TeamAdmin,
+            TeamLeader,
+            GymLeader,
+            EliteFour,
+            Champion,
+            CatchingTutTrainer, // Wally, Etc
+        }
+
         public const string nullName = "??????";
         public const int nameLength = 12;
         // The all of the class names (mostly for debugging)
         public List<string> classNames;
         public string Class => trainerClass < classNames.Count ? classNames[trainerClass] : nullName;
         public double AvgLvl => pokemon.Length > 0 ? pokemon.Average((p) => p.level) : 0;
-        public bool IsGymLeader => Class.ToLower() == "leader";
+        public bool IsGymLeader => TrainerCategory == Category.GymLeader;
 
-        public TrainerMetadata Metadata { get; set; }
+        public Category TrainerCategory { get; set; }
+        public TrainerThemeData Metadata { get; set; }
 
         public int offset;
         public TrainerPokemon.DataType dataType;
