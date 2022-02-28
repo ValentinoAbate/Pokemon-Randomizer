@@ -162,6 +162,8 @@ namespace PokemonRandomizer.AppSettings
 
         #region Trainers
 
+        public override bool TrainerTypeTheming => true;
+
         public override TrainerSettings GetTrainerSettings(TrainerCategory trainerClass)
         {
             return TrainerSettingsDict.ContainsKey(trainerClass) ? TrainerSettingsDict[trainerClass] : TrainerSettingsDict[TrainerCategory.Trainer];

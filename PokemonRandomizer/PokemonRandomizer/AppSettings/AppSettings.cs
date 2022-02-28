@@ -255,6 +255,8 @@ namespace PokemonRandomizer.AppSettings
 
         #region Trainers
 
+        public override bool TrainerTypeTheming => trainerData.TypeTheming;
+
         public override TrainerSettings GetTrainerSettings(TrainerCategory trainerClass)
         {
             static TrainerSettings TrainerDataToSettings(TrainerDataModel model)

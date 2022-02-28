@@ -140,6 +140,8 @@ namespace PokemonRandomizer
             Champion,
         }
 
+        public abstract bool TrainerTypeTheming { get; }
+
         public abstract TrainerSettings GetTrainerSettings(TrainerCategory trainerClass);
 
         public abstract bool RandomizeWallyAce { get; }
