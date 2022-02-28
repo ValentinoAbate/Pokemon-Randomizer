@@ -23,6 +23,10 @@ namespace PokemonRandomizer.UI
         {
             p.Add(new Label { Content = content }, new Separator());
         }
+        public static void Header(this Panel p, string content, string tooltip)
+        {
+            p.Add(new Label { Content = content, ToolTip = tooltip }, new Separator());
+        }
 
         public static void Description(this Panel p, params string[] content)
         {

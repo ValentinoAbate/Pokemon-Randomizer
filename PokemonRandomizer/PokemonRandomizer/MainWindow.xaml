@@ -97,6 +97,10 @@
 
             </TabItem>
 
+            <TabItem Name="TrainerOrgView" Header="Trainer Organizations">
+
+            </TabItem>
+
             <TabItem Name="ItemsView" Header="Items">
 
             </TabItem>
