@@ -162,97 +162,39 @@ namespace PokemonRandomizer.AppSettings
 
         #region Trainers
 
+        // Trainer Pokemon Settings
+        public override double TrainerPokemonRandChance => 1;
         public override bool TrainerTypeTheming => true;
+        public override bool BanLegendariesTrainer => true;
+        public override bool BanLegendariesMiniboss => true;
+        public override bool BanLegendariesBoss => false;
+        public override bool TrainerRestrictIllegalEvolutions => true;
+        public override bool TrainerForceHighestLegalEvolution => true;
+        public override double TrainerPokemonNoise => 0.003;
+        public override TrainerSettings.PokemonPcgStrategy RecurringTrainerPokemonStrategy => TrainerSettings.PokemonPcgStrategy.KeepParty;
 
-        public override TrainerSettings GetTrainerSettings(TrainerCategory trainerClass)
-        {
-            return TrainerSettingsDict.ContainsKey(trainerClass) ? TrainerSettingsDict[trainerClass] : TrainerSettingsDict[TrainerCategory.Trainer];
-        }
+        // Battle Type Settings
+        public override double BattleTypeRandChance => 1;
+        public override TrainerSettings.BattleTypePcgStrategy RecurringTrainerBattleTypeStrategy => TrainerSettings.BattleTypePcgStrategy.KeepSameType;
+        public override double DoubleBattleChance => 1;
 
-        private Dictionary<TrainerCategory, TrainerSettings> TrainerSettingsDict { get; } = new Dictionary<TrainerCategory, TrainerSettings>()
-        {
-            { TrainerCategory.Trainer, new TrainerSettings()
-                {
-                    PokemonSettings = new PokemonSettings()
-                    {
-                        BanLegendaries = false,
-                        ForceHighestLegalEvolution = true,
-                        Noise = 0.01f,
-                        Data = new List<MetricData>()
-                        {
-                            new MetricData(PokemonMetric.typeIndividual),
-                            new MetricData(PokemonMetric.powerIndividual, 2),
-                        }
-                    }
-                }
-            },
-            { TrainerCategory.AceTrainer, new TrainerSettings()
-                {
-                    PokemonSettings = new PokemonSettings()
-                    {
-                        BanLegendaries = false,
-                        ForceHighestLegalEvolution = true,
-                        Noise = 0.01f,
-                    }
-                }
-            },
-            { TrainerCategory.Rival, new TrainerSettings()
-                {
-                    PokemonSettings = new PokemonSettings()
-                    {
-                        BanLegendaries = false,
-                        ForceHighestLegalEvolution = true,
-                        Noise = 0.01f,
-                    }
-                }
-            },
-            { TrainerCategory.GymLeader, new TrainerSettings()
-                {
-                    PokemonSettings = new PokemonSettings()
-                    {
-                        BanLegendaries = false,
-                        ForceHighestLegalEvolution = true,
-                        Data = new List<MetricData>()
-                        {
-                            new MetricData(PokemonMetric.typeTrainerParty, 0, 10, 0.2f),
-                            new MetricData(PokemonMetric.powerIndividual, 3),
-                            //new MetricData(PokemonMetric.typeIndividual, 1),
-                        }
-                    }
-                }
-            },
-            { TrainerCategory.EliteFour, new TrainerSettings()
-                {
-                    PokemonSettings = new PokemonSettings()
-                    {
-                        BanLegendaries = false,
-                        RestrictIllegalEvolutions = false,
-                        ForceHighestLegalEvolution = true,
-                        Data = new List<MetricData>()
-                        {
-                            new MetricData(PokemonMetric.typeTrainerParty, 0, 10, 0.2f),
-                            //new MetricData(PokemonMetric.typeIndividual, 1),
-                        }
-                    }
-                }
-            },
-            { TrainerCategory.Champion, new TrainerSettings()
-                {
-                    PokemonSettings = new PokemonSettings()
-                    {
-                        BanLegendaries = false,
-                        RestrictIllegalEvolutions = false,
-                        ForceHighestLegalEvolution = true,
-                        Noise = 0.001f,
-                        Data = new List<MetricData>()
-                        {
-                            new MetricData(PokemonMetric.typeTrainerParty, 0, 10, 0.2f),
-                            //new MetricData(PokemonMetric.typeIndividual, 1),
-                        }
-                    }
-                }
-            },
-        };
+        // Difficulty Settings
+        public override double TrainerPokemonLevelMultiplier => 1;
+        public override double TrainerPokemonMinIV => 0;
+        public override bool UseSmartAI => true;
+
+        // Trainer Organization Settings
+        public override TrainerOrgTypeTheme GymTypeTheming => TrainerOrgTypeTheme.Default;
+        public override bool GymTrainerTheming => true;
+
+        public override TrainerOrgTypeTheme EliteFourTheming => TrainerOrgTypeTheme.Default;
+        public override TrainerOrgTypeTheme ChampionTheming => TrainerOrgTypeTheme.Default;
+        public override TrainerOrgTypeTheme TeamTypeTheming => TrainerOrgTypeTheme.Default;
+        public override bool GruntTheming => true;
+        public override bool KeepTeamSubtypes => true;
+        public override TrainerOrgTypeTheme SmallOrgTypeTheming => TrainerOrgTypeTheme.Default;
+
+        // Misc
         public override bool RandomizeWallyAce => true;
 
         #endregion

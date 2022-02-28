@@ -1,7 +1,8 @@
 ﻿using PokemonRandomizer.UI.Models;
 using System.Windows.Controls;
 using System.Windows.Data;
-using static PokemonRandomizer.UI.Models.TrainerOrganizationDataModel;
+using static PokemonRandomizer.Settings;
+
 
 namespace PokemonRandomizer.UI.Views
 {
@@ -33,17 +34,17 @@ namespace PokemonRandomizer.UI.Views
         {
             var stack = CreateMainStack();
             stack.Header("Gyms");
-            stack.Add(new EnumComboBoxUI<TypeTheme>("Type Theming", TypeThemeDropdown, model.GymTypeTheming));
+            stack.Add(new EnumComboBoxUI<TrainerOrgTypeTheme>("Type Theming", TypeThemeDropdown, model.GymTypeTheming));
             stack.Add(new BoundCheckBoxUI(model.GymTrainerTheming, "Apply Type Theme To Gym Trainers"));
             stack.Header("Elite Four + Champion");
-            stack.Add(new EnumComboBoxUI<TypeTheme>("Elite Four Type Theming", TypeThemeDropdown, model.EliteFourTheming));
-            stack.Add(new EnumComboBoxUI<TypeTheme>("Champion Type Theming", ChampionTypeThemeDropdown, model.ChampionTheming));
+            stack.Add(new EnumComboBoxUI<TrainerOrgTypeTheme>("Elite Four Type Theming", TypeThemeDropdown, model.EliteFourTheming));
+            stack.Add(new EnumComboBoxUI<TrainerOrgTypeTheme>("Champion Type Theming", ChampionTypeThemeDropdown, model.ChampionTheming));
             stack.Header("Criminal Teams");
-            stack.Add(new EnumComboBoxUI<TypeTheme>("Type Theming", TypeThemeDropdown, model.TeamTypeTheming));
+            stack.Add(new EnumComboBoxUI<TrainerOrgTypeTheme>("Type Theming", TypeThemeDropdown, model.TeamTypeTheming));
             stack.Add(new BoundCheckBoxUI(model.GruntTheming, "Apply Type Theme To Grunts"));
             stack.Add(new BoundCheckBoxUI(model.KeepTeamSubtypes, "Keep Team Subtypes") { ToolTip = teamSubtypesTooltip });
             //stack.Header("Miscellaneous Organizations", "Miscellanous Organizations include: The Winstrates, Nugget Bridge, The Fighting Dojo, The Soda Pop House");
-            //stack.Add(new EnumComboBoxUI<TypeTheme>("Type Theming", TypeThemeDropdown, model.SmallOrgTypeTheming));
+            //stack.Add(new EnumComboBoxUI<TrainerOrgTypeTheme>("Type Theming", TypeThemeDropdown, model.SmallOrgTypeTheming));
         }
     }
 }

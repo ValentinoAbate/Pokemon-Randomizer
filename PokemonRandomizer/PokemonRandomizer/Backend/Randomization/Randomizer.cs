@@ -667,7 +667,9 @@ namespace PokemonRandomizer.Backend.Randomization
 
             #region Rivals
 
-            var rivalSettings = settings.GetTrainerSettings(Settings.TrainerCategory.Rival);
+            // Setup Rival Pokemon Settings
+            var rivalSettings = settings.BasicTrainerSettings;
+            rivalSettings.PokemonSettings.BanLegendaries = settings.BanLegendariesMiniboss;
             bool originalStarters = settings.StarterSetting == Settings.StarterPokemonOption.Unchanged;
             foreach (var kvp in rivalTrainers)
             {

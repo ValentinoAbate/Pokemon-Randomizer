@@ -23,6 +23,7 @@ namespace PokemonRandomizer.AppSettings
         private DreamTeamDataModel dreamTeamData;
         private WildEncounterDataModel wildEncounterData;
         private TrainerDataModel trainerData;
+        private TrainerOrganizationDataModel trainerOrgData;
         private ItemDataModel itemData;
         private WeatherDataModel weatherData;
         private MiscDataModel miscData;
@@ -42,6 +43,7 @@ namespace PokemonRandomizer.AppSettings
             pokemonData = data.PokemonData;
             wildEncounterData = data.WildEncounterData;
             trainerData = data.TrainerData;
+            trainerOrgData = data.TrainerOrgData;
             itemData = data.ItemData;
             weatherData = data.WeatherData;
             miscData = data.MiscData;
@@ -255,34 +257,37 @@ namespace PokemonRandomizer.AppSettings
 
         #region Trainers
 
+        // Trainer Pokemon Settings
+        public override double TrainerPokemonRandChance => RandomChance(trainerData.RandomizePokemon, trainerData.PokemonRandChance);
         public override bool TrainerTypeTheming => trainerData.TypeTheming;
+        public override bool BanLegendariesTrainer => trainerData.BanLegendaries;
+        public override bool BanLegendariesMiniboss => trainerData.BanLegendariesMiniboss;
+        public override bool BanLegendariesBoss => trainerData.BanLegendariesBoss;
+        public override bool TrainerRestrictIllegalEvolutions => trainerData.RestrictIllegalEvolutions;
+        public override bool TrainerForceHighestLegalEvolution => trainerData.ForceHighestLegalEvolution;
+        public override double TrainerPokemonNoise => trainerData.PokemonNoise;
+        public override TrainerSettings.PokemonPcgStrategy RecurringTrainerPokemonStrategy => trainerData.PokemonStrategy;
 
-        public override TrainerSettings GetTrainerSettings(TrainerCategory trainerClass)
-        {
-            static TrainerSettings TrainerDataToSettings(TrainerDataModel model)
-            {
-                return new TrainerSettings()
-                {
-                    PokemonRandChance = RandomChance(model.RandomizePokemon, model.PokemonRandChance),
-                    PokemonStrategy = model.PokemonStrategy,
-                    PokemonSettings = new PokemonSettings()
-                    {
-                        BanLegendaries = model.BanLegendaries,
-                        RestrictIllegalEvolutions = model.RestrictIllegalEvolutions,
-                        ForceHighestLegalEvolution = model.ForceHighestLegalEvolution,
-                        Noise = (float)model.PokemonNoise,
-                    },
-                    BattleTypeRandChance = RandomChance(model.RandomizeBattleType, model.BattleTypeRandChance),
-                    BattleTypeStrategy = model.BattleTypeStrategy,
-                    DoubleBattleChance = model.DoubleBattleChance,
-                    LevelMultiplier = model.LevelMult,
-                    MinIV = MathUtils.MapToByte(31, model.MinIVs),
-                    UseSmartAI = model.SmartAI,
-                };
-            }
-            // Todo specify metrics
-            return TrainerDataToSettings(trainerData);
-        }
+        // Battle Type Settings
+        public override double BattleTypeRandChance => RandomChance(trainerData.RandomizeBattleType, trainerData.BattleTypeRandChance);
+        public override TrainerSettings.BattleTypePcgStrategy RecurringTrainerBattleTypeStrategy => trainerData.BattleTypeStrategy;
+        public override double DoubleBattleChance => trainerData.DoubleBattleChance;
+
+        // Difficulty Settings
+        public override double TrainerPokemonLevelMultiplier => trainerData.LevelMult;
+        public override double TrainerPokemonMinIV => trainerData.MinIVs;
+        public override bool UseSmartAI => trainerData.SmartAI;
+
+        // Trainer Organization Settings
+        public override TrainerOrgTypeTheme GymTypeTheming => trainerOrgData.GymTypeTheming;
+        public override bool GymTrainerTheming => trainerOrgData.GymTrainerTheming;
+
+        public override TrainerOrgTypeTheme EliteFourTheming => trainerOrgData.EliteFourTheming;
+        public override TrainerOrgTypeTheme ChampionTheming => trainerOrgData.ChampionTheming;
+        public override TrainerOrgTypeTheme TeamTypeTheming => trainerOrgData.TeamTypeTheming;
+        public override bool GruntTheming => trainerOrgData.GruntTheming;
+        public override bool KeepTeamSubtypes => trainerOrgData.KeepTeamSubtypes;
+        public override TrainerOrgTypeTheme SmallOrgTypeTheming => trainerOrgData.SmallOrgTypeTheming;
 
         #endregion
 

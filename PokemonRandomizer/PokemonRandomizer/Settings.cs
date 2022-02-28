@@ -130,21 +130,67 @@ namespace PokemonRandomizer
 
         #region Trainers
 
-        public enum TrainerCategory
+        public TrainerSettings BasicTrainerSettings => new()
         {
-            Trainer,
-            AceTrainer,
-            Rival,
-            GymLeader,
-            EliteFour,
-            Champion,
-        }
+            PokemonRandChance = TrainerPokemonRandChance,
+            PokemonStrategy = RecurringTrainerPokemonStrategy,
+            PokemonSettings = new PokemonSettings()
+            {
+                BanLegendaries = BanLegendariesTrainer,
+                RestrictIllegalEvolutions = TrainerRestrictIllegalEvolutions,
+                ForceHighestLegalEvolution = TrainerForceHighestLegalEvolution,
+                Noise = (float)TrainerPokemonNoise,
+            },
+            BattleTypeRandChance = BattleTypeRandChance,
+            BattleTypeStrategy = RecurringTrainerBattleTypeStrategy,
+            DoubleBattleChance = DoubleBattleChance,
+            LevelMultiplier = TrainerPokemonLevelMultiplier,
+            MinIV = MathUtils.MapToByte(31, TrainerPokemonMinIV),
+            UseSmartAI = UseSmartAI,
+        };
 
+        // Trainer Pokemon Settings
+        public abstract double TrainerPokemonRandChance { get; }
         public abstract bool TrainerTypeTheming { get; }
+        public abstract bool BanLegendariesTrainer { get; }
+        public abstract bool BanLegendariesMiniboss { get; }
+        public abstract bool BanLegendariesBoss { get; }
+        public abstract bool TrainerRestrictIllegalEvolutions { get; }
+        public abstract bool TrainerForceHighestLegalEvolution { get; }
+        public abstract double TrainerPokemonNoise { get; }
+        public abstract TrainerSettings.PokemonPcgStrategy RecurringTrainerPokemonStrategy { get; }
 
-        public abstract TrainerSettings GetTrainerSettings(TrainerCategory trainerClass);
+        // Battle Type Settings
+        public abstract double BattleTypeRandChance { get; }
+        public abstract TrainerSettings.BattleTypePcgStrategy RecurringTrainerBattleTypeStrategy { get; }
+        public abstract double DoubleBattleChance { get; }
 
+        // Difficulty Settings
+        public abstract double TrainerPokemonLevelMultiplier { get; }
+        public abstract double TrainerPokemonMinIV { get; }
+        public abstract bool UseSmartAI { get; }
+
+        // Trainer Organization Settings
+        public enum TrainerOrgTypeTheme
+        {
+            Default,
+            Off,
+            On,
+            Random,
+            RandomNoDupes,
+        }
+        public abstract TrainerOrgTypeTheme GymTypeTheming { get; }
+        public abstract bool GymTrainerTheming { get; }
+        public abstract TrainerOrgTypeTheme EliteFourTheming { get; }
+        public abstract TrainerOrgTypeTheme ChampionTheming { get; }
+        public abstract TrainerOrgTypeTheme TeamTypeTheming { get; }
+        public abstract bool GruntTheming { get; }
+        public abstract bool KeepTeamSubtypes { get; }
+        public abstract TrainerOrgTypeTheme SmallOrgTypeTheming { get; }
+
+        // Misc
         public abstract bool RandomizeWallyAce { get; }
+
         #endregion
 
         #region Wild Pokemon
