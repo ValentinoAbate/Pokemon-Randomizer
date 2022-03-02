@@ -67,7 +67,7 @@ namespace PokemonRandomizer.Backend.Reading
             // Trainers and associated data
             data.ClassNames = ReadTrainerClassNames(rom, info);
             data.Trainers = ReadTrainers(rom, info, data.ClassNames);
-            SetSpecialTrainerData(data, metadata, info);
+            SetTrainerCategoryData(data, metadata, info);
             // Read type definitions
             data.TypeDefinitions = ReadTypeEffectivenessData(rom, info);
             // Read in the map data
@@ -475,8 +475,46 @@ namespace PokemonRandomizer.Backend.Reading
         /// <summary>
         /// Read all the preset trainer data from the info file into the ROM data, and find normal grunt, ace, and reocurring trainers
         /// </summary>
-        private void SetSpecialTrainerData(RomData data, RomMetadata metadata, XmlManager info)
+        private void SetTrainerCategoryData(RomData data, RomMetadata metadata, XmlManager info)
         {
+            string leaderClass = info.SafeAttr(ElementNames.gymLeaders, "className")?.ToLower();
+            string eliteFourClass = info.SafeAttr(ElementNames.eliteFour, "className")?.ToLower();
+            string championClass = info.SafeAttr(ElementNames.champion, "className")?.ToLower();
+            string[] rivalNames = info.SafeArrayAttr(ElementNames.rivals, "names", info.ArrayAttr).Select(s => s.ToLower()).ToArray();
+            foreach (var trainer in data.Trainers)
+            {
+                if (trainer.Invalid)
+                    continue;
+                string trainerClass = trainer.Class.ToLower();
+                if (trainerClass == leaderClass)
+                {
+                    if(IsPlaceholder(trainer))
+                    {
+                        continue;
+                    }
+                    trainer.TrainerCategory = Trainer.Category.GymLeader;
+                } 
+                else if (trainerClass == eliteFourClass)
+                {
+                    if (IsPlaceholder(trainer))
+                    {
+                        continue;
+                    }
+                    trainer.TrainerCategory = Trainer.Category.EliteFour;
+                }
+                else if (rivalNames.Contains(trainer.name.ToLower()))
+                {
+                    trainer.TrainerCategory = Trainer.Category.Rival;
+                }
+                else if (trainerClass == championClass)
+                {
+                    if (IsPlaceholder(trainer))
+                    {
+                        continue;
+                    }
+                    trainer.TrainerCategory = Trainer.Category.Champion;
+                }
+            }
             //data.SpecialTrainers = new Dictionary<string, List<Trainer>>();
             //string[] AddTrainersFromArrayAttr(string element)
             //{
@@ -545,6 +583,11 @@ namespace PokemonRandomizer.Backend.Reading
             //        data.NormalTrainers.Add(name, trainer);
             //    }
             //}
+        }
+
+        private bool IsPlaceholder(Trainer trainer)
+        {
+            return trainer.pokemon.Length == 1 && trainer.pokemon[0].level == 5;
         }
 
         // Read encounters

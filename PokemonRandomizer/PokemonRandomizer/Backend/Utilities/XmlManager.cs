@@ -265,7 +265,7 @@ namespace PokemonRandomizer.Backend.Utilities
         public T[] SafeArrayAttr<T>(string element, string attribute, Func<string, string, T[]> arrayGetter)
         {
             if (!HasElementWithAttr(element, attribute))
-                return new T[0];
+                return Array.Empty<T>();
             return arrayGetter(element, attribute);
         }
         /// <summary> returns the given element's content as a string </summary> 
@@ -283,6 +283,12 @@ namespace PokemonRandomizer.Backend.Utilities
         {
             return Attr(element, attribute) != null;
         }
+
+        public string SafeAttr(string element, string attribute)
+        {
+            return Attr(element, attribute)?.Value;
+        }
+
         /// <summary>
         /// Finds an element by name and returns the given attribute.
         /// If the element is cached, it is looked up,

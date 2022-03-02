@@ -43,6 +43,12 @@ namespace PokemonRandomizer.Backend.GenIII.Constants.ElementNames
         public const string trades = "trades";
         public const string setBerryTreeScript = "setBerryTreeScript";
 
+        // Trainer metadata
+        public const string gymLeaders = "gymLeaders";
+        public const string rivals = "rivals";
+        public const string eliteFour = "eliteFour";
+        public const string champion = "champion";
+
         // Hacks and Tweaks / Misc
         public const string pcPotion = "pcPotion";
         public const string runIndoors = "runIndoors";

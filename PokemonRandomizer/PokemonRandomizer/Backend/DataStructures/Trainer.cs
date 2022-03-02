@@ -27,6 +27,7 @@ namespace PokemonRandomizer.Backend.DataStructures
             EliteFour,
             Champion,
             CatchingTutTrainer, // Wally, Etc
+            SpecialBoss, // Post-game steven in emerald, Red, etc
         }
 
         public bool Invalid => string.IsNullOrWhiteSpace(name) || name == nullName;

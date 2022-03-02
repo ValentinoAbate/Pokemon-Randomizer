@@ -41,7 +41,9 @@
 
     <!-- Special Trainer Battles -->
     
-    <teamGrunts names="[Grunt]"/>
+    <gymLeaders className="Leader"/>
+	<eliteFour className="Elite Four"/>
+	<champion className="champion"/>
     
     <!-- Pokemon Definitions -->
     
@@ -79,10 +81,10 @@
     <!-- Special Trainer Battles -->
 
     <rivals names="[Brendan,May]" remap="[1,2,0]"/>
-    <eliteFour names="[Sidney,Phoebe,Glacia,Drake]"/>
-    <teamAdmins names="[Tabitha,Matt,Shelly]"/>
-    <teamLeaders names="[Maxie,Archie]"/>
-    <aceTrainers classNums="[5,48]"/>
+	<teams elementNames="[teamAqua,teamMagma]"/>
+	<teamAqua leaderClass ="Aqua Leader" adminClass="Aqua Admin" gruntClass ="Team Aqua"/>
+	<teamMagma leaderClass ="Magma Leader" adminClass="Magma Admin" gruntClass ="Team Magma"/>
+    <aceTrainers classNames="[Cooltrainer]" classNums="[5,48]"/>
 
     <!-- Map Data -->
 
@@ -177,9 +179,7 @@
     
     <!-- Special Trainer Battles -->
 
-    <gymLeaders names="[Roxanne,Brawly,Wattson,Flannery,Norman,Winona,Tate&amp;Liza,Juan]"/>
-    <champion names="[Wallace]"/>
-    <uber names="[Steven]"/>
+    <specialBosses names="[Steven]"/>
 
     <!-- Map Data -->
 
@@ -214,11 +214,6 @@
     <!-- Pokemon Definitions -->
 
     <pokemonNames pointer="0x00FA58"/>
-    
-    <!-- Special Trainer Battles -->
-    
-    <gymLeaders names="[Roxanne,Brawly,Wattson,Flannery,Norman,Winona,Tate&amp;Liza,Wallace]"/>
-    <champion names="[Steven]"/>
     
     <!-- Items -->
 
@@ -300,9 +295,8 @@
     <!-- Special Trainer Battles -->
 
     <rivals names="[Terry]" remap="[1,0,2]"/>
-    <gymLeaders names="[Brock,Misty,Lt. Surge,Erika,Koga,Sabrina,Blaine]"/>
-    <eliteFour names="[Lorelei,Bruno,Agatha,Lance]"/>
-    <teamLeaders names="[Giovanni]"/>
+	<teams elementNames="[teamRocket]"/>
+	<teamRocket leaderClass ="Boss" adminNames="[Admin,Gideon]" gruntClass ="Team Rocket"/>
     <aceTrainers classNums="[9,93,86]"/>
 
     <!-- TMs, HMs, and Move Tutors -->
