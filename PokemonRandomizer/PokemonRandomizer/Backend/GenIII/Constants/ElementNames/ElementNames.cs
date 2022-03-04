@@ -48,6 +48,7 @@ namespace PokemonRandomizer.Backend.GenIII.Constants.ElementNames
         public const string rivals = "rivals";
         public const string eliteFour = "eliteFour";
         public const string champion = "champion";
+        public const string aceTrainers = "aceTrainers";
 
         // Hacks and Tweaks / Misc
         public const string pcPotion = "pcPotion";

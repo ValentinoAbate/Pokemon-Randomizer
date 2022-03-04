@@ -481,6 +481,8 @@ namespace PokemonRandomizer.Backend.Reading
             string eliteFourClass = info.SafeAttr(ElementNames.eliteFour, "className")?.ToLower();
             string championClass = info.SafeAttr(ElementNames.champion, "className")?.ToLower();
             string[] rivalNames = info.SafeArrayAttr(ElementNames.rivals, "names", info.ArrayAttr).Select(s => s.ToLower()).ToArray();
+            // Fetch the Ace Trainer Class Numbers for this ROM
+            var aceTrainersClasses = info.SafeArrayAttr(ElementNames.aceTrainers, "classNums", info.IntArrayAttr);
             foreach (var trainer in data.Trainers)
             {
                 if (trainer.Invalid)
@@ -513,6 +515,10 @@ namespace PokemonRandomizer.Backend.Reading
                         continue;
                     }
                     trainer.TrainerCategory = Trainer.Category.Champion;
+                }
+                else if (aceTrainersClasses.Contains(trainer.trainerClass))
+                {
+                    trainer.TrainerCategory = Trainer.Category.AceTrainer;
                 }
             }
             //data.SpecialTrainers = new Dictionary<string, List<Trainer>>();
