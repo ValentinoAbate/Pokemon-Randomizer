@@ -388,7 +388,7 @@ namespace PokemonRandomizer.Backend.Writing
             #endregion
 
             int movesetIndex = 0;
-            int skipNum = (int)info.Attr(ElementNames.pokemonBaseStats, "skip");
+            int skipNum = info.IntAttr(ElementNames.pokemonBaseStats, "skip");
             // Create an empty ROM block to write the learnsetData to
             Rom moveData = new Rom(romData.Pokemon.Sum((stats) => (stats.learnSet.Count * 2) + 2) + (skipNum * 4), rom.FreeSpaceByte);
             // If any of the movesets have changed we will have to perform repoint operations
@@ -396,7 +396,7 @@ namespace PokemonRandomizer.Backend.Writing
             // Find a block to write to in so we can log repoints if we need to
             int? newMoveDataOffset = needToRelocateMoveData ? rom.FindFreeSpaceOffset(moveData.Length) : null;
             bool ableToRelocateMoveData = newMoveDataOffset != null;
-            int skipAt = (int)info.Attr(ElementNames.pokemonBaseStats, "skipAt");
+            int skipAt = info.IntAttr(ElementNames.pokemonBaseStats, "skipAt");
             // Main writing loop
             for (int i = 0; i < info.Num(ElementNames.pokemonBaseStats); i++)
             {

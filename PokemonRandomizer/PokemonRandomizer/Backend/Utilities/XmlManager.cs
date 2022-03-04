@@ -1,4 +1,5 @@
 ﻿using PokemonRandomizer.Backend.DataStructures;
+using PokemonRandomizer.Backend.EnumTypes;
 using PokemonRandomizer.Backend.Utilities.Debug;
 using System;
 using System.Collections.Generic;
@@ -241,22 +242,30 @@ namespace PokemonRandomizer.Backend.Utilities
         /// <summary> returns the given attribute of the element unpacked from an array </summary>
         public string[] ArrayAttr(string element, string attribute)
         {
-            return ((string)Attr(element, attribute)).Trim('[', ']').Split(',');
+            var baseArray = SafeAttr(element, attribute);
+            if(string.IsNullOrWhiteSpace(baseArray))
+                return Array.Empty<string>();
+            return baseArray.Trim('[', ']').Split(',');
         }
         /// <summary> returns the given attribute of the element with each element interpreted as an int[] </summary>
         public int[] IntArrayAttr(string element, string attribute)
         {
-            return Array.ConvertAll(((string)Attr(element, attribute)).Trim('[', ']').Split(','), int.Parse);
+            return Array.ConvertAll(ArrayAttr(element, attribute), int.Parse);
         }
         /// <summary> returns the given attribute of the element with each element interpreted from a hex string </summary>
         public int[] HexArrayAttr(string element, string attribute)
         {
-            return Array.ConvertAll(((string)Attr(element, attribute)).Trim('[', ']').Split(','), HexToInt);
+            return Array.ConvertAll(ArrayAttr(element, attribute), HexToInt);
         }
 
         public byte[] ByteArrayAttr(string element, string attribute)
         {
-            return Array.ConvertAll(((string)Attr(element, attribute)).Trim('[', ']').Split(','), HexToByte);
+            return Array.ConvertAll(ArrayAttr(element, attribute), HexToByte);
+        }
+
+        public PokemonType[] TypeArrayAttr(string element, string attribute)
+        {
+            return Array.ConvertAll(ArrayAttr(element, attribute), PokemonTypeUtils.FromString);
         }
         /// <summary>
         /// Safely gets an array attribute if it exists. else returns an empty array.
@@ -294,7 +303,7 @@ namespace PokemonRandomizer.Backend.Utilities
         /// If the element is cached, it is looked up,
         /// else it is searched for (with SearchRoot as the search root Node)
         /// </summary>
-        public XAttribute Attr(string element, string attribute)
+        private XAttribute Attr(string element, string attribute)
         {
             return Element(element)?.Attribute(attribute);
         }
