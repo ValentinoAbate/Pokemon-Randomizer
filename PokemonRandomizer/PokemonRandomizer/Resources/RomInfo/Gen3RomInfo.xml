@@ -82,8 +82,8 @@
 
     <rivals names="[Brendan,May]" remap="[1,2,0]"/>
 	<teams elementNames="[teamAqua,teamMagma]"/>
-	<teamAqua leaderClass ="Aqua Leader" adminClass="Aqua Admin" gruntClass ="Team Aqua"/>
-	<teamMagma leaderClass ="Magma Leader" adminClass="Magma Admin" gruntClass ="Team Magma"/>
+	<teamAqua leaderClass ="Aqua Leader" adminClass="Aqua Admin" gruntClass ="Team Aqua" primaryTypes="[WAT]" secondaryTypes="[DRK,PSN]"/>
+	<teamMagma leaderClass ="Magma Leader" adminClass="Magma Admin" gruntClass ="Team Magma" primaryTypes="[FIR,GRD]" secondaryTypes="[DRK,PSN]"/>
     <aceTrainers classNames="[Cooltrainer]" classNums="[5,48]"/>
 
     <!-- Map Data -->
@@ -296,7 +296,7 @@
 
     <rivals names="[Terry]" remap="[1,0,2]"/>
 	<teams elementNames="[teamRocket]"/>
-	<teamRocket leaderClass ="Boss" adminNames="[Admin,Gideon]" gruntClass ="Team Rocket"/>
+	<teamRocket leaderClass ="Boss" adminNames="[Admin,Gideon]" gruntClass ="Team Rocket" primaryTypes="[PSN]" secondaryTypes="[NRM]"/>
     <aceTrainers classNums="[9,93,86]"/>
 
     <!-- TMs, HMs, and Move Tutors -->

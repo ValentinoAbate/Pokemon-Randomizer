@@ -194,7 +194,7 @@ namespace PokemonRandomizer.Backend.Writing
             // Emerald offsets from Panda Face (https://www.pokecommunity.com/member.php?u=660920)
             // Three snow flake spawning issue fix from ShinyDragonHunter (https://www.pokecommunity.com/member.php?u=241758)
             // Thread with all relevant posts: https://www.pokecommunity.com/showthread.php?t=351387&page=2
-            var hailRoutine = info.SafeArrayAttr(ElementNames.hailHack, "routine", info.ByteArrayAttr);
+            var hailRoutine = info.ByteArrayAttr(ElementNames.hailHack, "routine");
             if (hailRoutine.Length == 0)
             {
                 Logger.main.Unsupported(ElementNames.hailHack + " (no routine found)");

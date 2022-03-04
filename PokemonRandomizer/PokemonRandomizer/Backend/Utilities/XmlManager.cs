@@ -109,7 +109,7 @@ namespace PokemonRandomizer.Backend.Utilities
             {
                 try
                 {
-                    int offset = rom.ReadPointer(rom.FindFromPrefix(Attr(element, pointerPrefixAttr).Value));
+                    int offset = rom.ReadPointer(rom.FindFromPrefix(Attr(element, pointerPrefixAttr)));
                     if(rom.IsValidOffset(offset))
                     {
                         if (isValidOffset == null || isValidOffset(rom, offset))
@@ -122,7 +122,7 @@ namespace PokemonRandomizer.Backend.Utilities
             {
                 try
                 {
-                    int offset = rom.FindFromPrefix(Attr(element, prefixAttr).Value);
+                    int offset = rom.FindFromPrefix(Attr(element, prefixAttr));
                     if (rom.IsValidOffset(offset))
                     {
                         if (isValidOffset == null || isValidOffset(rom, offset))
@@ -135,7 +135,7 @@ namespace PokemonRandomizer.Backend.Utilities
             {
                 try
                 {
-                    int offset = rom.FindFirst(Attr(element, signatureAttr).Value);
+                    int offset = rom.FindFirst(Attr(element, signatureAttr));
                     if (rom.IsValidOffset(offset))
                     {
                         if (isValidOffset == null || isValidOffset(rom, offset))
@@ -181,17 +181,17 @@ namespace PokemonRandomizer.Backend.Utilities
         /// <summary> returns the "num" (amount of entries) attribute of the given element. Expects an integer value </summary>
         public int Num(string element)
         {
-            return (int)Attr(element, numAttr);
+            return IntAttr(element, numAttr);
         }
         /// <summary> returns the "size" (size in bytes) attribute of the given element. Expects an integer value </summary>
         public int Size(string element)
         {
-            return (int)Attr(element, sizeAttr);
+            return IntAttr(element, sizeAttr);
         }
         /// <summary> returns the "length" (max string length) attribute of the given element. Expects an integer value </summary>
         public int Length(string element)
         {
-            return (int)Attr(element, lengthAttr);
+            return IntAttr(element, lengthAttr);
         }
         /// <summary> returns true if the element has an "offset" (offset) attribute </summary>
         public bool HasOffset(string element)
@@ -232,17 +232,17 @@ namespace PokemonRandomizer.Backend.Utilities
         /// <summary> returns the given attribute of the element converted from hex string to int </summary> 
         public int HexAttr(string element, string attribute)
         {
-            return HexToInt((string)Attr(element, attribute));
+            return HexToInt(Attr(element, attribute));
         }
         /// <summary> returns the given attribute of the element converted from string to int </summary> 
         public int IntAttr(string element, string attribute)
         {
-            return int.Parse(Attr(element, attribute).Value);
+            return int.Parse(Attr(element, attribute));
         }
         /// <summary> returns the given attribute of the element unpacked from an array </summary>
         public string[] ArrayAttr(string element, string attribute)
         {
-            var baseArray = SafeAttr(element, attribute);
+            var baseArray = Attr(element, attribute);
             if(string.IsNullOrWhiteSpace(baseArray))
                 return Array.Empty<string>();
             return baseArray.Trim('[', ']').Split(',');
@@ -267,16 +267,7 @@ namespace PokemonRandomizer.Backend.Utilities
         {
             return Array.ConvertAll(ArrayAttr(element, attribute), PokemonTypeUtils.FromString);
         }
-        /// <summary>
-        /// Safely gets an array attribute if it exists. else returns an empty array.
-        /// ArrayGetter should either be: ArrayAttr, IntArrayAttr, ByteArrayAttr, or HexArrayAttr
-        /// </summary>
-        public T[] SafeArrayAttr<T>(string element, string attribute, Func<string, string, T[]> arrayGetter)
-        {
-            if (!HasElementWithAttr(element, attribute))
-                return Array.Empty<T>();
-            return arrayGetter(element, attribute);
-        }
+
         /// <summary> returns the given element's content as a string </summary> 
         public string StringElt(string element)
         {
@@ -293,29 +284,11 @@ namespace PokemonRandomizer.Backend.Utilities
             return Attr(element, attribute) != null;
         }
 
-        public string SafeAttr(string element, string attribute)
+        public string Attr(string element, string attribute)
         {
-            return Attr(element, attribute)?.Value;
+            return Element(element)?.Attribute(attribute)?.Value;
         }
 
-        /// <summary>
-        /// Finds an element by name and returns the given attribute.
-        /// If the element is cached, it is looked up,
-        /// else it is searched for (with SearchRoot as the search root Node)
-        /// </summary>
-        private XAttribute Attr(string element, string attribute)
-        {
-            return Element(element)?.Attribute(attribute);
-        }
-        /// <summary>
-        /// Finds an element by name and returns the given attribute.
-        /// If the element is cached, it is looked up,
-        /// else it is searched for (with the specified search root as the search root Node)
-        /// </summary>
-        public XAttribute Attr(string element, string attribute, XElement root)
-        {
-            return Element(element, root)?.Attribute(attribute);
-        }
         /// <summary>
         /// Returns true if the element exists, else false. If the element is cached, it is looked up,
         /// else it is searched for (with SearchRoot as the search root Node)
@@ -330,7 +303,7 @@ namespace PokemonRandomizer.Backend.Utilities
         /// else it is searched for (with SearchRoot as the search root Node)
         /// <para>If cache == true, then the element (if found) and all elements searched through will be cached</para>
         /// </summary>
-        public XElement Element(string element, bool cache = true)
+        private XElement Element(string element, bool cache = true)
         {
             return Element(element, searchRoot, cache);
         }
@@ -339,7 +312,7 @@ namespace PokemonRandomizer.Backend.Utilities
         /// else it is searched for (using the given root Node)
         /// <para>If cache == true, then the element (if found) and all elements searched through will be cached</para>
         /// </summary>
-        public XElement Element(string element, XElement root, bool cache = true)
+        private XElement Element(string element, XElement root, bool cache = true)
         {
             if (this.cache.ContainsKey(element))
                 return this.cache[element];

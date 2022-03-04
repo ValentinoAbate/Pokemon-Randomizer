@@ -9,6 +9,7 @@ using System.Linq;
 using System;
 using static PokemonRandomizer.Backend.DataStructures.MoveData;
 using PokemonRandomizer.Backend.DataStructures.Scripts;
+using PokemonRandomizer.Backend.Metadata;
 
 namespace PokemonRandomizer.Backend.Reading
 {
@@ -477,12 +478,12 @@ namespace PokemonRandomizer.Backend.Reading
         /// </summary>
         private void SetTrainerCategoryData(RomData data, RomMetadata metadata, XmlManager info)
         {
-            string leaderClass = info.SafeAttr(ElementNames.gymLeaders, "className")?.ToLower();
-            string eliteFourClass = info.SafeAttr(ElementNames.eliteFour, "className")?.ToLower();
-            string championClass = info.SafeAttr(ElementNames.champion, "className")?.ToLower();
-            string[] rivalNames = info.SafeArrayAttr(ElementNames.rivals, "names", info.ArrayAttr).Select(s => s.ToLower()).ToArray();
+            var leaderClass = info.Attr(ElementNames.gymLeaders, "className")?.ToLower();
+            var eliteFourClass = info.Attr(ElementNames.eliteFour, "className")?.ToLower();
+            var championClass = info.Attr(ElementNames.champion, "className")?.ToLower();
+            var rivalNames = info.ArrayAttr(ElementNames.rivals, "names").Select(s => s.ToLower()).ToArray();
             // Fetch the Ace Trainer Class Numbers for this ROM
-            var aceTrainersClasses = info.SafeArrayAttr(ElementNames.aceTrainers, "classNums", info.IntArrayAttr);
+            var aceTrainersClasses = info.IntArrayAttr(ElementNames.aceTrainers, "classNums");
             foreach (var trainer in data.Trainers)
             {
                 if (trainer.Invalid)
