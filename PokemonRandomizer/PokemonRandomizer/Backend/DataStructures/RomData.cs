@@ -1,5 +1,6 @@
 ﻿using PokemonRandomizer.Backend.DataStructures.Scripts;
 using PokemonRandomizer.Backend.EnumTypes;
+using PokemonRandomizer.Backend.Metadata;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -42,14 +43,16 @@ namespace PokemonRandomizer.Backend.DataStructures
         }
         public string[] PokemonNames { get; private set; }
         public PokemonBaseStats[] PokemonNationalDexOrder { get; private set; }
-        private Dictionary<Pokemon, PokemonBaseStats> PokemonLookup { get; } = new Dictionary<Pokemon, PokemonBaseStats>();
+        private Dictionary<Pokemon, PokemonBaseStats> PokemonLookup { get; } = new();
         public List<string> ClassNames { get; set; }
         public List<Trainer> Trainers { get; set; }
 
         #region Special Trainer Info
 
-        public Dictionary<string, PokemonType[]> TrainerNameTypeOverrides { get; set; }
-        public Dictionary<string, PokemonType[]> TrainerClassTypeOverrides { get; set; }
+        public Dictionary<string, PokemonType[]> TrainerNameTypeOverrides { get; } = new();
+        public Dictionary<string, PokemonType[]> TrainerClassTypeOverrides { get; } = new();
+
+        public List<VillainousTeamMetadata> VillainousTeamMetadata { get; } = new();
 
         #endregion
 

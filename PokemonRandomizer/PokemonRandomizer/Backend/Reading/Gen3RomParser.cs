@@ -473,15 +473,75 @@ namespace PokemonRandomizer.Backend.Reading
             }
             return ret;
         }
+        private class VillainousTeamInfo
+        {
+            public string LeaderClassName { get; set; }
+            public string AdminClassName { get; set; }
+            public string GruntClassName { get; set; }
+            public List<string> AdminNames { get; } = new();
+            public VillainousTeamMetadata TeamData { get; } = new();
+
+            public bool TryProcessMember(Trainer trainer)
+            {
+                string className = trainer.Class.ToLower();
+                if (className == GruntClassName)
+                {
+                    TeamData.TeamGrunts.Add(trainer);
+                    trainer.TrainerCategory = Trainer.Category.TeamGrunt;
+                }
+                if (className == LeaderClassName)
+                {
+                    TeamData.TeamLeaders.Add(trainer);
+                    trainer.TrainerCategory = Trainer.Category.TeamLeader;
+                    return true;
+                }
+                if (className == AdminClassName || AdminNames.Contains(trainer.name.ToLower()))
+                {
+                    TeamData.TeamAdmins.Add(trainer);
+                    trainer.TrainerCategory = Trainer.Category.TeamAdmin;
+                    return true;
+                }
+                return false;
+            }
+        }
+
         /// <summary>
         /// Read all the preset trainer data from the info file into the ROM data, and find normal grunt, ace, and reocurring trainers
         /// </summary>
         private void SetTrainerCategoryData(RomData data, RomMetadata metadata, XmlManager info)
         {
-            var leaderClass = info.Attr(ElementNames.gymLeaders, "className")?.ToLower();
-            var eliteFourClass = info.Attr(ElementNames.eliteFour, "className")?.ToLower();
-            var championClass = info.Attr(ElementNames.champion, "className")?.ToLower();
-            var rivalNames = info.ArrayAttr(ElementNames.rivals, "names").Select(s => s.ToLower()).ToArray();
+
+            // Setup team metadata
+            var teamNames = info.ArrayAttr(ElementNames.teamData, "elementNames");
+            var allTeams = new List<VillainousTeamInfo>(2);
+            foreach(var name in teamNames)
+            {
+                if (!info.HasElement(name))
+                {
+                    Logger.main.Error($"Parsing Error: Invalid villainous team name (element not found) {name}");
+                    continue;
+                }
+                var teamData = new VillainousTeamInfo()
+                {
+                    LeaderClassName = info.AttrLowerCase(name, "leaderClass"),
+                    AdminClassName = info.AttrLowerCase(name, "adminClass"),
+                    GruntClassName = info.AttrLowerCase(name, "gruntClass")
+                };
+                var adminNames = info.ArrayAttrLowerCase(name, "adminNames");
+                if(adminNames.Length > 0)
+                {
+                    teamData.AdminNames.AddRange(adminNames);
+                }
+                teamData.TeamData.PrimaryTypes = info.TypeArrayAttr(name, "primaryTypes");
+                teamData.TeamData.SecondaryTypes = info.TypeArrayAttr(name, "secondaryTypes");
+                allTeams.Add(teamData);
+            }
+            // Get leader, elite four, and champion class names
+            var leaderClass = info.AttrLowerCase(ElementNames.gymLeaders, "className");
+            var eliteFourClass = info.AttrLowerCase(ElementNames.eliteFour, "className");
+            var championClass = info.AttrLowerCase(ElementNames.champion, "className");
+            // Get rival names
+            var rivalNames = info.ArrayAttrLowerCase(ElementNames.rivals, "names");
             // Fetch the Ace Trainer Class Numbers for this ROM
             var aceTrainersClasses = info.IntArrayAttr(ElementNames.aceTrainers, "classNums");
             foreach (var trainer in data.Trainers)
@@ -513,75 +573,25 @@ namespace PokemonRandomizer.Backend.Reading
                 {
                     trainer.TrainerCategory = Trainer.Category.Champion;
                 }
+                else // See if this trainer is a member of a villainous team
+                {
+                    foreach(var team in allTeams)
+                    {
+                        if (team.TryProcessMember(trainer))
+                        {
+                            break;
+                        }
+                    }
+                }
             }
-            //data.SpecialTrainers = new Dictionary<string, List<Trainer>>();
-            //string[] AddTrainersFromArrayAttr(string element)
-            //{
-            //    var names = info.SafeArrayAttr(element, "names", info.ArrayAttr);
-            //    foreach (var name in names)
-            //        data.SpecialTrainers.Add(name.ToLower(), new List<Trainer>());
-            //    return names;
-            //};
-            //// Add trainers from preset names in info file
-            //data.RivalNames = AddTrainersFromArrayAttr("rivals");
-            //data.RivalRemap = info.SafeArrayAttr("rivals", "remap", info.IntArrayAttr);
-            //data.GymLeaderNames = AddTrainersFromArrayAttr("gymLeaders");
-            //data.EliteFourNames = AddTrainersFromArrayAttr("eliteFour");
-            //data.ChampionNames = AddTrainersFromArrayAttr("champion");
-            //data.UberNames = AddTrainersFromArrayAttr("uber");
-            //data.TeamAdminNames = AddTrainersFromArrayAttr("teamAdmins");
-            //data.TeamLeaderNames = AddTrainersFromArrayAttr("teamLeaders");
-            //// Find the normal trainers and calculated special trainers
-            //data.ReoccuringTrainerNames = new List<string>();
-            //data.AceTrainerNames = new List<string>();
-            //// Fetch the Ace Trainer Class Numbers for this ROM
-            //data.AceTrainerClasses = info.SafeArrayAttr("aceTrainers", "classNums", info.IntArrayAttr);
-            //// Safely initialize the team grunt names if supported
-            //data.TeamGruntNames = info.SafeArrayAttr("teamGrunts", "names", info.ArrayAttr).Select((name) => name.ToLower()).ToArray();
-            //data.GruntBattles = new List<Trainer>();
-            //const string wallyName = "wally";
-            //// Add Wally as their own special category if in RSE
-            //if (metadata.IsRubySapphireOrEmerald)
-            //{
-            //    data.SpecialTrainers.Add(wallyName, new List<Trainer>());
-            //}
-            //// Initialize Normal Trainer List
-            //data.NormalTrainers = new Dictionary<string, Trainer>();
-            //// Classify trainers
-            //foreach (var trainer in data.Trainers)
-            //{
-            //    string name = trainer.name.ToLower();
-            //    if (string.IsNullOrWhiteSpace(name) || name == Trainer.nullName)
-            //        continue;
-            //    // All grunts have the same names but are not reoccuring trainers
-            //    if (data.TeamGruntNames.Contains(name))
-            //    {
-            //        data.GruntBattles.Add(trainer);
-            //    }
-            //    else if (data.SpecialTrainers.ContainsKey(name)) // Already a known special trainer, add to the special trainers dictionary
-            //    {
-            //        data.SpecialTrainers[name].Add(trainer);
-            //    }
-            //    else if (data.AceTrainerClasses.Contains(trainer.trainerClass)) // new Ace trainer, add to speical trainers
-            //    {
-            //        if (!data.SpecialTrainers.ContainsKey(name))
-            //        {
-            //            data.SpecialTrainers.Add(name, new List<Trainer>());
-            //            data.AceTrainerNames.Add(name);
-            //        }
-            //        data.SpecialTrainers[name].Add(trainer);
-            //    }
-            //    else if (data.NormalTrainers.ContainsKey(name)) // new reocurring trainer
-            //    {
-            //        data.SpecialTrainers.Add(name, new List<Trainer> { data.NormalTrainers[name], trainer });
-            //        data.NormalTrainers.Remove(name);
-            //        data.ReoccuringTrainerNames.Add(name);
-            //    }
-            //    else // Normal (or potentially reocurring trainer)
-            //    {
-            //        data.NormalTrainers.Add(name, trainer);
-            //    }
-            //}
+            // Add valid team data to ROM data
+            foreach(var team in allTeams)
+            {
+                if (team.TeamData.IsValid)
+                {
+                    data.VillainousTeamMetadata.Add(team.TeamData);
+                }
+            }
         }
 
         private bool IsPlaceholder(Trainer trainer)

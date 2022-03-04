@@ -21,6 +21,7 @@ namespace PokemonRandomizer.Backend.DataStructures
             Trainer,
             AceTrainer,
             Rival,
+            TeamGrunt,
             TeamAdmin,
             TeamLeader,
             GymLeader,

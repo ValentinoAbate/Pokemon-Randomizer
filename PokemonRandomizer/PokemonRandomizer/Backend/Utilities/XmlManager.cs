@@ -21,6 +21,10 @@ namespace PokemonRandomizer.Backend.Utilities
         public const string constantsElt = "constants";
         public const string inheritanceElt = "inheritFrom";
 
+        private const char arrayEnd = ']';
+        private const char arrayStart = '[';
+        private const char arraySeparator = ',';
+
         public XElement Root { get; }
         private XElement searchRoot;
 
@@ -245,7 +249,14 @@ namespace PokemonRandomizer.Backend.Utilities
             var baseArray = Attr(element, attribute);
             if(string.IsNullOrWhiteSpace(baseArray))
                 return Array.Empty<string>();
-            return baseArray.Trim('[', ']').Split(',');
+            return baseArray.Trim(arrayStart, arrayEnd).Split(arraySeparator);
+        }
+        public string[] ArrayAttrLowerCase(string element, string attribute)
+        {
+            var baseArray = Attr(element, attribute);
+            if (string.IsNullOrWhiteSpace(baseArray))
+                return Array.Empty<string>();
+            return baseArray.ToLower().Trim(arrayStart, arrayEnd).Split(arraySeparator);
         }
         /// <summary> returns the given attribute of the element with each element interpreted as an int[] </summary>
         public int[] IntArrayAttr(string element, string attribute)
@@ -265,7 +276,7 @@ namespace PokemonRandomizer.Backend.Utilities
 
         public PokemonType[] TypeArrayAttr(string element, string attribute)
         {
-            return Array.ConvertAll(ArrayAttr(element, attribute), PokemonTypeUtils.FromString);
+            return Array.ConvertAll(ArrayAttrLowerCase(element, attribute), PokemonTypeUtils.FromString);
         }
 
         /// <summary> returns the given element's content as a string </summary> 
@@ -287,6 +298,11 @@ namespace PokemonRandomizer.Backend.Utilities
         public string Attr(string element, string attribute)
         {
             return Element(element)?.Attribute(attribute)?.Value;
+        }
+
+        public string AttrLowerCase(string element, string attribute)
+        {
+            return Element(element)?.Attribute(attribute)?.Value.ToLower();
         }
 
         /// <summary>

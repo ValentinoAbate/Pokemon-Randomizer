@@ -12,9 +12,9 @@ namespace PokemonRandomizer.Backend.Metadata
         public Pokemon TeamLegendary { get; set; } // Currently Unused
         public PokemonType[] PrimaryTypes { get; set; }
         public PokemonType[] SecondaryTypes { get; set; }
-        public List<Trainer> TeamLeaders { get; } = new List<Trainer>();
-        public List<Trainer> TeamAdmins { get; } = new List<Trainer>();
-        public List<Trainer> TeamGrunts { get; } = new List<Trainer>();
+        public List<Trainer> TeamLeaders { get; } = new();
+        public List<Trainer> TeamAdmins { get; } = new();
+        public List<Trainer> TeamGrunts { get; } = new();
         public override void ApplyTrainerThemeData()
         {
             if (!IsValid)
