@@ -28,7 +28,7 @@ namespace PokemonRandomizer.Backend.Metadata
 
         public override string ToString()
         {
-            return IsValid ? "Invalid" : $"{Leaders[0].name}'s Gym ({TrainerMetadata})";
+            return !IsValid ? "Invalid" : $"{Leaders[0].name}'s Gym ({TrainerMetadata})";
         }
     }
 }

@@ -44,5 +44,10 @@ namespace PokemonRandomizer.Backend.Metadata
             ApplyThemeDataToGroup(TeamAdmins, themeData);
             ApplyThemeDataToGroup(TeamGrunts, themeData);
         }
+
+        public override string ToString()
+        {
+            return !IsValid ? "Invalid" : $"{TeamLeaders[0].name}'s Team (Primary Types: {string.Join(", ", PrimaryTypes)}, Secondary Types: {string.Join(", ", SecondaryTypes)})";
+        }
     }
 }
