@@ -50,6 +50,7 @@ namespace PokemonRandomizer.Backend.GenIII.Constants.ElementNames
         public const string champion = "champion";
         public const string aceTrainers = "aceTrainers";
         public const string teamData = "teams";
+        public const string specialBosses = "specialBosses";
 
         // Hacks and Tweaks / Misc
         public const string pcPotion = "pcPotion";

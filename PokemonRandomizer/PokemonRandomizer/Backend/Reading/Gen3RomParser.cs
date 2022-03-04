@@ -542,6 +542,7 @@ namespace PokemonRandomizer.Backend.Reading
             var championClass = info.AttrLowerCase(ElementNames.champion, "className");
             // Get rival names
             var rivalNames = info.ArrayAttrLowerCase(ElementNames.rivals, "names");
+            var specialBossNames = info.ArrayAttrLowerCase(ElementNames.specialBosses, "names");
             // Fetch the Ace Trainer Class Numbers for this ROM
             var aceTrainersClasses = info.IntArrayAttr(ElementNames.aceTrainers, "classNums");
             foreach (var trainer in data.Trainers)
@@ -549,7 +550,8 @@ namespace PokemonRandomizer.Backend.Reading
                 if (trainer.Invalid)
                     continue;
                 string trainerClass = trainer.Class.ToLower();
-                if (rivalNames.Contains(trainer.name.ToLower())) // First rival battle will fit the "placeholder" criteria
+                string name = trainer.name.ToLower();
+                if (rivalNames.Contains(name)) // First rival battle will fit the "placeholder" criteria
                 {
                     trainer.TrainerCategory = Trainer.Category.Rival;
                 }
@@ -572,6 +574,10 @@ namespace PokemonRandomizer.Backend.Reading
                 else if (trainerClass == championClass)
                 {
                     trainer.TrainerCategory = Trainer.Category.Champion;
+                }
+                else if (specialBossNames.Contains(name))
+                {
+                    trainer.TrainerCategory = Trainer.Category.SpecialBoss;
                 }
                 else // See if this trainer is a member of a villainous team
                 {
