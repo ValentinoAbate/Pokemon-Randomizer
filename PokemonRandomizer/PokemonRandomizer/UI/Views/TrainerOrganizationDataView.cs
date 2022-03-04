@@ -39,7 +39,7 @@ namespace PokemonRandomizer.UI.Views
             stack.Header("Elite Four + Champion");
             stack.Add(new EnumComboBoxUI<TrainerOrgTypeTheme>("Elite Four Type Theming", TypeThemeDropdown, model.EliteFourTheming));
             stack.Add(new EnumComboBoxUI<TrainerOrgTypeTheme>("Champion Type Theming", ChampionTypeThemeDropdown, model.ChampionTheming));
-            stack.Header("Criminal Teams");
+            stack.Header("Villainous Teams");
             stack.Add(new EnumComboBoxUI<TrainerOrgTypeTheme>("Type Theming", TypeThemeDropdown, model.TeamTypeTheming));
             stack.Add(new BoundCheckBoxUI(model.GruntTheming, "Apply Type Theme To Grunts"));
             stack.Add(new BoundCheckBoxUI(model.KeepTeamSubtypes, "Keep Team Subtypes") { ToolTip = teamSubtypesTooltip });
