@@ -583,7 +583,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 }
 
                 // Remove invalid metadata
-                if (map.IsGym && gymMetadataDict[map.Name].Invalid)
+                if (map.IsGym && gymMetadataDict[map.Name].IsValid)
                 {
                     gymMetadataDict.Remove(map.Name);
                 }
@@ -673,7 +673,7 @@ namespace PokemonRandomizer.Backend.Randomization
                     };
                     foreach (var battle in kvp.Value)
                     {
-                        battle.Metadata = overrideMetadata;
+                        battle.ThemeData = overrideMetadata;
                     }
                     continue;
                 }
@@ -683,7 +683,7 @@ namespace PokemonRandomizer.Backend.Randomization
                     if (data.TrainerClassTypeOverrides.ContainsKey(battle.Class))
                     {
                         var overrideTypes = data.TrainerClassTypeOverrides[battle.Class];
-                        battle.Metadata = new TrainerThemeData()
+                        battle.ThemeData = new TrainerThemeData()
                         {
                             Theme = overrideTypes.Length > 0 ? TrainerThemeData.TrainerTheme.Typed : TrainerThemeData.TrainerTheme.Untyped,
                             Types = overrideTypes

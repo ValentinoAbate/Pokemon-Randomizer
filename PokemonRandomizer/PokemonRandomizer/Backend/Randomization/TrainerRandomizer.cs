@@ -47,9 +47,9 @@ namespace PokemonRandomizer.Backend.Randomization
 
         private IEnumerable<Metric<Pokemon>> CreatePokemonMetrics(Trainer trainer, IEnumerable<Pokemon> all, Pokemon pokemon, WeightedSet<PokemonType> partyTypeOccurence, IReadOnlyList<MetricData> data)
         {
-            if(trainer.Metadata != null)
+            if(trainer.ThemeData != null)
             {
-                return trainer.Metadata.GetPokemonMetrics(all, pokemon, trainer, dataT);
+                return trainer.ThemeData.GetPokemonMetrics(all, pokemon, trainer, dataT);
             }
             var metrics = pokeRand.CreateBasicMetrics(all, pokemon, data, out List<MetricData> specialData);
             foreach (var d in specialData)
@@ -124,13 +124,13 @@ namespace PokemonRandomizer.Backend.Randomization
             var pkmnSettings = settings.PokemonSettings;
 
             // Propogate gym metadata if the first battle has gym metadata
-            if (firstBattle.Metadata != null)
+            if (firstBattle.ThemeData != null)
             {
                 foreach(var battle in battles)
                 {
-                    if (battle.Metadata == null)
+                    if (battle.ThemeData == null)
                     {
-                        battle.Metadata = firstBattle.Metadata;
+                        battle.ThemeData = firstBattle.ThemeData;
                     }
                 }
             }

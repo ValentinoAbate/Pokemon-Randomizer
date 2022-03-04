@@ -41,7 +41,7 @@ namespace PokemonRandomizer.Backend.DataStructures
         public bool IsGymLeader => TrainerCategory == Category.GymLeader;
 
         public Category TrainerCategory { get; set; }
-        public TrainerThemeData Metadata { get; set; }
+        public TrainerThemeData ThemeData { get; set; }
 
         public int offset;
         public TrainerPokemon.DataType dataType;

@@ -1,13 +1,19 @@
-﻿using System;
+﻿using PokemonRandomizer.Backend.DataStructures;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PokemonRandomizer.Backend.Metadata
 {
     public abstract class TrainerOrganizationMetadata
     {
-        public abstract void ApplyTrainerMetadata();
+        public abstract bool IsValid { get; }
+        public abstract void ApplyTrainerThemeData();
+        protected void ApplyThemeDataToGroup(IEnumerable<Trainer> group, TrainerThemeData data)
+        {
+            foreach (var trainer in group)
+            {
+                trainer.ThemeData = data;
+            }
+        }
     }
 }

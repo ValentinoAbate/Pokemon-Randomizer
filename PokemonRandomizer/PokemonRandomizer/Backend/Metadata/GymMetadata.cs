@@ -10,29 +10,25 @@ namespace PokemonRandomizer.Backend.Metadata
 {
     public class GymMetadata : TrainerOrganizationMetadata
     {
-        public bool Invalid => Leaders.Count <= 0;
-        public List<Trainer> Leaders { get; set; } = new List<Trainer>();
-        public List<Trainer> GymTrainers { get; set; } = new List<Trainer>();
+        public override bool IsValid => Leaders.Count <= 0;
+        public List<Trainer> Leaders { get; } = new List<Trainer>();
+        public List<Trainer> GymTrainers { get; } = new List<Trainer>();
 
         public TrainerThemeData TrainerMetadata { get; set; }
 
-        public override void ApplyTrainerMetadata()
+        public override void ApplyTrainerThemeData()
         {
-            if (Invalid)
+            if (!IsValid)
+            {
                 return;
-            foreach(var trainer in Leaders)
-            {
-                trainer.Metadata = TrainerMetadata;
             }
-            foreach(var trainer in GymTrainers)
-            {
-                trainer.Metadata = TrainerMetadata;
-            }
+            ApplyThemeDataToGroup(Leaders, TrainerMetadata);
+            ApplyThemeDataToGroup(GymTrainers, TrainerMetadata);
         }
 
         public override string ToString()
         {
-            return Invalid ? "Invalid" : $"{Leaders[0].name}'s Gym ({TrainerMetadata})";
+            return IsValid ? "Invalid" : $"{Leaders[0].name}'s Gym ({TrainerMetadata})";
         }
     }
 }
