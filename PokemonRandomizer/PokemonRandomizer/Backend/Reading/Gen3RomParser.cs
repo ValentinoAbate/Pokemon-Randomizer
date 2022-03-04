@@ -488,37 +488,29 @@ namespace PokemonRandomizer.Backend.Reading
                 if (trainer.Invalid)
                     continue;
                 string trainerClass = trainer.Class.ToLower();
-                if (trainerClass == leaderClass)
-                {
-                    if(IsPlaceholder(trainer))
-                    {
-                        continue;
-                    }
-                    trainer.TrainerCategory = Trainer.Category.GymLeader;
-                } 
-                else if (trainerClass == eliteFourClass)
-                {
-                    if (IsPlaceholder(trainer))
-                    {
-                        continue;
-                    }
-                    trainer.TrainerCategory = Trainer.Category.EliteFour;
-                }
-                else if (rivalNames.Contains(trainer.name.ToLower()))
+                if (rivalNames.Contains(trainer.name.ToLower())) // First rival battle will fit the "placeholder" criteria
                 {
                     trainer.TrainerCategory = Trainer.Category.Rival;
-                }
-                else if (trainerClass == championClass)
-                {
-                    if (IsPlaceholder(trainer))
-                    {
-                        continue;
-                    }
-                    trainer.TrainerCategory = Trainer.Category.Champion;
                 }
                 else if (aceTrainersClasses.Contains(trainer.trainerClass))
                 {
                     trainer.TrainerCategory = Trainer.Category.AceTrainer;
+                }
+                else if (IsPlaceholder(trainer))
+                {
+                    continue;
+                }
+                else if (trainerClass == leaderClass)
+                {
+                    trainer.TrainerCategory = Trainer.Category.GymLeader;
+                } 
+                else if (trainerClass == eliteFourClass)
+                {
+                    trainer.TrainerCategory = Trainer.Category.EliteFour;
+                }
+                else if (trainerClass == championClass)
+                {
+                    trainer.TrainerCategory = Trainer.Category.Champion;
                 }
             }
             //data.SpecialTrainers = new Dictionary<string, List<Trainer>>();
