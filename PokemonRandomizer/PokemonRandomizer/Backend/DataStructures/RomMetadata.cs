@@ -117,5 +117,10 @@ namespace PokemonRandomizer.Backend.DataStructures
             // Remove null terminators from name
             Name = Name.Replace("\0", string.Empty);
         }
+
+        public override string ToString()
+        {
+            return $"{Name} ({Code}{Version})";
+        }
     }
 }
