@@ -10,44 +10,31 @@ namespace PokemonRandomizer.Backend.Metadata
     {
         public override bool IsValid => TeamLeaders.Count > 0;
         public Pokemon TeamLegendary { get; set; } // Currently Unused
-        public PokemonType[] PrimaryTypes { get; set; }
-        public PokemonType[] SecondaryTypes { get; set; }
         public List<Trainer> TeamLeaders { get; } = new();
         public List<Trainer> TeamAdmins { get; } = new();
         public List<Trainer> TeamGrunts { get; } = new();
+        public TrainerThemeData ThemeData { get; set; }
+
+        public void InitializeThemeData(PokemonType[] PrimaryTypes, PokemonType[] SecondaryTypes)
+        {
+            ThemeData = new TrainerThemeData();
+            ThemeData.SetTypes(PrimaryTypes, SecondaryTypes, SecondaryTypes.Length > 0 ? 0.6 : 0);
+        }
+
         public override void ApplyTrainerThemeData()
         {
             if (!IsValid)
             {
                 return;
             }
-            TrainerThemeData themeData;
-            if(PrimaryTypes.Length + SecondaryTypes.Length > 0)
-            {
-                themeData = new TrainerThemeData()
-                {
-                    Theme = TrainerThemeData.TrainerTheme.Untyped,
-                };
-            }
-            else
-            {
-                var types = new PokemonType[PrimaryTypes.Length + SecondaryTypes.Length];
-                Array.Copy(PrimaryTypes, 0, types, 0, PrimaryTypes.Length);
-                Array.Copy(SecondaryTypes, 0, types, 0, SecondaryTypes.Length);
-                themeData = new TrainerThemeData()
-                {
-                    Theme = TrainerThemeData.TrainerTheme.Typed,
-                    Types = types,
-                };
-            }
-            ApplyThemeDataToGroup(TeamLeaders, themeData);
-            ApplyThemeDataToGroup(TeamAdmins, themeData);
-            ApplyThemeDataToGroup(TeamGrunts, themeData);
+            ApplyThemeDataToGroup(TeamLeaders, ThemeData);
+            ApplyThemeDataToGroup(TeamAdmins, ThemeData);
+            ApplyThemeDataToGroup(TeamGrunts, ThemeData);
         }
 
         public override string ToString()
         {
-            return !IsValid ? "Invalid" : $"{TeamLeaders[0].name}'s Team (Primary Types: {string.Join(", ", PrimaryTypes)}, Secondary Types: {string.Join(", ", SecondaryTypes)})";
+            return !IsValid ? "Invalid" : $"{ThemeData})";
         }
     }
 }

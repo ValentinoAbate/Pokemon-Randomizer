@@ -187,6 +187,18 @@ namespace PokemonRandomizer.Backend.DataStructures
             return PrimaryType == type || SecondaryType == type;
         }
 
+        public bool IsType(params PokemonType[] types)
+        {
+            foreach (var type in types)
+            {
+                if (IsType(type))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         public bool IsSameTypeAs(PokemonBaseStats other)
         {
             return PrimaryType == other.PrimaryType && SecondaryType == other.SecondaryType;

@@ -532,8 +532,7 @@ namespace PokemonRandomizer.Backend.Reading
                 {
                     teamData.AdminNames.AddRange(adminNames);
                 }
-                teamData.TeamData.PrimaryTypes = info.TypeArrayAttr(name, "primaryTypes");
-                teamData.TeamData.SecondaryTypes = info.TypeArrayAttr(name, "secondaryTypes");
+                teamData.TeamData.InitializeThemeData(info.TypeArrayAttr(name, "primaryTypes"), info.TypeArrayAttr(name, "secondaryTypes"));
                 allTeams.Add(teamData);
             }
             // Get leader, elite four, and champion class names
