@@ -21,7 +21,7 @@ namespace PokemonRandomizer.UI.Models
         public Box<bool> BanLegendariesMiniboss { get; set; } = new Box<bool>(true); 
         public Box<bool> BanLegendariesBoss { get; set; } = new Box<bool>(false); 
         public Box<bool> RestrictIllegalEvolutions { get; set; } = new Box<bool>(true);
-        public Box<bool> ForceHighestLegalEvolution { get; set; } = new Box<bool>(false);
+        public Box<bool> ForceHighestLegalEvolution { get; set; } = new Box<bool>(true);
         public Box<double> PokemonNoise { get; set; } = new Box<double>(0.003);
         // Battle Type Settings
         public Box<bool> RandomizeBattleType { get; set; } = new Box<bool>(false);
