@@ -505,6 +505,8 @@ namespace PokemonRandomizer.Backend.Reading
             }
         }
 
+        private const string wallyName = "wally";
+
         /// <summary>
         /// Read all the preset trainer data from the info file into the ROM data, and find normal grunt, ace, and reocurring trainers
         /// </summary>
@@ -550,7 +552,11 @@ namespace PokemonRandomizer.Backend.Reading
                     continue;
                 string trainerClass = trainer.Class.ToLower();
                 string name = trainer.name.ToLower();
-                if (rivalNames.Contains(name)) // First rival battle will fit the "placeholder" criteria
+                if (name == wallyName)
+                {
+                    trainer.TrainerCategory = Trainer.Category.CatchingTutTrainer;
+                }
+                else if (rivalNames.Contains(name)) // First rival battle will fit the "placeholder" criteria
                 {
                     trainer.TrainerCategory = Trainer.Category.Rival;
                 }
