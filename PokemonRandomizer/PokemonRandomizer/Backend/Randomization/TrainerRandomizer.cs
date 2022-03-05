@@ -13,13 +13,17 @@ namespace PokemonRandomizer.Backend.Randomization
         private readonly Random rand;
         private readonly EvolutionUtils evoUtils;
         private readonly IDataTranslator dataT;
+        private readonly Func<Trainer.Category, bool> shouldBanLegendaries;
+        private readonly Func<Trainer.Category, bool> shouldApplyTheming;
 
-        public TrainerRandomizer(Random rand, PkmnRandomizer pokeRand, EvolutionUtils evoUtils, IDataTranslator dataT)
+        public TrainerRandomizer(Random rand, PkmnRandomizer pokeRand, EvolutionUtils evoUtils, IDataTranslator dataT, Settings s)
         {
             this.pokeRand = pokeRand;
             this.rand = rand;
             this.evoUtils = evoUtils;
             this.dataT = dataT;
+            shouldBanLegendaries = s.BanLegendaries;
+            shouldApplyTheming = s.ApplyTheming;
         }
 
         #region Trainer Randomization
@@ -110,7 +114,7 @@ namespace PokemonRandomizer.Backend.Randomization
             // Set pokemon
             if (rand.RollSuccess(settings.PokemonRandChance))
             {
-                RandomizeTrainerPokemon(trainer, pokemonSet, settings.PokemonSettings);
+                RandomizeTrainerPokemon(trainer, pokemonSet, CreatePokemonSettings(trainer, settings));
             }
         }
 
@@ -121,8 +125,6 @@ namespace PokemonRandomizer.Backend.Randomization
         /// </summary>
         public void RandomizeReoccurring(Trainer firstBattle, List<Trainer> battles, IEnumerable<Pokemon> pokemonSet, TrainerSettings settings)
         {
-            var pkmnSettings = settings.PokemonSettings;
-
             // Propogate gym metadata if the first battle has gym metadata
             if (firstBattle.ThemeData != null)
             {
@@ -175,7 +177,7 @@ namespace PokemonRandomizer.Backend.Randomization
             {
                 foreach (var battle in battles)
                 {
-                    RandomizeTrainerPokemon(battle, pokemonSet, pkmnSettings);
+                    RandomizeTrainerPokemon(battle, pokemonSet, CreatePokemonSettings(battle, settings));
                 }
             }
             else if (settings.PokemonStrategy == TrainerSettings.PokemonPcgStrategy.KeepAce)
@@ -183,10 +185,11 @@ namespace PokemonRandomizer.Backend.Randomization
                 var lastBattle = firstBattle;
                 foreach (var battle in battles)
                 {
+                    var pkmnSettings = CreatePokemonSettings(battle, settings);
                     RandomizeTrainerPokemon(battle, pokemonSet, pkmnSettings);
                     // Migrate Ace pokemon from the last battle
-                    var currAce = battle.pokemon[battle.pokemon.Length - 1];
-                    var lastAce = lastBattle.pokemon[lastBattle.pokemon.Length - 1];
+                    var currAce = battle.pokemon[^1];
+                    var lastAce = lastBattle.pokemon[^1];
                     currAce.species = evoUtils.MaxEvolution(lastAce.species, currAce.level, pkmnSettings.RestrictIllegalEvolutions);
                     if (currAce.HasSpecialMoves)
                     {
@@ -200,6 +203,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 var lastBattle = firstBattle;
                 foreach (var battle in battles)
                 {
+                    var pkmnSettings = CreatePokemonSettings(battle, settings);
                     RandomizeTrainerPokemon(battle, pokemonSet, pkmnSettings);
                     int lastBattleSize = lastBattle.pokemon.Length;
                     int battleSize = battle.pokemon.Length;
@@ -217,6 +221,17 @@ namespace PokemonRandomizer.Backend.Randomization
                     lastBattle = battle;
                 }
             }
+        }
+
+        private PokemonSettings CreatePokemonSettings(Trainer trainer, TrainerSettings settings)
+        {
+            return new PokemonSettings()
+            {
+                RestrictIllegalEvolutions = settings.RestrictIllegalEvolutions,
+                ForceHighestLegalEvolution = settings.ForceHighestLegalEvolution,
+                Noise = settings.PokemonNoise,
+                BanLegendaries = shouldBanLegendaries(trainer.TrainerCategory),
+            };
         }
 
         private void ApplyLevelScaling(Trainer trainer, TrainerSettings settings)

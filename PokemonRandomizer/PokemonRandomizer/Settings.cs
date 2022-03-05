@@ -134,13 +134,9 @@ namespace PokemonRandomizer
         {
             PokemonRandChance = TrainerPokemonRandChance,
             PokemonStrategy = RecurringTrainerPokemonStrategy,
-            PokemonSettings = new PokemonSettings()
-            {
-                BanLegendaries = BanLegendariesTrainer,
-                RestrictIllegalEvolutions = TrainerRestrictIllegalEvolutions,
-                ForceHighestLegalEvolution = TrainerForceHighestLegalEvolution,
-                Noise = (float)TrainerPokemonNoise,
-            },
+            RestrictIllegalEvolutions = TrainerRestrictIllegalEvolutions,
+            ForceHighestLegalEvolution = TrainerForceHighestLegalEvolution,
+            PokemonNoise = (float)TrainerPokemonNoise,
             BattleTypeRandChance = BattleTypeRandChance,
             BattleTypeStrategy = RecurringTrainerBattleTypeStrategy,
             DoubleBattleChance = DoubleBattleChance,
@@ -480,7 +476,9 @@ namespace PokemonRandomizer
 
             public double PokemonRandChance { get; set; } = 1;
             public PokemonPcgStrategy PokemonStrategy { get; set; } = PokemonPcgStrategy.KeepParty;
-            public PokemonSettings PokemonSettings { get; set; } = new PokemonSettings();
+            public bool RestrictIllegalEvolutions { get; set; } = true;
+            public bool ForceHighestLegalEvolution { get; set; } = false;
+            public float PokemonNoise { get; set; } = 0;
             public double BattleTypeRandChance { get; set; } = 1;
             public BattleTypePcgStrategy BattleTypeStrategy { get; set; } = BattleTypePcgStrategy.KeepSameType;
             public double DoubleBattleChance { get; set; } = 1;

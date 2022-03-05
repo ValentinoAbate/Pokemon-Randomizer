@@ -50,7 +50,7 @@ namespace PokemonRandomizer.Backend.Randomization
             // Initialize encounter randomizer
             encounterRand = new WildEncounterRandomizer(pokeRand, evoUtils, data.Metrics, data);
             // Initialize Trainer randomizer
-            trainerRand = new TrainerRandomizer(rand, pokeRand, evoUtils, data);
+            trainerRand = new TrainerRandomizer(rand, pokeRand, evoUtils, data, settings);
             compatRand = new MoveCompatibilityRandomizer(rand, data);
             bonusMoveGenerator = new BonusMoveGenerator(rand, data, settings);
             variantRand = new PokemonVariantRandomizer(rand, data, settings, bonusMoveGenerator, data.PaletteOverrideKey);
@@ -770,7 +770,14 @@ namespace PokemonRandomizer.Backend.Randomization
                     // Remove all pokemon that cannot be male (the tutorial cutscene crashes if the catching tut pokemon isn't able to be male)
                     var possibleCatchingTutPokemon = new List<Pokemon>(pokemonSet);
                     possibleCatchingTutPokemon.RemoveAll(p => data.GetBaseStats(p).genderRatio > 0xFD);
-                    data.CatchingTutPokemon = pokeRand.RandomPokemon(possibleCatchingTutPokemon, data.CatchingTutPokemon, rivalSettings.PokemonSettings, 5);
+                    var catchingTutSettings = new Settings.PokemonSettings()
+                    {
+                        BanLegendaries = settings.BanLegendaries(Trainer.Category.CatchingTutTrainer),
+                        RestrictIllegalEvolutions = settings.TrainerRestrictIllegalEvolutions,
+                        ForceHighestLegalEvolution = settings.TrainerForceHighestLegalEvolution,
+                        Noise = 0,
+                    };
+                    data.CatchingTutPokemon = pokeRand.RandomPokemon(possibleCatchingTutPokemon, data.CatchingTutPokemon, catchingTutSettings, 5);
                 }
                 var wallyBattles = new List<Trainer>(catchingTutorialTrainers);
                 wallyBattles.Sort((a, b) => a.AvgLvl.CompareTo(b.AvgLvl));
@@ -779,7 +786,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 // Set Wally's first pokemon to the catching tut pokemon
                 trainerRand.Randomize(firstBattle, pokemonSet, rivalSettings, false);
                 var firstBattleAce = firstBattle.pokemon[firstBattle.pokemon.Length - 1];
-                firstBattleAce.species = evoUtils.MaxEvolution(data.CatchingTutPokemon, firstBattleAce.level, rivalSettings.PokemonSettings.RestrictIllegalEvolutions);
+                firstBattleAce.species = evoUtils.MaxEvolution(data.CatchingTutPokemon, firstBattleAce.level, rivalSettings.RestrictIllegalEvolutions);
                 // Procedurally generate the rest of Wally's battles
                 trainerRand.RandomizeReoccurring(firstBattle, wallyBattles, pokemonSet, rivalSettings);
             }
