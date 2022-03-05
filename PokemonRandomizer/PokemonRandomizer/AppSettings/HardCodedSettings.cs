@@ -165,9 +165,9 @@ namespace PokemonRandomizer.AppSettings
         // Trainer Pokemon Settings
         public override double TrainerPokemonRandChance => 1;
         public override bool TrainerTypeTheming => true;
-        public override bool BanLegendariesTrainer => true;
-        public override bool BanLegendariesMiniboss => true;
-        public override bool BanLegendariesBoss => false;
+        protected override bool BanLegendariesTrainer => true;
+        protected override bool BanLegendariesMiniboss => true;
+        protected override bool BanLegendariesBoss => false;
         public override bool TrainerRestrictIllegalEvolutions => true;
         public override bool TrainerForceHighestLegalEvolution => true;
         public override double TrainerPokemonNoise => 0.003;

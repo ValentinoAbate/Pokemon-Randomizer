@@ -176,12 +176,27 @@ namespace PokemonRandomizer
             };
         }
 
+        public bool BanLegendaries(Trainer.Category category)
+        {
+            return category switch
+            {
+                // Minibosses
+                Trainer.Category.AceTrainer or Trainer.Category.Rival or Trainer.Category.TeamAdmin 
+                or Trainer.Category.CatchingTutTrainer => BanLegendariesMiniboss,
+                // Bosses
+                Trainer.Category.TeamLeader or Trainer.Category.GymLeader or Trainer.Category.EliteFour 
+                or Trainer.Category.Champion or Trainer.Category.SpecialBoss => BanLegendariesBoss,
+                // All other trainers
+                _ => BanLegendariesTrainer,
+            };
+        }
+
         // Trainer Pokemon Settings
         public abstract double TrainerPokemonRandChance { get; }
         public abstract bool TrainerTypeTheming { get; }
-        public abstract bool BanLegendariesTrainer { get; }
-        public abstract bool BanLegendariesMiniboss { get; }
-        public abstract bool BanLegendariesBoss { get; }
+        protected abstract bool BanLegendariesTrainer { get; }
+        protected abstract bool BanLegendariesMiniboss { get; }
+        protected abstract bool BanLegendariesBoss { get; }
         public abstract bool TrainerRestrictIllegalEvolutions { get; }
         public abstract bool TrainerForceHighestLegalEvolution { get; }
         public abstract double TrainerPokemonNoise { get; }
