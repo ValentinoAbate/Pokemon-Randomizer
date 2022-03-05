@@ -722,6 +722,7 @@ namespace PokemonRandomizer.Backend.Randomization
             foreach (var kvp in normalTrainersByName)
             {
                 var battles = new List<Trainer>(kvp.Value);
+                battles.Sort((a, b) => a.AvgLvl.CompareTo(b.AvgLvl));
                 if (battles.Count <= 0)
                     continue;
                 var firstBattle = battles[0];

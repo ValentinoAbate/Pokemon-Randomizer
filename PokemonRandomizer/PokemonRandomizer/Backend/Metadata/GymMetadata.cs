@@ -38,16 +38,7 @@ namespace PokemonRandomizer.Backend.Metadata
                 return;
             }
             // Calculate Gym Type Occurence
-            var typeSet = new WeightedSet<PokemonType>();
-            foreach(var pokemon in leader.pokemon)
-            {
-                var stats = dataT.GetBaseStats(pokemon.species);
-                typeSet.Add(stats.OriginalPrimaryType);
-                if (stats.IsDualTyped)
-                {
-                    typeSet.Add(stats.OriginalSecondaryType);
-                }
-            }
+            var typeSet = PokemonMetrics.TypeOccurence(leader.pokemon.Select(p => dataT.GetBaseStats(p.species)));
             // Find maximum occurence(s)
             var max = float.MinValue;
             var types = new List<PokemonType>(6);

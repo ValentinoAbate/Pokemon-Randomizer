@@ -54,7 +54,7 @@ namespace PokemonRandomizer.Backend.Randomization
         {
             if(trainer.ThemeData != null)
             {
-                return trainer.ThemeData.GetPokemonMetrics(rand, all, pokemon, trainer, dataT);
+                return trainer.ThemeData.GetPokemonMetrics(rand, pokeRand, all, pokemon, trainer, dataT);
             }
             var metrics = pokeRand.CreateBasicMetrics(all, pokemon, data, out List<MetricData> specialData);
             foreach (var d in specialData)
