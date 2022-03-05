@@ -9,7 +9,7 @@ namespace PokemonRandomizer.Backend.GenIII.Constants.ElementNames
     /// <summary>
     /// Contains symbolic constants for referencing the names of elements in a Gen III info file.
     /// </summary>
-    public static class ElementNames
+    public abstract class ElementNames
     {
         // Pokedex Elements
         public const string nationalDexOrder = "nationalDexOrder";
@@ -51,6 +51,8 @@ namespace PokemonRandomizer.Backend.GenIII.Constants.ElementNames
         public const string aceTrainers = "aceTrainers";
         public const string teamData = "teams";
         public const string specialBosses = "specialBosses";
+        public const string nameTrainerTypeOverrides = "nameTrainerTypeOverrides";
+        public const string classTrainerTypeOverrides = "classTrainerTypeOverrides";
 
         // Hacks and Tweaks / Misc
         public const string pcPotion = "pcPotion";

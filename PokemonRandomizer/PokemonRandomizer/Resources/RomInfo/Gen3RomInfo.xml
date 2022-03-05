@@ -298,6 +298,12 @@
 	<teams elementNames="[teamRocket]"/>
 	<teamRocket leaderClass ="Boss" adminNames="[Admin,Gideon]" gruntClass ="Team Rocket" primaryTypes="[PSN]" secondaryTypes="[NRM]"/>
     <aceTrainers classNums="[9,93,86]"/>
+	<nameTrainerTypeOverrides elementNames="[agathaOverride,lorelaiOverride,lanceOverride]"/>
+	<agathaOverride name="agatha" types="[GHO]"/>
+	<lorelaiOverride name="lorelei" types="[ICE]"/>
+	<lanceOverride name="lance" types="[DRG]"/>
+	<classTrainerTypeOverrides elementNames="[channelerOverride]"/>
+	<channelerOverride className="channeler" types="[GHO]"/>
 
     <!-- TMs, HMs, and Move Tutors -->
     <moveTutorMoves num="15"/>

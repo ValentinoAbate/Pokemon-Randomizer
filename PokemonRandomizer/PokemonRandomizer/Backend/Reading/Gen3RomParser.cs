@@ -10,6 +10,7 @@ using System;
 using static PokemonRandomizer.Backend.DataStructures.MoveData;
 using PokemonRandomizer.Backend.DataStructures.Scripts;
 using PokemonRandomizer.Backend.Metadata;
+using PokemonRandomizer.Backend.GenIII.Constants.AttributeNames;
 
 namespace PokemonRandomizer.Backend.Reading
 {
@@ -68,7 +69,8 @@ namespace PokemonRandomizer.Backend.Reading
             // Trainers and associated data
             data.ClassNames = ReadTrainerClassNames(rom, info);
             data.Trainers = ReadTrainers(rom, info, data.ClassNames);
-            SetTrainerCategoryData(data, metadata, info);
+            SetTrainerCategoryData(data, info);
+            SetTrainerThemeOverrides(data, info);
             // Read type definitions
             data.TypeDefinitions = ReadTypeEffectivenessData(rom, info);
             // Read in the map data
@@ -510,11 +512,10 @@ namespace PokemonRandomizer.Backend.Reading
         /// <summary>
         /// Read all the preset trainer data from the info file into the ROM data, and find normal grunt, ace, and reocurring trainers
         /// </summary>
-        private void SetTrainerCategoryData(RomData data, RomMetadata metadata, XmlManager info)
+        private void SetTrainerCategoryData(RomData data, XmlManager info)
         {
-
             // Setup team metadata
-            var teamNames = info.ArrayAttr(ElementNames.teamData, "elementNames");
+            var teamNames = info.ArrayAttr(ElementNames.teamData, AttributeNames.elementNames);
             var allTeams = new List<VillainousTeamInfo>(2);
             foreach(var name in teamNames)
             {
@@ -538,12 +539,12 @@ namespace PokemonRandomizer.Backend.Reading
                 allTeams.Add(teamData);
             }
             // Get leader, elite four, and champion class names
-            var leaderClass = info.AttrLowerCase(ElementNames.gymLeaders, "className");
-            var eliteFourClass = info.AttrLowerCase(ElementNames.eliteFour, "className");
-            var championClass = info.AttrLowerCase(ElementNames.champion, "className");
+            var leaderClass = info.AttrLowerCase(ElementNames.gymLeaders, AttributeNames.className);
+            var eliteFourClass = info.AttrLowerCase(ElementNames.eliteFour, AttributeNames.className);
+            var championClass = info.AttrLowerCase(ElementNames.champion, AttributeNames.className);
             // Get rival names
-            var rivalNames = info.ArrayAttrLowerCase(ElementNames.rivals, "names");
-            var specialBossNames = info.ArrayAttrLowerCase(ElementNames.specialBosses, "names");
+            var rivalNames = info.ArrayAttrLowerCase(ElementNames.rivals, AttributeNames.names);
+            var specialBossNames = info.ArrayAttrLowerCase(ElementNames.specialBosses, AttributeNames.names);
             // Fetch the Ace Trainer Class Numbers for this ROM
             var aceTrainersClasses = info.IntArrayAttr(ElementNames.aceTrainers, "classNums");
             foreach (var trainer in data.Trainers)
@@ -602,6 +603,32 @@ namespace PokemonRandomizer.Backend.Reading
                 {
                     data.VillainousTeamMetadata.Add(team.TeamData);
                 }
+            }
+        }
+
+        private void SetTrainerThemeOverrides(RomData data, XmlManager info)
+        {
+            var nameOverrides = info.ArrayAttr(ElementNames.nameTrainerTypeOverrides, AttributeNames.elementNames);
+            foreach(var nameOverride in nameOverrides)
+            {
+                string name = info.Attr(nameOverride, AttributeNames.name);
+                var types = info.TypeArrayAttr(nameOverride, AttributeNames.types);
+                if (string.IsNullOrWhiteSpace(name))
+                {
+                    continue;
+                }
+                data.TrainerNameTypeOverrides.Add(name, types);
+            }
+            var classOverrides = info.ArrayAttr(ElementNames.classTrainerTypeOverrides, AttributeNames.elementNames);
+            foreach (var classOverride in classOverrides)
+            {
+                string className = info.Attr(classOverride, AttributeNames.className);
+                var types = info.TypeArrayAttr(classOverride, AttributeNames.types);
+                if (string.IsNullOrWhiteSpace(className))
+                {
+                    continue;
+                }
+                data.TrainerClassTypeOverrides.Add(className, types);
             }
         }
 
