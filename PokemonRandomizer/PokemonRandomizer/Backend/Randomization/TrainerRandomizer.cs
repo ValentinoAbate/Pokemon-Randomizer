@@ -33,11 +33,12 @@ namespace PokemonRandomizer.Backend.Randomization
             // Class based?
             // Local environment based
             // Get type sample
-            var partyTypeOccurence = PokemonMetrics.TypeOccurence(trainer.pokemon.Select(p => dataT.GetBaseStats(p.species)));
+            bool useTheming = shouldApplyTheming(trainer.TrainerCategory);
+            var partyTypeOccurence = useTheming ? PokemonMetrics.TypeOccurence(trainer.pokemon.Select(p => dataT.GetBaseStats(p.species))) : null;
             foreach (var pokemon in trainer.pokemon)
             {
                 // Chose pokemon
-                var metrics = CreatePokemonMetrics(trainer, pokemonSet, pokemon.species, partyTypeOccurence, settings.Data);
+                var metrics = useTheming ? CreatePokemonMetrics(trainer, pokemonSet, pokemon.species, partyTypeOccurence, settings.Data) : Enumerable.Empty<Metric<Pokemon>>();
                 pokemon.species = pokeRand.RandomPokemon(pokemonSet, pokemon.species, metrics, settings, pokemon.level);
 
                 // Reset special moves if necessary
@@ -231,6 +232,11 @@ namespace PokemonRandomizer.Backend.Randomization
                 ForceHighestLegalEvolution = settings.ForceHighestLegalEvolution,
                 Noise = settings.PokemonNoise,
                 BanLegendaries = shouldBanLegendaries(trainer.TrainerCategory),
+                Data = new List<MetricData>()
+                {
+                    new MetricData(PokemonMetric.typeTrainerParty, 0, 3, 0.1f),
+                    new MetricData(PokemonMetric.typeIndividual, 3),
+                },
             };
         }
 
