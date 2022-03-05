@@ -10,7 +10,7 @@ namespace PokemonRandomizer.Backend.Metadata
 {
     public class GymMetadata : TrainerOrganizationMetadata
     {
-        public override bool IsValid => Leaders.Count <= 0;
+        public override bool IsValid => Leaders.Count > 0;
         public List<Trainer> Leaders { get; } = new List<Trainer>();
         public List<Trainer> GymTrainers { get; } = new List<Trainer>();
 
