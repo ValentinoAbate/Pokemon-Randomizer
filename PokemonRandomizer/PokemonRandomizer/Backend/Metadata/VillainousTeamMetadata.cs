@@ -21,15 +21,24 @@ namespace PokemonRandomizer.Backend.Metadata
             ThemeData.SetTypes(PrimaryTypes, SecondaryTypes, SecondaryTypes.Length > 0 ? 0.6 : 0);
         }
 
-        public override void ApplyTrainerThemeData()
+        public override void ApplyTrainerThemeData(Settings settings)
         {
             if (!IsValid)
             {
                 return;
             }
-            ApplyThemeDataToGroup(TeamLeaders, ThemeData);
-            ApplyThemeDataToGroup(TeamAdmins, ThemeData);
-            ApplyThemeDataToGroup(TeamGrunts, ThemeData);
+            if (settings.ApplyTheming(Trainer.Category.TeamLeader))
+            {
+                ApplyThemeDataToGroup(TeamLeaders, ThemeData);
+            }
+            if (settings.ApplyTheming(Trainer.Category.TeamAdmin))
+            {
+                ApplyThemeDataToGroup(TeamAdmins, ThemeData);
+            }
+            if (settings.ApplyTheming(Trainer.Category.TeamGrunt))
+            {
+                ApplyThemeDataToGroup(TeamGrunts, ThemeData);
+            }
         }
 
         public override string ToString()

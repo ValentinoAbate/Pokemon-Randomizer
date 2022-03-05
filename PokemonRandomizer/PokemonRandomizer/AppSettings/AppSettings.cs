@@ -280,7 +280,6 @@ namespace PokemonRandomizer.AppSettings
 
         // Trainer Organization Settings
         public override TrainerOrgTypeTheme GymTypeTheming => trainerOrgData.GymTypeTheming;
-        public override bool GymTrainerTheming => trainerOrgData.GymTrainerTheming;
 
         public override TrainerOrgTypeTheme EliteFourTheming => trainerOrgData.EliteFourTheming;
         public override TrainerOrgTypeTheme ChampionTheming => trainerOrgData.ChampionTheming;

@@ -149,6 +149,33 @@ namespace PokemonRandomizer
             UseSmartAI = UseSmartAI,
         };
 
+        public bool ApplyTheming(Trainer trainer) => ApplyTheming(trainer.TrainerCategory);
+
+        public bool ApplyTheming(Trainer.Category category)
+        {
+            return category switch
+            {
+                Trainer.Category.TeamGrunt => GruntTheming ? ApplyTheming(TeamTypeTheming, TrainerTypeTheming) : TrainerTypeTheming,
+                Trainer.Category.TeamAdmin or Trainer.Category.TeamLeader => ApplyTheming(TeamTypeTheming, TrainerTypeTheming),
+                Trainer.Category.GymLeader or Trainer.Category.GymTrainer => ApplyTheming(GymTypeTheming, TrainerTypeTheming),
+                Trainer.Category.EliteFour => ApplyTheming(EliteFourTheming, TrainerTypeTheming),
+                Trainer.Category.Champion => ApplyTheming(ChampionTheming, ApplyTheming(EliteFourTheming, TrainerTypeTheming)),
+                Trainer.Category.Rival or Trainer.Category.AceTrainer or Trainer.Category.CatchingTutTrainer => false,
+                _ => TrainerTypeTheming,
+            };
+        }
+
+        public bool ApplyTheming(TrainerOrgTypeTheme theme, bool defaultValue)
+        {
+            return theme switch
+            {
+                TrainerOrgTypeTheme.Default => defaultValue,
+                TrainerOrgTypeTheme.Off => false,
+                TrainerOrgTypeTheme.On or TrainerOrgTypeTheme.Random or TrainerOrgTypeTheme.RandomNoDupes => true,
+                _ => false,
+            };
+        }
+
         // Trainer Pokemon Settings
         public abstract double TrainerPokemonRandChance { get; }
         public abstract bool TrainerTypeTheming { get; }
@@ -180,7 +207,6 @@ namespace PokemonRandomizer
             RandomNoDupes,
         }
         public abstract TrainerOrgTypeTheme GymTypeTheming { get; }
-        public abstract bool GymTrainerTheming { get; }
         public abstract TrainerOrgTypeTheme EliteFourTheming { get; }
         public abstract TrainerOrgTypeTheme ChampionTheming { get; }
         public abstract TrainerOrgTypeTheme TeamTypeTheming { get; }

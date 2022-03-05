@@ -25,6 +25,7 @@ namespace PokemonRandomizer.Backend.DataStructures
             TeamAdmin,
             TeamLeader,
             GymLeader,
+            GymTrainer,
             EliteFour,
             Champion,
             CatchingTutTrainer, // Wally, Etc
@@ -174,7 +175,7 @@ namespace PokemonRandomizer.Backend.DataStructures
 
         public override string ToString()
         {
-            return $"{Class} {name}";
+            return $"{Class} {name} ({TrainerCategory})";
         }
     }
 }
