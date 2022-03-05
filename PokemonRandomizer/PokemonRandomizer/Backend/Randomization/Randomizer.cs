@@ -632,6 +632,7 @@ namespace PokemonRandomizer.Backend.Randomization
             var normalTrainersByName = new Dictionary<string, List<Trainer>>(data.Trainers.Count);
             var rivalTrainers = new Dictionary<string, List<Trainer>>(3);
             var catchingTutorialTrainers = new List<Trainer>();
+            var gruntTrainers = new List<Trainer>();
             foreach (var trainer in data.Trainers)
             {
                 if (trainer.Invalid)
@@ -684,6 +685,12 @@ namespace PokemonRandomizer.Backend.Randomization
                     catchingTutorialTrainers.Add(trainer);
                     continue;
                 }
+                // Grunts
+                if (trainer.TrainerCategory == Trainer.Category.TeamGrunt)
+                {
+                    gruntTrainers.Add(trainer);
+                    continue;
+                }
                 // All other trainers
                 if (!normalTrainersByName.ContainsKey(name))
                 {
@@ -727,10 +734,14 @@ namespace PokemonRandomizer.Backend.Randomization
                 trainerRand.RandomizeReoccurring(firstBattle, battles, pokemonSet, trainerSettings);
             }
 
+            foreach(var trainer in gruntTrainers)
+            {
+                trainerRand.Randomize(trainer, pokemonSet, trainerSettings);
+            }
+
             #region Rivals
 
             // Setup Rival Pokemon Settings
-            var rivalSettings = settings.BasicTrainerSettings;
             bool originalStarters = settings.StarterSetting == Settings.StarterPokemonOption.Unchanged;
             foreach (var kvp in rivalTrainers)
             {
@@ -745,11 +756,11 @@ namespace PokemonRandomizer.Backend.Randomization
                     var firstBattle = battles[0];
                     battles.RemoveAt(0);
                     // Randomize the first battle
-                    trainerRand.Randomize(firstBattle, pokemonSet, rivalSettings, false);
+                    trainerRand.Randomize(firstBattle, pokemonSet, trainerSettings, false);
                     // Set the appropriate starter as the ace
                     firstBattle.pokemon[firstBattle.pokemon.Length - 1].species = data.Starters[originalStarters ? i : data.RivalRemap[i]];
                     // Procedurally generate the rest of the battles
-                    trainerRand.RandomizeReoccurring(firstBattle, battles, pokemonSet, rivalSettings);
+                    trainerRand.RandomizeReoccurring(firstBattle, battles, pokemonSet, trainerSettings);
                     if (settings.EasyFirstRivalBattle)
                     {
                         foreach (var pokemon in firstBattle.pokemon)
@@ -786,11 +797,11 @@ namespace PokemonRandomizer.Backend.Randomization
                 var firstBattle = wallyBattles[0];
                 wallyBattles.RemoveAt(0);
                 // Set Wally's first pokemon to the catching tut pokemon
-                trainerRand.Randomize(firstBattle, pokemonSet, rivalSettings, false);
+                trainerRand.Randomize(firstBattle, pokemonSet, trainerSettings, false);
                 var firstBattleAce = firstBattle.pokemon[firstBattle.pokemon.Length - 1];
-                firstBattleAce.species = evoUtils.MaxEvolution(data.CatchingTutPokemon, firstBattleAce.level, rivalSettings.RestrictIllegalEvolutions);
+                firstBattleAce.species = evoUtils.MaxEvolution(data.CatchingTutPokemon, firstBattleAce.level, trainerSettings.RestrictIllegalEvolutions);
                 // Procedurally generate the rest of Wally's battles
-                trainerRand.RandomizeReoccurring(firstBattle, wallyBattles, pokemonSet, rivalSettings);
+                trainerRand.RandomizeReoccurring(firstBattle, wallyBattles, pokemonSet, trainerSettings);
             }
 
             #endregion
