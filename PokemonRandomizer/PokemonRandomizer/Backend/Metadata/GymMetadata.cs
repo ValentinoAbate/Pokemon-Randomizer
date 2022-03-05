@@ -30,36 +30,7 @@ namespace PokemonRandomizer.Backend.Metadata
             {
                 return;
             }
-            var leader = Leaders[0];
-            // If there is already a theme present on the leader, use that theme
-            if(leader.ThemeData != null)
-            {
-                ThemeData = leader.ThemeData;
-                return;
-            }
-            // Calculate Gym Type Occurence
-            var typeSet = PokemonMetrics.TypeOccurence(leader.pokemon.Select(p => dataT.GetBaseStats(p.species)));
-            // Find maximum occurence(s)
-            var max = float.MinValue;
-            var types = new List<PokemonType>(6);
-            foreach(var kvp in typeSet)
-            {
-                if(kvp.Value > max)
-                {
-                    max = kvp.Value;
-                    types.Clear();
-                    types.Add(kvp.Key);
-                }
-                else if(kvp.Value == max){
-                    types.Add(kvp.Key);
-                }
-            }
-            // Create Theme Data
-            ThemeData = new TrainerThemeData()
-            {
-                Types = types.ToArray(),
-                Theme = TrainerThemeData.TrainerTheme.Typed
-            };
+            ThemeData = GetTrainerThemeData(Leaders[0], dataT);
         }
 
         public override void ApplyTrainerThemeData(Settings settings)

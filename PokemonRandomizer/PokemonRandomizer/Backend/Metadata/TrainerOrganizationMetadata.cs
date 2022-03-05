@@ -1,6 +1,9 @@
 ﻿using PokemonRandomizer.Backend.DataStructures;
+using PokemonRandomizer.Backend.EnumTypes;
+using PokemonRandomizer.Backend.Randomization;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace PokemonRandomizer.Backend.Metadata
 {
@@ -14,6 +17,41 @@ namespace PokemonRandomizer.Backend.Metadata
             {
                 trainer.ThemeData = data;
             }
+        }
+
+        protected TrainerThemeData GetTrainerThemeData(Trainer trainer, IDataTranslator dataT)
+        {
+            if(trainer.ThemeData != null)
+                return trainer.ThemeData;
+            return GetTrainerTypeThemeData(trainer, dataT);
+        }
+
+        protected TrainerThemeData GetTrainerTypeThemeData(Trainer trainer, IDataTranslator dataT)
+        {
+            // Calculate Trainer Type Occurence
+            var typeSet = PokemonMetrics.TypeOccurence(trainer.pokemon.Select(p => dataT.GetBaseStats(p.species)));
+            // Find maximum occurence(s)
+            var max = float.MinValue;
+            var types = new List<PokemonType>(6);
+            foreach (var kvp in typeSet)
+            {
+                if (kvp.Value > max)
+                {
+                    max = kvp.Value;
+                    types.Clear();
+                    types.Add(kvp.Key);
+                }
+                else if (kvp.Value == max)
+                {
+                    types.Add(kvp.Key);
+                }
+            }
+            // Create Theme Data
+            return new TrainerThemeData()
+            {
+                Types = types.ToArray(),
+                Theme = TrainerThemeData.TrainerTheme.Typed
+            };
         }
     }
 }

@@ -613,7 +613,7 @@ namespace PokemonRandomizer.Backend.Randomization
 
             #region Trainer + Trainer Organization Metadata Preprocessing
 
-            // Remove invalid data
+            // Trainer Orgs: Remove Invalid Data, adn Initialize Trainer Categories (if applicable)
             foreach(var key in gymMetadataDict.Keys)
             {
                 if (!gymMetadataDict[key].IsValid)
@@ -625,7 +625,6 @@ namespace PokemonRandomizer.Backend.Randomization
             {
                 var gym = kvp.Value;
                 gym.InitializeCategory();
-                gym.InitializeThemeData(data);
             }
 
             // Construct trainer by name map and separate rival + catching tut trainer battles
@@ -633,6 +632,7 @@ namespace PokemonRandomizer.Backend.Randomization
             var rivalTrainers = new Dictionary<string, List<Trainer>>(3);
             var catchingTutorialTrainers = new List<Trainer>();
             var gruntTrainers = new List<Trainer>();
+            var eliteFourMetadata = new EliteFourMetadata();
             foreach (var trainer in data.Trainers)
             {
                 if (trainer.Invalid)
@@ -697,11 +697,31 @@ namespace PokemonRandomizer.Backend.Randomization
                     normalTrainersByName.Add(name, new List<Trainer>(10));
                 }
                 normalTrainersByName[name].Add(trainer);
+                if(trainer.TrainerCategory == Trainer.Category.Champion)
+                {
+                    eliteFourMetadata.Champion.Add(trainer);
+                }
+                else if(trainer.TrainerCategory == Trainer.Category.EliteFour)
+                {
+                    if (!eliteFourMetadata.EliteFour.ContainsKey(name))
+                    {
+                        eliteFourMetadata.EliteFour.Add(name, new EliteFourMetadata.EliteFourMember());
+                    }
+                    eliteFourMetadata.EliteFour[name].Add(trainer);
+                }
+            }
+
+            // Trainer orgs: initialize theme data
+            eliteFourMetadata.InitializeThemeData(data);
+            foreach (var kvp in gymMetadataDict)
+            {
+                var gym = kvp.Value;
+                gym.InitializeThemeData(data);
             }
 
             #endregion
 
-            #region Trainer Organizations
+            #region Trainer Organization Randomization
 
             foreach (var kvp in gymMetadataDict)
             {
@@ -713,6 +733,8 @@ namespace PokemonRandomizer.Backend.Randomization
             {
                 team.ApplyTrainerThemeData(settings);
             }
+
+            eliteFourMetadata.ApplyTrainerThemeData(settings);
 
             #endregion
 
