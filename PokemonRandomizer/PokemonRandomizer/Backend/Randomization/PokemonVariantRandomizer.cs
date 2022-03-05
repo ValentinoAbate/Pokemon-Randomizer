@@ -1338,7 +1338,7 @@ namespace PokemonRandomizer.Backend.Randomization
             { Pokemon.LOUDRED, new PaletteData(Range(2, 5), Range(6, 8), null, Range(9, 12))},
             { Pokemon.EXPLOUD, new PaletteData(Range(2, 5), Range(6, 8), null, Range(9, 12))},
             { Pokemon.CLAMPERL, new PaletteData(Range(8, 11), Range(13, 15), null, Range(4, 7))},
-            { Pokemon.HUNTAIL, new PaletteData(Range(2, 4), Range(5, 9))},
+            { Pokemon.HUNTAIL, new PaletteData(Range(5, 9), Range(2, 4))},
             { Pokemon.GOREBYSS, new PaletteData(Range(4, 9), PalRange(9, 10, 13, 14, 15))},
             { Pokemon.ABSOL, new PaletteData(Range(1, 4), Range(11, 14))},
             { Pokemon.SHUPPET, new PaletteData(Range(1, 5), Range(6, 7), null, Range(8, 9))},
