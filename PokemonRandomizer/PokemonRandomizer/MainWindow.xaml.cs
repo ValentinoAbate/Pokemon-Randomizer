@@ -194,7 +194,6 @@ namespace PokemonRandomizer
             TmHmTutorView.Content = new TmHmTutorDataView(AppData.TmHmTutorData);
             WildPokemonView.Content = new WildEncounterDataView(AppData.WildEncounterData);
             TrainerView.Content = new TrainerDataView(AppData.TrainerData);
-            TrainerOrgView.Content = new TrainerOrganizationDataView(AppData.TrainerOrgData);
             ItemsView.Content = new ItemDataView(AppData.ItemData);
             WeatherView.Content = new WeatherDataView(AppData.WeatherData);
         }
@@ -206,6 +205,7 @@ namespace PokemonRandomizer
             pokemon.AddRange(data.PokemonNationalDexOrder.Select(p => p.species));
             SpecialPokemonView.Content = new SpecialPokemonDataView(AppData.SpecialPokemonData, data.PokemonNames, pokemon);
             MiscView.Content = new MiscDataView(AppData.MiscData, metadata);
+            TrainerOrgView.Content = new TrainerOrganizationDataView(AppData.TrainerOrgData, metadata);
         }
 
         private void SetLastRandomizationInfo(RomData data, RomMetadata metadata, bool includeSettingsString)

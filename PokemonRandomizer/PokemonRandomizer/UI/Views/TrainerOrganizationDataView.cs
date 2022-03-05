@@ -1,4 +1,5 @@
-﻿using PokemonRandomizer.UI.Models;
+﻿using PokemonRandomizer.Backend.DataStructures;
+using PokemonRandomizer.UI.Models;
 using System.Windows.Controls;
 using System.Windows.Data;
 using static PokemonRandomizer.Settings;
@@ -31,14 +32,21 @@ namespace PokemonRandomizer.UI.Views
         private const string teamSubtypesTooltip = "When randomizing Team Type Themes, only randomize the primary Type Theme(s). The Type Themes are:" +
             "\nTeam Rocket: PSN (Primary), NRM | Team Aqua: WAT (Primary), PSN, DRK | Team Magma: GRD (Primary), FIR (Primary), PSN, DRK";
         private const string gruntThemeTooltip = "If checked, the team's theme will apply to grunts. If unchecked, team grunts will use default type theming";
-        public TrainerOrganizationDataView(TrainerOrganizationDataModel model)
+        public TrainerOrganizationDataView(TrainerOrganizationDataModel model, RomMetadata metadata)
         {
             var stack = CreateMainStack();
             stack.Header("Gyms");
             stack.Add(new EnumComboBoxUI<TrainerOrgTypeTheme>("Type Theming", TypeThemeDropdown, model.GymTypeTheming));
             stack.Header("Elite Four + Champion");
             stack.Add(new EnumComboBoxUI<TrainerOrgTypeTheme>("Elite Four Type Theming", TypeThemeDropdown, model.EliteFourTheming));
-            stack.Add(new EnumComboBoxUI<TrainerOrgTypeTheme>("Champion Type Theming", ChampionTypeThemeDropdown, model.ChampionTheming));
+            if (metadata.IsFireRedOrLeafGreen)
+            {
+                stack.Add(new Label() { Content = "Note: Champion type theming is disabled in FRLG because the champion is a Rival" });
+            }
+            else
+            {
+                stack.Add(new EnumComboBoxUI<TrainerOrgTypeTheme>("Champion Type Theming", ChampionTypeThemeDropdown, model.ChampionTheming));
+            }
             stack.Header("Villainous Teams");
             stack.Add(new EnumComboBoxUI<TrainerOrgTypeTheme>("Type Theming", TypeThemeDropdown, model.TeamTypeTheming));
             stack.Add(new BoundCheckBoxUI(model.GruntTheming, "Apply Team Theme To Grunts") { ToolTip = gruntThemeTooltip });
