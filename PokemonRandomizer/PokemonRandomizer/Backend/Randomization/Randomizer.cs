@@ -581,12 +581,6 @@ namespace PokemonRandomizer.Backend.Randomization
                         scriptRand.RandomizeScript(npc.script, settings, scriptRandomizationArgs);
                     }
                 }
-
-                // Remove invalid metadata
-                if (map.IsGym && gymMetadataDict[map.Name].IsValid)
-                {
-                    gymMetadataDict.Remove(map.Name);
-                }
             }
             #endregion
 
@@ -619,6 +613,14 @@ namespace PokemonRandomizer.Backend.Randomization
 
             #region Trainer + Trainer Organization Metadata Preprocessing
 
+            // Remove invalid data
+            foreach(var key in gymMetadataDict.Keys)
+            {
+                if (!gymMetadataDict[key].IsValid)
+                {
+                    gymMetadataDict.Remove(key);
+                }
+            }
             foreach(var kvp in gymMetadataDict)
             {
                 var gym = kvp.Value;
