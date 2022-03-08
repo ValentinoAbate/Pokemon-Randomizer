@@ -167,7 +167,7 @@ namespace PokemonRandomizer
             {
                 TrainerOrgTypeTheme.Default => defaultValue,
                 TrainerOrgTypeTheme.Off => false,
-                TrainerOrgTypeTheme.On or TrainerOrgTypeTheme.Random or TrainerOrgTypeTheme.RandomNoDupes => true,
+                TrainerOrgTypeTheme.On or TrainerOrgTypeTheme.Random => true,
                 _ => false,
             };
         }
@@ -215,7 +215,6 @@ namespace PokemonRandomizer
             Off,
             On,
             Random,
-            RandomNoDupes,
         }
         public abstract TrainerOrgTypeTheme GymTypeTheming { get; }
         public abstract TrainerOrgTypeTheme EliteFourTheming { get; }

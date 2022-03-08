@@ -8,6 +8,7 @@ namespace PokemonRandomizer.UI.Models
         public Box<TrainerOrgTypeTheme> GymTypeTheming { get; set; } = new Box<TrainerOrgTypeTheme>(TrainerOrgTypeTheme.Default);
         public Box<TrainerOrgTypeTheme> EliteFourTheming { get; set; } = new Box<TrainerOrgTypeTheme>(TrainerOrgTypeTheme.Default);
         public Box<TrainerOrgTypeTheme> ChampionTheming { get; set; } = new Box<TrainerOrgTypeTheme>(TrainerOrgTypeTheme.Default);
+        public Box<bool> NoDupeGymAndEliteFourTypes { get; set; } = new Box<bool>(true);
         public Box<TrainerOrgTypeTheme> TeamTypeTheming { get; set; } = new Box<TrainerOrgTypeTheme>(TrainerOrgTypeTheme.Default);
         public Box<bool> GruntTheming { get; set; } = new Box<bool>(true);
         public Box<bool> KeepTeamSubtypes { get; set; } = new Box<bool>(true);
