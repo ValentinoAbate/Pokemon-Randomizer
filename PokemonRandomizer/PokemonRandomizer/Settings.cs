@@ -219,6 +219,7 @@ namespace PokemonRandomizer
         public abstract TrainerOrgTypeTheme GymTypeTheming { get; }
         public abstract TrainerOrgTypeTheme EliteFourTheming { get; }
         public abstract TrainerOrgTypeTheme ChampionTheming { get; }
+        public abstract bool NoDuplicateGymsAndEliteFour { get; }
         public abstract TrainerOrgTypeTheme TeamTypeTheming { get; }
         public abstract bool GruntTheming { get; }
         public abstract bool KeepTeamSubtypes { get; }

@@ -28,6 +28,7 @@ namespace PokemonRandomizer.Backend.Randomization
         private readonly WeatherRandomizer weatherRand;
         private readonly List<Action> delayedRandomizationCalls;
         private readonly ScriptRandomizer scriptRand;
+        private readonly TrainerOrganizationRandomizer trainerOrgRand;
 
         /// <summary>
         /// Create a new randomizer with given data and settings
@@ -57,6 +58,7 @@ namespace PokemonRandomizer.Backend.Randomization
             weatherRand = new WeatherRandomizer(rand);
             delayedRandomizationCalls = new List<Action>();
             scriptRand = new ScriptRandomizer(rand, pokeRand, itemRand, data, delayedRandomizationCalls);
+            trainerOrgRand = new TrainerOrganizationRandomizer(rand);
         }
         // Apply mutations based on program settings.
         public RomData Randomize()
@@ -76,6 +78,7 @@ namespace PokemonRandomizer.Backend.Randomization
             // Generate ??? type traits (INCOMPLETE)
             if (settings.ModifyUnknownType)
             {
+                types.Add(PokemonType.Unknown);
                 foreach (var type in types)
                 {
                     // Type effectiveness of other type vs ???
@@ -723,6 +726,9 @@ namespace PokemonRandomizer.Backend.Randomization
 
             #region Trainer Organization Randomization
 
+            trainerOrgRand.RandomizeGymsAndEliteFour(gymMetadataDict.Values, eliteFourMetadata, types, settings);
+            trainerOrgRand.RandomizeVillainousTeams(data.VillainousTeamMetadata, types, settings);
+
             foreach (var kvp in gymMetadataDict)
             {
                 var gym = kvp.Value;
@@ -927,6 +933,7 @@ namespace PokemonRandomizer.Backend.Randomization
         {
             HashSet<PokemonType> types = EnumUtils.GetValues<PokemonType>().ToHashSet();
             types.Remove(PokemonType.FAI);
+            types.Remove(PokemonType.Unknown);
             return types;
         }
 
