@@ -18,12 +18,12 @@ namespace PokemonRandomizer.Backend.Randomization
             this.rand = rand;
         }
 
+        private bool IsRandom(Settings.TrainerOrgTypeTheme theme) => theme == Settings.TrainerOrgTypeTheme.Random;
+
         public void RandomizeGymsAndEliteFour(IEnumerable<GymMetadata> gyms, EliteFourMetadata eliteFour, IEnumerable<PokemonType> allTypes, Settings settings)
         {
             // If none of the categories are actually going to be randomized, return early
-            if(settings.GymTypeTheming != Settings.TrainerOrgTypeTheme.Random 
-                && settings.EliteFourTheming != Settings.TrainerOrgTypeTheme.Random 
-                && settings.ChampionTheming != Settings.TrainerOrgTypeTheme.Random)
+            if(!IsRandom(settings.GymTypeTheming) && !IsRandom(settings.EliteFourTheming) && !IsRandom(settings.ChampionTheming))
             {
                 return;
             }
@@ -32,15 +32,19 @@ namespace PokemonRandomizer.Backend.Randomization
             if (settings.NoDuplicateGymsAndEliteFour)
             {
                 var originalThemes = new List<TrainerThemeData>(16); // 8 gyms + 4 elite 4 + 1 champ
-                if (!settings.ApplyTheming(Trainer.Category.GymLeader))
+                if (!IsRandom(settings.GymTypeTheming))
                 {
                     originalThemes.AddRange(gyms.Select(g => g.ThemeData));
                 }
-                if (!settings.ApplyTheming(Trainer.Category.EliteFour))
+                if (!IsRandom(settings.EliteFourTheming))
                 {
                     originalThemes.AddRange(eliteFour.EliteFour.Select(kvp => kvp.Value.ThemeData));
+                    if(settings.ChampionTheming == Settings.TrainerOrgTypeTheme.Default)
+                    {
+                        originalThemes.Add(eliteFour.Champion.ThemeData);
+                    }
                 }
-                if (!settings.ApplyTheming(Trainer.Category.Champion))
+                if (!IsRandom(settings.ChampionTheming))
                 {
                     originalThemes.Add(eliteFour.Champion.ThemeData);
                 }
@@ -59,14 +63,14 @@ namespace PokemonRandomizer.Backend.Randomization
                 }
             }
             // Randomize Gyms
-            if(settings.GymTypeTheming == Settings.TrainerOrgTypeTheme.Random)
+            if(IsRandom(settings.GymTypeTheming))
             {
                 foreach(var gym in gyms)
                 {
                     RandomizeGymOrEliteFourThemeData(gym.ThemeData, typeSet, allTypes);
                 }
             }
-            if(settings.EliteFourTheming == Settings.TrainerOrgTypeTheme.Random)
+            if(IsRandom(settings.EliteFourTheming))
             {
                 foreach (var kvp in eliteFour.EliteFour)
                 {
@@ -78,7 +82,7 @@ namespace PokemonRandomizer.Backend.Randomization
                     RandomizeGymOrEliteFourThemeData(eliteFour.Champion.ThemeData, typeSet, allTypes);
                 }
             }
-            if (settings.ChampionTheming == Settings.TrainerOrgTypeTheme.Random)
+            if (IsRandom(settings.ChampionTheming))
             {
                 RandomizeGymOrEliteFourThemeData(eliteFour.Champion.ThemeData, typeSet, allTypes);
             }
@@ -93,7 +97,7 @@ namespace PokemonRandomizer.Backend.Randomization
 
         public void RandomizeVillainousTeams(IEnumerable<VillainousTeamMetadata> teams, IEnumerable<PokemonType> allTypes, Settings settings)
         {
-            if (settings.TeamTypeTheming != Settings.TrainerOrgTypeTheme.Random)
+            if (!IsRandom(settings.TeamTypeTheming))
                 return;
             var typeSet = allTypes.ToHashSet();
             if (settings.KeepTeamSubtypes)
