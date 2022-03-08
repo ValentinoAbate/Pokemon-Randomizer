@@ -32,15 +32,19 @@ namespace PokemonRandomizer.Backend.Randomization
             if (settings.NoDuplicateGymsAndEliteFour)
             {
                 var originalThemes = new List<TrainerThemeData>(16); // 8 gyms + 4 elite 4 + 1 champ
-                if (!settings.ApplyTheming(Trainer.Category.GymLeader))
+                if (settings.ApplyTheming(Trainer.Category.GymLeader) && !IsRandom(settings.GymTypeTheming))
                 {
                     originalThemes.AddRange(gyms.Select(g => g.ThemeData));
                 }
-                if (!settings.ApplyTheming(Trainer.Category.EliteFour))
+                if (settings.ApplyTheming(Trainer.Category.EliteFour) && !IsRandom(settings.EliteFourTheming))
                 {
                     originalThemes.AddRange(eliteFour.EliteFour.Select(kvp => kvp.Value.ThemeData));
+                    if(settings.ChampionTheming == Settings.TrainerOrgTypeTheme.Default)
+                    {
+                        originalThemes.Add(eliteFour.Champion.ThemeData);
+                    }
                 }
-                if (!settings.ApplyTheming(Trainer.Category.Champion))
+                if (settings.ApplyTheming(Trainer.Category.Champion) && !IsRandom(settings.ChampionTheming))
                 {
                     originalThemes.Add(eliteFour.Champion.ThemeData);
                 }
