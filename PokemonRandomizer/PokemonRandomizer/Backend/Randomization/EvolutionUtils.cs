@@ -117,13 +117,19 @@ namespace PokemonRandomizer.Backend.Randomization
             if (restrictIllegalEvolutions && !IsPokemonValidLevel(stats, level))
                 return CorrectImpossibleEvo(p, level);
             // Else evolve the pokemon until you can't anymore
-            var evos = stats.evolvesTo.Where((evo) => evo.Type != EvolutionType.None && EquivalentLevelReq(evo, stats) <= level);
-            while (evos.Count() > 0)
+            var evos = stats.evolvesTo.Where((evo) => evo.IsRealEvolution && EquivalentLevelReq(evo, stats) <= level);
+            while (evos.Any())
             {
                 stats = dataT.GetBaseStats(rand.Choice(evos).Pokemon);
-                evos = stats.evolvesTo.Where((evo) => evo.Type != EvolutionType.None && EquivalentLevelReq(evo, stats) <= level);
+                evos = stats.evolvesTo.Where((evo) => evo.IsRealEvolution && EquivalentLevelReq(evo, stats) <= level);
             }
             return stats.species;
+        }
+
+        public bool IsMaxEvolution(Pokemon p, int level)
+        {
+            var stats = dataT.GetBaseStats(p);
+            return !stats.evolvesTo.Any(evo => evo.IsRealEvolution && EquivalentLevelReq(evo, stats) <= level);
         }
     }
 }
