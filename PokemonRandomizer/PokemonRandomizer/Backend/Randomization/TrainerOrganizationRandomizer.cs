@@ -42,7 +42,7 @@ namespace PokemonRandomizer.Backend.Randomization
                         originalThemes.Add(eliteFour.Champion.ThemeData);
                     }
                 }
-                if (settings.ApplyTheming(Trainer.Category.Champion) && !IsRandom(settings.ChampionTheming))
+                if (settings.ApplyTheming(Trainer.Category.Champion) && !IsRandom(settings.ChampionTheming) && eliteFour.Champion.IsValid)
                 {
                     originalThemes.Add(eliteFour.Champion.ThemeData);
                 }
@@ -75,18 +75,21 @@ namespace PokemonRandomizer.Backend.Randomization
                     RandomizeGymOrEliteFourThemeData(kvp.Value.ThemeData, typeSet, allTypes);
                 }
                 // If on the "Same as Elite Four Setting" the randomize the champ here
-                if (settings.ChampionTheming == Settings.TrainerOrgTypeTheme.Default)
+                if (settings.ChampionTheming == Settings.TrainerOrgTypeTheme.Default && eliteFour.Champion.IsValid)
                 {
                     RandomizeGymOrEliteFourThemeData(eliteFour.Champion.ThemeData, typeSet, allTypes);
                 }
             }
-            if (IsRandom(settings.ChampionTheming))
+            if (IsRandom(settings.ChampionTheming) && eliteFour.Champion.IsValid)
             {
                 RandomizeGymOrEliteFourThemeData(eliteFour.Champion.ThemeData, typeSet, allTypes);
             }
             randomizationResults.Add("Gyms", gyms.Select(g => g.ToString()).ToList());
             randomizationResults.Add("Elite 4", eliteFour.EliteFour.Select(kvp => kvp.Value.ToString()).ToList());
-            randomizationResults.Add("Champion", new List<string>() { eliteFour.Champion.ToString() });
+            if (eliteFour.Champion.IsValid)
+            {
+                randomizationResults.Add("Champion", new List<string>() { eliteFour.Champion.ToString() });
+            }
         }
 
         private void RandomizeGymOrEliteFourThemeData(TrainerThemeData data, HashSet<PokemonType> typeSet, IEnumerable<PokemonType> allTypes)
