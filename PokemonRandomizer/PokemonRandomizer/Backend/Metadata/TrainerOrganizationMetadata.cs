@@ -19,10 +19,16 @@ namespace PokemonRandomizer.Backend.Metadata
             }
         }
 
-        protected TrainerThemeData GetTrainerThemeData(Trainer trainer, IDataTranslator dataT)
+        protected TrainerThemeData GetTrainerThemeData(Trainer trainer, IDataTranslator dataT, bool applyTheming)
         {
+            if (!applyTheming)
+            {
+                return new TrainerThemeData() { Theme = TrainerThemeData.TrainerTheme.Untyped };
+            }
             if(trainer.ThemeData != null)
+            {
                 return trainer.ThemeData;
+            }
             return GetTrainerTypeThemeData(trainer, dataT);
         }
 

@@ -4,8 +4,6 @@ using PokemonRandomizer.Backend.DataStructures;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using PokemonRandomizer.Backend.Utilities.Debug;
 
 namespace PokemonRandomizer.Backend.Randomization
@@ -20,7 +18,7 @@ namespace PokemonRandomizer.Backend.Randomization
 
         private bool IsRandom(Settings.TrainerOrgTypeTheme theme) => theme == Settings.TrainerOrgTypeTheme.Random;
 
-        public void RandomizeGymsAndEliteFour(IEnumerable<GymMetadata> gyms, EliteFourMetadata eliteFour, IEnumerable<PokemonType> allTypes, Settings settings)
+        public void RandomizeGymsAndEliteFour(IEnumerable<GymMetadata> gyms, EliteFourMetadata eliteFour, IEnumerable<PokemonType> allTypes, Settings settings, Dictionary<string, List<string>> randomizationResults)
         {
             // If none of the categories are actually going to be randomized, return early
             if(!IsRandom(settings.GymTypeTheming) && !IsRandom(settings.EliteFourTheming) && !IsRandom(settings.ChampionTheming))
@@ -86,6 +84,9 @@ namespace PokemonRandomizer.Backend.Randomization
             {
                 RandomizeGymOrEliteFourThemeData(eliteFour.Champion.ThemeData, typeSet, allTypes);
             }
+            randomizationResults.Add("Gyms", gyms.Select(g => g.ToString()).ToList());
+            randomizationResults.Add("Elite 4", eliteFour.EliteFour.Select(kvp => kvp.Value.ToString()).ToList());
+            randomizationResults.Add("Champion", new List<string>() { eliteFour.Champion.ToString() });
         }
 
         private void RandomizeGymOrEliteFourThemeData(TrainerThemeData data, HashSet<PokemonType> typeSet, IEnumerable<PokemonType> allTypes)
@@ -95,7 +96,7 @@ namespace PokemonRandomizer.Backend.Randomization
             data.SetTypes(new PokemonType[] { newType }, Array.Empty<PokemonType>(), 1);
         }
 
-        public void RandomizeVillainousTeams(IEnumerable<VillainousTeamMetadata> teams, IEnumerable<PokemonType> allTypes, Settings settings)
+        public void RandomizeVillainousTeams(IEnumerable<VillainousTeamMetadata> teams, IEnumerable<PokemonType> allTypes, Settings settings, Dictionary<string, List<string>> randomizationResults)
         {
             if (!IsRandom(settings.TeamTypeTheming))
                 return;
@@ -123,6 +124,7 @@ namespace PokemonRandomizer.Backend.Randomization
                     theme.SetTypes(new PokemonType[] { newPrimaryType }, new PokemonType[] { newSecondaryType }, theme.PrimaryTypeChance);
                 }
             }
+            randomizationResults.Add("Villainous Teams", teams.Select(t => t.ToString()).ToList());
         }
 
         private PokemonType ChooseType(IReadOnlyCollection<PokemonType> originals, HashSet<PokemonType> types, IEnumerable<PokemonType> all)

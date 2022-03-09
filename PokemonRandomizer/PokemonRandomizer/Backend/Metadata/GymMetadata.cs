@@ -24,13 +24,13 @@ namespace PokemonRandomizer.Backend.Metadata
             }
         }
 
-        public void InitializeThemeData(IDataTranslator dataT)
+        public void InitializeThemeData(IDataTranslator dataT, Settings s)
         {
             if (!IsValid)
             {
                 return;
             }
-            ThemeData = GetTrainerThemeData(Leaders[0], dataT);
+            ThemeData = GetTrainerThemeData(Leaders[0], dataT, s.ApplyTheming(Trainer.Category.GymLeader));
         }
 
         public override void ApplyTrainerThemeData(Settings settings)

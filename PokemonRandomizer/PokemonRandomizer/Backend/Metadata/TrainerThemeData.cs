@@ -70,7 +70,7 @@ namespace PokemonRandomizer.Backend.Metadata
             {
                 TrainerTheme.Typed => TypeString(),
                 TrainerTheme.SpecificPokemon => $"Specific Pokemon: {string.Join(", ", SpecificPokemon)}",
-                _ => Theme.ToString(),
+                _ => Theme.ToString().ToUpper(),
             };
         }
         

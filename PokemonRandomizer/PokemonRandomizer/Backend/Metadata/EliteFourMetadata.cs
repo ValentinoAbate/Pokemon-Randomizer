@@ -11,7 +11,7 @@ namespace PokemonRandomizer.Backend.Metadata
         public EliteFourMember Champion { get; } = new();
         public Dictionary<string, EliteFourMember> EliteFour { get; } = new(4);
 
-        public void InitializeThemeData(IDataTranslator dataT)
+        public void InitializeThemeData(IDataTranslator dataT, Settings settings)
         {
             if (!IsValid)
             {
@@ -19,14 +19,15 @@ namespace PokemonRandomizer.Backend.Metadata
             }
             if(Champion.IsValid)
             {
-                Champion.ThemeData = GetTrainerThemeData(Champion.FirstBattle, dataT);
+                Champion.ThemeData = GetTrainerThemeData(Champion.FirstBattle, dataT, settings.ApplyTheming(Trainer.Category.Champion));
             }
+            bool e4Theming = settings.ApplyTheming(Trainer.Category.EliteFour);
             foreach(var kvp in EliteFour)
             {
                 var member = kvp.Value;
                 if (member.IsValid)
                 {
-                    member.ThemeData = GetTrainerThemeData(member.FirstBattle, dataT);
+                    member.ThemeData = GetTrainerThemeData(member.FirstBattle, dataT, e4Theming);
                 }
             }
         }

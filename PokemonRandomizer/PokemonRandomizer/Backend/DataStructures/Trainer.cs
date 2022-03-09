@@ -32,6 +32,7 @@ namespace PokemonRandomizer.Backend.DataStructures
             SpecialBoss, // Post-game steven in emerald, Red, etc
         }
 
+        public static int AverageLevelComparer(Trainer t1, Trainer t2) => t1.AvgLvl.CompareTo(t2.AvgLvl);
         public bool Invalid => string.IsNullOrWhiteSpace(name) || name == nullName;
 
         public const string nullName = "??????";
@@ -40,7 +41,6 @@ namespace PokemonRandomizer.Backend.DataStructures
         public List<string> classNames;
         public string Class => trainerClass < classNames.Count ? classNames[trainerClass] : nullName;
         public double AvgLvl => pokemon.Length > 0 ? pokemon.Average((p) => p.level) : 0;
-        public bool IsGymLeader => TrainerCategory == Category.GymLeader;
 
         public Category TrainerCategory { get; set; }
         public TrainerThemeData ThemeData { get; set; }

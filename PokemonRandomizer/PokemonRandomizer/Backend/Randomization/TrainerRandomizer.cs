@@ -85,7 +85,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 Randomize(allBattles[0], pokemonSet, settings);
             }
             var reoccuringBattles = new List<Trainer>(allBattles);
-            reoccuringBattles.Sort((a, b) => a.AvgLvl.CompareTo(b.AvgLvl));
+            reoccuringBattles.Sort(Trainer.AverageLevelComparer);
             var firstBattle = reoccuringBattles[0];
             reoccuringBattles.RemoveAt(0);
             Randomize(firstBattle, pokemonSet, settings, false);

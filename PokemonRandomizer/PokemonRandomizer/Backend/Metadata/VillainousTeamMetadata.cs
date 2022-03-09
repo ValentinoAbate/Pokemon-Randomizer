@@ -43,7 +43,15 @@ namespace PokemonRandomizer.Backend.Metadata
 
         public override string ToString()
         {
-            return !IsValid ? "Invalid" : $"{ThemeData})";
+            if(!IsValid)
+            {
+                return "Invalid";
+            }
+            if(TeamGrunts.Count > 0)
+            {
+                return $"{TeamGrunts[0].Class.ToUpper()} ({ThemeData})";
+            }
+            return $"{TeamLeaders[0].name}'s Team ({ThemeData})";
         }
     }
 }

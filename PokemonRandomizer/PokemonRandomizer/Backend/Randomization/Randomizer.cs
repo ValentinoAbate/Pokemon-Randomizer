@@ -532,7 +532,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 fossilSet = fossilSet,
             };
             // Initialize gym metadata
-            var gymMetadataDict = new Dictionary<string, GymMetadata>(9); // 8 gyms + one temp space for invalid metadata
+            var gymMetadataDict = new Dictionary<string, GymMetadata>(16); // 8 gyms + extra room for invalid gyms
             // Randomize Maps (currently just iterate though the maps, but may want to construct and traverse a graph later)
             foreach (var map in data.Maps)
             {
@@ -628,6 +628,7 @@ namespace PokemonRandomizer.Backend.Randomization
             {
                 var gym = kvp.Value;
                 gym.InitializeCategory();
+                gym.Leaders.Sort(Trainer.AverageLevelComparer);
             }
 
             // Construct trainer by name map and separate rival + catching tut trainer battles
@@ -715,19 +716,21 @@ namespace PokemonRandomizer.Backend.Randomization
             }
 
             // Trainer orgs: initialize theme data
-            eliteFourMetadata.InitializeThemeData(data);
+            eliteFourMetadata.InitializeThemeData(data, settings);
             foreach (var kvp in gymMetadataDict)
             {
                 var gym = kvp.Value;
-                gym.InitializeThemeData(data);
+                gym.InitializeThemeData(data, settings);
             }
 
             #endregion
 
             #region Trainer Organization Randomization
 
-            trainerOrgRand.RandomizeGymsAndEliteFour(gymMetadataDict.Values, eliteFourMetadata, types, settings);
-            trainerOrgRand.RandomizeVillainousTeams(data.VillainousTeamMetadata, types, settings);
+            var gymsSorted = new List<GymMetadata>(gymMetadataDict.Values);
+            gymsSorted.Sort((g1, g2) => Trainer.AverageLevelComparer(g1.Leaders[0], g2.Leaders[0]));
+            trainerOrgRand.RandomizeGymsAndEliteFour(gymsSorted, eliteFourMetadata, types, settings, data.RandomizationResults);
+            trainerOrgRand.RandomizeVillainousTeams(data.VillainousTeamMetadata, types, settings, data.RandomizationResults);
 
             foreach (var kvp in gymMetadataDict)
             {
@@ -750,7 +753,7 @@ namespace PokemonRandomizer.Backend.Randomization
             foreach (var kvp in normalTrainersByName)
             {
                 var battles = new List<Trainer>(kvp.Value);
-                battles.Sort((a, b) => a.AvgLvl.CompareTo(b.AvgLvl));
+                battles.Sort(Trainer.AverageLevelComparer);
                 if (battles.Count <= 0)
                     continue;
                 var firstBattle = battles[0];
@@ -775,7 +778,7 @@ namespace PokemonRandomizer.Backend.Randomization
             foreach (var kvp in rivalTrainers)
             {
                 var allBattles = kvp.Value;
-                allBattles.Sort((a, b) => a.AvgLvl.CompareTo(b.AvgLvl));
+                allBattles.Sort(Trainer.AverageLevelComparer);
                 // Split the rival battles into their three different options
                 var starters = new Pokemon[] { allBattles[0].pokemon[0].species, allBattles[1].pokemon[0].species, allBattles[2].pokemon[0].species };
                 var rivalBattles = starters.Select(s => allBattles.Where(b => b.pokemon.Any(p => evoUtils.RelatedToOrSelf(p.species, s))).ToList()).ToArray();
@@ -822,7 +825,7 @@ namespace PokemonRandomizer.Backend.Randomization
                     data.CatchingTutPokemon = pokeRand.RandomPokemon(possibleCatchingTutPokemon, data.CatchingTutPokemon, catchingTutSettings, 5);
                 }
                 var wallyBattles = new List<Trainer>(catchingTutorialTrainers);
-                wallyBattles.Sort((a, b) => a.AvgLvl.CompareTo(b.AvgLvl));
+                wallyBattles.Sort(Trainer.AverageLevelComparer);
                 var firstBattle = wallyBattles[0];
                 wallyBattles.RemoveAt(0);
                 // Set Wally's first pokemon to the catching tut pokemon
