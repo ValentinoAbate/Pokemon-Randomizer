@@ -14,7 +14,6 @@ namespace PokemonRandomizer.UI.Models
 
         // Pokemon Settings
         public Box<bool> RandomizePokemon { get; set; } = new Box<bool>(false);
-        public Box<double> PokemonRandChance { get; set; } = new Box<double>(1);
         public Box<bool> TypeTheming { get; set; } = new Box<bool>(true);
         public Box<PokemonPcgStrategy> PokemonStrategy { get; set; } = new Box<PokemonPcgStrategy>(PokemonPcgStrategy.KeepParty);
         public Box<bool> BanLegendaries { get; set; } = new Box<bool>(true); 
@@ -25,7 +24,6 @@ namespace PokemonRandomizer.UI.Models
         public Box<double> PokemonNoise { get; set; } = new Box<double>(0.003);
         // Battle Type Settings
         public Box<bool> RandomizeBattleType { get; set; } = new Box<bool>(false);
-        public Box<double> BattleTypeRandChance { get; set; } = new Box<double>(1);
         public Box<BattleTypePcgStrategy> BattleTypeStrategy { get; set; } = new Box<BattleTypePcgStrategy>(BattleTypePcgStrategy.KeepSameType);
         public Box<double> DoubleBattleChance { get; set; } = new Box<double>(1);
         // Difficulty

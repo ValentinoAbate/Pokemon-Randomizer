@@ -100,7 +100,7 @@ namespace PokemonRandomizer.Backend.Randomization
             ApplyLevelScaling(trainer, settings);
             // Set item stock (if applicable)
             // Set Battle Type
-            if (rand.RollSuccess(settings.BattleTypeRandChance))
+            if (settings.RandomizeBattleType)
             {
                 trainer.isDoubleBattle = rand.RollSuccess(settings.DoubleBattleChance);
             }
@@ -113,7 +113,7 @@ namespace PokemonRandomizer.Backend.Randomization
             // Set AI flags
             ApplyAISettings(trainer, settings);
             // Set pokemon
-            if (rand.RollSuccess(settings.PokemonRandChance))
+            if (settings.RandomizePokemon)
             {
                 RandomizeTrainerPokemon(trainer, pokemonSet, CreatePokemonSettings(trainer, settings));
             }
@@ -139,21 +139,21 @@ namespace PokemonRandomizer.Backend.Randomization
             }
 
             // Battle Type
-            if (settings.BattleTypeStrategy == TrainerSettings.BattleTypePcgStrategy.None)
+            if (settings.RandomizeBattleType)
             {
-                foreach (var battle in battles)
+                if (settings.BattleTypeStrategy == TrainerSettings.BattleTypePcgStrategy.None)
                 {
-                    if (rand.RollSuccess(settings.BattleTypeRandChance))
+                    foreach (var battle in battles)
                     {
                         battle.isDoubleBattle = rand.RollSuccess(settings.DoubleBattleChance);
                     }
                 }
-            }
-            else if (settings.BattleTypeStrategy == TrainerSettings.BattleTypePcgStrategy.KeepSameType)
-            {
-                foreach (var battle in battles)
+                else if (settings.BattleTypeStrategy == TrainerSettings.BattleTypePcgStrategy.KeepSameType)
                 {
-                    battle.isDoubleBattle = firstBattle.isDoubleBattle;
+                    foreach (var battle in battles)
+                    {
+                        battle.isDoubleBattle = firstBattle.isDoubleBattle;
+                    }
                 }
             }
             // Ensure Battle Type Safety
@@ -174,52 +174,55 @@ namespace PokemonRandomizer.Backend.Randomization
                 ApplyLevelScaling(battle, settings);
             }
             // Pokemon
-            if (settings.PokemonStrategy == TrainerSettings.PokemonPcgStrategy.None)
+            if (settings.RandomizePokemon)
             {
-                foreach (var battle in battles)
+                if (settings.PokemonStrategy == TrainerSettings.PokemonPcgStrategy.None)
                 {
-                    RandomizeTrainerPokemon(battle, pokemonSet, CreatePokemonSettings(battle, settings));
+                    foreach (var battle in battles)
+                    {
+                        RandomizeTrainerPokemon(battle, pokemonSet, CreatePokemonSettings(battle, settings));
+                    }
                 }
-            }
-            else if (settings.PokemonStrategy == TrainerSettings.PokemonPcgStrategy.KeepAce)
-            {
-                var lastBattle = firstBattle;
-                foreach (var battle in battles)
+                else if (settings.PokemonStrategy == TrainerSettings.PokemonPcgStrategy.KeepAce)
                 {
-                    var pkmnSettings = CreatePokemonSettings(battle, settings);
-                    RandomizeTrainerPokemon(battle, pokemonSet, pkmnSettings);
-                    // Migrate Ace pokemon from the last battle
-                    var currAce = battle.pokemon[^1];
-                    var lastAce = lastBattle.pokemon[^1];
-                    currAce.species = evoUtils.MaxEvolution(lastAce.species, currAce.level, pkmnSettings.RestrictIllegalEvolutions);
-                    if (currAce.HasSpecialMoves)
+                    var lastBattle = firstBattle;
+                    foreach (var battle in battles)
                     {
-                        currAce.moves = MovesetGenerator.SmartMoveSet(rand, dataT.GetBaseStats(currAce.species), currAce.level, dataT);
-                    }
-                    lastBattle = battle;
-                };
-            }
-            else if (settings.PokemonStrategy == TrainerSettings.PokemonPcgStrategy.KeepParty)
-            {
-                var lastBattle = firstBattle;
-                foreach (var battle in battles)
-                {
-                    var pkmnSettings = CreatePokemonSettings(battle, settings);
-                    RandomizeTrainerPokemon(battle, pokemonSet, pkmnSettings);
-                    int lastBattleSize = lastBattle.pokemon.Length;
-                    int battleSize = battle.pokemon.Length;
-                    // Migrate pokemon from the last battle
-                    for (int i = 0; i < lastBattleSize && i < battleSize; ++i)
-                    {
-                        var currPokemon = battle.pokemon[battleSize - (i + 1)];
-                        var lastPokemon = lastBattle.pokemon[lastBattleSize - (i + 1)];
-                        currPokemon.species = evoUtils.MaxEvolution(lastPokemon.species, currPokemon.level, pkmnSettings.RestrictIllegalEvolutions);
-                        if (currPokemon.HasSpecialMoves)
+                        var pkmnSettings = CreatePokemonSettings(battle, settings);
+                        RandomizeTrainerPokemon(battle, pokemonSet, pkmnSettings);
+                        // Migrate Ace pokemon from the last battle
+                        var currAce = battle.pokemon[^1];
+                        var lastAce = lastBattle.pokemon[^1];
+                        currAce.species = evoUtils.MaxEvolution(lastAce.species, currAce.level, pkmnSettings.RestrictIllegalEvolutions);
+                        if (currAce.HasSpecialMoves)
                         {
-                            currPokemon.moves = MovesetGenerator.SmartMoveSet(rand, dataT.GetBaseStats(currPokemon.species), currPokemon.level, dataT);
+                            currAce.moves = MovesetGenerator.SmartMoveSet(rand, dataT.GetBaseStats(currAce.species), currAce.level, dataT);
                         }
+                        lastBattle = battle;
+                    };
+                }
+                else if (settings.PokemonStrategy == TrainerSettings.PokemonPcgStrategy.KeepParty)
+                {
+                    var lastBattle = firstBattle;
+                    foreach (var battle in battles)
+                    {
+                        var pkmnSettings = CreatePokemonSettings(battle, settings);
+                        RandomizeTrainerPokemon(battle, pokemonSet, pkmnSettings);
+                        int lastBattleSize = lastBattle.pokemon.Length;
+                        int battleSize = battle.pokemon.Length;
+                        // Migrate pokemon from the last battle
+                        for (int i = 0; i < lastBattleSize && i < battleSize; ++i)
+                        {
+                            var currPokemon = battle.pokemon[battleSize - (i + 1)];
+                            var lastPokemon = lastBattle.pokemon[lastBattleSize - (i + 1)];
+                            currPokemon.species = evoUtils.MaxEvolution(lastPokemon.species, currPokemon.level, pkmnSettings.RestrictIllegalEvolutions);
+                            if (currPokemon.HasSpecialMoves)
+                            {
+                                currPokemon.moves = MovesetGenerator.SmartMoveSet(rand, dataT.GetBaseStats(currPokemon.species), currPokemon.level, dataT);
+                            }
+                        }
+                        lastBattle = battle;
                     }
-                    lastBattle = battle;
                 }
             }
         }

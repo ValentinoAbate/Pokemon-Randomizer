@@ -163,7 +163,7 @@ namespace PokemonRandomizer.AppSettings
         #region Trainers
 
         // Trainer Pokemon Settings
-        public override double TrainerPokemonRandChance => 1;
+        public override bool RandomizeTrainerPokemon => true;
         public override bool TrainerTypeTheming => true;
         protected override bool BanLegendariesTrainer => true;
         protected override bool BanLegendariesMiniboss => true;
@@ -174,7 +174,7 @@ namespace PokemonRandomizer.AppSettings
         public override TrainerSettings.PokemonPcgStrategy RecurringTrainerPokemonStrategy => TrainerSettings.PokemonPcgStrategy.KeepParty;
 
         // Battle Type Settings
-        public override double BattleTypeRandChance => 1;
+        public override bool RandomizeTrainerBattleType => true;
         public override TrainerSettings.BattleTypePcgStrategy RecurringTrainerBattleTypeStrategy => TrainerSettings.BattleTypePcgStrategy.KeepSameType;
         public override double DoubleBattleChance => 1;
 

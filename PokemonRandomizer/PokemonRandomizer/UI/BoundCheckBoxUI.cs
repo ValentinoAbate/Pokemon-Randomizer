@@ -51,5 +51,13 @@ namespace PokemonRandomizer.UI
             bindElement.SetVisibility(IsChecked ?? false);
             return bindElement;
         }
+
+        public T BindEnabled<T>(T bindElement) where T : UIElement
+        {
+            Checked += (_, _2) => bindElement.IsEnabled = true;
+            Unchecked += (_, _2) => bindElement.IsEnabled = false;
+            bindElement.IsEnabled = IsChecked ?? false;
+            return bindElement;
+        }
     }
 }

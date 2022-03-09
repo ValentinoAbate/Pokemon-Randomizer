@@ -132,12 +132,12 @@ namespace PokemonRandomizer
 
         public TrainerSettings BasicTrainerSettings => new()
         {
-            PokemonRandChance = TrainerPokemonRandChance,
+            RandomizePokemon = RandomizeTrainerPokemon,
             PokemonStrategy = RecurringTrainerPokemonStrategy,
             RestrictIllegalEvolutions = TrainerRestrictIllegalEvolutions,
             ForceHighestLegalEvolution = TrainerForceHighestLegalEvolution,
             PokemonNoise = (float)TrainerPokemonNoise,
-            BattleTypeRandChance = BattleTypeRandChance,
+            RandomizeBattleType = RandomizeTrainerBattleType,
             BattleTypeStrategy = RecurringTrainerBattleTypeStrategy,
             DoubleBattleChance = DoubleBattleChance,
             LevelMultiplier = TrainerPokemonLevelMultiplier,
@@ -188,7 +188,7 @@ namespace PokemonRandomizer
         }
 
         // Trainer Pokemon Settings
-        public abstract double TrainerPokemonRandChance { get; }
+        public abstract bool RandomizeTrainerPokemon { get; }
         public abstract bool TrainerTypeTheming { get; }
         protected abstract bool BanLegendariesTrainer { get; }
         protected abstract bool BanLegendariesMiniboss { get; }
@@ -199,7 +199,7 @@ namespace PokemonRandomizer
         public abstract TrainerSettings.PokemonPcgStrategy RecurringTrainerPokemonStrategy { get; }
 
         // Battle Type Settings
-        public abstract double BattleTypeRandChance { get; }
+        public abstract bool RandomizeTrainerBattleType { get; }
         public abstract TrainerSettings.BattleTypePcgStrategy RecurringTrainerBattleTypeStrategy { get; }
         public abstract double DoubleBattleChance { get; }
 
@@ -474,12 +474,12 @@ namespace PokemonRandomizer
                 KeepSameType,
             }
 
-            public double PokemonRandChance { get; set; } = 1;
+            public bool RandomizePokemon { get; set; }
             public PokemonPcgStrategy PokemonStrategy { get; set; } = PokemonPcgStrategy.KeepParty;
             public bool RestrictIllegalEvolutions { get; set; } = true;
             public bool ForceHighestLegalEvolution { get; set; } = false;
             public float PokemonNoise { get; set; } = 0;
-            public double BattleTypeRandChance { get; set; } = 1;
+            public bool RandomizeBattleType { get; set; }
             public BattleTypePcgStrategy BattleTypeStrategy { get; set; } = BattleTypePcgStrategy.KeepSameType;
             public double DoubleBattleChance { get; set; } = 1;
 

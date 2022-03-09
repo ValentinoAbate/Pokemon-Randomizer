@@ -34,7 +34,7 @@ namespace PokemonRandomizer.UI.Views
         {
             var stack = CreateMainStack();
             stack.Header("Trainer Organization Theming");
-            stack.Description("These settings control how type theming is applied to different trainer organizations such as Gyms, the Elite Four, and Villainous Teams like Team Rocket!", "These settings only apply for trainers that have their pokemon randomized (controlled by the \"Trainer Pokemon\" settings in the \"Trainers\" tab).");
+            stack.Description("These settings control how type theming is applied to different trainer organizations such as Gyms, the Elite Four, and Villainous Teams like Team Rocket!", "These settings only apply if the \"Randomize Pokemon\" setting in the \"Trainers\" tab is enabled.");
             stack.Header("Gyms and Elite Four");
             stack.Add(new EnumComboBoxUI<TrainerOrgTypeTheme>("Gym Type Theming", TypeThemeDropdown, model.GymTypeTheming));
             stack.Add(new EnumComboBoxUI<TrainerOrgTypeTheme>("Elite Four Type Theming", TypeThemeDropdown, model.EliteFourTheming));

@@ -727,23 +727,27 @@ namespace PokemonRandomizer.Backend.Randomization
 
             #region Trainer Organization Randomization
 
-            var gymsSorted = new List<GymMetadata>(gymMetadataDict.Values);
-            gymsSorted.Sort((g1, g2) => Trainer.AverageLevelComparer(g1.Leaders[0], g2.Leaders[0]));
-            trainerOrgRand.RandomizeGymsAndEliteFour(gymsSorted, eliteFourMetadata, types, settings, data.RandomizationResults);
-            trainerOrgRand.RandomizeVillainousTeams(data.VillainousTeamMetadata, types, settings, data.RandomizationResults);
-
-            foreach (var kvp in gymMetadataDict)
+            // Only apply if trainer pokemon are randomized
+            if (settings.RandomizeTrainerPokemon)
             {
-                var gym = kvp.Value;
-                gym.ApplyTrainerThemeData(settings);
-            }
+                var gymsSorted = new List<GymMetadata>(gymMetadataDict.Values);
+                gymsSorted.Sort((g1, g2) => Trainer.AverageLevelComparer(g1.Leaders[0], g2.Leaders[0]));
+                trainerOrgRand.RandomizeGymsAndEliteFour(gymsSorted, eliteFourMetadata, types, settings, data.RandomizationResults);
+                trainerOrgRand.RandomizeVillainousTeams(data.VillainousTeamMetadata, types, settings, data.RandomizationResults);
 
-            foreach (var team in data.VillainousTeamMetadata)
-            {
-                team.ApplyTrainerThemeData(settings);
-            }
+                foreach (var kvp in gymMetadataDict)
+                {
+                    var gym = kvp.Value;
+                    gym.ApplyTrainerThemeData(settings);
+                }
 
-            eliteFourMetadata.ApplyTrainerThemeData(settings);
+                foreach (var team in data.VillainousTeamMetadata)
+                {
+                    team.ApplyTrainerThemeData(settings);
+                }
+
+                eliteFourMetadata.ApplyTrainerThemeData(settings);
+            }
 
             #endregion
 

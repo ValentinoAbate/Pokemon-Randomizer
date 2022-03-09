@@ -42,7 +42,7 @@ namespace PokemonRandomizer.UI.Views
             var stack = CreateMainStack();
             // Pokemon Randomization
             stack.Header("Trainer Pokemon");
-            var pokemonRand = stack.Add(new RandomChanceUI("Randomize Pokemon", model.RandomizePokemon, model.PokemonRandChance));
+            var pokemonRand = stack.Add(new BoundCheckBoxUI(model.RandomizePokemon, "Randomize Pokemon"));
             var pokemonStack = stack.Add(pokemonRand.BindEnabled(CreateStack()));
             pokemonStack.Add(new BoundCheckBoxUI(model.TypeTheming, "Intelligent Type Theming") { ToolTip = typeThemingTooltip });
             var pokemonDetailsStack = pokemonStack.Add(new StackPanel() { Orientation = Orientation.Horizontal });
@@ -57,7 +57,7 @@ namespace PokemonRandomizer.UI.Views
             pokemonStack.Add(new EnumComboBoxUI<PokemonPcgStrategy>("Recurring Trainer Pokemon Randomization Strategy", PokemonStrategyDropdown, model.PokemonStrategy));
             // Battle Type Randomization
             stack.Header("Battle Type");
-            var battleTypeRand = stack.Add(new RandomChanceUI("Randomize Battle Type", model.RandomizeBattleType, model.BattleTypeRandChance));
+            var battleTypeRand = stack.Add(new BoundCheckBoxUI(model.RandomizeBattleType, "Randomize Battle Type"));
             var typeStack = stack.Add(battleTypeRand.BindEnabled(CreateStack()));
             typeStack.Add(new BoundSliderUI("Double Battle Chance", model.DoubleBattleChance) { ToolTip = "The chance that the battle type will be a double battle when randomized" });
             typeStack.Add(new EnumComboBoxUI<BattleTypePcgStrategy>("Recurring Trainer Battle Type Strategy", BattleTypeStrategyDropdown, model.BattleTypeStrategy));

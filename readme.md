@@ -3,8 +3,6 @@
 Procedural Pokemon Randomizer is a Pokemon randomizer I'm creating as a fun side project!
 
 - This Randomizer focuses on using procedural generation and weighted random choices to create randomized ROMs that feel more natural
-- It also allows you to partially randomize most things. Want to randomize 5% of trainer's pokemon for an experience that is mostly the same but with some surprises? You got it.
-
 - Some of my favorite new features are:
 	- Type-Variant Pokemon: Random type-variants of pokemon with corresponding color palettes, movesets, base stats, and other modifications!
 	- Intelligent trainer pokemon choices: Challenge runs are more fun when you can plan for a fisherman to usually have WATER pokemon!
