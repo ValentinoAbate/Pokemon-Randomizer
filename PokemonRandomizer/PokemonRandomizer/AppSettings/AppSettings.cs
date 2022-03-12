@@ -287,6 +287,7 @@ namespace PokemonRandomizer.AppSettings
         public override TrainerOrgTypeTheme TeamTypeTheming => trainerOrgData.TeamTypeTheming;
         public override bool GruntTheming => trainerOrgData.GruntTheming;
         public override bool KeepTeamSubtypes => trainerOrgData.KeepTeamSubtypes;
+        protected override Trainer.Category PriorityThemeCategory => trainerOrgData.PriorityCategory;
         public override TrainerOrgTypeTheme SmallOrgTypeTheming => trainerOrgData.SmallOrgTypeTheming;
 
         #endregion

@@ -1,5 +1,6 @@
 ﻿using PokemonRandomizer.Backend.DataStructures;
 using PokemonRandomizer.UI.Models;
+using System.Collections.Generic;
 using System.Windows.Controls;
 using System.Windows.Data;
 using static PokemonRandomizer.Settings;
@@ -24,6 +25,12 @@ namespace PokemonRandomizer.UI.Views
             new ComboBoxItem() { Content="Off" },
             new ComboBoxItem() { Content="Intelligent", ToolTip = intelligentTypeThemeTooltip },
             new ComboBoxItem() { Content="Random", ToolTip = randomTypeThemeTooltip },
+        };
+
+        private static CompositeCollection ThemePriorityDropdown => new CompositeCollection()
+        {
+            new ComboBoxItem() { Content="Gym Leaders", ToolTip="If a trainer is a gym leader and a team leader (Giovanni, etc.), they will use their gym's theme" },
+            new ComboBoxItem() { Content="Villanous Team Leaders", ToolTip="If a trainer is a gym leader and a team leader (Giovanni, etc.), they will use their team's theme" },
         };
 
         private const string teamSubtypesTooltip = "When randomizing Team Type Themes, only randomize the primary Type Theme(s). The Type Themes are:" +
@@ -51,6 +58,7 @@ namespace PokemonRandomizer.UI.Views
             stack.Add(new EnumComboBoxUI<TrainerOrgTypeTheme>("Type Theming", TypeThemeDropdown, model.TeamTypeTheming));
             stack.Add(new BoundCheckBoxUI(model.GruntTheming, "Apply Team Theme To Grunts") { ToolTip = gruntThemeTooltip });
             stack.Add(new BoundCheckBoxUI(model.KeepTeamSubtypes, "Keep Team Subtypes") { ToolTip = teamSubtypesTooltip });
+            stack.Add(new EnumComboBoxUI<Trainer.Category>("Priority Theme Category", ThemePriorityDropdown, model.PriorityCategory, new List<Trainer.Category>() { Trainer.Category.GymLeader, Trainer.Category.TeamLeader } ));
             //stack.Header("Miscellaneous Organizations", "Miscellanous Organizations include: The Winstrates, Nugget Bridge, The Fighting Dojo, The Soda Pop House");
             //stack.Add(new EnumComboBoxUI<TrainerOrgTypeTheme>("Type Theming", TypeThemeDropdown, model.SmallOrgTypeTheming));
         }

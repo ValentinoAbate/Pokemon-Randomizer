@@ -756,18 +756,7 @@ namespace PokemonRandomizer.Backend.Randomization
             // Randomize trainers
             foreach (var kvp in normalTrainersByName)
             {
-                var battles = new List<Trainer>(kvp.Value);
-                battles.Sort(Trainer.AverageLevelComparer);
-                if (battles.Count <= 0)
-                    continue;
-                var firstBattle = battles[0];
-                // Randomize the first battle
-                trainerRand.Randomize(firstBattle, pokemonSet, trainerSettings, battles.Count <= 1);
-                if (battles.Count <= 1)
-                    continue;
-                battles.RemoveAt(0);
-                // Procedurally generate the rest of the battles
-                trainerRand.RandomizeReoccurring(firstBattle, battles, pokemonSet, trainerSettings);
+                trainerRand.RandomizeAll(kvp.Value, pokemonSet, trainerSettings);
             }
 
             foreach(var trainer in gruntTrainers)

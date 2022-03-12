@@ -1,4 +1,5 @@
-﻿using PokemonRandomizer.UI.Utilities;
+﻿using PokemonRandomizer.Backend.DataStructures;
+using PokemonRandomizer.UI.Utilities;
 using static PokemonRandomizer.Settings;
 
 namespace PokemonRandomizer.UI.Models
@@ -12,6 +13,7 @@ namespace PokemonRandomizer.UI.Models
         public Box<TrainerOrgTypeTheme> TeamTypeTheming { get; set; } = new Box<TrainerOrgTypeTheme>(TrainerOrgTypeTheme.Default);
         public Box<bool> GruntTheming { get; set; } = new Box<bool>(true);
         public Box<bool> KeepTeamSubtypes { get; set; } = new Box<bool>(true);
+        public Box<Trainer.Category> PriorityCategory { get; set; } = new Box<Trainer.Category>(Trainer.Category.GymLeader);
         public Box<TrainerOrgTypeTheme> SmallOrgTypeTheming { get; set; } = new Box<TrainerOrgTypeTheme>(TrainerOrgTypeTheme.Default);
     }
 }

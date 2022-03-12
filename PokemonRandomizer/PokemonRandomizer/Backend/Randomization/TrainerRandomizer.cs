@@ -6,6 +6,7 @@ namespace PokemonRandomizer.Backend.Randomization
 {
     using DataStructures;
     using EnumTypes;
+    using PokemonRandomizer.Backend.Metadata;
     using static Settings;
     public class TrainerRandomizer
     {
@@ -72,23 +73,55 @@ namespace PokemonRandomizer.Backend.Randomization
             return metrics;
         }
 
+        private void PropogateThemeData(List<Trainer> allBattles, Trainer.Category priorityCategory)
+        {
+            TrainerThemeData theme = null;
+            // Calculate theme data
+            foreach (var battle in allBattles)
+            {
+                if (battle.ThemeData == null || theme == battle.ThemeData)
+                {
+                    continue;
+                }
+                if (theme == null || battle.TrainerCategory == priorityCategory)
+                {
+                    theme = battle.ThemeData;
+                }
+            }
+            if (theme == null)
+                return;
+            // Apply theme data
+            foreach (var battle in allBattles)
+            {
+                battle.ThemeData = theme;
+            }
+        }
 
 
         public void RandomizeAll(List<Trainer> allBattles, IEnumerable<Pokemon> pokemonSet, TrainerSettings settings)
         {
+            // No battles, return
             if(allBattles.Count <= 0)
             {
                 return;
             }
+            // Only one battle (non-recurring trainer)
             if(allBattles.Count == 1)
             {
                 Randomize(allBattles[0], pokemonSet, settings);
+                return;
             }
+            // Recurring trainer
+            // Sort battles
             var reoccuringBattles = new List<Trainer>(allBattles);
             reoccuringBattles.Sort(Trainer.AverageLevelComparer);
+            // Choose theme data (if applicable)
+            PropogateThemeData(reoccuringBattles, settings.PriorityThemeCategory);
+            // Randomize the first battle of the sequence
             var firstBattle = reoccuringBattles[0];
             reoccuringBattles.RemoveAt(0);
             Randomize(firstBattle, pokemonSet, settings, false);
+            // Generate the recurring sequence
             RandomizeReoccurring(firstBattle, reoccuringBattles, pokemonSet, settings);
         }
 
@@ -126,18 +159,6 @@ namespace PokemonRandomizer.Backend.Randomization
         /// </summary>
         public void RandomizeReoccurring(Trainer firstBattle, List<Trainer> battles, IEnumerable<Pokemon> pokemonSet, TrainerSettings settings)
         {
-            // Propogate gym metadata if the first battle has gym metadata
-            if (firstBattle.ThemeData != null)
-            {
-                foreach(var battle in battles)
-                {
-                    if (battle.ThemeData == null)
-                    {
-                        battle.ThemeData = firstBattle.ThemeData;
-                    }
-                }
-            }
-
             // Battle Type
             if (settings.RandomizeBattleType)
             {

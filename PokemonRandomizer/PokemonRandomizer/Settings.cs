@@ -140,6 +140,7 @@ namespace PokemonRandomizer
             RandomizeBattleType = RandomizeTrainerBattleType,
             BattleTypeStrategy = RecurringTrainerBattleTypeStrategy,
             DoubleBattleChance = DoubleBattleChance,
+            PriorityThemeCategory = PriorityThemeCategory,
             LevelMultiplier = TrainerPokemonLevelMultiplier,
             MinIV = MathUtils.MapToByte(31, TrainerPokemonMinIV),
             UseSmartAI = UseSmartAI,
@@ -223,6 +224,7 @@ namespace PokemonRandomizer
         public abstract TrainerOrgTypeTheme TeamTypeTheming { get; }
         public abstract bool GruntTheming { get; }
         public abstract bool KeepTeamSubtypes { get; }
+        protected abstract Trainer.Category PriorityThemeCategory { get; }
         public abstract TrainerOrgTypeTheme SmallOrgTypeTheming { get; }
 
         // Misc
@@ -479,6 +481,7 @@ namespace PokemonRandomizer
             public bool RestrictIllegalEvolutions { get; set; } = true;
             public bool ForceHighestLegalEvolution { get; set; } = false;
             public float PokemonNoise { get; set; } = 0;
+            public Trainer.Category PriorityThemeCategory { get; set; } = Trainer.Category.GymLeader;
             public bool RandomizeBattleType { get; set; }
             public BattleTypePcgStrategy BattleTypeStrategy { get; set; } = BattleTypePcgStrategy.KeepSameType;
             public double DoubleBattleChance { get; set; } = 1;
