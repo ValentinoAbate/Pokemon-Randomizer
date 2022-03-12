@@ -37,7 +37,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 if (settings.ApplyTheming(Trainer.Category.EliteFour) && !IsRandom(settings.EliteFourTheming))
                 {
                     originalThemes.AddRange(eliteFour.EliteFour.Select(kvp => kvp.Value.ThemeData));
-                    if(settings.ChampionTheming == Settings.TrainerOrgTypeTheme.Default)
+                    if(settings.ChampionTheming == Settings.TrainerOrgTypeTheme.Default && eliteFour.Champion.IsValid)
                     {
                         originalThemes.Add(eliteFour.Champion.ThemeData);
                     }
