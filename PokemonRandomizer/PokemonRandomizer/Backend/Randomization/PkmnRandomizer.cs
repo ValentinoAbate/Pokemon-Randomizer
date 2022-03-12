@@ -58,7 +58,7 @@ namespace PokemonRandomizer.Backend.Randomization
             var choices = settings.RestrictIllegalEvolutions ? all.Where(p => evoUtils.IsPokemonValidLevel(dataT.GetBaseStats(p), level)) : all;
             if (settings.ForceHighestLegalEvolution)
             {
-                choices = choices.Where(evoUtils.IsMaxEvolution);
+                choices = choices.Where(p => evoUtils.IsMaxEvolution(p, level));
             }
             var newPokemon = RandomPokemonUnsafe(choices, data, settings);
             // If we got a null result, propegate that
@@ -68,9 +68,15 @@ namespace PokemonRandomizer.Backend.Randomization
         }
         private Pokemon RandomPokemonUnsafe(IEnumerable<Pokemon> all, IEnumerable<Metric<Pokemon>> data, PokemonSettings settings)
         {
+            if (!all.Any())
+            {
+                return Pokemon.None;
+            }
             // If we roll noise, choose a completely random pick
             if (rand.RollSuccess(settings.Noise))
+            {
                 return rand.Choice(all);
+            }
             // If there is no metric data
             if (!data.Any())
             {
