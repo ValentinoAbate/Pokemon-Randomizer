@@ -36,6 +36,8 @@ namespace PokemonRandomizer.UI.Views
             "\nSpecial trainer classes like Rivals and Ace/Cool Trainers will have no type theme";
 
         private const string ignoreRestrictionsTooltip = "The chance that all restrictions (Evolution Restrictions, Legendary Ban, Type Theming, etc.) will be ignored for any given pokemon";
+        private const string minibossTooltip = "Minibosses include Ace/CoolTrainers, Team Admins, and Rivals";
+        private const string bossTooltip = "Bosses include Team Leaders, Gym Leaders, the Elite Four, Champions, and Special bosses like Steven (Emerald) and Red (GS/HGSS)";
 
         public TrainerDataView(TrainerDataModel model)
         {
@@ -44,16 +46,25 @@ namespace PokemonRandomizer.UI.Views
             stack.Header("Trainer Pokemon");
             var pokemonRand = stack.Add(new BoundCheckBoxUI(model.RandomizePokemon, "Randomize Pokemon"));
             var pokemonStack = stack.Add(pokemonRand.BindEnabled(CreateStack()));
-            pokemonStack.Add(new BoundCheckBoxUI(model.TypeTheming, "Intelligent Type Theming") { ToolTip = typeThemingTooltip });
+            pokemonStack.Add(new BoundCheckBoxUI(model.TypeTheming, "Type Theming (Intelligent)") { ToolTip = typeThemingTooltip });
             var pokemonDetailsStack = pokemonStack.Add(new StackPanel() { Orientation = Orientation.Horizontal });
             pokemonDetailsStack.Add(new BoundCheckBoxUI(model.RestrictIllegalEvolutions, "Ban Illegal Evolutions"));
             pokemonDetailsStack.Add(new BoundCheckBoxUI(model.ForceHighestLegalEvolution, "Force Highest Legal Evolution"));
             pokemonStack.Add(new Label() { Content = "Ban Legendaries For: " });
+            // Legendary banning
             var banLegendariesStack = pokemonStack.Add(new StackPanel() { Orientation = Orientation.Horizontal });
             banLegendariesStack.Add(new BoundCheckBoxUI(model.BanLegendaries, "Normal Trainers"));
-            banLegendariesStack.Add(new BoundCheckBoxUI(model.BanLegendariesMiniboss, "Minibosses") { ToolTip = "Minibosses include Ace/CoolTrainers, Team Admins, and Rivals" });
-            banLegendariesStack.Add(new BoundCheckBoxUI(model.BanLegendariesBoss, "Bosses") { ToolTip = "Bosses include Team Leaders, Gym Leaders, the Elite Four, Champions, and Special bosses like Steven (Emerald) and Red (GS/HGSS)"});
-            pokemonStack.Add(new BoundSliderUI("Ignore Restrictions Chance", model.PokemonNoise, true, 0.01, 0, 0.33) { ToolTip = ignoreRestrictionsTooltip }); ;
+            banLegendariesStack.Add(new BoundCheckBoxUI(model.BanLegendariesMiniboss, "Minibosses") { ToolTip = minibossTooltip });
+            banLegendariesStack.Add(new BoundCheckBoxUI(model.BanLegendariesBoss, "Bosses") { ToolTip = bossTooltip});
+            pokemonStack.Add(new BoundSliderUI("Ignore Restrictions Chance", model.PokemonNoise, true, 0.01, 0, 0.33) { ToolTip = ignoreRestrictionsTooltip });
+            // Bonus pokemon
+            pokemonStack.Add(new BoundSliderUI("Bonus Pokemon", model.NumBonusPokemon, false, 1, 0, 6));
+            pokemonStack.Add(new Label() { Content = "Add Bonus Pokemon To: " });
+            var bonusPokemonStack = pokemonStack.Add(new StackPanel() { Orientation = Orientation.Horizontal });
+            bonusPokemonStack.Add(new BoundCheckBoxUI(model.BonusPokemon, "Normal Trainers"));
+            bonusPokemonStack.Add(new BoundCheckBoxUI(model.BonusPokemonMiniboss, "Minibosses") { ToolTip = minibossTooltip });
+            bonusPokemonStack.Add(new BoundCheckBoxUI(model.BonusPokemonBoss, "Bosses") { ToolTip = bossTooltip });
+            pokemonStack.Add(new BoundCheckBoxUI(model.ForceCustomMoves, "Force Custom Moves") { ToolTip = "Use custom movesets for all trainers. The moves chosen are based on the moves the pokemon or a pre-evolution can know at the level it appears at (no TMs, etc.). This setting can help pokemon that evolve from stones have usable movesets, and makes movesets less predictable" });
             pokemonStack.Add(new EnumComboBoxUI<PokemonPcgStrategy>("Recurring Trainer Pokemon Randomization Strategy", PokemonStrategyDropdown, model.PokemonStrategy));
             // Battle Type Randomization
             stack.Header("Battle Type");

@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:PokemonRandomizer"
         xmlns:converter="clr-namespace:PokemonRandomizer.Converters"
         mc:Ignorable="d"
-        Title="Procedural Pokemon Randomizer (Beta)" Height="560" Width="900">
+        Title="Procedural Pokemon Randomizer (Beta)" Height="625" Width="900">
 
     <!--Main Window Resources-->
 

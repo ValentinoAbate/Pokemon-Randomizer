@@ -17,6 +17,7 @@ namespace PokemonRandomizer.Backend.DataStructures
 
     public class Trainer
     {
+        public const int maxPokemon = 6;
         public enum Category
         {
             Trainer,
@@ -57,7 +58,11 @@ namespace PokemonRandomizer.Backend.DataStructures
         public BitArray AIFlags;
 
         public List<TrainerPokemon> Pokemon => PokemonData.Pokemon;
-        public TrainerPokemon.DataType DataType => PokemonData.DataType;
+        public TrainerPokemon.DataType DataType
+        {
+            get => PokemonData.DataType;
+            set => PokemonData.DataType = value;
+        } 
         public TrainerPokemonData PokemonData { get; private set; }
 
         public int pokemonOffset;

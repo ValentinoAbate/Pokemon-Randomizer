@@ -16,6 +16,7 @@ namespace PokemonRandomizer.Backend.Randomization
         private readonly IDataTranslator dataT;
         private readonly Func<Trainer.Category, bool> shouldBanLegendaries;
         private readonly Func<Trainer.Category, bool> shouldApplyTheming;
+        private readonly Func<Trainer.Category, int> numBonusPokemon;
 
         public TrainerRandomizer(Random rand, PkmnRandomizer pokeRand, EvolutionUtils evoUtils, IDataTranslator dataT, Settings s)
         {
@@ -25,6 +26,7 @@ namespace PokemonRandomizer.Backend.Randomization
             this.dataT = dataT;
             shouldBanLegendaries = s.BanLegendaries;
             shouldApplyTheming = s.ApplyTheming;
+            numBonusPokemon = s.NumBonusPokmon;
         }
 
         #region Trainer Randomization
@@ -97,6 +99,31 @@ namespace PokemonRandomizer.Backend.Randomization
             }
         }
 
+        private void AddBonusPokemon(Trainer trainer)
+        {
+            int bonusPokemon = numBonusPokemon(trainer.TrainerCategory);
+            if(bonusPokemon <= 0)
+            {
+                return;
+            }
+            for (int i = 0; i < bonusPokemon && trainer.Pokemon.Count <= Trainer.maxPokemon; i++)
+            {
+                trainer.Pokemon.Add(new TrainerPokemon(trainer.Pokemon[^1]));
+            }
+        }
+
+        private void ForceCustomMoves(Trainer trainer)
+        {
+            if(trainer.DataType == TrainerPokemon.DataType.Basic)
+            {
+                trainer.DataType = TrainerPokemon.DataType.SpecialMoves;
+            }
+            else if(trainer.DataType == TrainerPokemon.DataType.HeldItem)
+            {
+                trainer.DataType = TrainerPokemon.DataType.SpecialMovesAndHeldItem;
+            }
+        }
+
 
         public void RandomizeAll(List<Trainer> allBattles, IEnumerable<Pokemon> pokemonSet, TrainerSettings settings)
         {
@@ -129,7 +156,12 @@ namespace PokemonRandomizer.Backend.Randomization
         public void Randomize(Trainer trainer, IEnumerable<Pokemon> pokemonSet, TrainerSettings settings, bool safe = true)
         {
             // Set data type
+            if (settings.ForceCustomMoves)
+            {
+                ForceCustomMoves(trainer);
+            }
             // Add extra pokemon
+            AddBonusPokemon(trainer);
             // Apply level scaling
             ApplyLevelScaling(trainer, settings);
             // Set item stock (if applicable)
@@ -160,6 +192,19 @@ namespace PokemonRandomizer.Backend.Randomization
         /// </summary>
         public void RandomizeReoccurring(Trainer firstBattle, List<Trainer> battles, IEnumerable<Pokemon> pokemonSet, TrainerSettings settings)
         {
+            // Set data type
+            if (settings.ForceCustomMoves)
+            {
+                foreach(var battle in battles)
+                {
+                    ForceCustomMoves(battle);
+                }
+            }
+            // Add bonus pokemon
+            foreach (var battle in battles)
+            {
+                AddBonusPokemon(battle);
+            }
             // Battle Type
             if (settings.RandomizeBattleType)
             {

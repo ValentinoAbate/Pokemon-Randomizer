@@ -144,6 +144,7 @@ namespace PokemonRandomizer
             LevelMultiplier = TrainerPokemonLevelMultiplier,
             MinIV = MathUtils.MapToByte(31, TrainerPokemonMinIV),
             UseSmartAI = UseSmartAI,
+            ForceCustomMoves = TrainerForceCustomMovesets,
         };
 
         public bool ApplyTheming(Trainer trainer) => ApplyTheming(trainer.TrainerCategory);
@@ -175,17 +176,40 @@ namespace PokemonRandomizer
 
         public bool BanLegendaries(Trainer.Category category)
         {
-            return category switch
+            if (IsBoss(category))
             {
-                // Minibosses
-                Trainer.Category.AceTrainer or Trainer.Category.Rival or Trainer.Category.TeamAdmin 
-                or Trainer.Category.CatchingTutTrainer => BanLegendariesMiniboss,
-                // Bosses
-                Trainer.Category.TeamLeader or Trainer.Category.GymLeader or Trainer.Category.EliteFour 
-                or Trainer.Category.Champion or Trainer.Category.SpecialBoss => BanLegendariesBoss,
-                // All other trainers
-                _ => BanLegendariesTrainer,
-            };
+                return BanLegendariesBoss;
+            }
+            if (IsMiniboss(category))
+            {
+                return BanLegendariesMiniboss;
+            }
+            return BanLegendariesTrainer;
+        }
+
+        public int NumBonusPokmon(Trainer.Category category)
+        {
+            if (IsBoss(category))
+            {
+                return ApplyBonusPokemonBoss ? BonusPokemon : 0;
+            }
+            if (IsMiniboss(category))
+            {
+                return ApplyBonusPokemonTrainer ? BonusPokemon : 0;
+            }
+            return ApplyBonusPokemonTrainer ? BonusPokemon : 0;
+        }
+
+        private bool IsBoss(Trainer.Category category)
+        {
+            return category is Trainer.Category.TeamLeader or Trainer.Category.GymLeader or Trainer.Category.EliteFour
+                or Trainer.Category.Champion or Trainer.Category.SpecialBoss;
+        }
+
+        private bool IsMiniboss(Trainer.Category category)
+        {
+            return category is Trainer.Category.AceTrainer or Trainer.Category.Rival or Trainer.Category.TeamAdmin
+                or Trainer.Category.CatchingTutTrainer;
         }
 
         // Trainer Pokemon Settings
@@ -198,6 +222,11 @@ namespace PokemonRandomizer
         public abstract bool TrainerForceHighestLegalEvolution { get; }
         public abstract double TrainerPokemonNoise { get; }
         public abstract TrainerSettings.PokemonPcgStrategy RecurringTrainerPokemonStrategy { get; }
+        protected abstract bool TrainerForceCustomMovesets { get; }
+        protected abstract int BonusPokemon { get; }
+        protected abstract bool ApplyBonusPokemonTrainer { get; }
+        protected abstract bool ApplyBonusPokemonMiniboss { get; }
+        protected abstract bool ApplyBonusPokemonBoss { get; }
 
         // Battle Type Settings
         public abstract bool RandomizeTrainerBattleType { get; }
@@ -490,6 +519,7 @@ namespace PokemonRandomizer
             public double LevelMultiplier { get; set; } = 0;
             public int MinIV { get; set; } = 0;
             public bool UseSmartAI { get; set; } = true;
+            public bool ForceCustomMoves { get; set; } = true;
         }
 
         public class PokemonSettings

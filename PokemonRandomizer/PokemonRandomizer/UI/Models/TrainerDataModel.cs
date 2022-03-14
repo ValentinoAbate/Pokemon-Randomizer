@@ -30,6 +30,11 @@ namespace PokemonRandomizer.UI.Models
         public Box<double> LevelMult { get; set; } = new Box<double>(1);
         public Box<double> MinIVs { get; set; } = new Box<double>(0);
         public Box<bool> SmartAI { get; set; } = new Box<bool>(false);
+        public Box<bool> ForceCustomMoves { get; set; } = new Box<bool>(false);
+        public Box<double> NumBonusPokemon { get; set; } = new Box<double>(0);
+        public Box<bool> BonusPokemon { get; set; } = new Box<bool>(false);
+        public Box<bool> BonusPokemonMiniboss { get; set; } = new Box<bool>(false);
+        public Box<bool> BonusPokemonBoss { get; set; } = new Box<bool>(true);
 
         public void InitializeMetric(MetricData metric)
         {
