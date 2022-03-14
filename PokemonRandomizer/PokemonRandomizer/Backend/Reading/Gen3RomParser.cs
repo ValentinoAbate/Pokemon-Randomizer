@@ -634,7 +634,7 @@ namespace PokemonRandomizer.Backend.Reading
 
         private bool IsPlaceholder(Trainer trainer)
         {
-            return trainer.pokemon.Length == 1 && trainer.pokemon[0].level == 5;
+            return trainer.Pokemon.Count == 1 && trainer.Pokemon[0].level == 5;
         }
 
         // Read encounters

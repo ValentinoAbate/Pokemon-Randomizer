@@ -3,6 +3,7 @@ using PokemonRandomizer.Backend.EnumTypes;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using PokemonRandomizer.Backend.Utilities.Repointing;
 
 namespace PokemonRandomizer.Backend.DataStructures
 {
@@ -40,14 +41,12 @@ namespace PokemonRandomizer.Backend.DataStructures
         // The all of the class names (mostly for debugging)
         public List<string> classNames;
         public string Class => trainerClass < classNames.Count ? classNames[trainerClass] : nullName;
-        public double AvgLvl => pokemon.Length > 0 ? pokemon.Average((p) => p.level) : 0;
+        public double AvgLvl => Pokemon.Count > 0 ? Pokemon.Average((p) => p.level) : 0;
 
         public Category TrainerCategory { get; set; }
         public TrainerThemeData ThemeData { get; set; }
 
         public int offset;
-        public TrainerPokemon.DataType dataType;
-        public TrainerPokemon[] pokemon;
         public int trainerClass;
         public Gender gender;
         public byte musicIndex;
@@ -56,13 +55,18 @@ namespace PokemonRandomizer.Backend.DataStructures
         public Item[] useItems = new Item[4];
         public bool isDoubleBattle;
         public BitArray AIFlags;
+
+        public List<TrainerPokemon> Pokemon => PokemonData.Pokemon;
+        public TrainerPokemon.DataType DataType => PokemonData.DataType;
+        public TrainerPokemonData PokemonData { get; private set; }
+
         public int pokemonOffset;
 
         // Read a trainer from the rom's internal offset
         public Trainer(Rom rom, List<string> classNames)
         {
             this.classNames = classNames;
-            dataType = (TrainerPokemon.DataType)rom.ReadByte();
+            var dataType = (TrainerPokemon.DataType)rom.ReadByte();
             trainerClass = rom.ReadByte();
             // Read Gender (byte 2 bit 0)
             gender = (Gender)((rom.Peek() & 0x80) >> 7);
@@ -133,7 +137,7 @@ namespace PokemonRandomizer.Backend.DataStructures
 
             #region Read pokemon from pokemonOffset
             rom.Seek(pokemonOffset);
-            pokemon = new TrainerPokemon[numPokemon];
+            PokemonData = new TrainerPokemonData(dataType, numPokemon);
             // The pokemon data structures will be either 8 or 16 bytes depending on the dataType of the trainer
             for (int i = 0; i < numPokemon; ++i)
             {
@@ -158,7 +162,7 @@ namespace PokemonRandomizer.Backend.DataStructures
                     for (int j = 0; j < 4; ++j)
                         p.moves[j] = (Move)rom.ReadUInt16();
                 }                   
-                pokemon[i] = p;
+                PokemonData.Pokemon.Add(p);
             }
             #endregion
             // Return to the trainers
@@ -167,7 +171,7 @@ namespace PokemonRandomizer.Backend.DataStructures
 
         public void EnsureSafeBattleType()
         {
-            if(pokemon.Length <= 1)
+            if(Pokemon.Count <= 1)
             {
                 isDoubleBattle = false;
             }
@@ -177,5 +181,36 @@ namespace PokemonRandomizer.Backend.DataStructures
         {
             return $"{Class} {name} ({TrainerCategory})";
         }
+
+        public class TrainerPokemonData : IRepointable
+        {
+            public bool NeedsRepoint => DataType != originalDataType || Pokemon.Count > originalPokemonCount;
+            public TrainerPokemon.DataType DataType 
+            { 
+                get => dataType;
+                set
+                {
+                    if (dataType == value)
+                        return;
+                    dataType = value;
+                    foreach(var pokemon in Pokemon)
+                    {
+                        pokemon.dataType = value;
+                    }
+                }
+            }
+            private TrainerPokemon.DataType dataType;
+            private readonly TrainerPokemon.DataType originalDataType; 
+            public List<TrainerPokemon> Pokemon { get; }
+            private readonly int originalPokemonCount;
+            public TrainerPokemonData(TrainerPokemon.DataType dataType, int numPokemon)
+            {
+                Pokemon = new List<TrainerPokemon>(numPokemon);
+                originalPokemonCount = numPokemon;
+                this.dataType = dataType;
+                originalDataType = dataType;
+            }
+        }
+
     }
 }

@@ -124,7 +124,7 @@ namespace PokemonRandomizer.Backend.DataStructures
                     TrainerClassTypeOccurence.Add(trainer.Class, new WeightedSet<PokemonType>(16));
                 }
                 var set = TrainerClassTypeOccurence[trainer.Class];
-                foreach(var pokemon in trainer.pokemon)
+                foreach(var pokemon in trainer.Pokemon)
                 {
                     var pData = data.GetBaseStats(pokemon.species);
                     set.Add(pData.PrimaryType);

@@ -773,8 +773,8 @@ namespace PokemonRandomizer.Backend.Randomization
                 var allBattles = kvp.Value;
                 allBattles.Sort(Trainer.AverageLevelComparer);
                 // Split the rival battles into their three different options
-                var starters = new Pokemon[] { allBattles[0].pokemon[0].species, allBattles[1].pokemon[0].species, allBattles[2].pokemon[0].species };
-                var rivalBattles = starters.Select(s => allBattles.Where(b => b.pokemon.Any(p => evoUtils.RelatedToOrSelf(p.species, s))).ToList()).ToArray();
+                var starters = new Pokemon[] { allBattles[0].Pokemon[0].species, allBattles[1].Pokemon[0].species, allBattles[2].Pokemon[0].species };
+                var rivalBattles = starters.Select(s => allBattles.Where(b => b.Pokemon.Any(p => evoUtils.RelatedToOrSelf(p.species, s))).ToList()).ToArray();
                 for (int i = 0; i < rivalBattles.Length; ++i)
                 {
                     var battles = new List<Trainer>(rivalBattles[i]);
@@ -783,12 +783,12 @@ namespace PokemonRandomizer.Backend.Randomization
                     // Randomize the first battle
                     trainerRand.Randomize(firstBattle, pokemonSet, trainerSettings, false);
                     // Set the appropriate starter as the ace
-                    firstBattle.pokemon[firstBattle.pokemon.Length - 1].species = data.Starters[originalStarters ? i : data.RivalRemap[i]];
+                    firstBattle.Pokemon[firstBattle.Pokemon.Count - 1].species = data.Starters[originalStarters ? i : data.RivalRemap[i]];
                     // Procedurally generate the rest of the battles
                     trainerRand.RandomizeReoccurring(firstBattle, battles, pokemonSet, trainerSettings);
                     if (settings.EasyFirstRivalBattle)
                     {
-                        foreach (var pokemon in firstBattle.pokemon)
+                        foreach (var pokemon in firstBattle.Pokemon)
                         {
                             pokemon.level = 1;
                         }
@@ -823,7 +823,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 wallyBattles.RemoveAt(0);
                 // Set Wally's first pokemon to the catching tut pokemon
                 trainerRand.Randomize(firstBattle, pokemonSet, trainerSettings, false);
-                var firstBattleAce = firstBattle.pokemon[firstBattle.pokemon.Length - 1];
+                var firstBattleAce = firstBattle.Pokemon[firstBattle.Pokemon.Count - 1];
                 firstBattleAce.species = evoUtils.MaxEvolution(data.CatchingTutPokemon, firstBattleAce.level, trainerSettings.RestrictIllegalEvolutions);
                 // Procedurally generate the rest of Wally's battles
                 trainerRand.RandomizeReoccurring(firstBattle, wallyBattles, pokemonSet, trainerSettings);

@@ -35,8 +35,8 @@ namespace PokemonRandomizer.Backend.Randomization
             // Local environment based
             // Get type sample
             bool useTheming = shouldApplyTheming(trainer.TrainerCategory);
-            var partyTypeOccurence = useTheming ? PokemonMetrics.TypeOccurence(trainer.pokemon.Select(p => dataT.GetBaseStats(p.species))) : null;
-            foreach (var pokemon in trainer.pokemon)
+            var partyTypeOccurence = useTheming ? PokemonMetrics.TypeOccurence(trainer.Pokemon.Select(p => dataT.GetBaseStats(p.species))) : null;
+            foreach (var pokemon in trainer.Pokemon)
             {
                 // Chose pokemon
                 var metrics = useTheming ? CreatePokemonMetrics(trainer, pokemonSet, pokemon.species, partyTypeOccurence, settings.Data) : Enumerable.Empty<Metric<Pokemon>>();
@@ -129,6 +129,7 @@ namespace PokemonRandomizer.Backend.Randomization
         public void Randomize(Trainer trainer, IEnumerable<Pokemon> pokemonSet, TrainerSettings settings, bool safe = true)
         {
             // Set data type
+            // Add extra pokemon
             // Apply level scaling
             ApplyLevelScaling(trainer, settings);
             // Set item stock (if applicable)
@@ -212,8 +213,8 @@ namespace PokemonRandomizer.Backend.Randomization
                         var pkmnSettings = CreatePokemonSettings(battle, settings);
                         RandomizeTrainerPokemon(battle, pokemonSet, pkmnSettings);
                         // Migrate Ace pokemon from the last battle
-                        var currAce = battle.pokemon[^1];
-                        var lastAce = lastBattle.pokemon[^1];
+                        var currAce = battle.Pokemon[^1];
+                        var lastAce = lastBattle.Pokemon[^1];
                         currAce.species = evoUtils.MaxEvolution(lastAce.species, currAce.level, pkmnSettings.RestrictIllegalEvolutions);
                         if (currAce.HasSpecialMoves)
                         {
@@ -229,13 +230,13 @@ namespace PokemonRandomizer.Backend.Randomization
                     {
                         var pkmnSettings = CreatePokemonSettings(battle, settings);
                         RandomizeTrainerPokemon(battle, pokemonSet, pkmnSettings);
-                        int lastBattleSize = lastBattle.pokemon.Length;
-                        int battleSize = battle.pokemon.Length;
+                        int lastBattleSize = lastBattle.Pokemon.Count;
+                        int battleSize = battle.Pokemon.Count;
                         // Migrate pokemon from the last battle
                         for (int i = 0; i < lastBattleSize && i < battleSize; ++i)
                         {
-                            var currPokemon = battle.pokemon[battleSize - (i + 1)];
-                            var lastPokemon = lastBattle.pokemon[lastBattleSize - (i + 1)];
+                            var currPokemon = battle.Pokemon[battleSize - (i + 1)];
+                            var lastPokemon = lastBattle.Pokemon[lastBattleSize - (i + 1)];
                             currPokemon.species = evoUtils.MaxEvolution(lastPokemon.species, currPokemon.level, pkmnSettings.RestrictIllegalEvolutions);
                             if (currPokemon.HasSpecialMoves)
                             {
@@ -269,14 +270,14 @@ namespace PokemonRandomizer.Backend.Randomization
             // Apply Difficulty Settings
             if (settings.LevelMultiplier > 0)
             {
-                foreach (var pokemon in trainer.pokemon)
+                foreach (var pokemon in trainer.Pokemon)
                 {
                     pokemon.level = (int)Math.Max(0, Math.Min(100, pokemon.level * settings.LevelMultiplier));
                 }
             }
             if(settings.MinIV != 0)
             {
-                foreach (var pokemon in trainer.pokemon)
+                foreach (var pokemon in trainer.Pokemon)
                 {
                     pokemon.IVLevel = Math.Min(settings.MinIV, pokemon.IVLevel);
                 }

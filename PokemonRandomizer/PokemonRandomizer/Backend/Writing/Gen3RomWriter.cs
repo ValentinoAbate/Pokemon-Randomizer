@@ -51,7 +51,7 @@ namespace PokemonRandomizer.Backend.Writing
             WritePokemonBaseStats(data, rom, info, ref repoints);
             WriteTypeDefinitions(data, rom, info, ref repoints);
             WriteEncounters(data, rom, info);
-            WriteTrainerBattles(data, rom, info);
+            WriteTrainerBattles(data, rom, info, ref repoints);
             mapWriter.WriteMapData(data, rom, info, metadata);
             WriteItemData(data.ItemData, rom, info);
             WritePickupData(data.PickupItems, rom, info, metadata);
@@ -638,7 +638,7 @@ namespace PokemonRandomizer.Backend.Writing
         /// <summary>
         /// Write the trainer battles to the output file. Doesn't write all data (currently unfinished)
         /// </summary>
-        private void WriteTrainerBattles(RomData romData, Rom rom, XmlManager info)
+        private void WriteTrainerBattles(RomData romData, Rom rom, XmlManager info, ref RepointList repoints)
         {
             // If fail, reading trainer battles is not supported for this ROM
             if (!info.FindAndSeekOffset(ElementNames.trainerBattles, rom))
@@ -646,7 +646,22 @@ namespace PokemonRandomizer.Backend.Writing
             //int numTrainers = info.Num("trainerBattles"); // Needed later for determining if expansion is necessary
             foreach (var trainer in romData.Trainers)
             {
-                rom.WriteByte((byte)trainer.dataType);
+                // Check for trainer pokemon repoint, and try to apply it if necessary
+                if (trainer.PokemonData.NeedsRepoint)
+                {
+                    int? newPokemonOffset = rom.FindFreeSpaceOffset(PokemonDataSize(trainer.PokemonData));
+                    if (!newPokemonOffset.HasValue)
+                    {
+                        Logger.main.Error($"Trainer {trainer.name} needs to have it's pokemon repointed, but there is not enough free space. This trainer will not have any data written");
+                        return;
+                    }
+                    repoints.Add((trainer.pokemonOffset, newPokemonOffset.Value));
+                    trainer.pokemonOffset = newPokemonOffset.Value;
+                }
+
+                // Write trainer data
+
+                rom.WriteByte((byte)trainer.DataType);
                 rom.WriteByte((byte)trainer.trainerClass);
                 //// Write Gender (byte 2 bit 0)
                 //gender = (Gender)((rom.Peek() & 0x80) >> 7);
@@ -669,40 +684,51 @@ namespace PokemonRandomizer.Backend.Writing
                 trainer.AIFlags.CopyTo(aiBytes, 0);
                 rom.WriteBlock(aiBytes);
                 // Write pokemon num
-                rom.WriteByte((byte)trainer.pokemon.Length);
+                rom.WriteByte((byte)trainer.Pokemon.Count);
                 // What is in bytes 33-35?
                 rom.Skip(3);
                 // Bytes 36-39 (end of data)
                 rom.WritePointer(trainer.pokemonOffset);
 
+                // Write pokemon data
+
                 rom.SaveOffset();
                 rom.Seek(trainer.pokemonOffset);
-                #region Write pokemon from pokemonPtr
-                foreach (var pokemon in trainer.pokemon)
+                foreach (var pokemon in trainer.Pokemon)
                 {
                     rom.WriteUInt16(pokemon.IVLevel);
                     rom.WriteUInt16(pokemon.level);
                     rom.WriteUInt16((int)pokemon.species);
-                    if (trainer.dataType == TrainerPokemon.DataType.Basic)
+                    if (trainer.DataType == TrainerPokemon.DataType.Basic)
                         rom.Skip(2); // Skip padding
-                    else if (trainer.dataType == TrainerPokemon.DataType.HeldItem)
+                    else if (trainer.DataType == TrainerPokemon.DataType.HeldItem)
                         rom.WriteUInt16((int)RemapItem(pokemon.heldItem));
-                    else if (trainer.dataType == TrainerPokemon.DataType.SpecialMoves)
+                    else if (trainer.DataType == TrainerPokemon.DataType.SpecialMoves)
                     {
                         foreach (var move in pokemon.moves)
                             rom.WriteUInt16((int)move);
                         rom.Skip(2);
                     }
-                    else if (trainer.dataType == TrainerPokemon.DataType.SpecialMovesAndHeldItem)
+                    else if (trainer.DataType == TrainerPokemon.DataType.SpecialMovesAndHeldItem)
                     {
                         rom.WriteUInt16((int)RemapItem(pokemon.heldItem));
                         foreach (var move in pokemon.moves)
                             rom.WriteUInt16((int)move);
                     }
                 }
-                #endregion
                 rom.LoadOffset();
             }
+        }
+
+        private int PokemonDataSize(Trainer.TrainerPokemonData data)
+        {
+            int perPokemon = data.DataType switch
+            {
+                TrainerPokemon.DataType.Basic or TrainerPokemon.DataType.HeldItem => 8,
+                TrainerPokemon.DataType.SpecialMoves or TrainerPokemon.DataType.SpecialMovesAndHeldItem => 16,
+                _ => throw new NotImplementedException("Unknown trainer pokemon type! Unable to get size"),
+            };
+            return perPokemon * data.Pokemon.Count;
         }
 
         private static readonly string[] tmDescriptionRemovals = new string[]
