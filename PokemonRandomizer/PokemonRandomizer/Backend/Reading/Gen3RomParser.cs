@@ -542,8 +542,10 @@ namespace PokemonRandomizer.Backend.Reading
             var leaderClass = info.AttrLowerCase(ElementNames.gymLeaders, AttributeNames.className);
             var eliteFourClass = info.AttrLowerCase(ElementNames.eliteFour, AttributeNames.className);
             var championClass = info.AttrLowerCase(ElementNames.champion, AttributeNames.className);
-            // Get rival names
+            // Get rival names and remap info
             var rivalNames = info.ArrayAttrLowerCase(ElementNames.rivals, AttributeNames.names);
+            data.RivalRemap = info.IntArrayAttr(ElementNames.rivals, "remap");
+            // Get special boss info
             var specialBossNames = info.ArrayAttrLowerCase(ElementNames.specialBosses, AttributeNames.names);
             // Fetch the Ace Trainer Class Numbers for this ROM
             var aceTrainersClasses = info.IntArrayAttr(ElementNames.aceTrainers, "classNums");
