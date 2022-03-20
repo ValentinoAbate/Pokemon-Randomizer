@@ -27,7 +27,7 @@ namespace PokemonRandomizer.Backend.Randomization
             }
             var typeSet = allTypes.ToHashSet();
             // If no duplicates, remove any original types that won't be randomized
-            if (settings.NoDuplicateGymsAndEliteFour)
+            if (settings.GymEliteFourDupePrevention == Settings.GymEliteFourPreventDupesSetting.All)
             {
                 var originalThemes = new List<TrainerThemeData>(16); // 8 gyms + 4 elite 4 + 1 champ
                 if (settings.ApplyTheming(Trainer.Category.GymLeader) && !IsRandom(settings.GymTypeTheming))
@@ -60,29 +60,30 @@ namespace PokemonRandomizer.Backend.Randomization
                     }
                 }
             }
+            bool preventDupes = settings.GymEliteFourDupePrevention != Settings.GymEliteFourPreventDupesSetting.None;
             // Randomize Gyms
-            if(IsRandom(settings.GymTypeTheming))
+            if (IsRandom(settings.GymTypeTheming))
             {
                 foreach(var gym in gyms)
                 {
-                    RandomizeGymOrEliteFourThemeData(gym.ThemeData, typeSet, allTypes);
+                    RandomizeGymOrEliteFourThemeData(gym.ThemeData, typeSet, allTypes, preventDupes);
                 }
             }
             if(IsRandom(settings.EliteFourTheming))
             {
                 foreach (var kvp in eliteFour.EliteFour)
                 {
-                    RandomizeGymOrEliteFourThemeData(kvp.Value.ThemeData, typeSet, allTypes);
+                    RandomizeGymOrEliteFourThemeData(kvp.Value.ThemeData, typeSet, allTypes, preventDupes);
                 }
                 // If on the "Same as Elite Four Setting" the randomize the champ here
                 if (settings.ChampionTheming == Settings.TrainerOrgTypeTheme.Default && eliteFour.Champion.IsValid)
                 {
-                    RandomizeGymOrEliteFourThemeData(eliteFour.Champion.ThemeData, typeSet, allTypes);
+                    RandomizeGymOrEliteFourThemeData(eliteFour.Champion.ThemeData, typeSet, allTypes, preventDupes);
                 }
             }
             if (IsRandom(settings.ChampionTheming) && eliteFour.Champion.IsValid)
             {
-                RandomizeGymOrEliteFourThemeData(eliteFour.Champion.ThemeData, typeSet, allTypes);
+                RandomizeGymOrEliteFourThemeData(eliteFour.Champion.ThemeData, typeSet, allTypes, preventDupes);
             }
             randomizationResults.Add("Gyms", gyms.Select(g => g.ToString()).ToList());
             randomizationResults.Add("Elite 4", eliteFour.EliteFour.Select(kvp => kvp.Value.ToString()).ToList());
@@ -92,10 +93,10 @@ namespace PokemonRandomizer.Backend.Randomization
             }
         }
 
-        private void RandomizeGymOrEliteFourThemeData(TrainerThemeData data, HashSet<PokemonType> typeSet, IEnumerable<PokemonType> allTypes)
+        private void RandomizeGymOrEliteFourThemeData(TrainerThemeData data, HashSet<PokemonType> typeSet, IEnumerable<PokemonType> allTypes, bool preventDupes)
         {
             // Later allow for randomly chosen theme
-            var newType = ChooseType(data.Types, typeSet, allTypes);
+            var newType = ChooseType(data.Types, typeSet, allTypes, preventDupes);
             data.SetTypes(new PokemonType[] { newType }, Array.Empty<PokemonType>(), 1);
         }
 
@@ -110,7 +111,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 {
                     var theme = team.ThemeData;
                     var teamTypes = theme.Types.Concat(theme.SecondaryTypes).ToArray();
-                    var newType = ChooseType(teamTypes, typeSet, allTypes);
+                    var newType = ChooseType(teamTypes, typeSet, allTypes, true);
                     theme.SetTypes(new PokemonType[] { newType }, theme.SecondaryTypes, theme.PrimaryTypeChance);
                     team.Randomized = true;
                 }
@@ -123,8 +124,8 @@ namespace PokemonRandomizer.Backend.Randomization
                     var teamTypes = new List<PokemonType>(theme.Types.Length + theme.SecondaryTypes.Length + 1);
                     teamTypes.AddRange(theme.Types);
                     teamTypes.AddRange(theme.SecondaryTypes);
-                    var newPrimaryType = ChooseType(teamTypes, typeSet, allTypes);
-                    var newSecondaryType = ChooseType(teamTypes, typeSet, allTypes);
+                    var newPrimaryType = ChooseType(teamTypes, typeSet, allTypes, true);
+                    var newSecondaryType = ChooseType(teamTypes, typeSet, allTypes, true);
                     theme.SetTypes(new PokemonType[] { newPrimaryType }, new PokemonType[] { newSecondaryType }, theme.PrimaryTypeChance);
                     team.Randomized = true;
                 }
@@ -132,7 +133,7 @@ namespace PokemonRandomizer.Backend.Randomization
             randomizationResults.Add("Villainous Teams", teams.Select(t => t.ToString()).ToList());
         }
 
-        private PokemonType ChooseType(IReadOnlyCollection<PokemonType> originals, HashSet<PokemonType> types, IEnumerable<PokemonType> all)
+        private PokemonType ChooseType(IReadOnlyCollection<PokemonType> originals, HashSet<PokemonType> types, IEnumerable<PokemonType> all, bool preventDupes)
         {
             var addBackTypes = new HashSet<PokemonType>(originals.Count);
             foreach(var type in originals)
@@ -173,7 +174,10 @@ namespace PokemonRandomizer.Backend.Randomization
             }
             // Choose type
             var newType = rand.Choice(types);
-            types.Remove(newType);
+            if (preventDupes)
+            {
+                types.Remove(newType);
+            }
             foreach (var type in addBackTypes)
             {
                 types.Add(type);

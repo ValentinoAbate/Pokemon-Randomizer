@@ -27,16 +27,22 @@ namespace PokemonRandomizer.UI.Views
             new ComboBoxItem() { Content="Random", ToolTip = randomTypeThemeTooltip },
         };
 
+        private static CompositeCollection DuplicatePreventionDropdown => new CompositeCollection()
+        {
+            new ComboBoxItem() { Content="None" },
+            new ComboBoxItem() { Content="Prevent Duplicates (Randomized Only)", ToolTip = "Prevent duplicate type themes within randomized gyms and elite four members.\nFor example, if gym type themes are unrandomized, elite four members will be allowed to be the same type as a gym, but not the same as each other" },
+            new ComboBoxItem() { Content="Prevent Duplicates (Randomized and Unrandomized)", ToolTip =  "Prevent duplicate type themes within all gyms and elite four members (randomized or not).\nFor example, if gym type themes are unrandomized, elite four members will be not be allowed to be the same type as a gym or each other"},
+        };
+
         private static CompositeCollection ThemePriorityDropdown => new CompositeCollection()
         {
             new ComboBoxItem() { Content="Gym Leaders", ToolTip="If a trainer is a gym leader and a team leader (Giovanni, etc.), they will use their gym's theme" },
             new ComboBoxItem() { Content="Villanous Team Leaders", ToolTip="If a trainer is a gym leader and a team leader (Giovanni, etc.), they will use their team's theme" },
         };
 
-        private const string teamSubtypesTooltip = "When randomizing Team Type Themes, only randomize the primary Type Theme(s). The Type Themes are:" +
-            "\nTeam Rocket: PSN (Primary), NRM | Team Aqua: WAT (Primary), PSN, DRK | Team Magma: GRD (Primary), FIR (Primary), PSN, DRK";
+        private const string teamSubtypesTooltip = "When randomizing Team Type Themes, keep the Secondary Type Theme(s). The Secondary Type Themes are:" +
+            "\nTeam Rocket: NRM, FTG, PSY, GRD | Team Aqua: PSN, DRK | Team Magma: PSN, DRK";
         private const string gruntThemeTooltip = "If checked, the team's theme will apply to grunts. If unchecked, team grunts will use default type theming";
-        private const string preventDupesTooltip = "When checked, randomly chosen Gym or Elite Four member type themes will not be duplicates of any unrandomized or other randomized type themes";
         public TrainerOrganizationDataView(TrainerOrganizationDataModel model, RomMetadata metadata)
         {
             var stack = CreateMainStack();
@@ -53,7 +59,7 @@ namespace PokemonRandomizer.UI.Views
             {
                 stack.Add(new EnumComboBoxUI<TrainerOrgTypeTheme>("Champion Type Theming", ChampionTypeThemeDropdown, model.ChampionTheming));
             }
-            stack.Add(new BoundCheckBoxUI(model.NoDupeGymAndEliteFourTypes, "Prevent Duplicate Gym and Elite Four Themes") { ToolTip = preventDupesTooltip });
+            stack.Add(new EnumComboBoxUI<GymEliteFourPreventDupesSetting>("Gym and Elite Four Duplicate Theme Prevention", DuplicatePreventionDropdown, model.GymAndEliteDupePrevention));
             stack.Header("Villainous Teams");
             stack.Add(new EnumComboBoxUI<TrainerOrgTypeTheme>("Type Theming", TypeThemeDropdown, model.TeamTypeTheming));
             stack.Add(new BoundCheckBoxUI(model.GruntTheming, "Apply Team Theme To Grunts") { ToolTip = gruntThemeTooltip });
