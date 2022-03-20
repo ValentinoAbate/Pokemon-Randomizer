@@ -756,7 +756,7 @@ namespace PokemonRandomizer
         private void GoToDownloadPage(object sender, RoutedEventArgs e)
         {
             string url = "https://github.com/ValentinoAbate/Pokemon-Randomizer/releases";
-            Process.Start(new ProcessStartInfo(url));
+            Process.Start(new ProcessStartInfo(url) { UseShellExecute = true } );
             e.Handled = true;
         }
 
