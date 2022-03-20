@@ -79,7 +79,8 @@ namespace PokemonRandomizer.Backend.Metadata
             string ret = Types.Length > 0 ? string.Join('/', Types) : "Untyped";
             if (PrimaryTypeChance >= 1)
                 return ret;
-            ret += $" ({PrimaryTypeChance * 100}%) / {(SecondaryTypes.Length > 0 ? string.Join('/', SecondaryTypes) : "Untyped")} ({(1 - PrimaryTypeChance) * 100}%)";
+            int primaryTypePercent = (int)(PrimaryTypeChance * 100);
+            ret += $" ({primaryTypePercent}%) / {(SecondaryTypes.Length > 0 ? string.Join('/', SecondaryTypes) : "Untyped")} ({100 - primaryTypePercent}%)";
             return ret;
         }
     }
