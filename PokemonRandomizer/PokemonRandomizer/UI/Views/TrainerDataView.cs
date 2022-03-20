@@ -25,11 +25,11 @@ namespace PokemonRandomizer.UI.Views
             new ComboBoxItem() {Content="Keep Same Type", ToolTip="Recurring battles with a trainer will keep the same battle type (if the last battle was a double battle, the next one will also be a double battle, etc)."},
         };
 
-        public static IEnumerable<string> MetricTypes { get; } = PokemonSettingsUI.BasicPokemonMetricTypes.Concat(new List<string>()
+        private static CompositeCollection MetricDataDropdown => new CompositeCollection()
         {
-            PokemonMetric.typeTrainerParty,
-            //PokemonMetric.typeTrainerClass,
-        });
+            new ComboBoxItem() {Content="Individual Pokemon Type", ToolTip="Each pokemon will be more likely to randomize to a pokemon that has at least one of its original types."},
+            new ComboBoxItem() {Content="Party Type", ToolTip="Each pokemon will be be more likely to randomize to a pokemon whose type appears in the trainer's original party, weighted by the number of times that type appears"},
+        };
 
         private const string typeThemingTooltip = "Choose Pokemon based on their trainer's type theming. Most trainers will have their type theme determined by the types of their original party and their trainer class" +
             "\nGym Leaders, Gym Trainers, the Elite Four, and the Chamption will have the type theme of their original Gym / Elite Four position unless that theme is randomized by other settings" +
@@ -46,24 +46,26 @@ namespace PokemonRandomizer.UI.Views
             stack.Header("Trainer Pokemon");
             var pokemonRand = stack.Add(new BoundCheckBoxUI(model.RandomizePokemon, "Randomize Pokemon"));
             var pokemonStack = stack.Add(pokemonRand.BindEnabled(CreateStack()));
-            pokemonStack.Add(new BoundCheckBoxUI(model.TypeTheming, "Type Theming (Intelligent)") { ToolTip = typeThemingTooltip });
-            var pokemonDetailsStack = pokemonStack.Add(new StackPanel() { Orientation = Orientation.Horizontal });
+            var typeBox = pokemonStack.Add(new BoundCheckBoxUI(model.TypeTheming, "Type Theming (Intelligent)") { ToolTip = typeThemingTooltip });
+            pokemonStack.Add(typeBox.BindEnabled(new EnumComboBoxUI<TrainerTypeDataSource>("Normal Trainer Type Data Source", MetricDataDropdown, model.TypeDataSource) { ToolTip = "The type data source intelligent type theming will use for trainers that don't have special logic" }));
+            var pokemonDetailsStack = pokemonStack.Add(CreateHorizontalStack());
             pokemonDetailsStack.Add(new BoundCheckBoxUI(model.RestrictIllegalEvolutions, "Ban Illegal Evolutions"));
             pokemonDetailsStack.Add(new BoundCheckBoxUI(model.ForceHighestLegalEvolution, "Force Highest Legal Evolution"));
-            pokemonStack.Add(new Label() { Content = "Ban Legendaries For: " });
+
             // Legendary banning
-            var banLegendariesStack = pokemonStack.Add(new StackPanel() { Orientation = Orientation.Horizontal });
-            banLegendariesStack.Add(new BoundCheckBoxUI(model.BanLegendaries, "Normal Trainers"));
-            banLegendariesStack.Add(new BoundCheckBoxUI(model.BanLegendariesMiniboss, "Minibosses") { ToolTip = minibossTooltip });
-            banLegendariesStack.Add(new BoundCheckBoxUI(model.BanLegendariesBoss, "Bosses") { ToolTip = bossTooltip});
+            var banLegendariesStack = pokemonStack.Add(CreateHorizontalStack());
+            banLegendariesStack.Add(new Label() { Content = "Ban Legendaries For: " });
+            banLegendariesStack.Add(new BoundCheckBoxUI(model.BanLegendaries, "Normal Trainers") { VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(0, 2, 2, 2) });
+            banLegendariesStack.Add(new BoundCheckBoxUI(model.BanLegendariesMiniboss, "Minibosses") { ToolTip = minibossTooltip, VerticalAlignment = VerticalAlignment.Center });
+            banLegendariesStack.Add(new BoundCheckBoxUI(model.BanLegendariesBoss, "Bosses") { ToolTip = bossTooltip, VerticalAlignment = VerticalAlignment.Center });
             pokemonStack.Add(new BoundSliderUI("Ignore Restrictions Chance", model.PokemonNoise, true, 0.01, 0, 0.33) { ToolTip = ignoreRestrictionsTooltip });
             // Bonus pokemon
-            pokemonStack.Add(new BoundSliderUI("Bonus Pokemon", model.NumBonusPokemon, false, 1, 0, 6));
-            pokemonStack.Add(new Label() { Content = "Add Bonus Pokemon To: " });
-            var bonusPokemonStack = pokemonStack.Add(new StackPanel() { Orientation = Orientation.Horizontal });
-            bonusPokemonStack.Add(new BoundCheckBoxUI(model.BonusPokemon, "Normal Trainers"));
-            bonusPokemonStack.Add(new BoundCheckBoxUI(model.BonusPokemonMiniboss, "Minibosses") { ToolTip = minibossTooltip });
-            bonusPokemonStack.Add(new BoundCheckBoxUI(model.BonusPokemonBoss, "Bosses") { ToolTip = bossTooltip });
+            var bonusPokemonStack = pokemonStack.Add(CreateHorizontalStack());
+            bonusPokemonStack.Add(new BoundSliderUI("Bonus Pokemon", model.NumBonusPokemon, false, 1, 0, 6));
+            bonusPokemonStack.Add(new Label() { Content = "Add Bonus Pokemon To: " });
+            bonusPokemonStack.Add(new BoundCheckBoxUI(model.BonusPokemon, "Normal Trainers") { VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(0,2,2,2) });
+            bonusPokemonStack.Add(new BoundCheckBoxUI(model.BonusPokemonMiniboss, "Minibosses") { ToolTip = minibossTooltip, VerticalAlignment = VerticalAlignment.Center });
+            bonusPokemonStack.Add(new BoundCheckBoxUI(model.BonusPokemonBoss, "Bosses") { ToolTip = bossTooltip, VerticalAlignment = VerticalAlignment.Center });
             pokemonStack.Add(new BoundCheckBoxUI(model.ForceCustomMoves, "Force Custom Moves") { ToolTip = "Use custom movesets for all trainers. The moves chosen are based on the moves the pokemon or a pre-evolution can know at the level it appears at (no TMs, etc.). This setting can help pokemon that evolve from stones have usable movesets, and makes movesets less predictable" });
             pokemonStack.Add(new EnumComboBoxUI<PokemonPcgStrategy>("Recurring Trainer Pokemon Randomization Strategy", PokemonStrategyDropdown, model.PokemonStrategy));
             // Battle Type Randomization

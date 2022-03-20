@@ -7,6 +7,7 @@ namespace PokemonRandomizer.UI.Views
     public abstract class DataView<T> : ContentControl where T : DataModel
     {
         protected StackPanel CreateStack() => new StackPanel() { Orientation = Orientation.Vertical };
+        protected StackPanel CreateHorizontalStack() => new StackPanel() { Orientation = Orientation.Horizontal };
         protected StackPanel CreateMainStack()
         {
             var stack = CreateStack();

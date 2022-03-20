@@ -302,10 +302,17 @@ namespace PokemonRandomizer.Backend.Randomization
                 ForceHighestLegalEvolution = settings.ForceHighestLegalEvolution,
                 Noise = settings.PokemonNoise,
                 BanLegendaries = shouldBanLegendaries(trainer.TrainerCategory),
-                Data = new List<MetricData>()
+                Data = settings.MetricType switch
                 {
-                    new MetricData(PokemonMetric.typeTrainerParty, 0, 3, 0.1f),
-                    new MetricData(PokemonMetric.typeIndividual, 3),
+                    TrainerSettings.TrainerTypeDataSource.Individual => new List<MetricData>()
+                    {
+                        new MetricData(PokemonMetric.typeIndividual, 0),
+                    },
+                    TrainerSettings.TrainerTypeDataSource.Party => new List<MetricData>()
+                    {
+                        new MetricData(PokemonMetric.typeTrainerParty, 0, 3, 0.1f),
+                    },
+                    _ => new List<MetricData>(0)
                 },
             };
         }

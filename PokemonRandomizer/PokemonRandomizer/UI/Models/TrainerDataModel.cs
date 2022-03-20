@@ -15,6 +15,7 @@ namespace PokemonRandomizer.UI.Models
         // Pokemon Settings
         public Box<bool> RandomizePokemon { get; set; } = new Box<bool>(false);
         public Box<bool> TypeTheming { get; set; } = new Box<bool>(true);
+        public Box<TrainerTypeDataSource> TypeDataSource { get; set; } = new Box<TrainerTypeDataSource>(TrainerTypeDataSource.Individual);
         public Box<PokemonPcgStrategy> PokemonStrategy { get; set; } = new Box<PokemonPcgStrategy>(PokemonPcgStrategy.KeepParty);
         public Box<bool> BanLegendaries { get; set; } = new Box<bool>(true); 
         public Box<bool> BanLegendariesMiniboss { get; set; } = new Box<bool>(true); 

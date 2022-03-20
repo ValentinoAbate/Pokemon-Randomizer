@@ -134,6 +134,7 @@ namespace PokemonRandomizer
         {
             RandomizePokemon = RandomizeTrainerPokemon,
             PokemonStrategy = RecurringTrainerPokemonStrategy,
+            MetricType = TrainerTypeDataSource,
             RestrictIllegalEvolutions = TrainerRestrictIllegalEvolutions,
             ForceHighestLegalEvolution = TrainerForceHighestLegalEvolution,
             PokemonNoise = (float)TrainerPokemonNoise,
@@ -215,6 +216,7 @@ namespace PokemonRandomizer
         // Trainer Pokemon Settings
         public abstract bool RandomizeTrainerPokemon { get; }
         public abstract bool TrainerTypeTheming { get; }
+        protected abstract TrainerSettings.TrainerTypeDataSource TrainerTypeDataSource { get; }
         protected abstract bool BanLegendariesTrainer { get; }
         protected abstract bool BanLegendariesMiniboss { get; }
         protected abstract bool BanLegendariesBoss { get; }
@@ -504,12 +506,18 @@ namespace PokemonRandomizer
                 None,
                 KeepSameType,
             }
+            public enum TrainerTypeDataSource
+            {
+                Individual,
+                Party
+            }
 
             public bool RandomizePokemon { get; set; }
             public PokemonPcgStrategy PokemonStrategy { get; set; } = PokemonPcgStrategy.KeepParty;
             public bool RestrictIllegalEvolutions { get; set; } = true;
             public bool ForceHighestLegalEvolution { get; set; } = false;
             public float PokemonNoise { get; set; } = 0;
+            public TrainerTypeDataSource MetricType { get; set; } = TrainerTypeDataSource.Individual;
             public Trainer.Category PriorityThemeCategory { get; set; } = Trainer.Category.GymLeader;
             public bool RandomizeBattleType { get; set; }
             public BattleTypePcgStrategy BattleTypeStrategy { get; set; } = BattleTypePcgStrategy.KeepSameType;
