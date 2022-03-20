@@ -15,15 +15,18 @@ namespace PokemonRandomizer.Backend.Metadata
         public List<Trainer> TeamGrunts { get; } = new();
         public TrainerThemeData ThemeData { get; set; }
 
+        public bool Randomized { get; set; } = false;
+
         public void InitializeThemeData(PokemonType[] PrimaryTypes, PokemonType[] SecondaryTypes)
         {
             ThemeData = new TrainerThemeData();
-            ThemeData.SetTypes(PrimaryTypes, SecondaryTypes, SecondaryTypes.Length > 0 ? 0.6 : 0);
+            ThemeData.SetTypes(PrimaryTypes, SecondaryTypes, SecondaryTypes.Length > 0 ? 0.70 : 0);
         }
 
         public override void ApplyTrainerThemeData(Settings settings)
         {
-            if (!IsValid)
+            // Only actually apply theme data when randomized
+            if (!IsValid || !Randomized)
             {
                 return;
             }

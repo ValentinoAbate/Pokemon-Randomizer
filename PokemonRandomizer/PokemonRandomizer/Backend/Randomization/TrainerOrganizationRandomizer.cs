@@ -112,6 +112,7 @@ namespace PokemonRandomizer.Backend.Randomization
                     var teamTypes = theme.Types.Concat(theme.SecondaryTypes).ToArray();
                     var newType = ChooseType(teamTypes, typeSet, allTypes);
                     theme.SetTypes(new PokemonType[] { newType }, theme.SecondaryTypes, theme.PrimaryTypeChance);
+                    team.Randomized = true;
                 }
             }
             else
@@ -125,6 +126,7 @@ namespace PokemonRandomizer.Backend.Randomization
                     var newPrimaryType = ChooseType(teamTypes, typeSet, allTypes);
                     var newSecondaryType = ChooseType(teamTypes, typeSet, allTypes);
                     theme.SetTypes(new PokemonType[] { newPrimaryType }, new PokemonType[] { newSecondaryType }, theme.PrimaryTypeChance);
+                    team.Randomized = true;
                 }
             }
             randomizationResults.Add("Villainous Teams", teams.Select(t => t.ToString()).ToList());
