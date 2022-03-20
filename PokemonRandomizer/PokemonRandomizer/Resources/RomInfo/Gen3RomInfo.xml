@@ -296,7 +296,7 @@
 
     <rivals names="[Terry]" remap="[1,0,2]"/>
 	<teams elementNames="[teamRocket]"/>
-	<teamRocket leaderClass ="Boss" adminNames="[Admin,Gideon]" gruntClass ="Team Rocket" primaryTypes="[PSN]" secondaryTypes="[NRM]"/>
+	<teamRocket leaderClass ="Boss" adminNames="[Admin,Gideon]" gruntClass ="Team Rocket" primaryTypes="[PSN]" secondaryTypes="[NRM,FTG,PSY,GRD]"/>
     <aceTrainers classNums="[9,93,86]"/>
 	<nameTrainerTypeOverrides elementNames="[agathaOverride,lorelaiOverride,lanceOverride,giovanniOverride]"/>
 	<agathaOverride name="agatha" types="[GHO]"/>
