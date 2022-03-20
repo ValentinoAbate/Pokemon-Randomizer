@@ -32,7 +32,7 @@ namespace PokemonRandomizer.UI.Views
         };
 
         private const string typeThemingTooltip = "Choose Pokemon based on their trainer's type theming. Most trainers will have their type theme determined by the types of their original party and their trainer class" +
-            "\nGym Leaders, Gym Trainers, the Elite Four, and the Chamption will have the type theme of their original Gym / Elite Four position unless that theme is randomized by other settings" +
+            "\nGym Leaders, Gym Trainers, the Elite Four, and the Champion will have the type theme of their original Gym / Elite Four position unless that theme is randomized by other settings" +
             "\nSpecial trainer classes like Rivals and Ace/Cool Trainers will have no type theme";
 
         private const string ignoreRestrictionsTooltip = "The chance that all restrictions (Evolution Restrictions, Legendary Ban, Type Theming, etc.) will be ignored for any given pokemon";
