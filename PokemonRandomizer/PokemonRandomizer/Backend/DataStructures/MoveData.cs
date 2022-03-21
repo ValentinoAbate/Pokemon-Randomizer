@@ -250,6 +250,7 @@ namespace PokemonRandomizer.Backend.DataStructures
             { Move.CURSE, new PokemonType[] { PokemonType.GHO } },
             { Move.POISONPOWDER, new PokemonType[] { PokemonType.GRS, PokemonType.PSN } },
             { Move.FLASH, new PokemonType[] { PokemonType.ELE, PokemonType.PSY } },
+            { Move.WILLーOーWISP, new PokemonType[]{ PokemonType.FIR, PokemonType.GHO } }
         };
 
         public bool IsType(PokemonType t)
