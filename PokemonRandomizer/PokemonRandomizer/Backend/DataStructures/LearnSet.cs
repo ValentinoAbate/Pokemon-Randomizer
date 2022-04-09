@@ -7,7 +7,7 @@ using PokemonRandomizer.Backend.Utilities;
 
 namespace PokemonRandomizer.Backend
 {
-    public class LearnSet : IList<LearnSet.Entry>
+    public class LearnSet : IEnumerable<LearnSet.Entry>
     {
         /// <summary>
         /// The original number of moves in this moveset when read from the rom.
@@ -18,24 +18,22 @@ namespace PokemonRandomizer.Backend
 
         public int Count => items.Count;
 
-        int ICollection<Entry>.Count => items.Count;
-
-        public bool IsReadOnly => ((IList<Entry>)items).IsReadOnly;
-
         public Entry this[int index] { get => items[index]; set => items[index] = value; }
 
         private readonly List<Entry> items = new List<Entry>();
 
-        public LearnSet()
+        public HashSet<Move> GetMovesLookup()
         {
-
-        }
-
-        public LearnSet(LearnSet toCopy)
-        {
-            OriginalCount = toCopy.OriginalCount;
-            OriginalOffset = toCopy.OriginalOffset;
-            items.AddRange(toCopy);
+            var lookup = new HashSet<Move>(items.Count);
+            foreach(var entry in items)
+            {
+                if (lookup.Contains(entry.move))
+                {
+                    continue;
+                }
+                lookup.Add(entry.move);
+            }
+            return lookup;
         }
 
         public bool Learns(Move move)
@@ -48,13 +46,15 @@ namespace PokemonRandomizer.Backend
 
         public void Add(Move mv, int learnLvl)
         {
-            items.Add(new Entry(mv, learnLvl));
-            items.Sort();
+            Add(new Entry(mv, learnLvl));
         }
-        public void Sort()
+
+        public void Add(Entry item)
         {
+            items.Add(item);
             items.Sort();
         }
+
         public void RemoveWhere(Predicate<Entry> pred)
         {
             items.RemoveAll(pred);
@@ -71,7 +71,7 @@ namespace PokemonRandomizer.Backend
             return string.Join(", ", items);
         }
 
-        #region IList<MoveSet.Item> Implementation
+        #region IEnumerable<Entry> Implementation
         public IEnumerator<Entry> GetEnumerator()
         {
             return items.GetEnumerator();
@@ -80,47 +80,6 @@ namespace PokemonRandomizer.Backend
         IEnumerator IEnumerable.GetEnumerator()
         {
             return items.GetEnumerator();
-        }
-
-        public int IndexOf(Entry item)
-        {
-            return items.IndexOf(item);
-        }
-
-        public void Insert(int index, Entry item)
-        {
-            items.Insert(index, item);
-        }
-
-        public void RemoveAt(int index)
-        {
-            items.RemoveAt(index);
-        }
-
-        public void Add(Entry item)
-        {
-            items.Add(item);
-            items.Sort();
-        }
-
-        public void Clear()
-        {
-            items.Clear();
-        }
-
-        public bool Contains(Entry item)
-        {
-            return items.Contains(item);
-        }
-
-        public void CopyTo(Entry[] array, int arrayIndex)
-        {
-            items.CopyTo(array, arrayIndex);
-        }
-
-        public bool Remove(Entry item)
-        {
-            return items.Remove(item);
         }
         #endregion
 

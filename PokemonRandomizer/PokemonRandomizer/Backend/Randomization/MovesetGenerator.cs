@@ -7,12 +7,25 @@ using static PokemonRandomizer.Backend.DataStructures.MoveData;
 
 namespace PokemonRandomizer.Backend.Randomization
 {
-    public static class MovesetGenerator
+    public class MovesetGenerator
     {
+        private const float needSynergy = 12500;
+        private const float preferSynergy = needSynergy / 2;
+        private const float weakSynergy = needSynergy / 10;
+
+        private readonly IDataTranslator dataT;
+        private readonly Random rand;
+
+        public MovesetGenerator(IDataTranslator dataT, Random rand)
+        {
+            this.dataT = dataT;
+            this.rand = rand;
+        }
+
         public static Move[] DefaultMoveset(PokemonBaseStats pokemon, int level)
         {
             var learnSet = pokemon.learnSet;
-            var moves = new Stack<Move>();
+            var moves = new Stack<Move>(Math.Max(learnSet.Count, 4));
             foreach (var item in learnSet)
             {
                 if (item.learnLvl > level)
@@ -24,51 +37,25 @@ namespace PokemonRandomizer.Backend.Randomization
             return new Move[] { moves.Pop(), moves.Pop(), moves.Pop(), moves.Pop() };
         }
 
-        public static Move[] SmartMoveSet(Random rand, PokemonBaseStats pokemon, int level, IDataTranslator dataT)
+        private static float LevelWeightScale(int learnLevel)
+        {
+            return MathF.Pow(learnLevel, 2);
+        }
+
+        private static float LevelWeightScaleSmall(int learnLevel)
+        {
+            return MathF.Pow(learnLevel, 1.5f);
+        }
+
+        public Move[] SmartMoveSet(PokemonBaseStats pokemon, int level)
         {
             bool IsStab(Move m) => pokemon.IsType(dataT.GetMoveData(m).type);
             // Initialize move choices
-            var availableMoves = new Dictionary<Move, int>();
-            foreach(var entry in pokemon.learnSet.Where((e) => e.learnLvl <= level))
-            {
-                var move = entry.move;
-                var learnLevel = entry.learnLvl;
-                if (availableMoves.ContainsKey(move))
-                {
-                    if (availableMoves[move] < learnLevel)
-                        availableMoves[move] = learnLevel;
-                }
-                else
-                {
-                    availableMoves.Add(move, learnLevel);
-                }
-            }
-            // Add movesets from evolved from (moves down the chain)
-            for (var pkmn = pokemon; pkmn.evolvesFrom.Count > 0; pkmn = dataT.GetBaseStats(pkmn.evolvesFrom[0].Pokemon))
-            {
-                foreach(var entry in pkmn.learnSet.Where((e) => e.learnLvl <= level))
-                {
-                    var move = entry.move;
-                    var learnLevel = entry.learnLvl;
-                    if (availableMoves.ContainsKey(move))
-                    {
-                        if(availableMoves[move] < learnLevel)
-                            availableMoves[move] = learnLevel;
-                    }
-                    else
-                    {
-                        availableMoves.Add(move, learnLevel);
-                    }
-                }
-            }
-
+            var availableMoves = AvailableMoves(pokemon, level);
             // Initialize returns
             Move[] ret = new Move[4] { Move.None, Move.None, Move.None, Move.None };
             if (availableMoves.Count <= 0)
                 return ret;
-            IEnumerable<Move> GetAttackMoves() => availableMoves.Keys.Where(m => !dataT.GetMoveData(m).IsStatus);
-            //IEnumerable<LearnSet.Entry> GetNonStabMoves() => GetAttackMoves().Where((e) => !pokemon.types.Contains(GetData(e).type));
-            IEnumerable<Move> GetStatusMoves() => availableMoves.Keys.Where(m => dataT.GetMoveData(m).IsStatus);
             float PowerWeightScale(Move e) => (float)Math.Pow(dataT.GetMoveData(e).EffectivePower * (IsStab(e) && dataT.GetMoveData(e).AffectedByStab ? 1.5 : 1), 3);
             float RedundantTypeFactor(Move m)
             {
@@ -79,48 +66,25 @@ namespace PokemonRandomizer.Backend.Randomization
             float TypeWeightScale(Move m) => (IsStab(m) ? 2f : 1) * RedundantTypeFactor(m);
             float LevelWeightScale(Move e) => (float)Math.Pow(availableMoves[e], 2);
             float LevelWeightScaleSmall(Move e) => (float)Math.Pow(availableMoves[e], 1.5);
-            //float LevelWeightScaleLinear(Move e) => Math.Max(1, availableMoves[e] / 4);
             float LevelWeightScaleLog(Move e) => (float)Math.Max(1, Math.Log(availableMoves[e]));
-            Move FallbackMoveChoice() => rand.Choice(new WeightedSet<Move>(availableMoves.Keys, LevelWeightScale));
 
             // Choose first move - attempt to choose an attack move
-            var attackMoves = new WeightedSet<Move>(GetAttackMoves(), (e) => PowerWeightScale(e) * TypeWeightScale(e) * LevelWeightScaleLog(e));
-            if (attackMoves.Count > 0)
-            {
-                ret[0] = rand.Choice(attackMoves);
-            }
-            else
-            {
-                ret[0] = FallbackMoveChoice();
-            }
+            var attackMoves = new WeightedSet<Move>(GetAttackMoves(availableMoves), (e) => PowerWeightScale(e) * TypeWeightScale(e) * LevelWeightScaleLog(e));
+            ret[0] = ChooseMove(attackMoves, availableMoves);
             availableMoves.Remove(ret[0]);
             if (availableMoves.Count <= 0)
                 return ret;
 
             // Choose second move - attempt to choose another attack move
-            attackMoves = new WeightedSet<Move>(GetAttackMoves(), (e) => PowerWeightScale(e) * TypeWeightScale(e) * LevelWeightScaleLog(e));
-            if (attackMoves.Count > 0)
-            {
-                ret[1] = rand.Choice(attackMoves);
-            }
-            else
-            {
-                ret[1] = FallbackMoveChoice();
-            }
+            attackMoves = new WeightedSet<Move>(GetAttackMoves(availableMoves), (e) => PowerWeightScale(e) * TypeWeightScale(e) * LevelWeightScaleLog(e));
+            ret[1] = ChooseMove(attackMoves, availableMoves);
             availableMoves.Remove(ret[1]);
             if (availableMoves.Count <= 0)
                 return ret;
 
             // Choose third move - Attempt to choose a status move
-            var noPowerMoves = new WeightedSet<Move>(GetStatusMoves(), LevelWeightScaleSmall);
-            if (noPowerMoves.Count > 0)
-            {
-                ret[2] = rand.Choice(noPowerMoves);
-            }
-            else
-            {
-                ret[2] = FallbackMoveChoice();
-            }
+            var statusMoves = new WeightedSet<Move>(GetStatusMoves(availableMoves), LevelWeightScaleSmall);
+            ret[2] = ChooseMove(statusMoves, availableMoves);
             availableMoves.Remove(ret[2]);
             if (availableMoves.Count <= 0)
                 return ret;
@@ -128,9 +92,7 @@ namespace PokemonRandomizer.Backend.Randomization
             var fourthMoveChoice = new WeightedSet<Move>(availableMoves.Keys, LevelWeightScale);
             var currentMoves = ret.Where(m => m != Move.None).Select(dataT.GetMoveData);
             var metrics = new List<Func<Move, float>>();
-            const float needSynergy = 12500;
-            const float preferSynergy = needSynergy / 2;
-            const float weakSynergy = needSynergy / 10;
+
 
             // Apply synergy metrics
 
@@ -180,6 +142,112 @@ namespace PokemonRandomizer.Backend.Randomization
             ret[3] = rand.Choice(new WeightedSet<Move>(availableMoves.Keys, m => LevelWeightScale(m) * Math.Max(1, metrics.Sum((metric) => metric(m)))));
 
             return ret;
+        }
+
+        public Move[] StatusTankMoveset(Random rand, PokemonBaseStats pokemon, int level)
+        {
+            // Choose first move - attempt to choose a damaging status move or DOT move. Favor same type
+
+            // Choose second move - attempt to choose another damaging status move or DOT move that can overlap with the first one
+
+            // Choose third move = attempt to choose a buff / disruption move:
+            // Priority 1: healing move
+            // Priority 2: def/sp.def/evasion buff
+            // Priority 3: attack/sp.attack/acc debuff
+
+            return Array.Empty<Move>();
+        }
+
+        private IEnumerable<Move> GetAttackMoves(Dictionary<Move, int> moves)
+        {
+            return moves.Keys.Where(m => !dataT.GetMoveData(m).IsStatus);
+        }
+
+        private IEnumerable<Move> GetStatusMoves(Dictionary<Move, int> moves)
+        {
+            return moves.Keys.Where(m => dataT.GetMoveData(m).IsStatus);
+        }
+
+        private Move ChooseMove(WeightedSet<Move> preferredMoves, Dictionary<Move, int> allMoves)
+        {
+            // Preferred strategry
+            if(preferredMoves.Count > 0)
+            {
+                return rand.Choice(preferredMoves);
+            }
+            // Fallback strategy
+            var fallbackMoves = new WeightedSet<Move>(allMoves.Count);
+            foreach (var kvp in allMoves)
+            {
+                fallbackMoves.Add(kvp.Key, LevelWeightScale(kvp.Value));
+            }
+            return rand.Choice(fallbackMoves);
+        }
+
+        private Dictionary<Move, int> AvailableMoves(PokemonBaseStats pokemon, int level)
+        {
+            var availableMoves = new Dictionary<Move, int>(pokemon.learnSet.Count * 4);
+            AddMovesFromPokemon(ref availableMoves, pokemon, level);
+            // Add movesets from evolved from (moves down the chain)
+            for (var preEvolution = pokemon; preEvolution.evolvesFrom.Count > 0;)
+            {
+                preEvolution = dataT.GetBaseStats(preEvolution.evolvesFrom[0].Pokemon);
+                AddMovesFromPreEvolution(ref availableMoves, pokemon, level, preEvolution);
+            }
+            return availableMoves;
+        }
+
+        private void AddMovesFromPokemon(ref Dictionary<Move, int> availableMoves, PokemonBaseStats pokemon, int level)
+        {
+            AddMoves(ref availableMoves, pokemon.learnSet.Where(e => e.learnLvl <= level));
+        }
+
+        private void AddMovesFromPreEvolution(ref Dictionary<Move, int> availableMoves, PokemonBaseStats pokemon, int level, PokemonBaseStats preEvolution)
+        {
+            var eligibleMoves = new List<LearnSet.Entry>(preEvolution.learnSet.Count);
+            var movesetLookup = pokemon.learnSet.GetMovesLookup();
+            foreach(var entry in preEvolution.learnSet)
+            {
+                // Ignore moves past the learn level and SPLASH
+                if(entry.learnLvl > level || entry.move == Move.SPLASH)
+                {
+                    continue;
+                }
+                if (availableMoves.ContainsKey(entry.move))
+                {
+                    if(entry.learnLvl > availableMoves[entry.move])
+                    {
+                        // Move is higher level, update learn level data
+                        availableMoves[entry.move] = entry.learnLvl;
+                    }
+                    continue;
+                }
+                if (!movesetLookup.Contains(entry.move))
+                {
+                    // Pre-evo exclusive move, add to eligible moves
+                    eligibleMoves.Add(entry);
+                }
+            }
+            if (eligibleMoves.Count <= 0)
+                return;
+            AddMoves(ref availableMoves, eligibleMoves);
+        }
+
+        private void AddMoves(ref Dictionary<Move, int> availableMoves, IEnumerable<LearnSet.Entry> moves)
+        {
+            foreach (var entry in moves)
+            {
+                var move = entry.move;
+                var learnLevel = entry.learnLvl;
+                if (!availableMoves.ContainsKey(move))
+                {
+                    availableMoves.Add(move, learnLevel);
+                }
+                else if (availableMoves[move] < learnLevel)
+                {
+                    availableMoves[move] = learnLevel;
+                }
+            }
         }
     }
 }
