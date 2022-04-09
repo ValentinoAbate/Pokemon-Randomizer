@@ -705,12 +705,14 @@ namespace PokemonRandomizer.Backend.Randomization
 
         private List<MoveData> GetAvailibleAddMoves(LearnSet learnSet)
         {
-            return availableMoves.Where(m => m != Move.None && !learnSet.Learns(m)).Select(m => dataT.GetMoveData(m)).ToList();
+            var lookup = learnSet.GetMovesLookup();
+            return availableMoves.Where(m => m != Move.None && !lookup.Contains(m)).Select(m => dataT.GetMoveData(m)).ToList();
         }
 
         private List<MoveData> GetAvailibleTypeMoves(IEnumerable<MoveData> allMoves, PokemonType type, LearnSet learnSet)
         {
-            var moves = allMoves.Where(m => m.IsType(type) && !learnSet.Learns(m.move)).ToList();
+            var lookup = learnSet.GetMovesLookup();
+            var moves = allMoves.Where(m => m.IsType(type) && !lookup.Contains(m.move)).ToList();
             moves.Sort((m1, m2) => m1.EffectivePower.CompareTo(m2.EffectivePower));
             return moves;
         }

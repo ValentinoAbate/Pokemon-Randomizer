@@ -38,7 +38,8 @@ namespace PokemonRandomizer.Backend.Randomization
         public void GenerateBonusMoves(PokemonBaseStats pokemon, int numMoves, WeightedSet<AddMoveSource> addMoveSourceWeights)
         {
             var availableMoves = new HashSet<Move>(availableAddMoves);
-            availableMoves.RemoveWhere(m => pokemon.learnSet.Learns(m));
+            var learnSetLookup = pokemon.learnSet.GetMovesLookup();
+            availableMoves.RemoveWhere(learnSetLookup.Contains);
             var availableEggMoves = pokemon.eggMoves.Where(m => availableMoves.Contains(m)).ToHashSet();
             for (int i = 0; i < numMoves; ++i)
             {
