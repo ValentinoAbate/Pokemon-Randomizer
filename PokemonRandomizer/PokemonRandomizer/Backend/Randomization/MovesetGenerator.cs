@@ -58,7 +58,7 @@ namespace PokemonRandomizer.Backend.Randomization
             var ret = EmptyMoveset();
             if (availableMoves.Count <= 0)
                 return ret;
-            float PowerWeightScale(Move e) => (float)Math.Pow(dataT.GetMoveData(e).EffectivePower * (IsStab(e) && dataT.GetMoveData(e).AffectedByStab ? 1.5 : 1), 3);
+            float PowerWeightScale(Move e) => MathF.Pow(dataT.GetMoveData(e).EffectivePower * (IsStab(e) && dataT.GetMoveData(e).AffectedByStab ? 1.5f : 1), 3);
             float RedundantTypeFactor(Move m)
             {
                 var mType = dataT.GetMoveData(m).type;
@@ -73,9 +73,9 @@ namespace PokemonRandomizer.Backend.Randomization
 
             }
             float StabBonus(Move m) => IsStab(m) ? 2f : 1;
-            float LevelWeightScale(Move e) => (float)Math.Pow(availableMoves[e], 2);
-            float LevelWeightScaleSmall(Move e) => (float)Math.Pow(availableMoves[e], 1.5);
-            float LevelWeightScaleLog(Move e) => (float)Math.Max(1, Math.Log(availableMoves[e]));
+            float LevelWeightScale(Move e) => MathF.Pow(availableMoves[e], 2);
+            float LevelWeightScaleSmall(Move e) => MathF.Pow(availableMoves[e], 1.5f);
+            float LevelWeightScaleLog(Move e) => MathF.Max(1, MathF.Log(availableMoves[e]));
 
             // Choose first move - attempt to choose an attack move
             if(ChooseMoveForIndex(ret, 0, GetAttackMoves(availableMoves), (m) => PowerWeightScale(m) * StabBonus(m) * LevelWeightScaleLog(m), ref availableMoves))
