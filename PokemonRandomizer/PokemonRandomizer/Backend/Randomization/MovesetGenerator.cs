@@ -270,7 +270,7 @@ namespace PokemonRandomizer.Backend.Randomization
             // Priority 2: OHKO
             // Priority 3: def/sp.def/evasion buff
             // Else Level-based
-            if (ChooseMoveForIndex(ret, 2, new WeightedSet<Move>(GetStatusMoves(availableMoves)), ref availableMoves))
+            if (ChooseMoveForIndex(ret, 3, new WeightedSet<Move>(GetStatusMoves(availableMoves)), ref availableMoves))
             {
                 return ret;
             }
@@ -313,7 +313,14 @@ namespace PokemonRandomizer.Backend.Randomization
 
         private IEnumerable<Move> GetStatusMoves(Dictionary<Move, int> moves)
         {
-            return moves.Keys.Where(m => dataT.GetMoveData(m).IsStatus);
+            return moves.Keys.Where(IsValidStatusMove);
+        }
+
+        private bool IsValidStatusMove(Move m)
+        {
+            if (m == Move.SPLASH)
+                return false;
+            return dataT.GetMoveData(m).IsStatus;
         }
 
         private Dictionary<Move, int> AvailableMoves(PokemonBaseStats pokemon, int level)
