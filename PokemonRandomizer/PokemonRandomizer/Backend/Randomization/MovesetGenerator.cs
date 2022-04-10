@@ -51,6 +51,11 @@ namespace PokemonRandomizer.Backend.Randomization
 
         public Move[] SmartMoveSet(PokemonBaseStats pokemon, int level)
         {
+            if(pokemon.species is Pokemon.SHUCKLE or Pokemon.CHANSEY or Pokemon.BLISSEY or Pokemon.HOPPIP or Pokemon.SKIPLOOM or Pokemon.JUMPLUFF
+                or Pokemon.LILEEP or Pokemon.CRADILY)
+            {
+                return StatusTankMoveset(pokemon, level);
+            }
             bool IsStab(Move m) => pokemon.IsType(dataT.GetMoveData(m).type);
             // Initialize move choices
             var availableMoves = AvailableMoves(pokemon, level);
@@ -160,22 +165,127 @@ namespace PokemonRandomizer.Backend.Randomization
                 return ret;
 
             // Choose first move - attempt to choose a damaging status move or DOT move. Favor same type
-
+            var preferredMoves = new WeightedSet<Move>(availableMoves.Count);
+            foreach(var kvp in availableMoves)
+            {
+                var moveData = dataT.GetMoveData(kvp.Key);
+                float weight = 0;
+                if(moveData.effect is MoveEffect.StatusBadlyPoison or MoveEffect.StatusLeechSeed)
+                {
+                    weight = 1000;
+                }
+                else if(moveData.effect is MoveEffect.StatusBurn or MoveEffect.StatusPoison)
+                {
+                    weight = 100;
+                }
+                else if(moveData.effect is MoveEffect.DoTTrap or MoveEffect.StatusConfuse or MoveEffect.StatusConfuseAll)
+                {
+                    weight = 10;
+                }
+                else if(moveData.effect is MoveEffect.StatusNightmare)
+                {
+                    foreach(var entry in pokemon.learnSet)
+                    {
+                        var entryData = dataT.GetMoveData(entry.move);
+                        if(entryData.effect is MoveEffect.StatusSleep or MoveEffect.Yawn)
+                        {
+                            weight = 100;
+                            break;
+                        }
+                    }
+                }
+                else if(moveData.effect is MoveEffect.Curse)
+                {
+                    if (pokemon.IsType(PokemonType.GHO))
+                    {
+                        weight = 100;
+                    }
+                }
+                else if(moveData.effect is MoveEffect.WeatherSandstorm)
+                {
+                    if (pokemon.IsType(PokemonType.RCK))
+                    {
+                        weight = 25; // Going to be multiplied by 2 for STAB anyway
+                    }
+                    else if(pokemon.IsType(PokemonType.GRD) || pokemon.IsType(PokemonType.STL))
+                    {
+                        weight = 10;
+                    }
+                }
+                else if (moveData.effect is MoveEffect.WeatherHail)
+                {
+                    if (pokemon.IsType(PokemonType.ICE))
+                    {
+                        weight = 10;
+                    }
+                }
+                if (moveData.IsType(pokemon))
+                {
+                    weight *= 10;
+                }
+                if(weight > 0)
+                {
+                    preferredMoves.Add(moveData.move, weight);
+                }
+            }
+            if (ChooseMoveForIndex(ret, 0, preferredMoves, ref availableMoves))
+            {
+                return ret;
+            }
             // Choose second move - attempt to choose another damaging status move or DOT move that can overlap with the first one
+            var firstMoveData = dataT.GetMoveData(ret[0]);
+            preferredMoves.RemoveIfContains(firstMoveData.move);
+            // Don't stack non-volatile status conditions
+            if(firstMoveData.effect is MoveEffect.StatusPoison or MoveEffect.StatusBurn or MoveEffect.StatusBadlyPoison)
+            {
+                preferredMoves.RemoveWhere(m => dataT.GetMoveData(m).effect is MoveEffect.StatusPoison or MoveEffect.StatusBurn or MoveEffect.StatusBadlyPoison);
+            }
+            else if(firstMoveData.effect is MoveEffect.StatusNightmare)
+            {
+                // If nightmare, ensure sleep
+                preferredMoves.RemoveWhere(m => dataT.GetMoveData(m).effect is not (MoveEffect.StatusSleep or MoveEffect.Yawn));
+            }
+            else if (firstMoveData.effect is MoveEffect.WeatherSandstorm or MoveEffect.WeatherHail)
+            {
+                // Don't stack weather conditions
+                preferredMoves.RemoveWhere(m => dataT.GetMoveData(m).effect is MoveEffect.WeatherSandstorm or MoveEffect.WeatherHail);
+            }
+            if (ChooseMoveForIndex(ret, 1, preferredMoves, ref availableMoves))
+            {
+                return ret;
+            }
 
             // Choose third move = attempt to choose a buff / disruption move:
-            // Priority 1: healing move
-            // Priority 2: def/sp.def/evasion buff
-            // Priority 3: attack/sp.attack/acc debuff
+            // Priority 1: healing move (recover / synth (etc.)) > ingrain > wish > drain move
+            // Priority 2: protect / detect (endure?)
+            // Priority 3: def/sp.def/evasion buff
+            // Priority 4: attack/sp.attack/acc debuff
+            if (ChooseMoveForIndex(ret, 2, new WeightedSet<Move>(GetStatusMoves(availableMoves)), ref availableMoves))
+            {
+                return ret;
+            }
 
-            return Array.Empty<Move>();
+            // Fourth move
+            // Priority 1: flat damage (dragon rage, psywave, seismic toss, night shade, sonicboom, dragon rage, etc)
+            // Priority 2: OHKO
+            // Priority 3: def/sp.def/evasion buff
+            // Else Level-based
+            if (ChooseMoveForIndex(ret, 2, new WeightedSet<Move>(GetStatusMoves(availableMoves)), ref availableMoves))
+            {
+                return ret;
+            }
+
+            return ret;
         }
 
         private bool ChooseMoveForIndex(Move[] moveset, int index, IEnumerable<Move> preferredMoves, Func<Move, float> moveWeight, ref Dictionary<Move, int> availableMoves)
         {
-            // Choose first move - attempt to choose an attack move
-            var attackMoves = new WeightedSet<Move>(preferredMoves, moveWeight);
-            moveset[index] = ChooseMove(attackMoves, availableMoves);
+            return ChooseMoveForIndex(moveset, index, new WeightedSet<Move>(preferredMoves, moveWeight), ref availableMoves);
+        }
+
+        private bool ChooseMoveForIndex(Move[] moveset, int index, WeightedSet<Move> preferredMoves, ref Dictionary<Move, int> availableMoves)
+        {
+            moveset[index] = ChooseMove(preferredMoves, availableMoves);
             availableMoves.Remove(moveset[index]);
             return availableMoves.Count <= 0;
         }
