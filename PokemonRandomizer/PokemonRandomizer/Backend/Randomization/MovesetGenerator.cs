@@ -178,7 +178,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 {
                     weight = 100;
                 }
-                else if(moveData.effect is MoveEffect.DoTTrap or MoveEffect.StatusConfuse or MoveEffect.StatusConfuseAll)
+                else if(moveData.effect is MoveEffect.DoTTrap or MoveEffect.StatusConfuse or MoveEffect.StatusConfuseAll or MoveEffect.StatusConfuseAtkPlus2 or MoveEffect.StatusConfuseSpAtkPlus2 or MoveEffect.PerishSong)
                 {
                     weight = 10;
                 }
@@ -205,7 +205,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 {
                     if (pokemon.IsType(PokemonType.RCK))
                     {
-                        weight = 25; // Going to be multiplied by 2 for STAB anyway
+                        weight = 20; // Going to be multiplied by 2 for STAB anyway
                     }
                     else if(pokemon.IsType(PokemonType.GRD) || pokemon.IsType(PokemonType.STL))
                     {
