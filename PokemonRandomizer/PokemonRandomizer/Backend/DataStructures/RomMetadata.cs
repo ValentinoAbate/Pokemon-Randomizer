@@ -15,9 +15,9 @@ namespace PokemonRandomizer.Backend.DataStructures
         private const string gameCodeRu = "AXV";
         private const string gameCodeSp = "AXP";
         // Gen IV Codes
-        private const string gameCodePt = "CPU";
+        private const string gameCodePlatinum = "CPU";
         private const string gameCodeDi = "ADA";
-        private const string gameCodePl = "APA";
+        private const string gameCodePearl = "APA";
         private const string gameCodeHg = "IPK";
         private const string gameCodeSs = "IPG";
 
@@ -42,6 +42,7 @@ namespace PokemonRandomizer.Backend.DataStructures
         public bool IsFireRed => Gen == Generation.III && MatchCode(gameCodeFr);
         public bool IsRubySapphireOrEmerald => Gen == Generation.III && (MatchCode(gameCodeEm) || MatchCode(gameCodeRu) || MatchCode(gameCodeSp));
         public bool IsEmerald => Gen == Generation.III && MatchCode(gameCodeEm);
+        public bool IsPlatinum => Gen == Generation.IV && MatchCode(gameCodePlatinum);
         public Generation Gen { get; private set; }
         public string Code { get; private set; }
         public int Version { get; private set; }

@@ -68,5 +68,16 @@ namespace PokemonRandomizer.Resources.RomInfo {
                 return ResourceManager.GetString("Gen3RomInfo", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to "Gen4RomInfo"
+        /// </summary>
+        internal static string Gen4RomInfo
+        {
+            get
+            {
+                return ResourceManager.GetString("Gen4RomInfo", resourceCulture);
+            }
+        }
     }
 }
