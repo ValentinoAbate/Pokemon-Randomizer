@@ -12,7 +12,9 @@ namespace PokemonRandomizer.Backend.Reading
     public abstract class DSRomParser : RomParser
     {
         private const int fntOffsetOffset = 0x40;
-        protected DSRom ParseNDSFile(Rom rom, RomMetadata metadata, XmlManager info)
+        private const char pathSeparator = '/';
+        private const int directoryOffset = 0xF000;
+        protected DSFileSystemData ParseNDSFile(Rom rom, RomMetadata metadata, XmlManager info)
         {
             rom.Seek(fntOffsetOffset);
             int fntOffset = rom.ReadUInt32();
@@ -57,7 +59,7 @@ namespace PokemonRandomizer.Backend.Reading
                     {
                         // sub-directory
                         int subDirectoryID = rom.ReadUInt16();
-                        directoryNames[subDirectoryID - 0xF000] = name;
+                        directoryNames[subDirectoryID - directoryOffset] = name;
                     }
                     else
                     {
@@ -68,10 +70,62 @@ namespace PokemonRandomizer.Backend.Reading
                 }
             }
 
-            // Read FAT table data
-            rom.Seek(fatOffset);
-            var fat = rom.ReadBlock(fatSize);
-            return null;
+            var directoryPaths = new Dictionary<int, string>();
+
+            // Calculate full path names
+            for (int i = 1; i < dircount; i++)
+            {
+                string dirname = directoryNames[i];
+                if (dirname != null)
+                {
+                    string fullDirName = string.Empty;
+                    int curDir = i;
+                    while (!string.IsNullOrEmpty(dirname))
+                    {
+                        if (!string.IsNullOrEmpty(fullDirName))
+                        {
+                            fullDirName = pathSeparator + fullDirName;
+                        }
+                        fullDirName = dirname + fullDirName;
+                        int parentDir = parentDirIDs[curDir];
+                        if (parentDir >= 0xF001 && parentDir <= 0xFFFF)
+                        {
+                            curDir = parentDir - directoryOffset;
+                            dirname = directoryNames[curDir];
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+                    directoryPaths.Add(i + directoryOffset, fullDirName);
+                }
+                else
+                {
+                    directoryPaths.Add(i + directoryOffset, string.Empty);
+                }
+            }
+
+            var fileSystem = new DSFileSystemData(filenames.Count);
+
+            // parse files
+            foreach (int fileID in filenames.Keys)
+            {
+                string filename = filenames[fileID];
+                int directory = fileDirectories[fileID];
+                string dirPath = directoryPaths[directory + directoryOffset];
+                string fullFilename = filename;
+                if (!string.IsNullOrEmpty(dirPath))
+                {
+                    fullFilename = dirPath + pathSeparator + filename;
+                }
+                rom.Seek(fatOffset + (fileID * 8));
+                int start = rom.ReadUInt32();
+                int end = rom.ReadUInt32();
+                fileSystem.AddFile(fullFilename, start, end - start);
+            }
+
+            return fileSystem;
         }
     }
 }
