@@ -14,13 +14,13 @@ namespace PokemonRandomizer.Backend.Reading
         private const int fntOffsetOffset = 0x40;
         private const char pathSeparator = '/';
         private const int directoryOffset = 0xF000;
-        protected DSFileSystemData ParseNDSFile(Rom rom, RomMetadata metadata, XmlManager info)
+        protected DSFileSystemData ParseNDSFileSystemData(Rom rom)
         {
             rom.Seek(fntOffsetOffset);
             int fntOffset = rom.ReadUInt32();
-            int fntSize = rom.ReadUInt32();
+            rom.Skip(4); //int fntSize = rom.ReadUInt32();
             int fatOffset = rom.ReadUInt32();
-            int fatSize = rom.ReadUInt32();
+            rom.Skip(4); //int fatSize = rom.ReadUInt32();
 
             // Read fnt table data
             rom.Seek(fntOffset + 0x6);
@@ -109,8 +109,9 @@ namespace PokemonRandomizer.Backend.Reading
             var fileSystem = new DSFileSystemData(filenames.Count);
 
             // parse files
-            foreach (int fileID in filenames.Keys)
+            foreach (var kvp in filenames)
             {
+                int fileID = kvp.Key;
                 string filename = filenames[fileID];
                 int directory = fileDirectories[fileID];
                 string dirPath = directoryPaths[directory + directoryOffset];
