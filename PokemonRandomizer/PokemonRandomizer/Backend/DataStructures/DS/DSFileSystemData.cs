@@ -34,5 +34,19 @@ namespace PokemonRandomizer.Backend.DataStructures.DS
             fileLength = 0;
             return false;
         }
+
+        public bool GetFile(string fullFilename, out int offset, out int fileLength)
+        {
+            if (fileData.ContainsKey(fullFilename))
+            {
+                var data = fileData[fullFilename];
+                offset = data.offset;
+                fileLength = data.length;
+                return true;
+            }
+            offset = Rom.nullPointer;
+            fileLength = 0;
+            return false;
+        }
     }
 }

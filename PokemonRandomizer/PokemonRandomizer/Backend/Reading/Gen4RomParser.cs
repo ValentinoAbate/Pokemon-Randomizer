@@ -1,4 +1,5 @@
 ﻿using PokemonRandomizer.Backend.DataStructures;
+using PokemonRandomizer.Backend.DataStructures.DS;
 using PokemonRandomizer.Backend.EnumTypes;
 using PokemonRandomizer.Backend.GenIII.Constants.ElementNames;
 using PokemonRandomizer.Backend.Utilities;
@@ -14,6 +15,8 @@ namespace PokemonRandomizer.Backend.Reading
         {
             // Parse the NDS file structure
             var dsFileSystem = ParseNDSFileSystemData(rom);
+            var fileData = dsFileSystem.GetFile("poketool/personal/pl_personal.narc", out int baseStatsOffset, out int baseStatsLength);
+            var pokemonNARC = new NARCArchiveData(rom, baseStatsOffset, baseStatsLength);
             // Actually parse the ROM data
             RomData data = new RomData();
 
