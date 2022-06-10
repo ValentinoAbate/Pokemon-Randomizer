@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace PokemonRandomizer.Backend.DataStructures.DS
 {
+    // see https://www.romhacking.net/documents/[469]nds_formats.htm#NARC
+    // Code adapred from NARCArchive.java from UPR
     public class NARCArchiveData
     {
         private const string fatbIdentifier = "FATB";
@@ -26,6 +26,7 @@ namespace PokemonRandomizer.Backend.DataStructures.DS
             // Read the number of frames
             int frameCount = rom.ReadUInt16();
             // Read frame data
+            // Read frame sizes
             rom.Seek(offset + 0x10);
             for (int i = 0; i < frameCount; ++i)
             {
@@ -50,6 +51,55 @@ namespace PokemonRandomizer.Backend.DataStructures.DS
                 }
                 rom.Skip(frameLength);
             }
+            if(fatbFrameOffset == Rom.nullPointer || fimgFrameOffset == Rom.nullPointer || fntbFrameOffset == Rom.nullPointer)
+            {
+                throw new ArgumentException($"No valid NARC file located at {offset:x2}. FATB, FIMG, or FNTB frame not found");
+            }
+
+            // Read file offsets and sizes from FATB fram. Actual contents are located in FIMG frame
+            rom.Seek(fatbFrameOffset);
+            int fileCount = rom.ReadUInt32();
+            files = new List<(int offset, int length)>(fileCount);
+            for (int i = 0; i < fileCount; i++)
+            {
+                int startOffset = rom.ReadUInt32();
+                int endOffset = rom.ReadUInt32();
+                files.Add((fimgFrameOffset + startOffset, endOffset - startOffset));
+            }
+
+            // Read the filenames from the FNTB frame, if they exist
+            rom.Seek(fntbFrameOffset);
+            int fileNameIndicator = rom.ReadUInt32();
+            // Filenames 
+            if (fileNameIndicator == 8)
+            {
+                fileNames = new List<string>(fileCount);
+                rom.Skip(4);
+                for (int i = 0; i < fileCount; i++)
+                {
+                    byte nameLength = rom.ReadByte();
+                    fileNames.Add(Encoding.ASCII.GetString(rom.ReadBlock(nameLength)));
+                }
+            }
+            else
+            {
+                fileNames = new List<string>();
+            }
+        }
+
+        public bool GetFile(int fileIndex, out int offset, out int length, out string name)
+        {
+            name = fileIndex < fileNames.Count ? fileNames[fileIndex] : string.Empty;
+            if(fileIndex >= files.Count)
+            {
+                offset = Rom.nullPointer;
+                length = 0;
+                return false;
+            }
+            var fileData = files[fileIndex];
+            offset = fileData.offset;
+            length = fileData.length;
+            return true;
         }
     }
 }
