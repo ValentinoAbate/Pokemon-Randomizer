@@ -3,6 +3,7 @@ using PokemonRandomizer.Backend.DataStructures.DS;
 using PokemonRandomizer.Backend.EnumTypes;
 using PokemonRandomizer.Backend.GenIII.Constants.ElementNames;
 using PokemonRandomizer.Backend.Utilities;
+using PokemonRandomizer.Backend.Utilities.Debug;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,7 +18,11 @@ namespace PokemonRandomizer.Backend.Reading
             var dsFileSystem = ParseNDSFileSystemData(rom);
             // Actually parse the ROM data
             RomData data = new RomData();
-            data.Pokemon = ReadPokemonBaseStats(rom, dsFileSystem, info);
+            var pokemon = ReadPokemonBaseStats(rom, dsFileSystem, info);
+            foreach(var p in pokemon)
+            {
+                Logger.main.Info(p.ToString());
+            }
 
             throw new NotImplementedException("Gen IV Rom parsing not supported");
         }
@@ -38,7 +43,7 @@ namespace PokemonRandomizer.Backend.Reading
                 {
                     continue;
                 }
-                pokemon.Add(ReadBaseStatsSingle(rom, offset, (Pokemon)(i)));
+                pokemon.Add(ReadBaseStatsSingle(rom, offset, PokemonUtils.Gen4InternalToPokemon(i)));
             }
             return pokemon;
         }
@@ -83,6 +88,7 @@ namespace PokemonRandomizer.Backend.Reading
             // Temp until these can actually be read
             pkmn.Name = species.ToDisplayString();
             pkmn.NationalDexIndex = (int)species;
+            pkmn.evolvesTo = Array.Empty<Evolution>();
             return pkmn;
         }
     }
