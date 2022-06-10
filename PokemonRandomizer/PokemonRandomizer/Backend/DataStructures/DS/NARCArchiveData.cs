@@ -11,6 +11,7 @@ namespace PokemonRandomizer.Backend.DataStructures.DS
         private const string fatbIdentifier = "FATB";
         private const string fimgIdentifier = "FIMG";
         private const string fntbIdentifier = "FNTB";
+        public int FileCount => files.Count;
         private readonly List<string> fileNames;
         private readonly List<(int offset, int length)> files;
         public NARCArchiveData(Rom rom, int offset, int length)
