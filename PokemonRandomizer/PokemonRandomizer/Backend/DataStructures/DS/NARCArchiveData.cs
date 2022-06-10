@@ -5,7 +5,7 @@ using System.Text;
 namespace PokemonRandomizer.Backend.DataStructures.DS
 {
     // see https://www.romhacking.net/documents/[469]nds_formats.htm#NARC
-    // Code adapred from NARCArchive.java from UPR
+    // Code adapted from NARCArchive.java from UPR
     public class NARCArchiveData
     {
         private const string fatbIdentifier = "FATB";
@@ -26,7 +26,6 @@ namespace PokemonRandomizer.Backend.DataStructures.DS
             // Read the number of frames
             int frameCount = rom.ReadUInt16();
             // Read frame data
-            // Read frame sizes
             rom.Seek(offset + 0x10);
             for (int i = 0; i < frameCount; ++i)
             {
