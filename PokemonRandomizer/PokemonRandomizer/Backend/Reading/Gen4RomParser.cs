@@ -77,8 +77,8 @@ namespace PokemonRandomizer.Backend.Reading
             pkmn.eggGroups[0] = (EggGroup)rom.ReadByte();
             pkmn.eggGroups[1] = (EggGroup)rom.ReadByte();
             // fill in abilities
-            pkmn.abilities[0] = (Ability)rom.ReadByte();
-            pkmn.abilities[1] = (Ability)rom.ReadByte();
+            pkmn.abilities[0] = AbilityUtils.PostGen3InternalToAbility(rom.ReadByte());
+            pkmn.abilities[1] = AbilityUtils.PostGen3InternalToAbility(rom.ReadByte());
             pkmn.safariZoneRunRate = rom.ReadByte();
             byte searchFlip = rom.ReadByte();
             // read color
