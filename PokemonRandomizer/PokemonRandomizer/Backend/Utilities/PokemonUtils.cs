@@ -16,7 +16,6 @@ namespace PokemonRandomizer.Backend.Utilities
             {
                 pokemonToGenIVInternal.Add(genIVInternalToPokemon[i], i);
             }
-
         }
         public static bool IsBaby(this Pokemon species) => babyPokemon.Contains(species);
         private static readonly HashSet<Pokemon> babyPokemon = new HashSet<Pokemon>
