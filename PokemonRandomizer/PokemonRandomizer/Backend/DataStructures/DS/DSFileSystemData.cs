@@ -37,16 +37,17 @@ namespace PokemonRandomizer.Backend.DataStructures.DS
 
         public bool GetFile(string fullFilename, out int offset, out int fileLength)
         {
-            if (fileData.ContainsKey(fullFilename))
+            if (string.IsNullOrEmpty(fullFilename) || !fileData.ContainsKey(fullFilename))
             {
-                var data = fileData[fullFilename];
-                offset = data.offset;
-                fileLength = data.length;
-                return true;
+                offset = Rom.nullPointer;
+                fileLength = 0;
+                return false;
             }
-            offset = Rom.nullPointer;
-            fileLength = 0;
-            return false;
+            var data = fileData[fullFilename];
+            offset = data.offset;
+            fileLength = data.length;
+            return true;
+
         }
 
         public bool GetNarcFile(Rom rom, string fullFilename, out NARCArchiveData narc)

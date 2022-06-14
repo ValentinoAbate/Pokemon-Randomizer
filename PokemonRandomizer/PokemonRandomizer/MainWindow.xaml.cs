@@ -243,10 +243,6 @@ namespace PokemonRandomizer
             }
             else if (metadata.Gen == Generation.IV)
             {
-                if (!metadata.IsPlatinum)
-                {
-                    throw new Exception($"Unsupported Rom (Code {metadata.Code}{metadata.Version}). {checkAboutHelpMessage}");
-                }
                 RomInfo = new XmlManager(PokemonRandomizer.Resources.RomInfo.RomInfo.Gen4RomInfo);
                 RomInfo.SetSearchRoot(metadata.Code + metadata.Version.ToString());
                 Rom = new Rom(rawRom, 0x00, 0x00);

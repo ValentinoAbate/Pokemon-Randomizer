@@ -14,5 +14,6 @@ namespace PokemonRandomizer.Backend.GenIII.Constants.AttributeNames
         public const string name = "name";
         public const string className = "className";
         public const string types = "types";
+        public const string evolutionsPerPokemon = "evolutionsPerPokemon";
     }
 }

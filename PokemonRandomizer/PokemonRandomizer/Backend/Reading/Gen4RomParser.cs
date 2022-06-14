@@ -1,6 +1,7 @@
 ﻿using PokemonRandomizer.Backend.DataStructures;
 using PokemonRandomizer.Backend.DataStructures.DS;
 using PokemonRandomizer.Backend.EnumTypes;
+using PokemonRandomizer.Backend.GenIII.Constants.AttributeNames;
 using PokemonRandomizer.Backend.GenIII.Constants.ElementNames;
 using PokemonRandomizer.Backend.Utilities;
 using PokemonRandomizer.Backend.Utilities.Debug;
@@ -39,17 +40,18 @@ namespace PokemonRandomizer.Backend.Reading
 
         private List<PokemonBaseStats> ReadPokemonBaseStats(Rom rom, DSFileSystemData dsFileSystem, XmlManager info)
         {
-            // Later replace with string from info file
-            if(!dsFileSystem.GetNarcFile(rom, "poketool/personal/pl_personal.narc", out var pokemonNARC))
+            if(!dsFileSystem.GetNarcFile(rom, info.Path(ElementNames.pokemonBaseStats), out var pokemonNARC))
             {
                 return new List<PokemonBaseStats>();
             }
             var pokemon = new List<PokemonBaseStats>(pokemonNARC.FileCount);
-            if (!dsFileSystem.GetNarcFile(rom, "poketool/personal/wotbl.narc", out var learnsetNARC))
+            if (!dsFileSystem.GetNarcFile(rom, info.Path(ElementNames.movesets), out var learnsetNARC))
             {
                 return new List<PokemonBaseStats>();
             }
-            if (!dsFileSystem.GetNarcFile(rom, "poketool/personal/evo.narc", out var evolutionsNARC))
+            int evolutionsPerPokemon = info.IntAttr(ElementNames.evolutions, AttributeNames.evolutionsPerPokemon);
+            int evolutionPadding = info.Padding(ElementNames.evolutions);
+            if (!dsFileSystem.GetNarcFile(rom, info.Path(ElementNames.evolutions), out var evolutionsNARC))
             {
                 return new List<PokemonBaseStats>();
             }
@@ -72,8 +74,7 @@ namespace PokemonRandomizer.Backend.Reading
                 // Read evolutions
                 if (evolutionsNARC.GetFile(i, out int evolutionOffset, out _, out _))
                 {
-                    // TODO: replace 7 with data file constant
-                    ReadEvolutions(rom, evolutionOffset, 7, 0, out newPokemon.evolvesTo);
+                    ReadEvolutions(rom, evolutionOffset, evolutionsPerPokemon, evolutionPadding, out newPokemon.evolvesTo);
                 }
                 else
                 {

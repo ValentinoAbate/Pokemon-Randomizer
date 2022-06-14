@@ -50,7 +50,7 @@
     <pokemonBaseStats num="411" size="28" skip="25" skipAt="251"/>
     <tmHmCompat size="8"/>
     <eggMoves pokemonSigniture="0x4E20"/>
-    <evolutions size="40" evolutionsPerPokemon="5"/>
+    <evolutions size="40" evolutionsPerPokemon="5" padding="2"/>
     <pokemonNames length ="11"/>
     <!-- Constant for FRLG+E (R/S will override) -->
     <pokemonPalettes pointer="0x000130" size="8"/>

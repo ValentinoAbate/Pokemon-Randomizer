@@ -1,5 +1,91 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 
 <gen4RomInfo>
-  
+	<constants>
+	</constants>
+	
+
+	<dppConstants>
+		<!-- Metadata -->
+
+		<inheritFrom>constants</inheritFrom>
+		<movesets filePath="poketool/personal/wotbl.narc"/>
+		<evolutions filePath="poketool/personal/evo.narc" evolutionsPerPokemon="7" padding="0"/>
+	</dppConstants>
+
+	<!-- Platinum Rom Info -->
+
+	<CPUE0>
+		<!-- Metadata -->
+
+		<inheritFrom>dppConstants</inheritFrom>
+		<pokemonBaseStats filePath="poketool/personal/pl_personal.narc"/>
+		
+	</CPUE0>
+
+	<!-- Diamond / Pearl Constants -->
+
+	<dpConstants>
+		<!-- Metadata -->
+
+		<inheritFrom>dppConstants</inheritFrom>
+	</dpConstants>
+
+	<!-- Diamond / Pearl Rom Info -->
+
+	<ADAE0>
+		<!-- Metadata -->
+
+		<inheritFrom>dpConstants</inheritFrom>
+		<pokemonBaseStats filePath="poketool/personal/personal.narc"/>
+
+	</ADAE0>
+	<ADAE5>
+		<!-- Metadata -->
+
+		<inheritFrom>ADAE0</inheritFrom>
+
+	</ADAE5>
+	<APAE0>
+		<!-- Metadata -->
+
+		<inheritFrom>ADAE0</inheritFrom>
+		<pokemonBaseStats filePath="poketool/personal_pearl/personal.narc"/>
+
+	</APAE0>
+	<APAE5>
+		<!-- Metadata -->
+
+		<inheritFrom>APAE0</inheritFrom>
+
+	</APAE5>
+
+	<!-- HGSS Constants -->
+
+	<hgssConstants>
+		<!-- Metadata -->
+
+		<inheritFrom>constants</inheritFrom>
+		<pokemonBaseStats filePath="a/0/0/2"/>
+		<movesets filePath="a/0/3/3"/>
+		<evolutions filePath="a/0/3/4"/>
+	</hgssConstants>
+
+	<!-- HGSS Rom Info -->
+
+	<!-- HeartGold -->
+	<IPKE0>
+		<!-- Metadata -->
+
+		<inheritFrom>hgssConstants</inheritFrom>
+
+	</IPKE0>
+	<!-- SoulSilver -->
+	<IPGE0>
+		<!-- Metadata -->
+
+		<inheritFrom>IPKE0</inheritFrom>
+
+	</IPGE0>
+	
 </gen4RomInfo> 

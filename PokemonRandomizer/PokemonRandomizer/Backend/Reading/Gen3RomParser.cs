@@ -213,7 +213,8 @@ namespace PokemonRandomizer.Backend.Reading
             if (evolutionOffset == Rom.nullPointer)
                 return pokemon;
             int evolutionSize = info.Size(ElementNames.evolutions);
-            int evolutionsPerPokemon = info.IntAttr(ElementNames.evolutions, "evolutionsPerPokemon");
+            int evolutionsPerPokemon = info.IntAttr(ElementNames.evolutions, AttributeNames.evolutionsPerPokemon);
+            int evolutionPadding = info.Padding(ElementNames.evolutions);
             // Add evolution size to skip the null pokemon
             evolutionOffset += evolutionSize;
             // setup TmHmCompat offset
@@ -272,7 +273,7 @@ namespace PokemonRandomizer.Backend.Reading
                 // Read Tm/Hm/Mt compat
                 ReadTMHMCompat(rom, tmHmCompatOffset + (i * tmHmSize), numTms, numHms, tmHmSize, out pkmn.TMCompat, out pkmn.HMCompat);
                 ReadTutorCompat(rom, tutorCompatOffset + (i * tutorSize), numTutorMoves, tutorSize, out pkmn.moveTutorCompat);
-                ReadEvolutions(rom, evolutionOffset + (i * evolutionSize), evolutionsPerPokemon, 2, out pkmn.evolvesTo);
+                ReadEvolutions(rom, evolutionOffset + (i * evolutionSize), evolutionsPerPokemon, evolutionPadding, out pkmn.evolvesTo);
                 ReadPalettes(rom, normalPaletteOffset + (i * pokemonPaletteSize), shinyPaletteOffset + (i * pokemonPaletteSize), pkmn);
                 pokemon.Add(pkmn);
             }
