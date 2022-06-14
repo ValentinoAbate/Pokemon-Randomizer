@@ -45,11 +45,11 @@ namespace PokemonRandomizer.Backend.DataStructures
             Pokemon = pokemon;
             this.parameter = parameter;
         }
-        public Evolution(EvolutionType type, Pokemon pokemon, int parameter)
+        public Evolution(Evolution toCopy)
         {
-            Type = type;
-            Pokemon = pokemon;
-            this.parameter = parameter;
+            Type = toCopy.Type;
+            Pokemon = toCopy.Pokemon;
+            parameter = toCopy.parameter;
         }
         public override string ToString()
         {

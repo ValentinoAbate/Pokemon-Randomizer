@@ -107,7 +107,7 @@ namespace PokemonRandomizer.Backend.DataStructures
                 {
                     if (evo.Type != EvolutionType.None)
                     {
-                        PokemonLookup[evo.Pokemon].evolvesFrom.Add(new Evolution(evo.Type, pokemon.species, evo.parameter));
+                        PokemonLookup[evo.Pokemon].evolvesFrom.Add(new Evolution(evo));
                     }
                 }
             }
