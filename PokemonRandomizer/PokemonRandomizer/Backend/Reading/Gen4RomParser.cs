@@ -60,6 +60,7 @@ namespace PokemonRandomizer.Backend.Reading
                     continue;
                 }
                 var newPokemon = ReadBaseStatsSingle(rom, pokemonOffset, InternalIndexToPokemon(i));
+                // Read Learnset
                 if (learnsetNARC.GetFile(i, out int learnsetOffset, out _, out _))
                 {
                     ReadLearnSet(rom, learnsetOffset, out newPokemon.learnSet);
@@ -68,6 +69,7 @@ namespace PokemonRandomizer.Backend.Reading
                 {
                     Logger.main.Error($"Unable to find learset file for pokemon {newPokemon.Name}");
                 }
+                // Read evolutions
                 if (evolutionsNARC.GetFile(i, out int evolutionOffset, out _, out _))
                 {
                     // TODO: replace 7 with data file constant

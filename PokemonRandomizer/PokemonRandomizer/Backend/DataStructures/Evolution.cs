@@ -16,12 +16,23 @@ namespace PokemonRandomizer.Backend.DataStructures
             LevelUpWithDefLessThanAtk,  // 0x0008 - Evolves by level up, but only when Attack is greater than Defense
             LevelUpWithAtkEqualToDef,   // 0x0009 - Evolves by level up, but only when Attack is equal to Defense
             LevelUpWithAtkLessThanDef,  // 0x000A - Evolves by level up, but only when Attack is lower than Defense
-            LevelUpWithPersonality1,    // 0x000B - Evolves by level up, but only when the personality value permits(Wurmple → Silcoon evolution)
-            LevelUpWithPersonality2,    // 0x000C - Evolves by level up, but only when the personality value permits(Wurmple → Cascoon evolution)
-            LevelUpButMaySpawn,         // 0x000D - Evolves by level up, but may spawn another Pokémon if permitted(Nincada → Ninjask evolution)
-            LevelUpConditionalSpawn,    // 0x000E - Evolves by level up, but is only spawned if the conditions permit(Nincada → Shedinja evolution)
+            LevelUpWithPersonality1,    // 0x000B - Evolves by level up, but only when the personality value permits (Wurmple → Silcoon evolution)
+            LevelUpWithPersonality2,    // 0x000C - Evolves by level up, but only when the personality value permits (Wurmple → Cascoon evolution)
+            LevelUpButMaySpawn,         // 0x000D - Evolves by level up, but may spawn another Pokémon if permitted (Nincada → Ninjask evolution)
+            LevelUpConditionalSpawn,    // 0x000E - Evolves by level up, but is only spawned if the conditions permit (Nincada → Shedinja evolution)
             Beauty,                     // 0x000F - Evolves by beauty
-        }
+            UseItemMale,                // 0x0010 - Evolves by using an item on the Pokémon, but only if it is Male
+            UseItemFemale,              // 0x0011 - Evolves by using an item on the Pokémon, but only if it is Female
+            LevelUpWithItemDay,         // 0x0012 - Evolves by level up, but only while holding a specific item during the day
+            LevelUpWithItemNight,       // 0x0013 - Evolves by level up, but only while holding a specific item during the night
+            LevelUpWithMove,            // 0x0014 - Evolves by level up, but only when the pokemon knows a certain move
+            LevelUpWithPokemonInParty,  // 0x0015 - Evolves by level up, but only when a specific pokmon is in the party (mantyke -> mantine w/ remoraid)
+            LevelUpMale,                // 0x0016 - Evolves by level up, but only if it is Male
+            LevelUpFemale,              // 0x0017 - Evolves by level up, but only if it is Female
+            LevelUpAtMagneticField,     // 0x0018 - Evolves by level up, but only at a special magnetic field (Mt Coronet)
+            LevelUpAtMossyRock,         // 0x0019 - Evolves by level up, but only at a Mossy Rock (Eterna Forest)
+            LevelUpAtIcyRock,           // 0x001A - Evolves by level up, but only at an Icy Rock (Route 217)
+    }
     // Represents a single evolution definition
     // Each pokemon has five of these (most of which are usually empty)
     // https://bulbapedia.bulbagarden.net/wiki/Pok%C3%A9mon_evolution_data_structure_in_Generation_III
@@ -29,16 +40,19 @@ namespace PokemonRandomizer.Backend.DataStructures
     {
         public bool IsRealEvolution => Type != EvolutionType.None;
         public EvolutionType Type { get; set; }
-        // The parameter to the evolution function (dependend on evolution type)
-        // For LevelUp evoltion types, the parameter is the evolution level
+        // The parameter to the evolution function (depending on evolution type)
+        // For LevelUp evolution types that require a specific level (see EvolvesByLevel), the parameter is the evolution level
         // For Item-related evolution types, the parameter is the Item needed
         // For the Beauty type, the parameter is the beauty threshold (0-255)
+        // For Move-related evolution types, the parameter is the Move needed
+        // For Pokemon-related evolution types, the parameter is the Pokemon needed
         // On any other types the parameter does not apply
         public int parameter;
         public Pokemon Pokemon { get; set; }
-        public bool EvolvesByLevel { get => Type.ToString().Contains("Level"); }
-        public bool EvolvesByTrade { get => Type == EvolutionType.Trade || Type == EvolutionType.TradeWithItem; }
-        public bool EvolvesByFriendship { get => Type == EvolutionType.Friendship || Type == EvolutionType.FriendshipDay || Type == EvolutionType.FriendshipNight; }
+        public bool EvolvesByLevel => Type is EvolutionType.LevelUp or EvolutionType.LevelUpButMaySpawn or EvolutionType.LevelUpConditionalSpawn or EvolutionType.LevelUpFemale or EvolutionType.LevelUpMale or EvolutionType.LevelUpWithAtkEqualToDef or EvolutionType.LevelUpWithAtkLessThanDef or EvolutionType.LevelUpWithDefLessThanAtk or EvolutionType.LevelUpWithPersonality1 or EvolutionType.LevelUpWithPersonality2;
+        public bool EvolvesWithItem => Type is EvolutionType.UseItem or EvolutionType.TradeWithItem or EvolutionType.LevelUpWithItemDay or EvolutionType.LevelUpWithItemNight or EvolutionType.UseItemMale or EvolutionType.UseItemFemale;
+        public bool EvolvesByTrade => Type is EvolutionType.Trade or EvolutionType.TradeWithItem;
+        public bool EvolvesByFriendship => Type is EvolutionType.Friendship or EvolutionType.FriendshipDay or EvolutionType.FriendshipNight;
         public Evolution(EvolutionType type, int parameter, Pokemon pokemon)
         {
             Type = type;
@@ -58,9 +72,17 @@ namespace PokemonRandomizer.Backend.DataStructures
             {
                 return ret + $" (Level {parameter})";
             }
-            else if(Type == EvolutionType.UseItem || Type == EvolutionType.TradeWithItem)
+            else if(EvolvesWithItem)
             {
                 return ret + $" ({((Item)parameter).ToDisplayString()})";
+            }
+            else if(Type is EvolutionType.LevelUpWithMove)
+            {
+                return ret + $" ({((Move)parameter).ToDisplayString()})";
+            }
+            else if(Type is EvolutionType.LevelUpWithPokemonInParty)
+            {
+                return ret + $" ({PokemonUtils.Gen4InternalToPokemon(parameter)})";
             }
             else if(Type == EvolutionType.Beauty)
             {
