@@ -33,5 +33,20 @@ namespace PokemonRandomizer.Backend.Reading
             rom.LoadOffset();
             return offset;
         }
+
+        // Read evolutions
+        protected void ReadEvolutions(Rom rom, int offset, int numEvolutions, int paddingSize, out Evolution[] evolutions)
+        {
+            evolutions = new Evolution[numEvolutions];
+            rom.SaveAndSeekOffset(offset);
+            for (int i = 0; i < evolutions.Length; ++i)
+            {
+                evolutions[i] = new Evolution((EvolutionType)rom.ReadUInt16(), rom.ReadUInt16(), InternalIndexToPokemon(rom.ReadUInt16()));
+                rom.Skip(paddingSize);
+            }
+            rom.LoadOffset();
+        }
+
+        protected abstract Pokemon InternalIndexToPokemon(int internalIndex);
     }
 }

@@ -23,11 +23,19 @@ namespace PokemonRandomizer.Backend.Reading
             {
                 Logger.main.Info(p.ToString());
                 Logger.main.Info(p.learnSet.ToString());
+                if (p.HasRealEvolution)
+                {
+                    Logger.main.Info(string.Join(", ", p.evolvesTo.Where(e => e.IsRealEvolution)));
+                }
             }
 
             throw new NotImplementedException("Gen IV Rom parsing not supported");
         }
 
+        protected override Pokemon InternalIndexToPokemon(int internalIndex)
+        {
+            return PokemonUtils.Gen4InternalToPokemon(internalIndex);
+        }
 
         private List<PokemonBaseStats> ReadPokemonBaseStats(Rom rom, DSFileSystemData dsFileSystem, XmlManager info)
         {
@@ -41,13 +49,17 @@ namespace PokemonRandomizer.Backend.Reading
             {
                 return new List<PokemonBaseStats>();
             }
+            if (!dsFileSystem.GetNarcFile(rom, "poketool/personal/evo.narc", out var evolutionsNARC))
+            {
+                return new List<PokemonBaseStats>();
+            }
             for (int i = 1; i < pokemonNARC.FileCount; ++i)
             {
                 if (!pokemonNARC.GetFile(i, out int pokemonOffset, out _, out _))
                 {
                     continue;
                 }
-                var newPokemon = ReadBaseStatsSingle(rom, pokemonOffset, PokemonUtils.Gen4InternalToPokemon(i));
+                var newPokemon = ReadBaseStatsSingle(rom, pokemonOffset, InternalIndexToPokemon(i));
                 if (learnsetNARC.GetFile(i, out int learnsetOffset, out _, out _))
                 {
                     ReadLearnSet(rom, learnsetOffset, out newPokemon.learnSet);
@@ -55,6 +67,16 @@ namespace PokemonRandomizer.Backend.Reading
                 else
                 {
                     Logger.main.Error($"Unable to find learset file for pokemon {newPokemon.Name}");
+                }
+                if (evolutionsNARC.GetFile(i, out int evolutionOffset, out _, out _))
+                {
+                    // TODO: replace 7 with data file constant
+                    ReadEvolutions(rom, evolutionOffset, 7, 0, out newPokemon.evolvesTo);
+                }
+                else
+                {
+                    newPokemon.evolvesTo = Array.Empty<Evolution>();
+                    Logger.main.Error($"Unable to find evolutions file for pokemon {newPokemon.Name}");
                 }
                 pokemon.Add(newPokemon);
             }
@@ -101,7 +123,6 @@ namespace PokemonRandomizer.Backend.Reading
             // Temp until these can actually be read
             pkmn.Name = species.ToDisplayString();
             pkmn.NationalDexIndex = (int)species;
-            pkmn.evolvesTo = Array.Empty<Evolution>();
             return pkmn;
         }
     }

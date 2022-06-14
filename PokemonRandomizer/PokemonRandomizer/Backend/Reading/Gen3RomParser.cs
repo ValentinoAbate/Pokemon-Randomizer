@@ -92,6 +92,11 @@ namespace PokemonRandomizer.Backend.Reading
             return data;
         }
 
+        protected override Pokemon InternalIndexToPokemon(int internalIndex)
+        {
+            return (Pokemon)internalIndex;
+        }
+
         // Read national dex order
         private void ReadNationalDexOrder(IList<PokemonBaseStats> pokemon, Rom rom, XmlManager info)
         {
@@ -164,7 +169,7 @@ namespace PokemonRandomizer.Backend.Reading
             }
             int pkmnSigniture = info.HexAttr(eggMoveElt, "pokemonSigniture");
             var moves = new Dictionary<Pokemon, List<Move>>();
-            var pkmn = (Pokemon)0;
+            var pkmn = Pokemon.None;
             int counter = 0;
             // Limit on loop just in case we are at the wrong place
             while (++counter < 3000)
@@ -174,8 +179,8 @@ namespace PokemonRandomizer.Backend.Reading
                     break;
                 if(number >= pkmnSigniture)
                 {
-                    pkmn = (Pokemon)(number - pkmnSigniture);
-                    if ((int)pkmn > 0)
+                    pkmn = InternalIndexToPokemon(number - pkmnSigniture);
+                    if (pkmn > Pokemon.None)
                         moves.Add(pkmn, new List<Move>());
                 }
                 else
@@ -257,7 +262,7 @@ namespace PokemonRandomizer.Backend.Reading
                     movesetOffset += skipNum * 4; // (don't know why this is 4, cuz move segments are variable lengths possibly terminators?)
                 }
                 // Create Pokemon
-                PokemonBaseStats pkmn = ReadBaseStatsSingle(rom, pkmnOffset + (i * pkmnSize), (Pokemon)(i + 1));
+                PokemonBaseStats pkmn = ReadBaseStatsSingle(rom, pkmnOffset + (i * pkmnSize), InternalIndexToPokemon(i + 1));
                 // Read name
                 pkmn.Name = rom.ReadString(namesOffset + (i * nameLength), nameLength);
                 // Set Egg Moves
@@ -267,7 +272,7 @@ namespace PokemonRandomizer.Backend.Reading
                 // Read Tm/Hm/Mt compat
                 ReadTMHMCompat(rom, tmHmCompatOffset + (i * tmHmSize), numTms, numHms, tmHmSize, out pkmn.TMCompat, out pkmn.HMCompat);
                 ReadTutorCompat(rom, tutorCompatOffset + (i * tutorSize), numTutorMoves, tutorSize, out pkmn.moveTutorCompat);
-                ReadEvolutions(rom, evolutionOffset + (i * evolutionSize), evolutionsPerPokemon, out pkmn.evolvesTo);
+                ReadEvolutions(rom, evolutionOffset + (i * evolutionSize), evolutionsPerPokemon, 2, out pkmn.evolvesTo);
                 ReadPalettes(rom, normalPaletteOffset + (i * pokemonPaletteSize), shinyPaletteOffset + (i * pokemonPaletteSize), pkmn);
                 pokemon.Add(pkmn);
             }
@@ -340,18 +345,7 @@ namespace PokemonRandomizer.Backend.Reading
                 mask <<= 1;
             }
         }
-        // Read evolutions
-        private void ReadEvolutions(Rom rom, int offset, int numEvolutions, out Evolution[] evolutions)
-        {
-            evolutions = new Evolution[numEvolutions];
-            rom.SaveAndSeekOffset(offset);
-            for(int i = 0; i < evolutions.Length; ++i)
-            {
-                evolutions[i] = new Evolution((EvolutionType)rom.ReadUInt16(), rom.ReadUInt16(), (Pokemon)rom.ReadUInt16());
-                rom.Skip(2);
-            }
-            rom.LoadOffset();
-        }
+
         // Read Palettes
         private void ReadPalettes(Rom rom, int normalOffset, int shinyOffset, PokemonBaseStats pokemon)
         {
@@ -371,11 +365,11 @@ namespace PokemonRandomizer.Backend.Reading
             var starters = new List<Pokemon>();
             if (!info.FindAndSeekOffset(ElementNames.starterPokemon, rom))
                 return starters;
-            starters.Add((Pokemon)rom.ReadUInt16());
+            starters.Add(InternalIndexToPokemon(rom.ReadUInt16()));
             rom.Skip(info.IntAttr(ElementNames.starterPokemon, "skip1"));
-            starters.Add((Pokemon)rom.ReadUInt16());
+            starters.Add(InternalIndexToPokemon(rom.ReadUInt16()));
             rom.Skip(info.IntAttr(ElementNames.starterPokemon, "skip2"));
-            starters.Add((Pokemon)rom.ReadUInt16());
+            starters.Add(InternalIndexToPokemon(rom.ReadUInt16()));
             return starters;
         }
         // Read the starter items
@@ -401,7 +395,7 @@ namespace PokemonRandomizer.Backend.Reading
             {
                 var t = new InGameTrade();
                 t.pokemonName = rom.ReadFixedLengthString(InGameTrade.pokemonNameLength);
-                t.pokemonRecieved = (Pokemon)rom.ReadUInt16();
+                t.pokemonRecieved = InternalIndexToPokemon(rom.ReadUInt16());
                 t.IVs = rom.ReadBlock(6);
                 t.abilityNum = rom.ReadUInt32();
                 t.trainerID = rom.ReadUInt32();
@@ -413,7 +407,7 @@ namespace PokemonRandomizer.Backend.Reading
                 t.trainerName = rom.ReadFixedLengthString(InGameTrade.trainerNameLength);
                 t.trainerGender = rom.ReadByte();
                 t.sheen = rom.ReadByte();
-                t.pokemonWanted = (Pokemon)rom.ReadUInt32();
+                t.pokemonWanted = InternalIndexToPokemon(rom.ReadUInt16());
                 trades.Add(t);
             }
             return trades;
