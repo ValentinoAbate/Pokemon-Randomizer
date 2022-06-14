@@ -59,12 +59,6 @@ namespace PokemonRandomizer.Backend.DataStructures
             Pokemon = pokemon;
             this.parameter = parameter;
         }
-        public Evolution(Evolution toCopy)
-        {
-            Type = toCopy.Type;
-            Pokemon = toCopy.Pokemon;
-            parameter = toCopy.parameter;
-        }
         public override string ToString()
         {
             string ret = $"{Pokemon.ToDisplayString()}: {Type.ToDisplayString()}";
