@@ -22,6 +22,7 @@ namespace PokemonRandomizer.Backend.Reading
             foreach(var p in pokemon)
             {
                 Logger.main.Info(p.ToString());
+                Logger.main.Info(p.learnSet.ToString());
             }
 
             throw new NotImplementedException("Gen IV Rom parsing not supported");
@@ -31,19 +32,31 @@ namespace PokemonRandomizer.Backend.Reading
         private List<PokemonBaseStats> ReadPokemonBaseStats(Rom rom, DSFileSystemData dsFileSystem, XmlManager info)
         {
             // Later replace with string from info file
-            if(!dsFileSystem.GetFile("poketool/personal/pl_personal.narc", out int baseStatsOffset, out int baseStatsLength))
+            if(!dsFileSystem.GetNarcFile(rom, "poketool/personal/pl_personal.narc", out var pokemonNARC))
             {
                 return new List<PokemonBaseStats>();
             }
-            var pokemonNARC = new NARCArchiveData(rom, baseStatsOffset, baseStatsLength);
             var pokemon = new List<PokemonBaseStats>(pokemonNARC.FileCount);
+            if (!dsFileSystem.GetNarcFile(rom, "poketool/personal/wotbl.narc", out var learnsetNARC))
+            {
+                return new List<PokemonBaseStats>();
+            }
             for (int i = 1; i < pokemonNARC.FileCount; ++i)
             {
-                if (!pokemonNARC.GetFile(i, out int offset, out int length, out var _))
+                if (!pokemonNARC.GetFile(i, out int pokemonOffset, out _, out _))
                 {
                     continue;
                 }
-                pokemon.Add(ReadBaseStatsSingle(rom, offset, PokemonUtils.Gen4InternalToPokemon(i)));
+                var newPokemon = ReadBaseStatsSingle(rom, pokemonOffset, PokemonUtils.Gen4InternalToPokemon(i));
+                if (learnsetNARC.GetFile(i, out int learnsetOffset, out _, out _))
+                {
+                    ReadLearnSet(rom, learnsetOffset, out newPokemon.learnSet);
+                }
+                else
+                {
+                    Logger.main.Error($"Unable to find learset file for pokemon {newPokemon.Name}");
+                }
+                pokemon.Add(newPokemon);
             }
             return pokemon;
         }

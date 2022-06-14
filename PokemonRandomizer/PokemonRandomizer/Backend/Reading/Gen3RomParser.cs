@@ -263,7 +263,7 @@ namespace PokemonRandomizer.Backend.Reading
                 // Set Egg Moves
                 pkmn.eggMoves = eggMoves.ContainsKey(pkmn.species) ? eggMoves[pkmn.species] : new List<Move>();
                 // Read Learn Set
-                movesetOffset = ReadAttacks(rom, movesetOffset, out pkmn.learnSet);
+                movesetOffset = ReadLearnSet(rom, movesetOffset, out pkmn.learnSet);
                 // Read Tm/Hm/Mt compat
                 ReadTMHMCompat(rom, tmHmCompatOffset + (i * tmHmSize), numTms, numHms, tmHmSize, out pkmn.TMCompat, out pkmn.HMCompat);
                 ReadTutorCompat(rom, tutorCompatOffset + (i * tutorSize), numTutorMoves, tutorSize, out pkmn.moveTutorCompat);
@@ -311,30 +311,6 @@ namespace PokemonRandomizer.Backend.Reading
             // read flip
             pkmn.flip = (searchFlip & 0b0000_0001) == 1;
             return pkmn;
-        }
-        // Read the attacks starting at offset (returns the index after completion)
-        private int ReadAttacks(Rom rom, int offset, out LearnSet moves)
-        {
-            moves = new LearnSet
-            {
-                OriginalOffset = offset
-            };
-            byte curr = rom.ReadByte(offset);
-            byte next = rom.ReadByte(offset + 1);
-            while (curr != 255 || next != 255)
-            {
-                // lvl is in the lvl byte but divided by 2 (lose the last bit)
-                int lvl = next >> 1;
-                // if the move number is over 255, the last bit of the learn level byte is set to 1
-                Move move = (Move)((next % 2) * 256 + curr);
-                moves.Add(move, lvl);
-                offset += 2;
-                curr = rom.ReadByte(offset);
-                next = rom.ReadByte(offset + 1);
-            }
-            moves.SetOriginalCount();
-            offset += 2;    //pass final FFFF
-            return offset;
         }
         // Read the TMcompat and HM compat BitArrays starting at given offset
         private void ReadTMHMCompat(Rom rom, int offset, int numTms, int numHms, int compatSize, out BitArray tmCompat, out BitArray hmCompat)

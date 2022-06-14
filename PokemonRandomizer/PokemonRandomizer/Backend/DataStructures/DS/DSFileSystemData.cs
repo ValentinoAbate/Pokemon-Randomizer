@@ -48,5 +48,16 @@ namespace PokemonRandomizer.Backend.DataStructures.DS
             fileLength = 0;
             return false;
         }
+
+        public bool GetNarcFile(Rom rom, string fullFilename, out NARCArchiveData narc)
+        {
+            if(!GetFile(fullFilename, out int offset, out int length))
+            {
+                narc = null;
+                return false;
+            }
+            narc = new NARCArchiveData(rom, offset, length);
+            return true;
+        }
     }
 }
