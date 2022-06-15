@@ -74,7 +74,7 @@ namespace PokemonRandomizer.Backend.Reading
                 }
                 else
                 {
-                    Logger.main.Error($"Unable to find learset file for pokemon {newPokemon.Name}");
+                    Logger.main.Error($"Unable to find learnset file for pokemon {newPokemon.Name}");
                 }
                 // Read evolutions
                 if (evolutionsNARC.GetFile(i, out int evolutionOffset, out _, out _))
