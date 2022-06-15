@@ -408,7 +408,7 @@ namespace PokemonRandomizer.Backend.Reading
                 t.trainerName = rom.ReadFixedLengthString(InGameTrade.trainerNameLength);
                 t.trainerGender = rom.ReadByte();
                 t.sheen = rom.ReadByte();
-                t.pokemonWanted = InternalIndexToPokemon(rom.ReadUInt16());
+                t.pokemonWanted = InternalIndexToPokemon(rom.ReadUInt32());
                 trades.Add(t);
             }
             return trades;
