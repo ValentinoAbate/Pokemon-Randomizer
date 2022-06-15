@@ -920,8 +920,22 @@ namespace PokemonRandomizer.Backend.Randomization
         private HashSet<Pokemon> DefinePokemonSet()
         {
             //Start with all for now
-            HashSet<Pokemon> pokemonSet = EnumUtils.GetValues<Pokemon>().ToHashSet();
-            pokemonSet.Remove(Pokemon.None);
+            HashSet<Pokemon> pokemonSet = new(data.Pokemon.Count);
+            foreach(var pokemon in data.Pokemon)
+            {
+                if(pokemon.species != Pokemon.None)
+                {
+                    pokemonSet.Add(pokemon.species);
+                }
+            }
+            if (pokemonSet.Contains(Pokemon.POKÉMON_EGG))
+            {
+                pokemonSet.Remove(Pokemon.POKÉMON_EGG);
+            }
+            if (pokemonSet.Contains(Pokemon.MANAPHY_EGG))
+            {
+                pokemonSet.Remove(Pokemon.MANAPHY_EGG);
+            }
             return pokemonSet;
         }
         /// <summary> Define and return the set of valid types (with applicable restrictions)</summary> 
