@@ -97,6 +97,11 @@ namespace PokemonRandomizer.Backend.Reading
             return (Pokemon)internalIndex;
         }
 
+        protected override Item InternalIndexToItem(int internalIndex)
+        {
+            return (Item)internalIndex;
+        }
+
         // Read national dex order
         private void ReadNationalDexOrder(IList<PokemonBaseStats> pokemon, Rom rom, XmlManager info)
         {

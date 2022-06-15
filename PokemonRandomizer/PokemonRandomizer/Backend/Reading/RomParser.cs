@@ -23,7 +23,7 @@ namespace PokemonRandomizer.Backend.Reading
                 // lvl is in the lvl byte but divided by 2 (lose the last bit)
                 int lvl = next >> 1;
                 // if the move number is over 255, the last bit of the learn level byte is set to 1
-                Move move = (Move)((next % 2) * 256 + curr);
+                Move move = InternalIndexToMove((next % 2) * 256 + curr);
                 moves.Add(move, lvl);
                 curr = rom.ReadByte();
                 next = rom.ReadByte();
@@ -41,12 +41,32 @@ namespace PokemonRandomizer.Backend.Reading
             rom.SaveAndSeekOffset(offset);
             for (int i = 0; i < evolutions.Length; ++i)
             {
-                evolutions[i] = new Evolution((EvolutionType)rom.ReadUInt16(), rom.ReadUInt16(), InternalIndexToPokemon(rom.ReadUInt16()));
+                var evoType = (EvolutionType)rom.ReadUInt16();
+                int param = rom.ReadUInt16();
+                var evo = evolutions[i] = new Evolution(evoType, InternalIndexToPokemon(rom.ReadUInt16()));
+                if (evo.EvolvesWithItem)
+                {
+                    evo.ItemParamater = InternalIndexToItem(param);
+                }
+                else if (evo.EvolvesWithMove)
+                {
+                    evo.MoveParameter = InternalIndexToMove(param);
+                }
+                else if (evo.EvolvesWithPokemon)
+                {
+                    evo.PokemonParameter = InternalIndexToPokemon(param);
+                }
+                else
+                {
+                    evo.IntParameter = param;
+                }
                 rom.Skip(paddingSize);
             }
             rom.LoadOffset();
         }
 
         protected abstract Pokemon InternalIndexToPokemon(int internalIndex);
+        protected abstract Item InternalIndexToItem(int internalIndex);
+        protected static Move InternalIndexToMove(int internalIndex) => (Move)internalIndex;
     }
 }

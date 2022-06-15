@@ -252,14 +252,14 @@ namespace PokemonRandomizer.Backend.Randomization
                         if (evolveByLevelUp == null)
                         {
 
-                            newEvo.parameter = evoUtils.EquivalentLevelReq(evo, pokemon) + rand.RandomGaussianInt(0, settings.ImpossibleEvoLevelStandardDev);
+                            newEvo.IntParameter = evoUtils.EquivalentLevelReq(evo, pokemon) + rand.RandomGaussianInt(0, settings.ImpossibleEvoLevelStandardDev);
                             newEvo.Type = EvolutionType.LevelUp;
                         }
                         else
                         {
                             evolveByLevelUp.Type = EvolutionType.LevelUpWithPersonality1;
                             newEvo.Type = EvolutionType.LevelUpWithPersonality2;
-                            newEvo.parameter = evolveByLevelUp.parameter;
+                            newEvo.IntParameter = evolveByLevelUp.IntParameter;
                         }
                     }
                     foreach (var evo in pokemon.evolvesTo)
@@ -275,9 +275,9 @@ namespace PokemonRandomizer.Backend.Randomization
                                 var newEvo = pokemon.evolvesTo.FirstOrDefault(e => !e.IsRealEvolution) ?? evo;
                                 newEvo.Pokemon = evo.Pokemon;
                                 newEvo.Type = EvolutionType.UseItem;
-                                newEvo.parameter = evo.parameter;
+                                newEvo.ItemParamater = evo.ItemParamater;
                                 // Log this as a new evolution stone if necessary
-                                Item item = (Item)newEvo.parameter;
+                                Item item = newEvo.ItemParamater;
                                 if (!data.NewEvolutionStones.Contains(item))
                                     data.NewEvolutionStones.Add(item);
                             }
@@ -318,7 +318,7 @@ namespace PokemonRandomizer.Backend.Randomization
                             {
                                 pokemon.evolvesTo[index].Pokemon = Pokemon.DUNSPARCE;
                                 pokemon.evolvesTo[index].Type = EvolutionType.LevelUpWithPersonality2;
-                                pokemon.evolvesTo[index].parameter = evo.parameter;
+                                pokemon.evolvesTo[index].IntParameter = evo.IntParameter;
                             }
                         }
                         else if (evo.Type == EvolutionType.Friendship)
@@ -329,7 +329,7 @@ namespace PokemonRandomizer.Backend.Randomization
                             {
                                 pokemon.evolvesTo[index].Pokemon = Pokemon.DUNSPARCE;
                                 pokemon.evolvesTo[index].Type = evo.Type == EvolutionType.FriendshipDay ? EvolutionType.FriendshipNight : EvolutionType.FriendshipDay;
-                                pokemon.evolvesTo[index].parameter = evo.parameter;
+                                pokemon.evolvesTo[index].IntParameter = evo.IntParameter;
                             }
                         }
                     }

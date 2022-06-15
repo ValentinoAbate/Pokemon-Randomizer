@@ -86,7 +86,7 @@ namespace PokemonRandomizer.Backend.Randomization
         public int EquivalentLevelReq(Evolution evo, PokemonBaseStats pokemon)
         {
             if (evo.EvolvesByLevel)
-                return evo.parameter;
+                return evo.IntParameter;
             if (evo.EvolvesByFriendship && pokemon.IsBaby)
             {
                 if (dataT.GetBaseStats(evo.Pokemon).HasRealEvolution)

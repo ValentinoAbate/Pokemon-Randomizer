@@ -123,6 +123,11 @@ namespace PokemonRandomizer.Backend.Writing
             return rom;
         }
 
+        protected override int ItemToInternalIndex(Item item)
+        {
+            return (int)item;
+        }
+
         private Item RemapItem(Item item)
         {
             return itemRemaps.ContainsKey(item) ? itemRemaps[item] : item;
@@ -512,7 +517,7 @@ namespace PokemonRandomizer.Backend.Writing
             {
                 if(evo.Type == EvolutionType.UseItem)
                 {
-                    var item = (Item)evo.parameter;
+                    var item = evo.ItemParamater;
                     if(failedItemRemaps.Contains(item))
                     {
                         rom.WriteUInt16((int)EvolutionType.LevelUp);
@@ -527,7 +532,14 @@ namespace PokemonRandomizer.Backend.Writing
                 else
                 {
                     rom.WriteUInt16((int)evo.Type);
-                    rom.WriteUInt16(evo.parameter);
+                    if (evo.EvolvesWithItem)
+                    {
+                        rom.WriteUInt16(ItemToInternalIndex(evo.ItemParamater));
+                    }
+                    else // Don't need to consider Pokemon or Move arguments in Gen III
+                    {
+                        rom.WriteUInt16(evo.IntParameter);
+                    }
                 }
                 rom.WriteUInt16((int)evo.Pokemon);
                 rom.Skip(2);

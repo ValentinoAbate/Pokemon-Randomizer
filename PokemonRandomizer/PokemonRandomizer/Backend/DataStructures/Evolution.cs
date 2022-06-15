@@ -40,47 +40,53 @@ namespace PokemonRandomizer.Backend.DataStructures
     {
         public bool IsRealEvolution => Type != EvolutionType.None;
         public EvolutionType Type { get; set; }
-        // The parameter to the evolution function (depending on evolution type)
-        // For LevelUp evolution types that require a specific level (see EvolvesByLevel), the parameter is the evolution level
-        // For Item-related evolution types, the parameter is the Item needed
-        // For the Beauty type, the parameter is the beauty threshold (0-255)
-        // For Move-related evolution types, the parameter is the Move needed
-        // For Pokemon-related evolution types, the parameter is the Pokemon needed
-        // On any other types the parameter does not apply
-        public int parameter;
+        public Item ItemParamater { get; set; }
+        public Pokemon PokemonParameter { get; set; }
+        public Move MoveParameter { get; set; }
+        public int IntParameter { get; set; }
         public Pokemon Pokemon { get; set; }
         public bool EvolvesByLevel => Type is EvolutionType.LevelUp or EvolutionType.LevelUpButMaySpawn or EvolutionType.LevelUpConditionalSpawn or EvolutionType.LevelUpFemale or EvolutionType.LevelUpMale or EvolutionType.LevelUpWithAtkEqualToDef or EvolutionType.LevelUpWithAtkLessThanDef or EvolutionType.LevelUpWithDefLessThanAtk or EvolutionType.LevelUpWithPersonality1 or EvolutionType.LevelUpWithPersonality2;
         public bool EvolvesWithItem => Type is EvolutionType.UseItem or EvolutionType.TradeWithItem or EvolutionType.LevelUpWithItemDay or EvolutionType.LevelUpWithItemNight or EvolutionType.UseItemMale or EvolutionType.UseItemFemale;
         public bool EvolvesByTrade => Type is EvolutionType.Trade or EvolutionType.TradeWithItem;
+        public bool EvolvesWithMove => Type is EvolutionType.LevelUpWithMove;
+        public bool EvolvesWithPokemon => Type is EvolutionType.LevelUpWithPokemonInParty;
         public bool EvolvesByFriendship => Type is EvolutionType.Friendship or EvolutionType.FriendshipDay or EvolutionType.FriendshipNight;
-        public Evolution(EvolutionType type, int parameter, Pokemon pokemon)
+        public Evolution(EvolutionType type, Pokemon pokemon)
         {
             Type = type;
             Pokemon = pokemon;
-            this.parameter = parameter;
         }
+
+        public Evolution(Evolution toCopy) : this(toCopy.Type, toCopy.Pokemon)
+        {
+            ItemParamater = toCopy.ItemParamater;
+            MoveParameter = toCopy.MoveParameter;
+            PokemonParameter = toCopy.PokemonParameter;
+            IntParameter = toCopy.IntParameter;
+        }
+
         public override string ToString()
         {
             string ret = $"{Pokemon.ToDisplayString()}: {Type.ToDisplayString()}";
             if (EvolvesByLevel)
             {
-                return ret + $" (Level {parameter})";
+                return ret + $" (Level {IntParameter})";
             }
             else if(EvolvesWithItem)
             {
-                return ret + $" ({((Item)parameter).ToDisplayString()})";
+                return ret + $" ({ItemParamater.ToDisplayString()})";
             }
             else if(Type is EvolutionType.LevelUpWithMove)
             {
-                return ret + $" ({((Move)parameter).ToDisplayString()})";
+                return ret + $" ({MoveParameter.ToDisplayString()})";
             }
             else if(Type is EvolutionType.LevelUpWithPokemonInParty)
             {
-                return ret + $" ({PokemonUtils.Gen4InternalToPokemon(parameter)})";
+                return ret + $" ({PokemonParameter.ToDisplayString()})";
             }
             else if(Type == EvolutionType.Beauty)
             {
-                return ret + $" ({parameter})";
+                return ret + $" ({IntParameter})";
             }
             return ret;
         }

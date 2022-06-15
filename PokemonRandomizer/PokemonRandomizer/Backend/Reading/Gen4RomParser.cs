@@ -38,6 +38,11 @@ namespace PokemonRandomizer.Backend.Reading
             return PokemonUtils.Gen4InternalToPokemon(internalIndex);
         }
 
+        protected override Item InternalIndexToItem(int internalIndex)
+        {
+            return ItemUtils.Gen4InternalToItem(internalIndex);
+        }
+
         private List<PokemonBaseStats> ReadPokemonBaseStats(Rom rom, DSFileSystemData dsFileSystem, XmlManager info)
         {
             if(!dsFileSystem.GetNarcFile(rom, info.Path(ElementNames.pokemonBaseStats), out var pokemonNARC))
@@ -105,8 +110,8 @@ namespace PokemonRandomizer.Backend.Reading
             pkmn.baseExpYield = rom.ReadByte();
             // fill in ev yields (stored in the first 12 bits of data[10-11])
             pkmn.evYields = rom.ReadBits(12, 2);
-            pkmn.heldItems[0] = ItemUtils.Gen4InternalToItem(rom.ReadUInt16());
-            pkmn.heldItems[1] = ItemUtils.Gen4InternalToItem(rom.ReadUInt16());
+            pkmn.heldItems[0] = InternalIndexToItem(rom.ReadUInt16());
+            pkmn.heldItems[1] = InternalIndexToItem(rom.ReadUInt16());
             pkmn.genderRatio = rom.ReadByte();
             pkmn.eggCycles = rom.ReadByte();
             pkmn.baseFriendship = rom.ReadByte();
