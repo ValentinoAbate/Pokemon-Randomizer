@@ -392,6 +392,10 @@ namespace PokemonRandomizer.Backend.DataStructures
         /// <summary>Reads a UInt32 (4 bytes) from the given offset </summary>
         public int ReadUInt32(int offset) => ReadUInt(offset, 4);
         /// <summary>Reads a UInt16 (2 bytes) from the internal offset </summary>
+        public int ReadUInt24() => ReadUInt(3);
+        /// <summary>Reads a UInt16 (2 bytes) from the Given offset </summary>
+        public int ReadUInt24(int offset) => ReadUInt(offset, 3);
+        /// <summary>Reads a UInt16 (2 bytes) from the internal offset </summary>
         public int ReadUInt16() => ReadUInt(2);
         /// <summary>Reads a UInt16 (2 bytes) from the Given offset </summary>
         public int ReadUInt16(int offset) => ReadUInt(offset, 2);

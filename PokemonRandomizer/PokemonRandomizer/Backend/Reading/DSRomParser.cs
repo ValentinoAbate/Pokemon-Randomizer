@@ -14,6 +14,9 @@ namespace PokemonRandomizer.Backend.Reading
         private const int fntOffsetOffset = 0x40;
         private const char pathSeparator = '/';
         private const int directoryOffset = 0xF000;
+        private const int fileHeaderSize = 8;
+        private const int arm9HeaderOffset = 0x50;
+        private const int arm9OverlayDataSize = 32;
         protected DSFileSystemData ParseNDSFileSystemData(Rom rom)
         {
             rom.Seek(fntOffsetOffset);
@@ -106,7 +109,13 @@ namespace PokemonRandomizer.Backend.Reading
                 }
             }
 
-            var fileSystem = new DSFileSystemData(filenames.Count);
+            // arm9 overlays
+            rom.Seek(arm9HeaderOffset);
+            int arm9OverlayTableOffset = rom.ReadUInt32();
+            int arm9OverlayTablesize = rom.ReadUInt32();
+            int arm9OverlayCount = arm9OverlayTablesize / arm9OverlayDataSize;
+
+            var fileSystem = new DSFileSystemData(filenames.Count, arm9OverlayCount);
 
             // parse files
             foreach (var kvp in filenames)
@@ -120,10 +129,33 @@ namespace PokemonRandomizer.Backend.Reading
                 {
                     fullFilename = dirPath + pathSeparator + filename;
                 }
-                rom.Seek(fatOffset + (fileID * 8));
+                rom.Seek(fatOffset + (fileID * fileHeaderSize));
                 int start = rom.ReadUInt32();
                 int end = rom.ReadUInt32();
                 fileSystem.AddFile(fullFilename, start, end - start);
+            }
+
+            // parse overlays
+            rom.Seek(arm9OverlayTableOffset);
+            for (int i = 0; i < arm9OverlayCount; i++)
+            {
+                var overlay = new Arm9Overlay { ID = i };
+                // Read entry data
+                rom.Skip(4);
+                overlay.RamAddress = rom.ReadUInt32();
+                overlay.RamSize = rom.ReadUInt32();
+                overlay.BssSize = rom.ReadUInt32();
+                overlay.StaticStart = rom.ReadUInt32();
+                overlay.StaticEnd = rom.ReadUInt32();
+                overlay.FileID = rom.ReadUInt32();
+                overlay.CompressedSize = rom.ReadUInt24();
+                overlay.CompressionFlag = rom.ReadByte();
+                // Read start and end
+                rom.SaveAndSeekOffset(fatOffset + (overlay.FileID * fileHeaderSize));
+                overlay.Start = rom.ReadUInt32();
+                overlay.End = rom.ReadUInt32();
+                rom.LoadOffset();
+                fileSystem.AddArm9Overlay(overlay.FileID, overlay);
             }
 
             return fileSystem;
