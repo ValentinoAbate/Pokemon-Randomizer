@@ -9,12 +9,14 @@ namespace PokemonRandomizer.Backend.DataStructures.DS
     public class DSFileSystemData
     {
         private readonly Dictionary<string, (int offset, int length)> fileData;
-        private readonly Dictionary<int, Arm9Overlay> arm9Data;
+        private readonly Dictionary<int, Arm9Overlay> arm9OverlaysByFileID;
+        private readonly Arm9Overlay[] arm9Overlays;
 
         public DSFileSystemData(int fileCapacity, int arm9Capacity)
         {
             fileData = new(fileCapacity);
-            arm9Data = new(arm9Capacity);
+            arm9OverlaysByFileID = new(arm9Capacity);
+            arm9Overlays = new Arm9Overlay[arm9Capacity];
         }
 
         public void AddFile(string fullFilename, int offset, int length)
@@ -24,20 +26,25 @@ namespace PokemonRandomizer.Backend.DataStructures.DS
             fileData.Add(fullFilename, (offset, length));
         }
 
-        public void AddArm9Overlay(int fileID, Arm9Overlay entry)
+        public void AddArm9Overlay(int index, int fileID, Arm9Overlay entry)
         {
-            if (arm9Data.ContainsKey(fileID))
-                return;
-            arm9Data.Add(fileID, entry);
+            if (!arm9OverlaysByFileID.ContainsKey(fileID))
+            {
+                arm9OverlaysByFileID.Add(fileID, entry);
+            }
+            if(index >= 0 && index < arm9Overlays.Length)
+            {
+                arm9Overlays[index] = entry;
+            }
         }
 
         public bool SeekFile(string fullFilename, Rom rom, out int fileLength)
         {
             if (fileData.ContainsKey(fullFilename))
             {
-                var data = fileData[fullFilename];
-                rom.Seek(data.offset);
-                fileLength = data.length;
+                var (offset, length) = fileData[fullFilename];
+                rom.Seek(offset);
+                fileLength = length;
                 return true;
             }
             fileLength = 0;
@@ -52,9 +59,7 @@ namespace PokemonRandomizer.Backend.DataStructures.DS
                 fileLength = 0;
                 return false;
             }
-            var data = fileData[fullFilename];
-            offset = data.offset;
-            fileLength = data.length;
+            (offset, fileLength) = fileData[fullFilename];
             return true;
 
         }
@@ -68,6 +73,41 @@ namespace PokemonRandomizer.Backend.DataStructures.DS
             }
             narc = new NARCArchiveData(rom, offset, length);
             return true;
+        }
+
+        public Rom GetArm9OverlayData(Rom rom, int overlayIndex, out int startOffset)
+        {
+            if(overlayIndex >= 0 && overlayIndex < arm9Overlays.Length)
+            {
+                return GetOverlayContents(rom, arm9Overlays[overlayIndex], out startOffset);
+            }
+            startOffset = 0;
+            return new Rom(Array.Empty<byte>(), 0x00, 0x00);
+        }
+
+        public Rom GetArm9OverlayDataByFileID(Rom rom, int fileID, out int startOffset)
+        {
+            if (arm9OverlaysByFileID.ContainsKey(fileID))
+            {
+                return GetOverlayContents(rom, arm9OverlaysByFileID[fileID], out startOffset);
+            }
+            startOffset = 0;
+            return new Rom(Array.Empty<byte>(), 0x00, 0x00);
+        }
+
+        private Rom GetOverlayContents(Rom rom, Arm9Overlay overlay, out int startOffset)
+        {
+            if (overlay.CompressionFlag <= 0)
+            {
+                startOffset = overlay.Start;
+                return rom;
+            }
+            else
+            {
+                startOffset = 0;
+                // TODO: Decompress
+                return new Rom(Array.Empty<byte>(), 0x00, 0x00);
+            }
         }
     }
 }

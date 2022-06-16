@@ -155,7 +155,7 @@ namespace PokemonRandomizer.Backend.Reading
                 overlay.Start = rom.ReadUInt32();
                 overlay.End = rom.ReadUInt32();
                 rom.LoadOffset();
-                fileSystem.AddArm9Overlay(overlay.FileID, overlay);
+                fileSystem.AddArm9Overlay(i, overlay.FileID, overlay);
             }
 
             return fileSystem;

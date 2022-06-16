@@ -29,6 +29,8 @@ namespace PokemonRandomizer.Backend.Reading
                     Logger.main.Info(string.Join(", ", p.evolvesTo.Where(e => e.IsRealEvolution)));
                 }
             }
+            data.tutorMoves = ReadMoveTutorMoves(rom, dsFileSystem, info);
+            Logger.main.Info(string.Join(", ", data.tutorMoves));
 
             throw new NotImplementedException("Gen IV Rom parsing not supported");
         }
@@ -90,7 +92,6 @@ namespace PokemonRandomizer.Backend.Reading
             }
             return pokemon;
         }
-
         // TODO: refactor to reuse code from gen 3 ROM parser
         private PokemonBaseStats ReadBaseStatsSingle(Rom rom, int offset, Pokemon species)
         {
@@ -132,6 +133,32 @@ namespace PokemonRandomizer.Backend.Reading
             pkmn.Name = species.ToDisplayString();
             pkmn.NationalDexIndex = (int)species;
             return pkmn;
+        }
+
+        private Move[] ReadMoveTutorMoves(Rom rom, DSFileSystemData dsFileSystem, XmlManager info)
+        {
+            if (!info.HasElement(ElementNames.tutorMoves))
+            {
+                return Array.Empty<Move>();
+            }
+            // Initialize Move Array
+            int num = info.Num(ElementNames.tutorMoves);
+            var moves = new Move[num];
+            int skip = Math.Max(0, info.Size(ElementNames.tutorMoves) - 2);
+            // Get overlay data
+            var overlayData = dsFileSystem.GetArm9OverlayData(rom, info.Overlay(ElementNames.tutorMoves), out int startOffset);
+            if(overlayData.Length <= 0)
+            {
+                return Array.Empty<Move>();
+            }
+            // Go to offset
+            overlayData.Seek(startOffset + info.FindOffset(ElementNames.tutorMoves, rom));
+            for (int i = 0; i < num; ++i)
+            {
+                moves[i] = InternalIndexToMove(overlayData.ReadUInt16());
+                overlayData.Skip(skip);
+            }
+            return moves;
         }
     }
 }

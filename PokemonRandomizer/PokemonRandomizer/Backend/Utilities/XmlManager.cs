@@ -20,6 +20,7 @@ namespace PokemonRandomizer.Backend.Utilities
         public const string lengthAttr = "length";
         public const string paddingAttr = "padding";
         public const string pathAttr = "filePath";
+        public const string overlayAttr = "overlay";
         public const string constantsElt = "constants";
         public const string inheritanceElt = "inheritFrom";
 
@@ -187,6 +188,11 @@ namespace PokemonRandomizer.Backend.Utilities
         public string Path(string element)
         {
             return Attr(element, pathAttr);
+        }
+
+        public int Overlay(string element)
+        {
+            return IntAttr(element, overlayAttr);
         }
         /// <summary> returns the "num" (amount of entries) attribute of the given element. Expects an integer value </summary>
         public int Num(string element)
