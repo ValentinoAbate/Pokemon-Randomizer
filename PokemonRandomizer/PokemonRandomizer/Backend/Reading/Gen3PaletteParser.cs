@@ -9,12 +9,12 @@ namespace PokemonRandomizer.Backend.Reading
 
         public Palette ParseCompressed(int offset, Rom rom)
         {
-            return ParseUncompressed(rom.ReadCompressedData(offset));
+            return ParseUncompressed(rom.ReadLZ77CompressedData(offset));
         }
 
         public Palette ParseCompressed(Rom rom)
         {
-            return ParseUncompressed(rom.ReadCompressedData());
+            return ParseUncompressed(rom.ReadLZ77CompressedData());
         }
 
         public Palette ParseUncompressed(Rom rom, int numColors)

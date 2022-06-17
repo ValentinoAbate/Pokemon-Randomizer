@@ -634,7 +634,7 @@ namespace PokemonRandomizer.Backend.DataStructures
 
         #endregion
 
-        #region Compression and Decompression
+        #region LZ77 Compression and Decompression
 
         // Compression Format Documentation (from https://www.akkit.org/info/gbatek.htm)
         // SWI 11h(GBA/NDS7/NDS9) - LZ77UnCompWram
@@ -662,15 +662,15 @@ namespace PokemonRandomizer.Backend.DataStructures
         private const byte lzIdentifier = 0x10;
         private const int lzMinCompressedRunLength = 3;
 
-        public byte[] ReadCompressedData(int offset)
+        public byte[] ReadLZ77CompressedData(int offset)
         {
             SaveAndSeekOffset(offset);
-            var data = ReadCompressedData();
+            var data = ReadLZ77CompressedData();
             LoadOffset();
             return data;
         }
 
-        public byte[] ReadCompressedData()
+        public byte[] ReadLZ77CompressedData()
         {
             // Read header
             // First byte is the lz identifier, which is a magic number
@@ -726,16 +726,16 @@ namespace PokemonRandomizer.Backend.DataStructures
             return data;
         }
 
-        public void CompressAndWriteData(int offset, byte[] data)
+        public void CompressToLZ77AndWriteData(int offset, byte[] data)
         {
             SaveAndSeekOffset(offset);
-            CompressAndWriteData(data);
+            CompressToLZ77AndWriteData(data);
             LoadOffset();
         }
 
         private const byte compressionHeaderMask = 0b10000000;
 
-        public void CompressAndWriteData(byte[] data)
+        public void CompressToLZ77AndWriteData(byte[] data)
         {
             // Write Header
             WriteByte(lzIdentifier);
