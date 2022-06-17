@@ -8,6 +8,7 @@ namespace PokemonRandomizer.Backend.DataStructures.DS
 {
     public class Arm9Overlay
     {
+        public int Length => End - Start;
         public int ID { get; set; }
         public int FileID { get; set; }
         public int Start { get; set; }
@@ -19,5 +20,6 @@ namespace PokemonRandomizer.Backend.DataStructures.DS
         public int StaticEnd { get; set; }
         public int CompressedSize { get; set; }
         public byte CompressionFlag { get; set; }
+        public Rom DecompressedData { get; set; }
     }
 }
