@@ -102,12 +102,13 @@ namespace PokemonRandomizer.Backend.DataStructures.DS
                 startOffset = overlay.Start;
                 return rom;
             }
-            else
+            startOffset = 0;
+            if (overlay.DecompressedData != null)
             {
-                startOffset = 0;
-                // TODO: Decompress
-                return new Rom(Array.Empty<byte>(), 0x00, 0x00);
+                overlay.DecompressedData.Seek(0);
+                return overlay.DecompressedData;
             }
+            return overlay.DecompressedData = new Rom(rom.ReadBLZCompressedData(overlay.Start, overlay.Length), 0x00, 0x00);
         }
     }
 }
