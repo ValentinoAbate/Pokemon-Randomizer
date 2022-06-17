@@ -810,5 +810,109 @@ namespace PokemonRandomizer.Backend.DataStructures
         }
 
         #endregion
+
+        #region BLZ (Bottom LZ) Compression and Decompression
+
+        // All BLZ Compression and Decompression methods are
+        // Based on BLZEncoder.java from Dabomstew's Universal Pokemon Randomizer
+        // BLZEncoder.java is based on blz.c - Bottom LZ coding for Nintendo GBA/DS (Copyright (C) 2011 CUE)
+        // Modified by Valentino Abate under the terms of the GPL
+
+        private const int minBLZHeaderLength = 0x8;
+        private const int maxBLZHeaderLength = 0xB;
+        private const int maxBLZOutputLength = 0xFFFFFF;
+        private const int BLZShift = 1;
+        private const int BLZMask= 0x80;
+        private const int BLZThreshold = 2;
+
+        public byte[] ReadBLZCompressedData(int offset, int length)
+        {
+            // The difference between the length of the compressed portion of the data
+            // And its length before compression
+            int incLength = ReadUInt32(offset + length - 4);
+            int headerLength = ReadByte(offset + length - 5);
+            if(headerLength > maxBLZHeaderLength || headerLength < minBLZHeaderLength)
+            {
+                Logger.main.Error($"Error attempting to decompress BLZ data at {offset:x2}: bad header length");
+                return Array.Empty<byte>();
+            }
+            // The length of the compressed portion of the data
+            int compressedLength = ReadUInt24(offset + length - 8);
+            // The length of the uncompressed portion of the data
+            int uncompressedLength = length - compressedLength;
+            // The length of the output data (the already uncompressedLength + the currently compressed length + the compression gain
+            int outputLength = uncompressedLength + compressedLength + incLength;
+            if(outputLength > maxBLZOutputLength)
+            {
+                Logger.main.Error($"Error attempting to decompress BLZ data at {offset:x2}: outLength ({outputLength} is longer than max length {maxBLZOutputLength})");
+                return Array.Empty<byte>();
+            }
+
+            byte[] output = new byte[outputLength];
+            // Copy uncompressed data to output file
+            Array.Copy(File, offset, output, 0, uncompressedLength);
+            // Prepare input data
+            byte[] input = new byte[length - headerLength];
+            Array.Copy(File, offset, input, 0 , input.Length);
+            Array.Reverse(input, uncompressedLength, input.Length - uncompressedLength);
+
+
+            // Iterate through input data
+            uint mask = 0;
+            int flags = 0;
+            for (int outputIndex = uncompressedLength, inputIndex = uncompressedLength; outputIndex < output.Length && inputIndex < input.Length;)
+            {
+                if((mask >>= BLZShift) == 0)
+                {
+                    if (inputIndex + 1 >= input.Length)
+                        break;
+                    flags = input[inputIndex++];
+                    mask = BLZMask;
+                }
+                if ((flags & mask) == 0)
+                {
+                    if (inputIndex + 1 >= input.Length)
+                    {
+                        break;
+                    }
+                    output[outputIndex++] = input[inputIndex++];
+                }
+                else if (inputIndex + 1 >= input.Length)
+                {
+                    break;
+                }
+                else
+                {
+                    byte byte1 = input[inputIndex++];
+                    byte byte2 = input[inputIndex++];
+                    // Length is the 4 Most significant bits of byte1
+                    int len = (byte1 >> 4) + BLZThreshold + 1;
+                    // Offset is the 4 Least significant bits of byte1 and byte2
+                    int posOffset = (((byte1 << 8) | byte2) & 0x0FFF) + 3;
+                    if (outputIndex + len > output.Length)
+                    {
+                        Logger.main.Warning($"BLZ Decompression warning: incorrect decoded length. Expected {output.Length}, got {outputIndex + len}");
+                        len = Math.Max(0, output.Length - outputIndex);
+                    }
+                    while ((len--) > 0)
+                    {
+                        output[outputIndex] = output[outputIndex - posOffset];
+                        ++outputIndex;
+                    }
+                }
+            }
+            Array.Reverse(output, uncompressedLength, output.Length - uncompressedLength);
+            return output;
+        }
+
+        public byte[] ReadBLZCompressedData(int length)
+        {
+            SaveOffset();
+            var data = ReadBLZCompressedData(InternalOffset, length);
+            LoadOffset();
+            return data;
+        }
+
+        #endregion
     }
 }
