@@ -494,7 +494,7 @@ namespace PokemonRandomizer
                         LogError("Diff Error: Roms have different generations");
                         return;
                     }
-                    var rom2 = new Rom(rawRom2, 0x00, 0x00); // No free space data, will do later
+                    var rom2 = new Rom(rawRom2);
                     // Diff Roms
                     var diffData = RomDiff.Diff(Rom, rom2);
                     // Save diff file

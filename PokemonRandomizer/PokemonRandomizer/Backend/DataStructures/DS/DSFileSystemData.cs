@@ -282,7 +282,7 @@ namespace PokemonRandomizer.Backend.DataStructures.DS
                 overlay.DecompressedData.Seek(0);
                 return overlay.DecompressedData;
             }
-            return overlay.DecompressedData = new Rom(rom.ReadBLZCompressedData(overlay.Start, overlay.Length), 0x00, 0x00);
+            return overlay.DecompressedData = new Rom(rom.ReadBLZCompressedData(overlay.Start, overlay.Length));
         }
 
         // Arm 9 Data
