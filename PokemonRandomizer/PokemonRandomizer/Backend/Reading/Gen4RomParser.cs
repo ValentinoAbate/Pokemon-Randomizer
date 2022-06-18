@@ -16,7 +16,7 @@ namespace PokemonRandomizer.Backend.Reading
         public override RomData Parse(Rom rom, RomMetadata metadata, XmlManager info)
         {
             // Parse the NDS file structure
-            var dsFileSystem = ParseNDSFileSystemData(rom);
+            var dsFileSystem = new DSFileSystemData(rom);
             // Actually parse the ROM data
             RomData data = new RomData();
             var pokemon = ReadPokemonBaseStats(rom, dsFileSystem, info);
