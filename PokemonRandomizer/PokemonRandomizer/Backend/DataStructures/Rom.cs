@@ -32,7 +32,7 @@ namespace PokemonRandomizer.Backend.DataStructures
         {
             // Initialize the reverse-text table
             textToSymTable = new Dictionary<string, byte>();
-            foreach(var kvp in symTable)
+            foreach (var kvp in symTable)
             {
                 if (!textToSymTable.ContainsKey(kvp.Value))
                     textToSymTable.Add(kvp.Value, kvp.Key);
@@ -40,28 +40,35 @@ namespace PokemonRandomizer.Backend.DataStructures
         }
 
         /// <summary> Initilize a new Rom from raw data </summary>
-        public Rom(byte[] rawRom, byte freeSpaceByte, int searchStartOffset)
+        public Rom(byte[] rawRom, byte freeSpaceByte, int searchStartOffset, bool clone = false)
         {
             FreeSpaceByte = freeSpaceByte;
             SearchStartOffset = searchStartOffset;
             PaddingByte = (byte)((FreeSpaceByte == 0xFF) ? 0x00 : 0xFF);
-            File = new byte[rawRom.Length];
-            Array.Copy(rawRom, File, rawRom.Length);
-            InternalOffset = 0;           
+            if (clone)
+            {
+                File = new byte[rawRom.Length];
+                Array.Copy(rawRom, File, rawRom.Length);
+            }
+            else
+            {
+                File = rawRom;
+            }
+            InternalOffset = 0;
+        }
+
+        public Rom(byte[] rawRom, bool clone = false) : this(rawRom, 0x00, 0x00, clone)
+        {
+
         }
         /// <summary> Initilize a new Rom as a copy of an extant one </summary>
-        public Rom(Rom toCopy)
+        public Rom(Rom toCopy) : this(toCopy.File, toCopy.FreeSpaceByte, toCopy.SearchStartOffset, true)
         {
-            FreeSpaceByte = toCopy.FreeSpaceByte;
-            SearchStartOffset = toCopy.SearchStartOffset;
-            PaddingByte = toCopy.PaddingByte;
-            File = new byte[toCopy.File.Length];
-            Array.Copy(toCopy.File, File, toCopy.File.Length);
-            InternalOffset = 0;  
+
         }
         /// <summary> Initilize an Empty Rom with a given length </summary>
         public Rom(int length, byte freeSpaceByte, int searchStartOffset = 0)
-            : this(new byte[length], freeSpaceByte, searchStartOffset) { }
+            : this(new byte[length], freeSpaceByte, searchStartOffset, false) { }
         /// <summary>Reads a byte from the internal offset</summary>
         public byte WriteByte(byte value) => File[InternalOffset++] = value;
         /// <summary>Reads a byte from the internal offset</summary>
