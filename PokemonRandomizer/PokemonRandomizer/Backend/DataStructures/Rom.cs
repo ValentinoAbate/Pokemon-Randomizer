@@ -845,29 +845,50 @@ namespace PokemonRandomizer.Backend.DataStructures
         private const int BLZMask= 0x80;
         private const int BLZThreshold = 2;
 
-        public byte[] ReadBLZCompressedData(int offset, int length)
+        public bool TryGetBLZHeaderData(int offset, int length, out int headerLength, out int incLength, out int compressedLength, out int uncompressedLength, out int outputLength)
         {
+            if(length < minBLZHeaderLength)
+            {
+                incLength = 0;
+                headerLength = 0;
+                compressedLength = 0;
+                uncompressedLength = 0;
+                outputLength = 0;
+                return false;
+            }
             // The difference between the length of the compressed portion of the data
             // And its length before compression
-            int incLength = ReadUInt32(offset + length - 4);
-            int headerLength = ReadByte(offset + length - 5);
-            if(headerLength > maxBLZHeaderLength || headerLength < minBLZHeaderLength)
+            incLength = ReadUInt32(offset + length - 4);
+            headerLength = ReadByte(offset + length - 5);
+            if (headerLength > maxBLZHeaderLength || headerLength < minBLZHeaderLength || length < headerLength)
             {
-                Logger.main.Error($"Error attempting to decompress BLZ data at {offset:x2}: bad header length");
-                return Array.Empty<byte>();
+                compressedLength = 0;
+                uncompressedLength = 0;
+                outputLength = 0;
+                return false;
             }
             // The length of the compressed portion of the data
-            int compressedLength = ReadUInt24(offset + length - 8);
+            compressedLength = ReadUInt24(offset + length - 8);
             // The length of the uncompressed portion of the data
-            int uncompressedLength = length - compressedLength;
+            uncompressedLength = length - compressedLength;
             // The length of the output data (the already uncompressedLength + the currently compressed length + the compression gain
-            int outputLength = uncompressedLength + compressedLength + incLength;
-            if(outputLength > maxBLZOutputLength)
+            outputLength = uncompressedLength + compressedLength + incLength;
+            if (outputLength > maxBLZOutputLength)
             {
-                Logger.main.Error($"Error attempting to decompress BLZ data at {offset:x2}: outLength ({outputLength} is longer than max length {maxBLZOutputLength})");
+                return false;
+            }
+            return true;
+        }
+
+        public byte[] ReadBLZCompressedData(int offset, int length)
+        {
+            if(!TryGetBLZHeaderData(offset, length, out int headerLength, out int inclength, out int compressedLenght, out int uncompressedLength, out int outputLength))
+            {
+                Logger.main.Error($"Error attempting to decompress BLZ data at {offset}: unable to parse header");
                 return Array.Empty<byte>();
             }
 
+            // Create output
             byte[] output = new byte[outputLength];
             // Copy uncompressed data to output file
             Array.Copy(File, offset, output, 0, uncompressedLength);

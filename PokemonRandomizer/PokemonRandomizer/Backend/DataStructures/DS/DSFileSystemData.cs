@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace PokemonRandomizer.Backend.DataStructures.DS
 {
@@ -12,12 +10,20 @@ namespace PokemonRandomizer.Backend.DataStructures.DS
         private const char pathSeparator = '/';
         private const int directoryOffset = 0xF000;
         private const int fileHeaderSize = 8;
-        private const int arm9HeaderOffset = 0x50;
+        private const int arm9OverlayHeaderOffset = 0x50;
         private const int arm9OverlayDataSize = 32;
+        private const int arm9OffsetOffset = 0x20;
+        private const int arm9SizeOffset = 0x2C;
+        private const uint nitroFooterSigniture = 0xDEC00621;
+        private const int nitroFooterSize = 12;
 
         private readonly Dictionary<string, (int offset, int length)> fileData;
         private readonly Dictionary<int, Arm9Overlay> arm9OverlaysByFileID;
         private readonly Arm9Overlay[] arm9Overlays;
+        private readonly Rom decompressedArm9Data;
+        private readonly int arm9Offset;
+        private readonly int arm9Size;
+        private readonly byte[] arm9Footer;
 
         public DSFileSystemData(Rom rom)
         {
@@ -111,7 +117,7 @@ namespace PokemonRandomizer.Backend.DataStructures.DS
             }
 
             // arm9 overlays
-            rom.Seek(arm9HeaderOffset);
+            rom.Seek(arm9OverlayHeaderOffset);
             int arm9OverlayTableOffset = rom.ReadUInt32();
             int arm9OverlayTablesize = rom.ReadUInt32();
             int arm9OverlayCount = arm9OverlayTablesize / arm9OverlayDataSize;
@@ -161,6 +167,26 @@ namespace PokemonRandomizer.Backend.DataStructures.DS
                 rom.LoadOffset();
                 AddArm9Overlay(i, overlay.FileID, overlay);
             }
+
+            // Parse Arm9 Data
+            arm9Offset = rom.ReadUInt32(arm9OffsetOffset);
+            arm9Size = rom.ReadUInt32(arm9SizeOffset);
+            // Footer
+            rom.Seek(arm9Offset + arm9Size);
+            uint nitroCode = rom.ReadUInt32Full();
+            if(nitroCode == nitroFooterSigniture)
+            {
+                arm9Footer = rom.ReadBlock(arm9Offset + arm9Size, nitroFooterSize);
+            }
+            else
+            {
+                arm9Footer = Array.Empty<byte>();
+            }
+            // Read compressed data if compressed
+            if(rom.TryGetBLZHeaderData(arm9Offset, arm9Size, out _, out int incLength, out _, out _, out _ ) && incLength > 0)
+            {
+                decompressedArm9Data = new Rom(rom.ReadBLZCompressedData(arm9Offset, arm9Size));
+            }
         }
 
         private void AddFile(string fullFilename, int offset, int length)
@@ -181,6 +207,8 @@ namespace PokemonRandomizer.Backend.DataStructures.DS
                 arm9Overlays[index] = entry;
             }
         }
+
+        // File Data
 
         public bool SeekFile(string fullFilename, Rom rom, out int fileLength)
         {
@@ -219,6 +247,8 @@ namespace PokemonRandomizer.Backend.DataStructures.DS
             return true;
         }
 
+        // Arm9 Overlay Data
+
         public Rom GetArm9OverlayData(Rom rom, int overlayIndex, out int startOffset)
         {
             if(overlayIndex >= 0 && overlayIndex < arm9Overlays.Length)
@@ -226,7 +256,7 @@ namespace PokemonRandomizer.Backend.DataStructures.DS
                 return GetOverlayContents(rom, arm9Overlays[overlayIndex], out startOffset);
             }
             startOffset = 0;
-            return new Rom(Array.Empty<byte>(), 0x00, 0x00);
+            return new Rom(Array.Empty<byte>());
         }
 
         public Rom GetArm9OverlayDataByFileID(Rom rom, int fileID, out int startOffset)
@@ -236,7 +266,7 @@ namespace PokemonRandomizer.Backend.DataStructures.DS
                 return GetOverlayContents(rom, arm9OverlaysByFileID[fileID], out startOffset);
             }
             startOffset = 0;
-            return new Rom(Array.Empty<byte>(), 0x00, 0x00);
+            return new Rom(Array.Empty<byte>());
         }
 
         private Rom GetOverlayContents(Rom rom, Arm9Overlay overlay, out int startOffset)
@@ -253,6 +283,21 @@ namespace PokemonRandomizer.Backend.DataStructures.DS
                 return overlay.DecompressedData;
             }
             return overlay.DecompressedData = new Rom(rom.ReadBLZCompressedData(overlay.Start, overlay.Length), 0x00, 0x00);
+        }
+
+        // Arm 9 Data
+
+        public Rom GetArm9Data(Rom rom, out int startOffset, out int length)
+        {
+            if(decompressedArm9Data != null)
+            {
+                startOffset = 0;
+                length = decompressedArm9Data.Length;
+                return decompressedArm9Data;
+            }
+            startOffset = arm9Offset;
+            length = arm9Size;
+            return rom;
         }
     }
 }
