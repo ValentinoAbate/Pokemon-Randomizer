@@ -381,9 +381,8 @@ namespace PokemonRandomizer.Backend.DataStructures
         #region Number Reading and Writing (UInt16, 32, etc)
         private int ReadUInt(int numBytes)
         {
-            int ret = ReadUInt(InternalOffset, numBytes);
             InternalOffset += numBytes;
-            return ret;
+            return ReadUInt(InternalOffset - numBytes, numBytes);
         }
         /// <summary>Reads a UInt of specified number of bytes.
         /// The number of bits in the resulting int is numBytes * 8</summary>
@@ -393,10 +392,24 @@ namespace PokemonRandomizer.Backend.DataStructures
             for (int i = 0; i < numBytes; ++i)
                 ret += (File[offset + i] << (i * 8));
             return ret;
-        }       
-        /// <summary>Reads a UInt32 (4 bytes) from the internal offset </summary>
+        }
+        /// <summary>Reads a UInt32 (4 bytes) from the internal offset, allowing for the full 32 bits of data to be read </summary>
+        public uint ReadUInt32Full()
+        {
+            InternalOffset += 4;
+            return ReadUInt32Full(InternalOffset - 4);
+        }
+        /// <summary>Reads a UInt32 (4 bytes) from the given offset, allowing for the full 32 bits of data to be read </summary>
+        public uint ReadUInt32Full(int offset)
+        {
+            uint ret = 0;
+            for (int i = 0; i < 4; ++i)
+                ret += ((uint)File[offset + i] << (i * 8));
+            return ret;
+        }
+        /// <summary>Reads a UInt32 (4 bytes) from the internal offset. WARNING: any value greater than 16 bits will not be read properly </summary>
         public int ReadUInt32() => ReadUInt(4);
-        /// <summary>Reads a UInt32 (4 bytes) from the given offset </summary>
+        /// <summary>Reads a UInt32 (4 bytes) from the given offset WARNING: any value greater than 16 bits will not be read properly </summary>
         public int ReadUInt32(int offset) => ReadUInt(offset, 4);
         /// <summary>Reads a UInt16 (2 bytes) from the internal offset </summary>
         public int ReadUInt24() => ReadUInt(3);
