@@ -110,46 +110,55 @@ namespace PokemonRandomizer.Backend.Utilities
         /// TODO: Check that the thing at the "pointer" location is actually a pointer
         /// TODO: Check that the thing after the prefix in find pointer prefix is actually a pointer
         /// </summary>
-        public int FindOffset(string element, Rom rom, Func<Rom, int, bool> isValidOffset = null)
+        public int FindOffset(string element, Rom rom, int? startOffset = null, int? endOffset = null, Func<Rom, int, bool> isValidOffset = null)
         {
             if(HasPointerPrefix(element))
             {
                 try
                 {
-                    int offset = rom.ReadPointer(rom.FindFromPrefix(Attr(element, pointerPrefixAttr)));
+                    int offset = rom.ReadPointer(rom.FindFromPrefix(Attr(element, pointerPrefixAttr), startOffset, endOffset));
                     if(rom.IsValidOffset(offset))
                     {
                         if (isValidOffset == null || isValidOffset(rom, offset))
                             return offset;
                     }
                 }
-                catch { }
+                catch (Exception e)
+                {
+                    Logger.main.Error($"FindOffset Error for {element}: {e.Message}");
+                }
             }
             if (HasPrefix(element))
             {
                 try
                 {
-                    int offset = rom.FindFromPrefix(Attr(element, prefixAttr));
+                    int offset = rom.FindFromPrefix(Attr(element, prefixAttr), startOffset, endOffset);
                     if (rom.IsValidOffset(offset))
                     {
                         if (isValidOffset == null || isValidOffset(rom, offset))
                             return offset;
                     }
                 }
-                catch { }
+                catch (Exception e)
+                {
+                    Logger.main.Error($"FindOffset Error for {element}: {e.Message}");
+                }
             }
             if (HasSignature(element))
             {
                 try
                 {
-                    int offset = rom.FindFirst(Attr(element, signatureAttr));
+                    int offset = rom.FindFirst(Attr(element, signatureAttr), startOffset, endOffset);
                     if (rom.IsValidOffset(offset))
                     {
                         if (isValidOffset == null || isValidOffset(rom, offset))
                             return offset;
                     }
                 }
-                catch { }
+                catch (Exception e)
+                {
+                    Logger.main.Error($"FindOffset Error for {element}: {e.Message}");
+                }
             }
             if (HasPointer(element))
             {
@@ -175,9 +184,9 @@ namespace PokemonRandomizer.Backend.Utilities
         /// Set the Rom's internal offset to the offset of the specified data (found using FindOffset).
         /// Returns false if no valid offset is found
         /// </summary>
-        public bool FindAndSeekOffset(string element, Rom rom, Func<Rom, int, bool> isValidOffset = null)
+        public bool FindAndSeekOffset(string element, Rom rom, int? startOffset = null, int? endOffset = null, Func<Rom, int, bool> isValidOffset = null)
         {
-            int offset = FindOffset(element, rom, isValidOffset);
+            int offset = FindOffset(element, rom, startOffset, endOffset, isValidOffset);
             if(offset != Rom.nullPointer)
             {
                 rom.Seek(offset);

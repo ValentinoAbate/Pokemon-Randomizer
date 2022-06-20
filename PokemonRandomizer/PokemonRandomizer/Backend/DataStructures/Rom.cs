@@ -333,33 +333,33 @@ namespace PokemonRandomizer.Backend.DataStructures
 
         #region Pattern Searching
         /// <summary> Find all instances of a byte sequence in the ROM </summary>
-        public List<int> FindAll(string hexString)
+        public List<int> FindAll(string hexString, int? startIndex = null, int? endIndex = null)
         {
             var pattern = Utilities.HexUtils.HexToBytes(hexString);
-            return Search.Kmp.SearchAll(File, pattern);
+            return Search.Kmp.SearchAll(File, pattern, startIndex, endIndex);
         }
         /// <summary> Find all instances of a byte sequence in the ROM </summary>
-        public List<int> FindAll(byte[] pattern)
+        public List<int> FindAll(byte[] pattern, int? startIndex = null, int? endIndex = null)
         {
-            return Search.Kmp.SearchAll(File, pattern);
+            return Search.Kmp.SearchAll(File, pattern, startIndex, endIndex);
         }
         /// <summary> Find the first instance of a byte sequence in the ROM </summary>
-        public int FindFirst(string hexString)
+        public int FindFirst(string hexString, int? startIndex = null, int? endIndex = null)
         {
             var pattern = Utilities.HexUtils.HexToBytes(hexString);
-            return Search.Kmp.Search(File, pattern);
+            return Search.Kmp.Search(File, pattern, startIndex, endIndex);
         }
         /// <summary> Find all instances of a byte sequence in the ROM </summary>
-        public int FindFirst(byte[] pattern)
+        public int FindFirst(byte[] pattern, int? startIndex = null, int? endIndex = null)
         {
-            return Search.Kmp.Search(File, pattern);
+            return Search.Kmp.Search(File, pattern, startIndex, endIndex);
         }
         /// <summary> Find the index after a given pattern prefix. Throws exceptions if the prefix is not found or is a duplicate </summary>
-        public int FindFromPrefix(string prefix) => FindFromPrefix(Utilities.HexUtils.HexToBytes(prefix));
+        public int FindFromPrefix(string prefix, int? startIndex = null, int? endIndex = null) => FindFromPrefix(Utilities.HexUtils.HexToBytes(prefix), startIndex, endIndex);
         /// <summary> Find the index after a given pattern prefix. Throws exceptions if the prefix is not found or is a duplicate </summary>
-        public int FindFromPrefix(byte[] prefix)
+        public int FindFromPrefix(byte[] prefix, int? startIndex = null, int? endIndex = null)
         {
-            var prefixes = FindAll(prefix);
+            var prefixes = FindAll(prefix, startIndex, endIndex);
             // If no prefix was found, throw an exception
             if (prefixes.Count <= 0)
                 throw new Exception("Error: no prefix found");

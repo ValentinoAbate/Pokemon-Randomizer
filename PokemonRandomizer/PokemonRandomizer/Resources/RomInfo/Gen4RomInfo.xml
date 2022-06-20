@@ -3,6 +3,8 @@
 <gen4RomInfo>
 	<constants>
 		<evolutions evolutionsPerPokemon="7" padding="0"/>
+		<tmMoves num="92" size="2"/>
+		<hmMoves num="8" size="2"/>
 	</constants>
 	
 
@@ -12,6 +14,7 @@
 		<inheritFrom>constants</inheritFrom>
 		<movesets filePath="poketool/personal/wotbl.narc"/>
 		<evolutions filePath="poketool/personal/evo.narc"/>
+		<tmMoves prefix="0xD100D200D300D400"/>
 	</dppConstants>
 
 	<!-- Platinum Rom Info -->
@@ -71,6 +74,7 @@
 		<pokemonBaseStats filePath="a/0/0/2"/>
 		<movesets filePath="a/0/3/3"/>
 		<evolutions filePath="a/0/3/4"/>
+		<tmMoves prefix="0x1E003200"/>
 		<moveTutorMoves overlay="1" offset="0x23AE0" num="51" size="4"/>
 	</hgssConstants>
 

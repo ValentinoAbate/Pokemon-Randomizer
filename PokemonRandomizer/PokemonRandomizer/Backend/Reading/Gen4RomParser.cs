@@ -29,6 +29,7 @@ namespace PokemonRandomizer.Backend.Reading
                     Logger.main.Info(string.Join(", ", p.evolvesTo.Where(e => e.IsRealEvolution)));
                 }
             }
+            data.TMMoves = ReadTmMoves(rom, dsFileSystem, info, out data.HMMoves);
             data.tutorMoves = ReadMoveTutorMoves(rom, dsFileSystem, info);
             Logger.main.Info(string.Join(", ", data.tutorMoves));
 
@@ -159,6 +160,28 @@ namespace PokemonRandomizer.Backend.Reading
                 overlayData.Skip(skip);
             }
             return moves;
+        }
+        private Move[] ReadTmMoves(Rom rom, DSFileSystemData dsFileSytem, XmlManager info, out Move[] hmMoves)
+        {
+            var arm9 = dsFileSytem.GetArm9Data(rom, out int arm9Start, out int arm9Length);
+            if (!info.FindAndSeekOffset(ElementNames.tmMoves, arm9, arm9Start, arm9Start + arm9Length))
+            {
+                hmMoves = Array.Empty<Move>();
+                return Array.Empty<Move>();
+            }
+            int numTms = info.Num(ElementNames.tmMoves);
+            int numHms = info.Num(ElementNames.hmMoves);
+            var tmMoves = new Move[numTms];
+            for (int i = 0; i < numTms; ++i)
+            {
+                tmMoves[i] = InternalIndexToMove(arm9.ReadUInt16());
+            }
+            hmMoves = new Move[numHms];
+            for (int i = 0; i < numHms; ++i)
+            {
+                hmMoves[i] = InternalIndexToMove(arm9.ReadUInt16());
+            }
+            return tmMoves;
         }
     }
 }

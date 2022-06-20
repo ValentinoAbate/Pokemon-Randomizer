@@ -16,13 +16,14 @@ namespace PokemonRandomizer.Search
         /// Returns the index of the first match, or -1 if no match is found.
         /// Runs in time complexity O(m+n) where m = text.Length and n = pattern.Length
         /// </summary>
-        public static int Search<T>(T[] text, T[] pattern)
+        public static int Search<T>(T[] text, T[] pattern, int? startIndex = null, int? endIndex = null)
         {
             var comparer = EqualityComparer<T>.Default;
             var lps = ComputeLps(pattern, comparer);
-            int i = 0;
+            int i = startIndex ?? 0;
             int j = 0;
-            while(i < text.Length && j < pattern.Length)
+            int end = endIndex ?? text.Length;
+            while(i < end && j < pattern.Length)
             {
                 if (comparer.Equals(text[i], pattern[j]))
                 {
@@ -47,14 +48,15 @@ namespace PokemonRandomizer.Search
         /// Returns the indices of all matches in an array.
         /// Runs in time complexity O(m+n) where m = text.Length and n = pattern.Length
         /// </summary>
-        public static List<int> SearchAll<T>(T[] text, T[] pattern)
+        public static List<int> SearchAll<T>(T[] text, T[] pattern, int? startIndex = null, int? endIndex = null)
         {
             var comparer = EqualityComparer<T>.Default;
             var lps = ComputeLps(pattern, comparer);
             var matches = new List<int>();
-            int i = 0;
+            int i = startIndex ?? 0;
             int j = 0;
-            while (i < text.Length && j < pattern.Length)
+            int end = endIndex ?? text.Length;
+            while (i < end && j < pattern.Length)
             {
                 if (comparer.Equals(text[i], pattern[j]))
                 {
