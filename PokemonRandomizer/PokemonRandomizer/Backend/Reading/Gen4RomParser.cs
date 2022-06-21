@@ -6,6 +6,7 @@ using PokemonRandomizer.Backend.GenIII.Constants.ElementNames;
 using PokemonRandomizer.Backend.Utilities;
 using PokemonRandomizer.Backend.Utilities.Debug;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -19,19 +20,26 @@ namespace PokemonRandomizer.Backend.Reading
             var dsFileSystem = new DSFileSystemData(rom);
             // Actually parse the ROM data
             RomData data = new RomData();
+            // TM, HM, and MT Moves
+            data.TMMoves = ReadTmMoves(rom, dsFileSystem, info, out data.HMMoves);
+            data.tutorMoves = ReadMoveTutorMoves(rom, dsFileSystem, info);
+            Logger.main.Info(string.Join(", ", data.tutorMoves));
+            // Pokemon Base Stats
             var pokemon = ReadPokemonBaseStats(rom, dsFileSystem, info);
             foreach(var p in pokemon)
             {
                 Logger.main.Info(p.ToString());
                 Logger.main.Info(p.learnSet.ToString());
+                Logger.main.Info($"TM: {InfoFileGenerator.MoveCompatibility(p.TMCompat, data.TMMoves, "TM")}");
+                Logger.main.Info($"HM: {InfoFileGenerator.MoveCompatibility(p.HMCompat, data.HMMoves, "HM")}");
                 if (p.HasRealEvolution)
                 {
                     Logger.main.Info(string.Join(", ", p.evolvesTo.Where(e => e.IsRealEvolution)));
                 }
+
             }
-            data.TMMoves = ReadTmMoves(rom, dsFileSystem, info, out data.HMMoves);
-            data.tutorMoves = ReadMoveTutorMoves(rom, dsFileSystem, info);
-            Logger.main.Info(string.Join(", ", data.tutorMoves));
+
+
 
             throw new NotImplementedException("Gen IV Rom parsing not supported");
         }
@@ -63,6 +71,8 @@ namespace PokemonRandomizer.Backend.Reading
             {
                 return new List<PokemonBaseStats>();
             }
+            int numTms = info.Num(ElementNames.tmMoves);
+            int numHms = info.Num(ElementNames.hmMoves);
             for (int i = 1; i < pokemonNARC.FileCount; ++i)
             {
                 if (!pokemonNARC.GetFile(i, out int pokemonOffset, out _, out _))
@@ -70,6 +80,8 @@ namespace PokemonRandomizer.Backend.Reading
                     continue;
                 }
                 var newPokemon = ReadBaseStatsSingle(rom, pokemonOffset, InternalIndexToPokemon(i));
+                // Read TM / HM compat
+                newPokemon.TMCompat = ReadTmHmCompat(rom, pokemonOffset, numTms, numHms, out newPokemon.HMCompat);
                 // Read Learnset
                 if (learnsetNARC.GetFile(i, out int learnsetOffset, out _, out _))
                 {
@@ -134,6 +146,30 @@ namespace PokemonRandomizer.Backend.Reading
             pkmn.Name = species.ToDisplayString();
             pkmn.NationalDexIndex = (int)species;
             return pkmn;
+        }
+        private BitArray ReadTmHmCompat(Rom rom, int pokemonOffset, int numTms, int numHms, out BitArray hmCompat)
+        {
+            // TmHm Compat is in the same Narc file as the rest of the base stats
+            const int baseStatsTmHmCompatOffset = 28;
+            rom.Seek(pokemonOffset + baseStatsTmHmCompatOffset);
+            var compat = rom.ReadBits(numTms + numHms);
+            var tmCompat = new BitArray(numTms);
+            hmCompat = new BitArray(numHms);
+            for (int i = 0; i < compat.Length; ++i)
+            {
+                bool compatible = compat[i] == 1;
+                if(i < numTms)
+                {
+                    tmCompat.Set(i, compatible);
+                    continue;
+                }
+                int hmInd = i - numTms;
+                if(hmInd >= 0 && hmInd < numHms)
+                {
+                    hmCompat.Set(hmInd, compatible);
+                }
+            }
+            return tmCompat;
         }
 
         private Move[] ReadMoveTutorMoves(Rom rom, DSFileSystemData dsFileSystem, XmlManager info)
