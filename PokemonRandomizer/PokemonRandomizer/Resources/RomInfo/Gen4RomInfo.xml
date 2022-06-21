@@ -15,6 +15,7 @@
 		<movesets filePath="poketool/personal/wotbl.narc"/>
 		<evolutions filePath="poketool/personal/evo.narc"/>
 		<tmMoves prefix="0xD100D200D300D400"/>
+
 	</dppConstants>
 
 	<!-- Platinum Rom Info -->
@@ -25,7 +26,7 @@
 		<inheritFrom>dppConstants</inheritFrom>
 		<pokemonBaseStats filePath="poketool/personal/pl_personal.narc"/>
 		<moveTutorMoves overlay="5" offset="0x2FF64" num="38" size="12"/>
-		
+		<moveTutorCompat overlay="5" size="5" offset="0x3012C"/>	
 	</CPUE0>
 
 	<!-- Diamond / Pearl Constants -->
@@ -76,6 +77,7 @@
 		<evolutions filePath="a/0/3/4"/>
 		<tmMoves prefix="0x1E003200"/>
 		<moveTutorMoves overlay="1" offset="0x23AE0" num="51" size="4"/>
+		<moveTutorCompat filePath="fielddata/wazaoshie/waza_oshie.bin" size="8" offset="0x00"/>
 	</hgssConstants>
 
 	<!-- HGSS Rom Info -->
