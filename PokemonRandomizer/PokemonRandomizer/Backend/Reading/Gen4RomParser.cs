@@ -73,6 +73,8 @@ namespace PokemonRandomizer.Backend.Reading
             }
             int numTms = info.Num(ElementNames.tmMoves);
             int numHms = info.Num(ElementNames.hmMoves);
+            // Declare the tm / hm compat reading buffer here so it can be re-used for all pokemon
+            int[] compatBuffer = new int[numTms + numHms];
             for (int i = 1; i < pokemonNARC.FileCount; ++i)
             {
                 if (!pokemonNARC.GetFile(i, out int pokemonOffset, out _, out _))
@@ -81,7 +83,7 @@ namespace PokemonRandomizer.Backend.Reading
                 }
                 var newPokemon = ReadBaseStatsSingle(rom, pokemonOffset, InternalIndexToPokemon(i));
                 // Read TM / HM compat
-                newPokemon.TMCompat = ReadTmHmCompat(rom, pokemonOffset, numTms, numHms, out newPokemon.HMCompat);
+                newPokemon.TMCompat = ReadTmHmCompat(rom, pokemonOffset, numTms, numHms, ref compatBuffer, out newPokemon.HMCompat);
                 // Read Learnset
                 if (learnsetNARC.GetFile(i, out int learnsetOffset, out _, out _))
                 {
@@ -105,7 +107,6 @@ namespace PokemonRandomizer.Backend.Reading
             }
             return pokemon;
         }
-        // TODO: refactor to reuse code from gen 3 ROM parser
         private PokemonBaseStats ReadBaseStatsSingle(Rom rom, int offset, Pokemon species)
         {
             var pkmn = new PokemonBaseStats
@@ -147,26 +148,25 @@ namespace PokemonRandomizer.Backend.Reading
             pkmn.NationalDexIndex = (int)species;
             return pkmn;
         }
-        private BitArray ReadTmHmCompat(Rom rom, int pokemonOffset, int numTms, int numHms, out BitArray hmCompat)
+        private BitArray ReadTmHmCompat(Rom rom, int pokemonOffset, int numTms, int numHms, ref int[] compat, out BitArray hmCompat)
         {
             // TmHm Compat is in the same Narc file as the rest of the base stats
             const int baseStatsTmHmCompatOffset = 28;
             rom.Seek(pokemonOffset + baseStatsTmHmCompatOffset);
-            var compat = rom.ReadBits(numTms + numHms);
+            rom.ReadBits(ref compat, numTms + numHms);
             var tmCompat = new BitArray(numTms);
             hmCompat = new BitArray(numHms);
             for (int i = 0; i < compat.Length; ++i)
             {
-                bool compatible = compat[i] == 1;
                 if(i < numTms)
                 {
-                    tmCompat.Set(i, compatible);
+                    tmCompat.Set(i, compat[i] == 1);
                     continue;
                 }
                 int hmInd = i - numTms;
                 if(hmInd >= 0 && hmInd < numHms)
                 {
-                    hmCompat.Set(hmInd, compatible);
+                    hmCompat.Set(hmInd, compat[i] == 1);
                 }
             }
             return tmCompat;

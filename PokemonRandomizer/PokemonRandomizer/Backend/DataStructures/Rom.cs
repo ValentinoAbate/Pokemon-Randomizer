@@ -293,18 +293,39 @@ namespace PokemonRandomizer.Backend.DataStructures
         /// <summary>Reads the bits of a byte in chunks of chunkSize from the given offset</summary>
         public int[] ReadBits(int offset, int numBits, int chunkSize)
         {
-            // Create a mask for n bits, where n = chunkSize
-            int mask = Utilities.MathUtils.IntPow(2, chunkSize) - 1;
             int numChunks = numBits / chunkSize;
+            int[] output = new int[numChunks];
+            ReadBits(offset, chunkSize, numChunks, ref output);
+            return output;
+        }
+        /// <summary>Reads the bits of a byte in chunks of chunkSize from the internal offset into a given array</summary>
+        public void ReadBits(ref int[] output, int numBits = 8, int chunkSize = 1)
+        {
+            int numBytes = numBits % 8 == 0 ? numBits / 8 : (numBits / 8) + 1;
+            InternalOffset += numBytes;
+            ReadBits(InternalOffset - numBytes, ref output, numBits, chunkSize);
+        }
+        /// <summary>Reads the bits of a byte in chunks of chunkSize from a given offset into a given array</summary>
+        public void ReadBits(int offset, ref int[] output, int numBits = 8, int chunkSize = 1)
+        {
+            ReadBits(offset, chunkSize, numBits / chunkSize, ref output);
+        }
+        /// <summary>Reads the bits of a byte in chunks of chunkSize from the given offset, into an already existing array</summary>
+        private void ReadBits(int offset, int chunkSize, int numChunks, ref int[] output)
+        {
+            if (output.Length != numChunks)
+            {
+                Logger.main.Error($"Read bits error: incorrect output array langth. Expected {numChunks}, got {output.Length}");
+                return;
+            }
             int chunksPerByte = 8 / chunkSize;
-            int[] ret = new int[numChunks];
-            for(int i = 0; i < numChunks; ++i)
+            int mask = Utilities.MathUtils.IntPow(2, chunkSize) - 1;
+            for (int i = 0; i < numChunks; ++i)
             {
                 byte src = File[offset + i / chunksPerByte];
                 int shiftBy = (i % chunksPerByte) * chunkSize;
-                ret[i] = (src & (mask << shiftBy)) >> shiftBy;
+                output[i] = (src & (mask << shiftBy)) >> shiftBy;
             }
-            return ret;
         }
         /// <summary>Writes the input values to bits in chunks of chunkSize at the internal offset</summary>
         public void WriteBits(int chunkSize, params int[] chunkValues)
