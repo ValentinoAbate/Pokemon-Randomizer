@@ -291,7 +291,7 @@ namespace PokemonRandomizer.Backend.DataStructures
             return ReadBits(InternalOffset - numBytes, numBits, chunkSize);
         }
         /// <summary>Reads the bits of a byte in chunks of chunkSize from the given offset</summary>
-        public int[] ReadBits(int offset, int numBits = 8, int chunkSize = 1)
+        public int[] ReadBits(int offset, int numBits, int chunkSize)
         {
             // Create a mask for n bits, where n = chunkSize
             int mask = Utilities.MathUtils.IntPow(2, chunkSize) - 1;
