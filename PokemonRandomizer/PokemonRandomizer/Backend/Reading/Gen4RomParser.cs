@@ -26,6 +26,12 @@ namespace PokemonRandomizer.Backend.Reading
             Logger.main.Info(string.Join(", ", data.tutorMoves));
             // Pokemon Base Stats
             var pokemon = ReadPokemonBaseStats(rom, dsFileSystem, info);
+            // Egg Moves
+            if (info.HasElementWithAttr(ElementNames.eggMoves, XmlManager.overlayAttr))
+            {
+                var eggMoveData = dsFileSystem.GetArm9OverlayData(rom, info.Overlay(ElementNames.eggMoves), out int startOffset);
+                ReadEggMoves(eggMoveData, startOffset + info.Offset(ElementNames.eggMoves), info, pokemon);
+            }
             // Move Tutor Compatibility
             ReadMoveTutorCompatibility(pokemon, rom, dsFileSystem, info, metadata);
             foreach(var p in pokemon)
@@ -270,6 +276,42 @@ namespace PokemonRandomizer.Backend.Reading
                 hmMoves[i] = InternalIndexToMove(arm9.ReadUInt16());
             }
             return tmMoves;
+        }
+
+        // TODO: Convert to shared code
+        private void ReadEggMoves(Rom rom, int offset, XmlManager info, List<PokemonBaseStats> pokemon)
+        {
+            rom.SaveAndSeekOffset(offset);
+            int pkmnSigniture = info.HexAttr(ElementNames.eggMoves, AttributeNames.eggMovePokemonSigniture);
+            var moves = new Dictionary<Pokemon, List<Move>>(pokemon.Count);
+            var pkmn = Pokemon.None;
+            int counter = 0;
+            // Limit on loop just in case we are at the wrong place
+            while (++counter < 3000)
+            {
+                int number = rom.ReadUInt16();
+                if (number > pkmnSigniture + 1000 || number < 0)
+                    break;
+                if (number >= pkmnSigniture)
+                {
+                    pkmn = InternalIndexToPokemon(number - pkmnSigniture);
+                    if (pkmn > Pokemon.None)
+                        moves.Add(pkmn, new List<Move>());
+                }
+                else if (pkmn != Pokemon.None)
+                {
+                    moves[pkmn].Add(InternalIndexToMove(number));
+                }
+            }
+            rom.LoadOffset();
+            // Link Egg Moves
+            foreach(var p in pokemon)
+            {
+                if (moves.ContainsKey(p.species))
+                {
+                    p.eggMoves = moves[p.species];
+                }
+            }
         }
     }
 }

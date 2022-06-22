@@ -27,6 +27,7 @@ namespace PokemonRandomizer.Backend.GenIII.Constants.ElementNames
         public const string starterPokemon = "starterPokemon";
         public const string pokemonPalettes = "pokemonPalettes";
         public const string pokemonPalettesShiny = "pokemonPalettesShiny";
+        public const string eggMoves = "eggMoves";
         // Data elements
         public const string moveData = "moveData";
         public const string moveDescriptions = "moveDescriptions";

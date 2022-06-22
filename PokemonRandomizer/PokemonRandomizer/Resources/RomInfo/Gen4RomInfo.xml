@@ -5,6 +5,7 @@
 		<evolutions evolutionsPerPokemon="7" padding="0"/>
 		<tmMoves num="92" size="2"/>
 		<hmMoves num="8" size="2"/>
+		<eggMoves pokemonSigniture="0x4E20"/>
 	</constants>
 	
 
@@ -35,6 +36,7 @@
 		<!-- Metadata -->
 
 		<inheritFrom>dppConstants</inheritFrom>
+		<eggMoves overlay ="5" offset="0x20660"/>
 	</dpConstants>
 
 	<!-- Diamond / Pearl Rom Info -->

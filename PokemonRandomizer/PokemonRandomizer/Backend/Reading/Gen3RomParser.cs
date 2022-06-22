@@ -164,15 +164,14 @@ namespace PokemonRandomizer.Backend.Reading
 
         private Dictionary<Pokemon, List<Move>> ReadEggMoves(Rom rom, XmlManager info)
         {
-            const string eggMoveElt = "eggMoves";
             rom.SaveOffset();
             // Find the offset of the eggMoves if we have the data
-            if (!info.FindAndSeekOffset(eggMoveElt, rom))
+            if (!info.FindAndSeekOffset(ElementNames.eggMoves, rom))
             {
                 rom.LoadOffset();
                 return new Dictionary<Pokemon, List<Move>>();
             }
-            int pkmnSigniture = info.HexAttr(eggMoveElt, "pokemonSigniture");
+            int pkmnSigniture = info.HexAttr(ElementNames.eggMoves, AttributeNames.eggMovePokemonSigniture);
             var moves = new Dictionary<Pokemon, List<Move>>();
             var pkmn = Pokemon.None;
             int counter = 0;

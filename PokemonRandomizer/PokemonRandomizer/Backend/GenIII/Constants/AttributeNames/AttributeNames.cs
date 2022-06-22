@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace PokemonRandomizer.Backend.GenIII.Constants.AttributeNames
+﻿namespace PokemonRandomizer.Backend.GenIII.Constants.AttributeNames
 {
     public abstract class AttributeNames
     {
@@ -14,6 +8,8 @@ namespace PokemonRandomizer.Backend.GenIII.Constants.AttributeNames
         public const string name = "name";
         public const string className = "className";
         public const string types = "types";
+        // Pokemon Attributes
         public const string evolutionsPerPokemon = "evolutionsPerPokemon";
+        public const string eggMovePokemonSigniture = "pokemonSigniture";
     }
 }
