@@ -204,6 +204,10 @@ namespace PokemonRandomizer.Backend.Reading
         {
             if (!info.HasElement(ElementNames.tutorMoves) || !info.HasElement(ElementNames.tutorCompat))
             {
+                foreach(var p in pokemon)
+                {
+                    p.moveTutorCompat = new BitArray(0);
+                }
                 return;
             }
             Rom mtCompat;
@@ -212,6 +216,10 @@ namespace PokemonRandomizer.Backend.Reading
                 if(!dsFileSystem.GetFile(info.Path(ElementNames.tutorCompat), out int offset, out _))
                 {
                     Logger.main.Error($"Error reading Move Tutor Compatibility. Can't find compatiblity file");
+                    foreach (var p in pokemon)
+                    {
+                        p.moveTutorCompat = new BitArray(0);
+                    }
                     return;
                 }           
                 mtCompat = rom;
