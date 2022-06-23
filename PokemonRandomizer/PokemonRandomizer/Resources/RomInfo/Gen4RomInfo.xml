@@ -81,6 +81,8 @@
 		<tmMoves prefix="0x1E003200"/>
 		<moveTutorMoves overlay="1" offset="0x23AE0" num="51" size="4"/>
 		<moveTutorCompat filePath="fielddata/wazaoshie/waza_oshie.bin" size="8" offset="0x00"/>
+		<!-- Egg moves also seem to be in data/kowaza.narc for HGSS (at the same offset) -->
+		<eggMoves filePath ="a/2/2/9" offset="0x3C"/>
 	</hgssConstants>
 
 	<!-- HGSS Rom Info -->

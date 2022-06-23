@@ -32,6 +32,13 @@ namespace PokemonRandomizer.Backend.Reading
                 var eggMoveData = dsFileSystem.GetArm9OverlayData(rom, info.Overlay(ElementNames.eggMoves), out int startOffset, out _);
                 ReadEggMoves(eggMoveData, startOffset + info.Offset(ElementNames.eggMoves), info, pokemon);
             }
+            else if(info.HasElementWithAttr(ElementNames.eggMoves, XmlManager.pathAttr))
+            {
+                if (dsFileSystem.GetFile(info.Path(ElementNames.eggMoves), out int startOffset, out _))
+                {
+                    ReadEggMoves(rom, startOffset + info.Offset(ElementNames.eggMoves), info, pokemon);
+                } 
+            }
             // Move Tutor Compatibility
             ReadMoveTutorCompatibility(pokemon, rom, dsFileSystem, info, metadata);
             foreach(var p in pokemon)
