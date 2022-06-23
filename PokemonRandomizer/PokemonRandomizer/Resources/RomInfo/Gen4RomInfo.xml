@@ -27,7 +27,8 @@
 		<inheritFrom>dppConstants</inheritFrom>
 		<pokemonBaseStats filePath="poketool/personal/pl_personal.narc"/>
 		<moveTutorMoves overlay="5" offset="0x2FF64" num="38" size="12"/>
-		<moveTutorCompat overlay="5" size="5" offset="0x3012C"/>	
+		<moveTutorCompat overlay="5" size="5" offset="0x3012C"/>
+		<eggMoves overlay ="5" offset="0x2921A"/>
 	</CPUE0>
 
 	<!-- Diamond / Pearl Constants -->
