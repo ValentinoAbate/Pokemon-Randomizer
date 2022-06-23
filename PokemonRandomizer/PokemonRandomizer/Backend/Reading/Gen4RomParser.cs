@@ -29,7 +29,7 @@ namespace PokemonRandomizer.Backend.Reading
             // Egg Moves
             if (info.HasElementWithAttr(ElementNames.eggMoves, XmlManager.overlayAttr))
             {
-                var eggMoveData = dsFileSystem.GetArm9OverlayData(rom, info.Overlay(ElementNames.eggMoves), out int startOffset);
+                var eggMoveData = dsFileSystem.GetArm9OverlayData(rom, info.Overlay(ElementNames.eggMoves), out int startOffset, out _);
                 ReadEggMoves(eggMoveData, startOffset + info.Offset(ElementNames.eggMoves), info, pokemon);
             }
             // Move Tutor Compatibility
@@ -192,7 +192,7 @@ namespace PokemonRandomizer.Backend.Reading
             var moves = new Move[num];
             int skip = Math.Max(0, info.Size(ElementNames.tutorMoves) - 2);
             // Get overlay data
-            var overlayData = dsFileSystem.GetArm9OverlayData(rom, info.Overlay(ElementNames.tutorMoves), out int startOffset);
+            var overlayData = dsFileSystem.GetArm9OverlayData(rom, info.Overlay(ElementNames.tutorMoves), out int startOffset, out _);
             if(overlayData.Length <= 0)
             {
                 return Array.Empty<Move>();
@@ -233,7 +233,7 @@ namespace PokemonRandomizer.Backend.Reading
             }
             else
             {
-                mtCompat = dsFileSystem.GetArm9OverlayData(rom, info.Overlay(ElementNames.tutorCompat), out int startOffset);
+                mtCompat = dsFileSystem.GetArm9OverlayData(rom, info.Overlay(ElementNames.tutorCompat), out int startOffset, out _);
                 mtCompat.Seek(startOffset + info.Offset(ElementNames.tutorCompat));
             }
             int numTutorMoves = info.Num(ElementNames.tutorMoves);

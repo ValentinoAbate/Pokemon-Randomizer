@@ -249,40 +249,44 @@ namespace PokemonRandomizer.Backend.DataStructures.DS
 
         // Arm9 Overlay Data
 
-        public Rom GetArm9OverlayData(Rom rom, int overlayIndex, out int startOffset)
+        public Rom GetArm9OverlayData(Rom rom, int overlayIndex, out int startOffset, out int length)
         {
             if(overlayIndex >= 0 && overlayIndex < arm9Overlays.Length)
             {
-                return GetOverlayContents(rom, arm9Overlays[overlayIndex], out startOffset);
+                return GetOverlayContents(rom, arm9Overlays[overlayIndex], out startOffset, out length);
             }
             startOffset = 0;
+            length = 0;
             return new Rom(Array.Empty<byte>());
         }
 
-        public Rom GetArm9OverlayDataByFileID(Rom rom, int fileID, out int startOffset)
+        public Rom GetArm9OverlayDataByFileID(Rom rom, int fileID, out int startOffset, out int length)
         {
             if (arm9OverlaysByFileID.ContainsKey(fileID))
             {
-                return GetOverlayContents(rom, arm9OverlaysByFileID[fileID], out startOffset);
+                return GetOverlayContents(rom, arm9OverlaysByFileID[fileID], out startOffset, out length);
             }
             startOffset = 0;
+            length = 0;
             return new Rom(Array.Empty<byte>());
         }
 
-        private Rom GetOverlayContents(Rom rom, Arm9Overlay overlay, out int startOffset)
+        private Rom GetOverlayContents(Rom rom, Arm9Overlay overlay, out int startOffset, out int length)
         {
             if (overlay.CompressionFlag <= 0)
             {
                 startOffset = overlay.Start;
+                length = overlay.Length;
                 return rom;
             }
             startOffset = 0;
-            if (overlay.DecompressedData != null)
+            if(overlay.DecompressedData == null)
             {
-                overlay.DecompressedData.Seek(0);
-                return overlay.DecompressedData;
+                overlay.DecompressedData = new Rom(rom.ReadBLZCompressedData(overlay.Start, overlay.Length));
             }
-            return overlay.DecompressedData = new Rom(rom.ReadBLZCompressedData(overlay.Start, overlay.Length));
+            length = overlay.DecompressedData.Length;
+            overlay.DecompressedData.Seek(0);
+            return overlay.DecompressedData;
         }
 
         // Arm 9 Data
