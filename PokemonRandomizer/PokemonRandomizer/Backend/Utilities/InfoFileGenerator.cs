@@ -12,6 +12,7 @@ namespace PokemonRandomizer.Backend.Utilities
         private const string divider = "===============================================================================================================================================";
         private const string subdivider = "---------------------------------------------------------------------------------------------------------------------------------------";
         private const string unrandomized = "None (unrandomized)";
+        private const string none = "None";
         private const int headerLines = 5;
         public string[] GenerateInfoFile(RomData data, RomMetadata metadata, string settingsString = null)
         {
@@ -83,6 +84,7 @@ namespace PokemonRandomizer.Backend.Utilities
                 lines.Add($"TM: {MoveCompatibility(pkmn.TMCompat, data.TMMoves, "TM")}");
                 lines.Add($"HM: {MoveCompatibility(pkmn.HMCompat, data.HMMoves, "HM")}");
                 lines.Add($"Tutor: {MoveCompatibility(pkmn.moveTutorCompat, data.tutorMoves)}");
+                lines.Add($"Egg: {EnumArray(pkmn.eggMoves)}");
             }
 
             Header(ref lines, "Evolution Info");
@@ -116,7 +118,21 @@ namespace PokemonRandomizer.Backend.Utilities
 
                 }
             }
-            return str.Length > 0 ? str.ToString() : "None";
+            return str.Length > 0 ? str.ToString() : none;
+        }
+
+        private static string EnumArray<T>(IEnumerable<T> input) where T : System.Enum
+        {
+            var str = new StringBuilder();
+            foreach (var i in input)
+            {
+                if (str.Length > 0)
+                {
+                    str.Append(", ");
+                }
+                str.Append(i.ToDisplayString());
+            }
+            return str.Length > 0 ? str.ToString() : none;
         }
 
         private static string NameFormatted(PokemonBaseStats pkmn)
