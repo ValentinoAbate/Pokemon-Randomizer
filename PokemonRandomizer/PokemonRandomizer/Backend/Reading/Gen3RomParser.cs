@@ -47,6 +47,12 @@ namespace PokemonRandomizer.Backend.Reading
             #region Base Stats
             // Read the pokemon base stats from the Rom and link dex orders
             var pokemon = ReadPokemonBaseStats(rom, info, out byte[] skippedData);
+            // Find the offset of the eggMoves if we have the data
+            int? eggMovesOffset = info.FindOffset(ElementNames.eggMoves, rom);
+            if (eggMovesOffset.HasValue)
+            {
+                ReadEggMoves(rom, eggMovesOffset.Value, info, pokemon);
+            }
             ReadNationalDexOrder(pokemon, rom, info);
             // Set the data on the RomData
             data.Pokemon = pokemon;
@@ -162,40 +168,6 @@ namespace PokemonRandomizer.Backend.Reading
             return moves;
         }
 
-        private Dictionary<Pokemon, List<Move>> ReadEggMoves(Rom rom, XmlManager info)
-        {
-            rom.SaveOffset();
-            // Find the offset of the eggMoves if we have the data
-            if (!info.FindAndSeekOffset(ElementNames.eggMoves, rom))
-            {
-                rom.LoadOffset();
-                return new Dictionary<Pokemon, List<Move>>();
-            }
-            int pkmnSigniture = info.HexAttr(ElementNames.eggMoves, AttributeNames.eggMovePokemonSigniture);
-            var moves = new Dictionary<Pokemon, List<Move>>();
-            var pkmn = Pokemon.None;
-            int counter = 0;
-            // Limit on loop just in case we are at the wrong place
-            while (++counter < 3000)
-            {
-                int number = rom.ReadUInt16();
-                if (number > pkmnSigniture + 1000 || number < 0)
-                    break;
-                if(number >= pkmnSigniture)
-                {
-                    pkmn = InternalIndexToPokemon(number - pkmnSigniture);
-                    if (pkmn > Pokemon.None)
-                        moves.Add(pkmn, new List<Move>());
-                }
-                else
-                {
-                    moves[pkmn].Add((Move)number);
-                }
-            }
-            rom.LoadOffset();
-            return moves;
-        }
-
         #region Read Pokemon Base Stats
         // Read the Pokemon base stat definitions from the ROM
         private List<PokemonBaseStats> ReadPokemonBaseStats(Rom rom, XmlManager info, out byte[] skippedData)
@@ -254,8 +226,6 @@ namespace PokemonRandomizer.Backend.Reading
             int shinyPaletteOffset = info.FindOffset(ElementNames.pokemonPalettesShiny, rom) + pokemonPaletteSize;
             #endregion
 
-            // Read Egg Moves
-            var eggMoves = ReadEggMoves(rom, info);
             // Find skip index if one exists
             int skipAt = info.HasElementWithAttr(ElementNames.pokemonBaseStats, "skipAt") ? info.IntAttr(ElementNames.pokemonBaseStats, "skipAt") : -1; 
             for (int i = 0; i < numPokemonBaseStats; i++)
@@ -270,8 +240,6 @@ namespace PokemonRandomizer.Backend.Reading
                 PokemonBaseStats pkmn = ReadBaseStatsSingle(rom, pkmnOffset + (i * pkmnSize), InternalIndexToPokemon(i + 1));
                 // Read name
                 pkmn.Name = rom.ReadString(namesOffset + (i * nameLength), nameLength);
-                // Set Egg Moves
-                pkmn.eggMoves = eggMoves.ContainsKey(pkmn.species) ? eggMoves[pkmn.species] : new List<Move>();
                 // Read Learn Set
                 movesetOffset = ReadLearnSet(rom, movesetOffset, out pkmn.learnSet);
                 // Read Tm/Hm/Mt compat
