@@ -26,8 +26,15 @@ namespace PokemonRandomizer.Backend.DataStructures
                 pokemon = value;
                 // Refresh the lookup
                 PokemonLookup.Clear();
+                // Pre-process
                 foreach (var p in pokemon)
+                {
                     PokemonLookup.Add(p.species, p);
+                    if(p.eggMoves == null)
+                    {
+                        p.eggMoves = new List<Move>(0);
+                    }
+                }
                 // Refresh the national dex order
                 PokemonNationalDexOrder = Pokemon.ToArray();
                 Array.Sort(PokemonNationalDexOrder, (x, y) => x.NationalDexIndex.CompareTo(y.NationalDexIndex));

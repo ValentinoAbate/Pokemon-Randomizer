@@ -95,7 +95,7 @@ namespace PokemonRandomizer.Backend.Utilities
             }
         }
 
-        public static string MoveCompatibility(BitArray compat, Move[] moves, string name = null)
+        private static string MoveCompatibility(BitArray compat, Move[] moves, string name = null)
         {
             var str = new StringBuilder();
             for (int i = 0; i < compat.Count && i < moves.Length; i++)

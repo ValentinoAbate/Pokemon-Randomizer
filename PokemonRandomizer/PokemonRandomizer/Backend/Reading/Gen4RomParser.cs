@@ -41,20 +41,12 @@ namespace PokemonRandomizer.Backend.Reading
             }
             // Move Tutor Compatibility
             ReadMoveTutorCompatibility(pokemon, rom, dsFileSystem, info, metadata);
-            foreach(var p in pokemon)
+            data.Pokemon = pokemon;
+            var infoGen = new InfoFileGenerator();
+            foreach(var line in infoGen.GenerateInfoFile(data, metadata))
             {
-                Logger.main.Info(p.ToString());
-                Logger.main.Info(p.learnSet.ToString());
-                Logger.main.Info($"TM: {InfoFileGenerator.MoveCompatibility(p.TMCompat, data.TMMoves, "TM")}");
-                Logger.main.Info($"HM: {InfoFileGenerator.MoveCompatibility(p.HMCompat, data.HMMoves, "HM")}");
-                Logger.main.Info($"Tutor: {InfoFileGenerator.MoveCompatibility(p.moveTutorCompat, data.tutorMoves)}");
-                if (p.HasRealEvolution)
-                {
-                    Logger.main.Info(string.Join(", ", p.evolvesTo.Where(e => e.IsRealEvolution)));
-                }
-
+                Logger.main.Info(line);
             }
-
 
 
             throw new NotImplementedException("Gen IV Rom parsing not supported");
