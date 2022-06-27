@@ -411,10 +411,77 @@ namespace PokemonRandomizer.Backend.Reading
             if (!info.FindAndSeekOffset(ElementNames.trainerBattles, rom))
                 return new List<Trainer>();
             int numTrainers = info.Num(ElementNames.trainerBattles);
-            List<Trainer> ret = new List<Trainer>(numTrainers);
-            for (int i = 0; i < numTrainers; ++i)
+            var ret = new List<Trainer>(numTrainers);
+            for (int trainerInd = 0; trainerInd < numTrainers; ++trainerInd)
             {
-                ret.Add(new Trainer(rom, classNames));
+                var trainer = new Trainer();
+                trainer.ClassNames = classNames;
+                var dataType = (TrainerPokemon.DataType)rom.ReadByte();
+                trainer.trainerClass = rom.ReadByte();
+                // Read Gender (byte 2 bit 0)
+                trainer.gender = (Gender)((rom.Peek() & 0x80) >> 7);
+                // Read music track index (byte 2 bits 1-7)
+                trainer.musicIndex = (byte)(rom.ReadByte() & 0x7F);
+                // Read sprite index (byte 3)
+                trainer.spriteIndex = rom.ReadByte();
+                // Read name (I think bytes 4 - 15?)
+                trainer.name = rom.ReadFixedLengthString(Trainer.nameLength);
+                // Read items (bytes 16-23)
+                for (int itemInd = 0; itemInd < 4; ++itemInd)
+                {
+                    trainer.useItems[itemInd] = InternalIndexToItem(rom.ReadUInt16());
+                }
+                // Read double battle (byte 24)
+                trainer.isDoubleBattle = rom.ReadByte() == 1;
+                // What is in bytes 25-27?
+                rom.Skip(3);
+                // Read AI flags
+                trainer.AIFlags = new BitArray(new int[] { rom.ReadUInt32() });
+                int numPokemon = rom.ReadByte();
+                // What is in bytes 33-35?
+                rom.Skip(3);
+                // Bytes 36-39 (end of data)
+                trainer.pokemonOffset = rom.ReadPointer();
+
+                // Save the internal offset before chasing pointers
+                rom.SaveOffset();
+                #region Read pokemon from pokemonOffset
+                rom.Seek(trainer.pokemonOffset);
+                trainer.PokemonData = new Trainer.TrainerPokemonData(dataType, numPokemon);
+                // The pokemon data structures will be either 8 or 16 bytes depending on the dataType of the trainer
+                for (int pokemonInd = 0; pokemonInd < numPokemon; ++pokemonInd)
+                {
+                    var p = new TrainerPokemon();
+                    p.dataType = dataType;
+                    p.IVLevel = rom.ReadUInt16();
+                    p.level = rom.ReadUInt16();
+                    p.species = InternalIndexToPokemon(rom.ReadUInt16());
+                    if (dataType == TrainerPokemon.DataType.Basic)
+                    {
+                        rom.Skip(2); // Skip padding
+                    }
+                    else if (dataType == TrainerPokemon.DataType.HeldItem)
+                    {
+                        p.heldItem = InternalIndexToItem(rom.ReadUInt16());
+                    }
+                    else if (dataType == TrainerPokemon.DataType.SpecialMoves)
+                    {
+                        for (int moveInd = 0; moveInd < 4; ++moveInd)
+                            p.moves[moveInd] = InternalIndexToMove(rom.ReadUInt16());
+                        rom.Skip(2);
+                    }
+                    else if (dataType == TrainerPokemon.DataType.SpecialMovesAndHeldItem)
+                    {
+                        p.heldItem = InternalIndexToItem(rom.ReadUInt16());
+                        for (int moveInd = 0; moveInd < 4; ++moveInd)
+                            p.moves[moveInd] = InternalIndexToMove(rom.ReadUInt16());
+                    }
+                    trainer.PokemonData.Pokemon.Add(p);
+                }
+                #endregion
+                // Return to the trainers
+                rom.LoadOffset();
+                ret.Add(trainer);
             }
             return ret;
         }
