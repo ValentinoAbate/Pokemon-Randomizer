@@ -1,16 +1,15 @@
 ﻿using PokemonRandomizer.Backend.DataStructures;
 using PokemonRandomizer.Backend.EnumTypes;
 using PokemonRandomizer.Backend.Utilities;
-using PokemonRandomizer.Backend.GenIII.Constants.ElementNames;
 using PokemonRandomizer.Backend.Utilities.Debug;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System;
-using static PokemonRandomizer.Backend.DataStructures.MoveData;
 using PokemonRandomizer.Backend.DataStructures.Scripts;
 using PokemonRandomizer.Backend.Metadata;
-using PokemonRandomizer.Backend.GenIII.Constants.AttributeNames;
+using static PokemonRandomizer.Backend.DataStructures.MoveData;
+using PokemonRandomizer.Backend.Constants;
 
 namespace PokemonRandomizer.Backend.Reading
 {

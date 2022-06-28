@@ -2,13 +2,13 @@
 using PokemonRandomizer.Backend.EnumTypes;
 using PokemonRandomizer.Backend.Scripting;
 using PokemonRandomizer.Backend.Utilities;
-using PokemonRandomizer.Backend.GenIII.Constants.ElementNames;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using PokemonRandomizer.Backend.Scripting.GenIII;
 using PokemonRandomizer.Backend.Utilities.Debug;
 using PokemonRandomizer.Backend.DataStructures.Scripts;
+using PokemonRandomizer.Backend.Constants;
 
 namespace PokemonRandomizer.Backend.Writing
 {
@@ -100,18 +100,18 @@ namespace PokemonRandomizer.Backend.Writing
             // Right now, only supports level-up evolves (not evo stones)
             if(settings.EvolveWithoutNationalDex && metadata.IsFireRedOrLeafGreen)
             {
-                int offset = info.FindOffset(ElementNames.evolveWithoutNatDex, rom);
+                int offset = info.FindOffset(ElementNames.GenIII.evolveWithoutNatDex, rom);
                 if(offset != Rom.nullPointer)
                 {
                     // Get the data from the attribute
-                    var byteData = info.ByteArrayAttr(ElementNames.evolveWithoutNatDex, "data");
+                    var byteData = info.ByteArrayAttr(ElementNames.GenIII.evolveWithoutNatDex, "data");
                     rom.WriteBlock(offset, byteData);
                 }
-                offset = info.FindOffset(ElementNames.stoneEvolveWithoutNatDex, rom);
+                offset = info.FindOffset(ElementNames.GenIII.stoneEvolveWithoutNatDex, rom);
                 if(offset != Rom.nullPointer)
                 {
                     // Get the data from the attribute
-                    var byteData = info.ByteArrayAttr(ElementNames.stoneEvolveWithoutNatDex, "data");
+                    var byteData = info.ByteArrayAttr(ElementNames.GenIII.stoneEvolveWithoutNatDex, "data");
                     rom.WriteBlock(offset, byteData);
                 }
             }
@@ -189,9 +189,9 @@ namespace PokemonRandomizer.Backend.Writing
 
         private void ApplyHailHack(Settings.HailHackOption option, Rom rom, XmlManager info)
         {
-            if (!info.HasElement(ElementNames.hailHack))
+            if (!info.HasElement(ElementNames.GenIII.hailHack))
             {
-                Logger.main.Unsupported(ElementNames.hailHack);
+                Logger.main.Unsupported(ElementNames.GenIII.hailHack);
                 return;
             }
             // Hail Weather Hack. Makes the weather types "steady snow" and "three snowflakes" cause hail in battle
@@ -199,10 +199,10 @@ namespace PokemonRandomizer.Backend.Writing
             // Emerald offsets from Panda Face (https://www.pokecommunity.com/member.php?u=660920)
             // Three snow flake spawning issue fix from ShinyDragonHunter (https://www.pokecommunity.com/member.php?u=241758)
             // Thread with all relevant posts: https://www.pokecommunity.com/showthread.php?t=351387&page=2
-            var hailRoutine = info.ByteArrayAttr(ElementNames.hailHack, "routine");
+            var hailRoutine = info.ByteArrayAttr(ElementNames.GenIII.hailHack, "routine");
             if (hailRoutine.Length == 0)
             {
-                Logger.main.Unsupported(ElementNames.hailHack + " (no routine found)");
+                Logger.main.Unsupported(ElementNames.GenIII.hailHack + " (no routine found)");
                 return;
             }
             int? hailHackroutineOffset = rom.WriteInFreeSpace(hailRoutine);
@@ -212,22 +212,22 @@ namespace PokemonRandomizer.Backend.Writing
                 if (option.HasFlag(Settings.HailHackOption.Snow))
                 {
                     // Add battle weather routine
-                    rom.WritePointer(info.HexAttr(ElementNames.hailHack, "snowRoutineOffset"), (int)hailHackroutineOffset);
+                    rom.WritePointer(info.HexAttr(ElementNames.GenIII.hailHack, "snowRoutineOffset"), (int)hailHackroutineOffset);
                     // Fix message
-                    rom.WriteBlock(info.HexAttr(ElementNames.hailHack, "snowMessageOffset"), hailMessageBlock);
+                    rom.WriteBlock(info.HexAttr(ElementNames.GenIII.hailHack, "snowMessageOffset"), hailMessageBlock);
                     // Fix Three snow flakes spawning issue
-                    rom.WriteBlock(info.HexAttr(ElementNames.hailHack, "snowFixOffset"), new byte[] { 0x4B, 0xE0 });
-                    if(info.HasElementWithAttr(ElementNames.hailHack, "snowPostBattleFixOffset")) 
+                    rom.WriteBlock(info.HexAttr(ElementNames.GenIII.hailHack, "snowFixOffset"), new byte[] { 0x4B, 0xE0 });
+                    if(info.HasElementWithAttr(ElementNames.GenIII.hailHack, "snowPostBattleFixOffset")) 
                     {
-                        rom.WriteBlock(info.HexAttr(ElementNames.hailHack, "snowPostBattleFixOffset"), new byte[] { 0x04, 0x1C, 0xE1, 0xF7, 0x32, 0xF8, 0x0D, 0x4A, 0xD9, 0x21, 0xC9, 0x00, 0x88, 0x5C });
+                        rom.WriteBlock(info.HexAttr(ElementNames.GenIII.hailHack, "snowPostBattleFixOffset"), new byte[] { 0x04, 0x1C, 0xE1, 0xF7, 0x32, 0xF8, 0x0D, 0x4A, 0xD9, 0x21, 0xC9, 0x00, 0x88, 0x5C });
                     }
                 }
                 if (option.HasFlag(Settings.HailHackOption.SteadySnow))
                 {
                     // Add battle weather routine
-                    rom.WritePointer(info.HexAttr(ElementNames.hailHack, "steadySnowRoutineOffset"), (int)hailHackroutineOffset);
+                    rom.WritePointer(info.HexAttr(ElementNames.GenIII.hailHack, "steadySnowRoutineOffset"), (int)hailHackroutineOffset);
                     // Fix message
-                    rom.WriteBlock(info.HexAttr(ElementNames.hailHack, "steadySnowMessageOffset"), hailMessageBlock);
+                    rom.WriteBlock(info.HexAttr(ElementNames.GenIII.hailHack, "steadySnowMessageOffset"), hailMessageBlock);
                 }
             }
             else

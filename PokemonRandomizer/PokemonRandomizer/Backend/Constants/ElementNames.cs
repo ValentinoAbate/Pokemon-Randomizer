@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace PokemonRandomizer.Backend.GenIII.Constants.ElementNames
+﻿namespace PokemonRandomizer.Backend.Constants
 {
     /// <summary>
-    /// Contains symbolic constants for referencing the names of elements in a Gen III info file.
+    /// Contains symbolic constants for referencing the names of elements in a ROM info file.
     /// </summary>
     public abstract class ElementNames
     {
@@ -59,9 +53,18 @@ namespace PokemonRandomizer.Backend.GenIII.Constants.ElementNames
         public const string pcPotion = "pcPotion";
         public const string runIndoors = "runIndoors";
         public const string textSpeed = "textSpeed";
-        public const string evolveWithoutNatDex = "evolveWithoutNationalDex";
-        public const string stoneEvolveWithoutNatDex = "stoneEvolveWithoutNationalDex";
         public const string firstEncounter = "firstRoute";
-        public const string hailHack = "hailHack";
+
+        public abstract class GenIII
+        {
+            public const string evolveWithoutNatDex = "evolveWithoutNationalDex";
+            public const string stoneEvolveWithoutNatDex = "stoneEvolveWithoutNationalDex";
+            public const string hailHack = "hailHack";
+        }
+
+        public abstract class GenIV
+        {
+            public const string trainerPokemon = "trainerPokemon";
+        }
     }
 }

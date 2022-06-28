@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using PokemonRandomizer.Backend.DataStructures;
+using PokemonRandomizer.Backend.EnumTypes;
+using PokemonRandomizer.Backend.Utilities;
+using PokemonRandomizer.Backend.Constants;
 
 namespace PokemonRandomizer.Backend.Reading
 {
-    using DataStructures;
-    using EnumTypes;
-    using Utilities;
-    using GenIII.Constants.ElementNames;
     public class Gen3MapParser
     {
         private readonly Gen3ScriptParser scriptParser;

@@ -1,7 +1,6 @@
-﻿using PokemonRandomizer.Backend.DataStructures;
+﻿using PokemonRandomizer.Backend.Constants;
+using PokemonRandomizer.Backend.DataStructures;
 using PokemonRandomizer.Backend.EnumTypes;
-using PokemonRandomizer.Backend.GenIII.Constants.AttributeNames;
-using PokemonRandomizer.Backend.GenIII.Constants.ElementNames;
 using PokemonRandomizer.Backend.Utilities;
 using System.Collections.Generic;
 

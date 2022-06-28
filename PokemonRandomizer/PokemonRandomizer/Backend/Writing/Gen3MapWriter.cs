@@ -1,11 +1,11 @@
 ﻿using System;
 using PokemonRandomizer.Backend.EnumTypes;
+using PokemonRandomizer.Backend.DataStructures;
+using PokemonRandomizer.Backend.Utilities;
+using PokemonRandomizer.Backend.Constants;
 
 namespace PokemonRandomizer.Backend.Writing
 {
-    using DataStructures;
-    using Utilities;
-    using GenIII.Constants.ElementNames;
     public class Gen3MapWriter
     {
         private readonly Gen3ScriptWriter scriptWriter;

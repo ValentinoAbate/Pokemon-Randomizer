@@ -1,5 +1,8 @@
-﻿namespace PokemonRandomizer.Backend.GenIII.Constants.AttributeNames
+﻿namespace PokemonRandomizer.Backend.Constants
 {
+    /// <summary>
+    /// Contains symbolic constants for referencing the names of attributes in a ROM info file.
+    /// </summary>
     public abstract class AttributeNames
     {
         // Common
