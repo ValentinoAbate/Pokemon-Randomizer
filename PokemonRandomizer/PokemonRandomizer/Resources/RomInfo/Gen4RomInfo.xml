@@ -43,6 +43,16 @@
 		<moveTutorCompat overlay="5" size="5" offset="0x3012C"/>
 		<eggMoves overlay ="5" offset="0x2921A"/>
 		<text filePath="msgdata/pl_msg.narc"/>
+
+		<!-- Text Offsets -->
+		<pokemonNames offset="412" extra="true"/>
+		<trainerNames offset="618"/>
+		<trainerClassNames offset="619"/>
+		<moveDescriptions offset="646"/>
+		<moveNames offset="647"/>
+		<abilityNames offset="610"/>
+		<itemNames offset="392"/>
+		<itemDescriptions offset="391"/>
 	</CPUE0>
 
 	<!-- Diamond / Pearl Constants -->
@@ -62,6 +72,16 @@
 
 		<inheritFrom>dpConstants</inheritFrom>
 		<pokemonBaseStats filePath="poketool/personal/personal.narc"/>
+		
+		<!-- Text Offsets -->
+		<pokemonNames offset="362" extra="true"/>
+		<trainerNames offset="559"/>
+		<trainerClassNames offset="560"/>
+		<moveDescriptions offset="587"/>
+		<moveNames offset="588"/>
+		<abilityNames offset="552"/>
+		<itemNames offset="344"/>
+		<itemDescriptions offset="343"/>
 
 	</ADAE0>
 	<ADAE5>
@@ -110,6 +130,16 @@
 		<!-- Metadata -->
 
 		<inheritFrom>hgssConstants</inheritFrom>
+
+		<!-- Text Offsets -->
+		<pokemonNames offset="237" extra="true"/>
+		<trainerNames offset="729"/>
+		<trainerClassNames offset="730"/>
+		<moveDescriptions offset="749"/>
+		<moveNames offset="750"/>
+		<abilityNames offset="720"/>
+		<itemNames offset="221"/>
+		<itemDescriptions offset="222"/>
 
 	</IPKE0>
 	<!-- SoulSilver -->

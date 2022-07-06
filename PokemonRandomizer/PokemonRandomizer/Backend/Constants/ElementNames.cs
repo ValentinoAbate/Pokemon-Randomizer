@@ -35,6 +35,7 @@
         public const string pickupRareItems = "pickupRareItems";
         public const string stoneEffect = "stoneEffect";
         public const string trainerBattles = "trainerBattles";
+        public const string trainerClassNames = "trainerClassNames";
         public const string trades = "trades";
         public const string setBerryTreeScript = "setBerryTreeScript";
 
@@ -66,6 +67,11 @@
         {
             public const string trainerPokemon = "trainerPokemon";
             public const string text = "text";
+            public const string trainerNames = "trainerNames";
+            public const string moveNames = "moveNames";
+            public const string itemNames = "itemNames";
+            public const string itemDescriptions = "itemDescriptions";
+            public const string abilityNames = "abilityNames";
         }
     }
 }
