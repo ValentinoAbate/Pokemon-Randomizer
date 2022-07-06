@@ -16,7 +16,8 @@
 		<movesets filePath="poketool/personal/wotbl.narc"/>
 		<evolutions filePath="poketool/personal/evo.narc"/>
 		<tmMoves prefix="0xD100D200D300D400"/>
-
+		<trainerBattles filePath="poketool/trainer/trdata.narc"/>
+		<trainerPokemon filePath="poketool/trainer/trpoke.narc"/>
 	</dppConstants>
 
 	<!-- Platinum Rom Info -->
@@ -83,6 +84,8 @@
 		<moveTutorCompat filePath="fielddata/wazaoshie/waza_oshie.bin" size="8" offset="0x00"/>
 		<!-- Egg moves also seem to be in data/kowaza.narc for HGSS (at the same offset) -->
 		<eggMoves filePath ="a/2/2/9" offset="0x3C"/>
+		<trainerBattles filePath="a/0/5/5"/>
+		<trainerPokemon filePath="a/0/5/6"/>
 	</hgssConstants>
 
 	<!-- HGSS Rom Info -->
