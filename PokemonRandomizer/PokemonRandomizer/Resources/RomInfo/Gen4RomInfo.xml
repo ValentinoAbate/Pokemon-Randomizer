@@ -42,6 +42,7 @@
 		<moveTutorMoves overlay="5" offset="0x2FF64" num="38" size="12"/>
 		<moveTutorCompat overlay="5" size="5" offset="0x3012C"/>
 		<eggMoves overlay ="5" offset="0x2921A"/>
+		<text filePath="msgdata/pl_msg.narc"/>
 	</CPUE0>
 
 	<!-- Diamond / Pearl Constants -->
@@ -51,6 +52,7 @@
 
 		<inheritFrom>dppConstants</inheritFrom>
 		<eggMoves overlay ="5" offset="0x20660"/>
+		<text filePath="msgdata/msg.narc"/>
 	</dpConstants>
 
 	<!-- Diamond / Pearl Rom Info -->
@@ -98,6 +100,7 @@
 		<eggMoves filePath ="a/2/2/9" offset="0x3C"/>
 		<trainerBattles filePath="a/0/5/5"/>
 		<trainerPokemon filePath="a/0/5/6"/>
+		<text filePath="a/0/2/7"/>
 	</hgssConstants>
 
 	<!-- HGSS Rom Info -->

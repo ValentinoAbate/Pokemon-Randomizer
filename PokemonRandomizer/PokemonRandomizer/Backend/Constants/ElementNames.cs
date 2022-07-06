@@ -65,6 +65,7 @@
         public abstract class GenIV
         {
             public const string trainerPokemon = "trainerPokemon";
+            public const string text = "text";
         }
     }
 }
