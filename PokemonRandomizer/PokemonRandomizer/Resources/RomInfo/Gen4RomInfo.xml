@@ -1,5 +1,17 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 
+<!-- README -->
+<!-- Standard attribute definitionss -->
+<!-- size: the number of bytes in the data if singular or in a single item if a collection of data (int) -->
+<!-- num:  the number of items in the collection (only applies to collections) (int) -->
+<!-- length:  the number of characters in a relevant string (int) -->
+<!-- offset: the ROM offset of the data/collection of data (hex string) -->
+<!-- pointer: an offset where a pointer to the offset is usually stored. useful for dealing with hacked roms (hex string) -->
+<!-- pointerPrefix: a hex string that is a prefix to where a pointer to the offset is usually stored. useful for dealing with hacked roms (hex string) -->
+<!-- prefix: a hex string that is a prefix to the data. useful for dealing with hacked roms (hex string) -->
+<!-- signature: a hex string that is the start of the data being searched for. useful for dealing with hacked roms (hex string) -->
+<!-- filePath: string name of a file in a DS ROM -->
+
 <gen4RomInfo>
 	<constants>
 		<evolutions evolutionsPerPokemon="7" padding="0"/>

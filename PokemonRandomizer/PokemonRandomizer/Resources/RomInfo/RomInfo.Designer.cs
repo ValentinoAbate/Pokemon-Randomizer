@@ -19,10 +19,10 @@ namespace PokemonRandomizer.Resources.RomInfo {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class RomInfo {
+    public class RomInfo {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
@@ -36,7 +36,7 @@ namespace PokemonRandomizer.Resources.RomInfo {
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
+        public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("PokemonRandomizer.Resources.RomInfo.RomInfo", typeof(RomInfo).Assembly);
@@ -51,7 +51,7 @@ namespace PokemonRandomizer.Resources.RomInfo {
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
+        public static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -61,21 +61,35 @@ namespace PokemonRandomizer.Resources.RomInfo {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to "Gen3RomInfo"
+        ///   Looks up a localized string similar to &lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot; ?&gt;
+        ///
+        ///&lt;!-- README --&gt;
+        ///&lt;!-- Standard attribute definitionss --&gt;
+        ///&lt;!-- size: the number of bytes in the data if singular or in a single item if a collection of data (int) --&gt;
+        ///&lt;!-- num:  the number of items in the collection (only applies to collections) (int) --&gt;
+        ///&lt;!-- length:  the number of characters in a relevant string (int) --&gt;
+        ///&lt;!-- offset: the ROM offset of the data/collection of data (hex string) --&gt;
+        ///&lt;!-- pointer: an offset where a pointer to the offset is usual [rest of string was truncated]&quot;;.
         /// </summary>
-        internal static string Gen3RomInfo {
+        public static string Gen3RomInfo {
             get {
                 return ResourceManager.GetString("Gen3RomInfo", resourceCulture);
             }
         }
-
+        
         /// <summary>
-        ///   Looks up a localized string similar to "Gen4RomInfo"
+        ///   Looks up a localized string similar to &lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot; ?&gt;
+        ///
+        ///&lt;!-- README --&gt;
+        ///&lt;!-- Standard attribute definitionss --&gt;
+        ///&lt;!-- size: the number of bytes in the data if singular or in a single item if a collection of data (int) --&gt;
+        ///&lt;!-- num:  the number of items in the collection (only applies to collections) (int) --&gt;
+        ///&lt;!-- length:  the number of characters in a relevant string (int) --&gt;
+        ///&lt;!-- offset: the ROM offset of the data/collection of data (hex string) --&gt;
+        ///&lt;!-- pointer: an offset where a pointer to the offset is usual [rest of string was truncated]&quot;;.
         /// </summary>
-        internal static string Gen4RomInfo
-        {
-            get
-            {
+        public static string Gen4RomInfo {
+            get {
                 return ResourceManager.GetString("Gen4RomInfo", resourceCulture);
             }
         }
