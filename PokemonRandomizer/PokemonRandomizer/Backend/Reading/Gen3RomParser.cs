@@ -388,17 +388,14 @@ namespace PokemonRandomizer.Backend.Reading
         // Read the Trainer Class names
         private List<string> ReadTrainerClassNames(Rom rom, XmlManager info)
         {
-            int? offset = info.Offset(ElementNames.trainerClassNames);
-            // Trainer class names are not supported
-            if (offset == null)
+            if(!info.FindAndSeekOffset(ElementNames.trainerClassNames, rom))
                 return new List<string>();
             int numClasses = info.Num(ElementNames.trainerClassNames);
             int nameLength = info.Length(ElementNames.trainerClassNames);
-            int realOffset = (int)offset;
-            List<string> classNames = new List<string>(numClasses);
+            var classNames = new List<string>(numClasses);
             for(int i = 0; i < numClasses; ++i)
             {
-                classNames.Add(rom.ReadString(realOffset + (i * nameLength), nameLength));
+                classNames.Add(rom.ReadFixedLengthString(nameLength));
             }
             return classNames;
         }

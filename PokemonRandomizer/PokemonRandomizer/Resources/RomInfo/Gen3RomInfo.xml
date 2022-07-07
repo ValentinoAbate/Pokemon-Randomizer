@@ -27,6 +27,7 @@
     <!-- Move Data -->
 
     <moveData pointer="0x1CC" num="354" size="12"/>
+	<!-- Move names are overriden in RS Constants -->
     <moveNames pointer="0x148" />  
 
     <!-- TMs, HMs, and Move Tutors -->
@@ -38,6 +39,7 @@
     <!-- Trainer Battle Definitions -->
 
     <trainerBattles size="40"/>
+	<trainerClassNames length="13"/>
 
     <!-- Special Trainer Battles -->
     
@@ -175,7 +177,7 @@
     <!-- Trainer Battle Definitions -->
 
     <trainerBattles num="854" pointer="0x03587C" offset="0x310030"/>
-    <trainerClassNames num="66" length="13" offset="0x30FCD4"/>
+    <trainerClassNames num="66" pointer="0x0183B4" offset="0x30FCD4"/>
     
     <!-- Special Trainer Battles -->
 
@@ -225,6 +227,7 @@
 
 	<!-- Trainer Battle Definitions -->
 	<trainerBattles num="694" pointer="0x00D890"/>
+	<trainerClassNames num="58"/>
   </rsConstants>
 
   <!-- Ruby and Sapphire Rom Info -->
@@ -245,6 +248,10 @@
     <!-- Static Pokemon -->
 
     <trades pointer="0x04D8D4"/>
+
+	<!-- Trainer Battle Definitions -->
+
+	<trainerClassNames pointer="0x1217BC"/>
   </AXVE0>
   <AXPE0>
     <!-- Metadata -->
@@ -270,6 +277,10 @@
     <!-- Static Pokemon -->
 
     <trades pointer="0x04D8F4"/>
+
+	<!-- Trainer Battle Definitions -->
+
+	<trainerClassNames pointer="0x0F70A8"/>
   </AXVE1>
   <AXPE1>
     <!-- Metadata -->
@@ -318,6 +329,8 @@
     <!-- Static Pokemon -->
 
     <trades num="9"/>
+
+	<trainerClassNames num="107" length="13"/>
 
     <!-- Map Data -->
 
@@ -395,7 +408,7 @@
 
     <!-- offset from thethethethe's forum post: http://pokemonhackersonline.com/showthread.php?t=2586. Pointer from HMA info files-->
     <trainerBattles num="743" pointer="0x00FC00" offset="0x23EAC8"/>
-    <trainerClassNames num="107" length="13" offset="0x23E558"/>
+    <trainerClassNames pointer="0x0D80A0" offset="0x23E558"/>
 
     <mapBankPointers num="43" offset="0x3526A8" pointer="0x5524C"/>
     <maps bankLengths="[5,123,60,66,4,6,8,10,6,8,20,10,8,2,10,4,2,2,2,1,1,2,2,3,2,3,2,1,1,1,1,7,5,5,8,8,5,5,1,1,1,2,1]"/>
@@ -411,6 +424,10 @@
     <!-- Move Data -->
 
     <moveDescriptions pointer="0x0E5418"/>
+
+	<!-- Trainer Battle Definitions -->
+
+	<trainerClassNames pointer="0x0D8074"/>
 
     <!-- Items -->
 
@@ -433,6 +450,7 @@
 
 	<!-- Trainer Battle Definitions -->
 	<trainerBattles num="743" pointer="0x00FC14"/>
+	<trainerClassNames pointer="0x0D80B4"/>
     
     <!-- Static Pokemon -->
 
@@ -447,6 +465,9 @@
     <!-- Move Data -->
 
     <moveDescriptions pointer="0x0E542C"/>
+
+	<!-- Trainer Battle Definitions -->
+	<trainerClassNames pointer="0x0D8088"/>
     
     <!-- Items -->
     
