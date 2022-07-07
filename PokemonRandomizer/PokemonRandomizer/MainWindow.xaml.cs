@@ -241,6 +241,7 @@ namespace PokemonRandomizer
                 Parser = new Gen3RomParser();
                 RomData = Parser.Parse(Rom, metadata, RomInfo);
             }
+#if DEBUG
             else if (metadata.Gen == Generation.IV)
             {
                 RomInfo = new XmlManager(PokemonRandomizer.Resources.RomInfo.RomInfo.Gen4RomInfo);
@@ -250,6 +251,7 @@ namespace PokemonRandomizer
                 Parser = new Gen4RomParser();
                 RomData = Parser.Parse(Rom, metadata, RomInfo);
             }
+#endif
             else
             {
                 throw new Exception($"Unsupported generation (Gen {metadata.Gen}). {checkAboutHelpMessage}");
