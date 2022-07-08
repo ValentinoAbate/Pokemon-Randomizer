@@ -142,13 +142,21 @@ namespace PokemonRandomizer.Backend.Randomization
                 tmTypePalettes.Add(PokemonType.BUG, tmTypePalettes[PokemonType.GRS]);
             }
             // Get Potential Move Choices
-            var moves = EnumUtils.GetValues<Move>().ToHashSet();
-            moves.Remove(Move.None); // Remove none as a possible choice
+            var moves = data.GetAllMoves();
+            if (moves.Contains(Move.None))
+            {
+                moves.Remove(Move.None); // Remove none as a possible choice
+            }
             // Remove HM moves if applicable
             if(settings.PreventHmMovesInTMsAndTutors)
             {
                 foreach (var move in data.HMMoves)
-                    moves.Remove(move);
+                {
+                    if (moves.Contains(move))
+                    {
+                        moves.Remove(move);
+                    }
+                }
             }
             // Remove important TMs that will be kept if applicable if no duplicates is on
             if (settings.KeepImportantTMsAndTutors && settings.PreventDuplicateTMsAndTutors)

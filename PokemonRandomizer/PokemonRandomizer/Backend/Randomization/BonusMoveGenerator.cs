@@ -22,8 +22,11 @@ namespace PokemonRandomizer.Backend.Randomization
             dataT = data;
             metrics = data.Metrics;
             // Setup allowed move set
-            availableAddMoves = EnumUtils.GetValues<Move>().ToHashSet();
-            availableAddMoves.Remove(Move.None);
+            availableAddMoves = data.GetAllMoves();
+            if (availableAddMoves.Contains(Move.None))
+            {
+                availableAddMoves.Remove(Move.None);
+            }
             if (settings.BanSelfdestruct)
             {
                 availableAddMoves.RemoveWhere(m => data.GetMoveData(m).IsSelfdestruct);
@@ -31,7 +34,12 @@ namespace PokemonRandomizer.Backend.Randomization
             if (settings.DisableAddingHmMoves)
             {
                 foreach (var move in data.HMMoves)
-                    availableAddMoves.Remove(move);
+                {
+                    if (availableAddMoves.Contains(move))
+                    {
+                        availableAddMoves.Remove(move);
+                    }
+                }
             }
         }
 

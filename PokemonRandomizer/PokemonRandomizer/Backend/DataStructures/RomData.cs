@@ -25,7 +25,7 @@ namespace PokemonRandomizer.Backend.DataStructures
             {
                 pokemon = value;
                 // Refresh the lookup
-                PokemonLookup.Clear();
+                PokemonLookup = new(value.Count);
                 // Pre-process
                 foreach (var p in pokemon)
                 {
@@ -50,7 +50,7 @@ namespace PokemonRandomizer.Backend.DataStructures
         }
         public string[] PokemonNames { get; private set; }
         public PokemonBaseStats[] PokemonNationalDexOrder { get; private set; }
-        private Dictionary<Pokemon, PokemonBaseStats> PokemonLookup { get; } = new();
+        private Dictionary<Pokemon, PokemonBaseStats> PokemonLookup { get; set; }
         public List<string> ClassNames { get; set; }
         public List<Trainer> Trainers { get; set; }
 
@@ -69,8 +69,41 @@ namespace PokemonRandomizer.Backend.DataStructures
         public List<EncounterSet> Encounters { get; set; }
         // Used in dream team application
         public EncounterSet FirstEncounterSet { get; set; }
-        public List<MoveData> MoveData { get; set; }
-        public List<ItemData> ItemData { get; set; }
+        private List<MoveData> moveData;
+        public List<MoveData> MoveData 
+        { 
+            get => moveData;
+            set
+            {
+                moveData = value;
+                MoveDataLookup = new(value.Count);
+                // Pre-process
+                foreach (var m in moveData)
+                {
+                    MoveDataLookup.Add(m.move, m);
+                }
+            }
+        }
+        private Dictionary<Move, MoveData> MoveDataLookup { get; set; }
+        private List<ItemData> itemData;
+        public List<ItemData> ItemData
+        {
+            get => itemData;
+            set
+            {
+                itemData = value;
+                ItemDataLookup = new(value.Count);
+                // Pre-process
+                foreach (var item in itemData)
+                {
+                    if(!item.IsUnused && !ItemDataLookup.ContainsKey(item.Item))
+                    {
+                        ItemDataLookup.Add(item.Item, item);
+                    }
+                }
+            }
+        }
+        private Dictionary<Item, ItemData> ItemDataLookup { get; set; }
         public PickupData PickupItems { get; set; }
         public List<InGameTrade> Trades { get; set; }
 
@@ -94,9 +127,10 @@ namespace PokemonRandomizer.Backend.DataStructures
         public Dictionary<string, List<string>> RandomizationResults { get; } = new Dictionary<string, List<string>>();
 
         public PokemonBaseStats GetBaseStats(Pokemon p) => PokemonLookup[p];
-        public MoveData GetMoveData(Move m) => MoveData[(int)m];
-        public ItemData GetItemData(Item i) => ItemData[(int)i];
+        public MoveData GetMoveData(Move m) => MoveDataLookup[m];
+        public ItemData GetItemData(Item i) => ItemDataLookup[i];
         public Trainer GetTrainer(int trainerIndex) => Trainers[trainerIndex];
+        public HashSet<Move> GetAllMoves() => MoveDataLookup.Keys.ToHashSet();
 
         // updates the metrics from the current data
         public void CalculateMetrics()
