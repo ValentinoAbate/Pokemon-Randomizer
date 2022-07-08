@@ -365,30 +365,26 @@ namespace PokemonRandomizer.Backend.Writing
             if (evolutionOffset == Rom.nullPointer)
                 return;
             int evolutionSize = info.Size(ElementNames.evolutions);
-            // Add evolution size to skip the null pokemon
-            evolutionOffset += evolutionSize;
             // setup TmHmCompat offset
             int tmHmCompatOffset = info.FindOffset(ElementNames.tmHmCompat, rom);
             if (tmHmCompatOffset == Rom.nullPointer)
                 return;
             int tmHmSize = info.Size(ElementNames.tmHmCompat);
-            // Skip over the null pokemon
-            tmHmCompatOffset += tmHmSize;
             // Setup Move Tutor Compat offset
             int tutorCompatOffset = info.FindOffset(ElementNames.tutorMoves, rom);
             if (tutorCompatOffset == Rom.nullPointer)
                 return;
             int tutorSize = info.Size(ElementNames.tutorCompat);
             // Skip over the tutor move definitions to get to the compatibilities, and +tutorSize to skip the null pkmn
-            tutorCompatOffset += (info.Num(ElementNames.tutorMoves) * info.Size(ElementNames.tutorMoves)) + tutorSize;
+            tutorCompatOffset += (info.Num(ElementNames.tutorMoves) * info.Size(ElementNames.tutorMoves));
             // Setup moveset offset
             int originalMovesetOffset = info.FindOffset(ElementNames.movesets, rom);
             if (originalMovesetOffset == Rom.nullPointer)
                 return;
             // Setup palette offsets
             int pokemonPaletteSize = info.Size(ElementNames.pokemonPalettes);
-            int normalPaletteOffset = info.FindOffset(ElementNames.pokemonPalettes, rom) + pokemonPaletteSize;
-            int shinyPaletteOffset = info.FindOffset(ElementNames.pokemonPalettesShiny, rom) + pokemonPaletteSize;
+            int normalPaletteOffset = info.FindOffset(ElementNames.pokemonPalettes, rom);
+            int shinyPaletteOffset = info.FindOffset(ElementNames.pokemonPalettesShiny, rom);
 
             #endregion
 
@@ -403,7 +399,7 @@ namespace PokemonRandomizer.Backend.Writing
             bool ableToRelocateMoveData = newMoveDataOffset != null;
             int skipAt = info.IntAttr(ElementNames.pokemonBaseStats, "skipAt");
             // Main writing loop
-            for (int i = 0; i < info.Num(ElementNames.pokemonBaseStats); i++)
+            for (int i = 1; i <= info.Num(ElementNames.pokemonBaseStats); i++)
             {
                 if (i == skipAt) // potentially skip empty slots
                 {
@@ -411,7 +407,7 @@ namespace PokemonRandomizer.Backend.Writing
                     moveData.WriteBlock(movesetIndex, romData.SkippedLearnSetData);
                     movesetIndex += skipNum * 4; // (don't know why this is 4, cuz move segments are variable lengths possibly terminators?)
                 }
-                var stats = romData.GetBaseStats((Pokemon)(i + 1));
+                var stats = romData.GetBaseStats((Pokemon)(i));
                 WriteBaseStatsSingle(stats, pkmnOffset + (i * pkmnSize), rom);
                 // Log a repoint if necessary
                 if (needToRelocateMoveData)
