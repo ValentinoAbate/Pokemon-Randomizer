@@ -125,7 +125,7 @@ namespace PokemonRandomizer.Backend.Utilities
                 }
                 catch (Exception e)
                 {
-                    Logger.main.Error($"FindOffset Error for {element}: {e.Message}");
+                    Logger.main.Exception($"FindOffset Error for {element}: ", e);
                 }
             }
             if (HasPrefix(element))
@@ -141,7 +141,7 @@ namespace PokemonRandomizer.Backend.Utilities
                 }
                 catch (Exception e)
                 {
-                    Logger.main.Error($"FindOffset Error for {element}: {e.Message}");
+                    Logger.main.Exception($"FindOffset Error for {element}: ", e);
                 }
             }
             if (HasSignature(element))
@@ -157,7 +157,7 @@ namespace PokemonRandomizer.Backend.Utilities
                 }
                 catch (Exception e)
                 {
-                    Logger.main.Error($"FindOffset Error for {element}: {e.Message}");
+                    Logger.main.Exception($"FindOffset Error for {element}: ", e);
                 }
             }
             if (HasPointer(element))

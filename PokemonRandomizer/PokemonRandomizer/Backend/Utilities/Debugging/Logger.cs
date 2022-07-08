@@ -13,6 +13,7 @@ namespace PokemonRandomizer.Backend.Utilities.Debug
             Warning,
             Unsupported,
             Error,
+            StackTrace,
         }
 
         public static readonly Logger main = new Logger();
@@ -23,7 +24,7 @@ namespace PokemonRandomizer.Backend.Utilities.Debug
         public int Count => log.Count;
         public IReadOnlyList<LogData> FullLog => log;
         public string[] FullLogText => log.Select(d => d.ToString()).ToArray();
-        public LogData LastLog => log.Count > 0 ? log[log.Count - 1] : emptyData;
+        public LogData LastLog => log.Count > 0 ? log[^1] : emptyData;
 
         private readonly List<LogData> log = new List<LogData>();
 
@@ -35,7 +36,7 @@ namespace PokemonRandomizer.Backend.Utilities.Debug
         public void Log(string message, Level level)
         {
             log.Add(new LogData(message, level));
-            OnLog?.Invoke(log[log.Count - 1]);
+            OnLog?.Invoke(log[^1]);
         }
 
         public void Info(string message) => Log(message, Level.Info);
@@ -47,6 +48,25 @@ namespace PokemonRandomizer.Backend.Utilities.Debug
         public void Unsupported(string message) => Log(message, Level.Unsupported);
 
         public void Todo(string message) => Log(message, Level.Todo);
+
+        private void Exception(string message, string stackTrace)
+        {
+            Error(message);
+            if(stackTrace != null)
+            {
+                Log("\n" + stackTrace, Level.StackTrace);
+            }
+        }
+
+        public void Exception(Exception e)
+        {
+            Exception(e.Message, e.StackTrace);
+        }
+
+        public void Exception(string prefix, Exception e)
+        {
+            Exception(prefix + e.Message, e.StackTrace);
+        }
 
         public readonly struct LogData
         {

@@ -79,6 +79,7 @@ namespace PokemonRandomizer
         private const string saveRomPrompt = "Save Rom";
         private const string openRomPrompt = "Open Rom";
         private const string openRomError = "Failed to open Rom";
+        private const string loadPresetError = "Preset load error: ";
         private const string checkAboutHelpMessage = "Please check Help->About for a list of supported ROMs";
         private const string debugSeed = "DEBUG";
 
@@ -145,6 +146,13 @@ namespace PokemonRandomizer
             OnPropertyChanged("LogNotEmpty");
             logData.Clear();
         }
+
+        private void LogException(string prefix, Exception e) 
+        {
+            Logger.main.Exception(prefix, e);
+            ProcessLogData();
+        }
+
         private void LogError(string message)
         {
             Logger.main.Error(message);
@@ -340,7 +348,7 @@ namespace PokemonRandomizer
             if (openFileDialog.ShowDialog() == true)
             {
                 void Open() => GetRomData(File.ReadAllBytes(openFileDialog.FileName));
-                void Error(Exception e) => LogError($"{openRomError}: {e.Message}");
+                void Error(Exception e) => LogException($"{openRomError}: ", e);
                 void Success()
                 {
                     IsROMLoaded = true;
@@ -364,7 +372,7 @@ namespace PokemonRandomizer
             void Save() => writeFn(path, fileFn());
             void Error(Exception e)
             {
-                LogError($"Failed to save {name.ToLower()}: {e.Message}");
+                LogException($"Failed to save {name.ToLower()}: ", e);
                 onComplete?.Invoke(false);
             }
             void Success()
@@ -515,7 +523,7 @@ namespace PokemonRandomizer
                 }
                 catch (IOException exception)
                 {
-                    LogError($"{openRomError}: {exception.Message}");
+                    LogException($"{openRomError}: ", exception);
                 }
             }
         }
@@ -550,7 +558,7 @@ namespace PokemonRandomizer
             void QuickRand() => Randomize(debugSeed);
             void Error(Exception e)
             {
-                LogError($"Quick Randomization Error: {e.Message}");
+                LogException($"Quick Randomization Error: ", e);
             }
             void Success()
             {
@@ -693,7 +701,7 @@ namespace PokemonRandomizer
                         ApplyPreset(file[0]);
                     }
                 }
-                void Error(Exception e) => LogError($"Preset load error: {e.Message}");
+                void Error(Exception e) => LogException(loadPresetError, e);
                 void Success()
                 {
                     OnPresetLoaded($"Preset loaded: {openFileDialog.FileName}");
@@ -715,7 +723,7 @@ namespace PokemonRandomizer
                 {
                     DecompressAndApplyPreset(stringPrompt.Output);
                 }
-                void Error(Exception e) => LogError($"Preset load error: {e.Message}");
+                void Error(Exception e) => LogException(loadPresetError, e);
                 void Success()
                 {
                     OnPresetLoaded("Preset string loaded successfully");
