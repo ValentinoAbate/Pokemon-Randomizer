@@ -216,6 +216,7 @@
     <!-- Pokemon Definitions -->
 
 	<pokemonBaseStats pointer="0x010B64"/>
+	<evolutions pointer="0x03F534"/>
     <pokemonNames pointer="0x00FA58"/>
     
     <!-- Items -->
@@ -444,6 +445,10 @@
     <!-- Move Data -->
 
     <moveDescriptions pointer="0x0E5454"/>
+
+    <!-- Pokemon Definitions -->
+
+	<evolutions pointer="0x042F80"/>
 
     <!-- Items -->
 
