@@ -381,6 +381,7 @@ namespace PokemonRandomizer.Backend.Writing
             int originalMovesetOffset = info.FindOffset(ElementNames.movesets, rom);
             if (originalMovesetOffset == Rom.nullPointer)
                 return;
+            originalMovesetOffset = rom.ReadPointer(originalMovesetOffset);
             // Setup palette offsets
             int pokemonPaletteSize = info.Size(ElementNames.pokemonPalettes);
             int normalPaletteOffset = info.FindOffset(ElementNames.pokemonPalettes, rom);

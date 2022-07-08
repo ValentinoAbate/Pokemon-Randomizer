@@ -209,6 +209,7 @@ namespace PokemonRandomizer.Backend.Reading
             int movesetOffset = info.FindOffset(ElementNames.movesets, rom);
             if (movesetOffset == Rom.nullPointer)
                 return pokemon;
+            movesetOffset = rom.ReadPointer(movesetOffset);
             // Setup Name offset
             int namesOffset = info.FindOffset(ElementNames.pokemonNames, rom);
             if (namesOffset == Rom.nullPointer)

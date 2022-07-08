@@ -144,7 +144,8 @@
     <tmHmCompat offset="0x31E898" pointer="0x06E048"/>
     <!-- Move Tutor compat offset is determined from the move mappings offset. Default offset is given here (bulbasaur is actually +4 from here) -->
     <moveTutorCompat size="4" offset="0x615048"/>
-    <movesets offset="0x3230dc"/>
+	<!-- Note: moveset pointer actually points to the moveset pointer table, not the first moveset, and will need to be followed to depth 2-->
+    <movesets pointer="0x06930C" bulbaOffset="0x3230dc"/>
     <!-- pointer found in Hex Editor Advance's Table reference file. offset found from following pointer -->
     <eggMoves offset="0x32ADD8" pointer="0x0703F0" />
     <evolutions offset="0x32531C" pointer="0x06D140"/>
@@ -217,6 +218,8 @@
 
 	<pokemonBaseStats pointer="0x010B64"/>
 	<evolutions pointer="0x03F534"/>
+	<!-- Note: moveset pointer actually points to the moveset pointer table, not the first moveset, and will need to be followed to depth 2-->
+	<movesets pointer="0x03B7BC"/>
     <pokemonNames pointer="0x00FA58"/>
     
     <!-- Items -->
@@ -380,7 +383,8 @@
 
     <tmHmCompat offset="0x252BC8" pointer="0x043C68"/>
     <moveTutorCompat offset="0x459B7E"/>
-    <movesets offset="0x257494"/>
+	<!-- Note: moveset pointer actually points to the moveset pointer table, not the first moveset, and will need to be followed to depth 2-->
+    <movesets pointer="0x03EA7C" bulbaOffset="0x257494"/>
     <!-- offset from thethethethe's forum post (archived on the wayback machine): https://web.archive.org/web/20180316234519/http://pokemonhackersonline.com/showthread.php?t=2586 -->
     <!-- pointer found in Hex Editor Advance's Table reference file -->
     <eggMoves offset="0x25EF0C" pointer="0x045C50" />
@@ -449,6 +453,8 @@
     <!-- Pokemon Definitions -->
 
 	<evolutions pointer="0x042F80"/>
+    <!-- Note: moveset pointer actually points to the moveset pointer table, not the first moveset, and will need to be followed to depth 2-->
+	<movesets pointer="0x03EA90"/>
 
     <!-- Items -->
 
