@@ -49,7 +49,7 @@
     
     <!-- Pokemon Definitions -->
     
-    <pokemonBaseStats num="411" size="28" skip="25" skipAt="251"/>
+    <pokemonBaseStats num="411" size="28" skip="25" skipAt="252"/>
     <tmHmCompat size="8"/>
     <eggMoves pokemonSigniture="0x4E20"/>
     <evolutions size="40" evolutionsPerPokemon="5" padding="2"/>
@@ -140,7 +140,7 @@
 
     <!-- Pokemon Definitions -->
 
-    <pokemonBaseStats offset="0x3203e8"/>
+    <pokemonBaseStats pointer="0x0001BC"/>
     <tmHmCompat offset="0x31E898" pointer="0x06E048"/>
     <!-- Move Tutor compat offset is determined from the move mappings offset. Default offset is given here (bulbasaur is actually +4 from here) -->
     <moveTutorCompat size="4" offset="0x615048"/>
@@ -215,6 +215,7 @@
 
     <!-- Pokemon Definitions -->
 
+	<pokemonBaseStats pointer="0x010B64"/>
     <pokemonNames pointer="0x00FA58"/>
     
     <!-- Items -->
@@ -301,6 +302,7 @@
 
     <!-- Pokemon Definitions -->
 
+	<pokemonBaseStats pointer="0x0001BC"/>
     <pokemonNames pointer="0x000144"/>
 
     <!-- Special Trainer Battles -->
@@ -375,7 +377,6 @@
 
     <!-- Pokemon Definitions -->
 
-    <pokemonBaseStats offset="0x2547A0"/>
     <tmHmCompat offset="0x252BC8" pointer="0x043C68"/>
     <moveTutorCompat offset="0x459B7E"/>
     <movesets offset="0x257494"/>
