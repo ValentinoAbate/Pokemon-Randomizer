@@ -227,10 +227,12 @@ namespace PokemonRandomizer
             // Read ROM data
             if (metadata.Gen == Generation.III)
             {
+#if !DEBUG
                 if(!(metadata.IsEmerald || (metadata.IsFireRed && metadata.Version == 0)))
                 {
                     throw new Exception($"Unsupported Rom (Code {metadata.Code}{metadata.Version}). {checkAboutHelpMessage}");
                 }
+#endif
                 RomInfo = new XmlManager(PokemonRandomizer.Resources.RomInfo.RomInfo.Gen3RomInfo);
                 RomInfo.SetSearchRoot(metadata.Code + metadata.Version.ToString());
                 //Initalize Rom file wrapper
@@ -282,7 +284,7 @@ namespace PokemonRandomizer
             throw new Exception($"Attempting to write randomized data to Rom of unsupported generation (Gen {Metadata.Gen})");
         }
 
-#region INotifyPropertyChanged Implementation
+        #region INotifyPropertyChanged Implementation
 
         public event PropertyChangedEventHandler PropertyChanged;
         private void OnPropertyChanged(string prop)
@@ -290,9 +292,9 @@ namespace PokemonRandomizer
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
         }
 
-#endregion
+        #endregion
 
-#region Menu Functions
+        #region Menu Functions
 
         private void SetUIEnabled(bool enabled)
         {
