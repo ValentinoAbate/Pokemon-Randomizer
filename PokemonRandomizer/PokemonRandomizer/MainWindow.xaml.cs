@@ -78,7 +78,7 @@ namespace PokemonRandomizer
         private const string csvFileFilter = "csv files (*.csv)|*.csv";
         private const string saveRomPrompt = "Save Rom";
         private const string openRomPrompt = "Open Rom";
-        private const string openRomError = "Failed to open Rom";
+        private const string openRomError = "Failed to open Rom: ";
         private const string loadPresetError = "Preset load error: ";
         private const string checkAboutHelpMessage = "Please check Help->About for a list of supported ROMs";
         private const string debugSeed = "DEBUG";
@@ -348,7 +348,7 @@ namespace PokemonRandomizer
             if (openFileDialog.ShowDialog() == true)
             {
                 void Open() => GetRomData(File.ReadAllBytes(openFileDialog.FileName));
-                void Error(Exception e) => LogException($"{openRomError}: ", e);
+                void Error(Exception e) => LogException(openRomError, e);
                 void Success()
                 {
                     IsROMLoaded = true;
@@ -523,7 +523,7 @@ namespace PokemonRandomizer
                 }
                 catch (IOException exception)
                 {
-                    LogException($"{openRomError}: ", exception);
+                    LogException(openRomError, exception);
                 }
             }
         }
