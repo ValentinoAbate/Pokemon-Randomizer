@@ -25,7 +25,8 @@ namespace PokemonRandomizer.Backend.DataStructures
             {
                 pokemon = value;
                 // Refresh the lookup
-                PokemonLookup = new(value.Count);
+                PokemonLookup.Clear();
+                PokemonLookup.EnsureCapacity(value.Count);
                 // Pre-process
                 foreach (var p in pokemon)
                 {
@@ -50,7 +51,7 @@ namespace PokemonRandomizer.Backend.DataStructures
         }
         public string[] PokemonNames { get; private set; }
         public PokemonBaseStats[] PokemonNationalDexOrder { get; private set; }
-        private Dictionary<Pokemon, PokemonBaseStats> PokemonLookup { get; set; }
+        private Dictionary<Pokemon, PokemonBaseStats> PokemonLookup { get; } = new(0);
         public List<string> ClassNames { get; set; }
         public List<Trainer> Trainers { get; set; }
 
@@ -76,7 +77,8 @@ namespace PokemonRandomizer.Backend.DataStructures
             set
             {
                 moveData = value;
-                MoveDataLookup = new(value.Count);
+                MoveDataLookup.Clear();
+                MoveDataLookup.EnsureCapacity(value.Count);
                 // Pre-process
                 foreach (var m in moveData)
                 {
@@ -84,7 +86,7 @@ namespace PokemonRandomizer.Backend.DataStructures
                 }
             }
         }
-        private Dictionary<Move, MoveData> MoveDataLookup { get; set; }
+        private Dictionary<Move, MoveData> MoveDataLookup { get; } = new(0);
         private List<ItemData> itemData;
         public List<ItemData> ItemData
         {
@@ -92,7 +94,8 @@ namespace PokemonRandomizer.Backend.DataStructures
             set
             {
                 itemData = value;
-                ItemDataLookup = new(value.Count);
+                ItemDataLookup.Clear();
+                ItemDataLookup.EnsureCapacity(value.Count);
                 // Pre-process
                 foreach (var item in itemData)
                 {
@@ -103,7 +106,7 @@ namespace PokemonRandomizer.Backend.DataStructures
                 }
             }
         }
-        private Dictionary<Item, ItemData> ItemDataLookup { get; set; }
+        private Dictionary<Item, ItemData> ItemDataLookup { get; } = new(0);
         public PickupData PickupItems { get; set; }
         public List<InGameTrade> Trades { get; set; }
 
@@ -130,7 +133,24 @@ namespace PokemonRandomizer.Backend.DataStructures
         public MoveData GetMoveData(Move m) => MoveDataLookup[m];
         public ItemData GetItemData(Item i) => ItemDataLookup[i];
         public Trainer GetTrainer(int trainerIndex) => Trainers[trainerIndex];
-        public HashSet<Move> GetAllMoves() => MoveDataLookup.Keys.ToHashSet();
+        public HashSet<Move> GetAllMoves()
+        {
+            var set = new HashSet<Move>(MoveDataLookup.Count);
+            foreach(var kvp in MoveDataLookup)
+            {
+                set.Add(kvp.Key);
+            }
+            return set;
+        }
+        public HashSet<Item> GetAllItems()
+        {
+            var set = new HashSet<Item>(ItemDataLookup.Count);
+            foreach (var kvp in ItemDataLookup)
+            {
+                set.Add(kvp.Key);
+            }
+            return set;
+        }
         public List<Item> GetAllItemsOrdered(bool includeNone = false)
         {
             var list = new List<Item>(includeNone ? ItemData.Count + 1 : ItemData.Count);
