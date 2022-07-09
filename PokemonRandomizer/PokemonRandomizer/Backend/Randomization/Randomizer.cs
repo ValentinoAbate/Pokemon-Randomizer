@@ -831,7 +831,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 wallyBattles.RemoveAt(0);
                 // Set Wally's first pokemon to the catching tut pokemon
                 trainerRand.Randomize(firstBattle, pokemonSet, trainerSettings, false);
-                var firstBattleAce = firstBattle.Pokemon[firstBattle.Pokemon.Count - 1];
+                var firstBattleAce = firstBattle.Pokemon[^1];
                 firstBattleAce.species = evoUtils.MaxEvolution(data.CatchingTutPokemon, firstBattleAce.level, trainerSettings.RestrictIllegalEvolutions);
                 // Procedurally generate the rest of Wally's battles
                 trainerRand.RandomizeReoccurring(firstBattle, wallyBattles, pokemonSet, trainerSettings);
