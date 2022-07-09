@@ -20,7 +20,7 @@ namespace PokemonRandomizer.Backend.Utilities
             Header(ref lines, "Randomizer Info");
             lines.Add($"Randomizer Version : {MainWindow.version}");
             lines.Add($"Seed               : {(string.IsNullOrEmpty(data.Seed) ? unrandomized : data.Seed)}");
-            lines.Add($"ROM                : {metadata.Name} ({metadata.Code})");
+            lines.Add($"ROM                : {metadata}");
             lines.Add($"Generation         : {metadata.Gen}");
 
             if (!string.IsNullOrEmpty(settingsString))

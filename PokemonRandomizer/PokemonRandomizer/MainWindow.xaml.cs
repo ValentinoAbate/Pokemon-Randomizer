@@ -353,7 +353,7 @@ namespace PokemonRandomizer
                 {
                     IsROMLoaded = true;
                     // Log open and set info box
-                    string msg = $"Rom opened: {metadata.Name} ({metadata.Code})"; ;
+                    string msg = $"Rom opened: {metadata}"; ;
                     LogInfo(msg);
                     SetInfoBox(msg);
                     InitializeRomDependentUI(RomData, Metadata);
