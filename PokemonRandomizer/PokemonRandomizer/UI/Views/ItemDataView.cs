@@ -13,14 +13,15 @@ namespace PokemonRandomizer.UI.Views
 
     public class ItemDataView : DataView<ItemDataModel>
     {
-        public ItemDataView(ItemDataModel model)
+        public ItemDataView(ItemDataModel model, List<Item> allItems)
         {
+            var itemsDisplay = allItems.Select(EnumUtils.ToDisplayString).ToList();
             var tabs = new TabControl();
 
             tabs.Add(CreateItemRandomizerSettingsTab(model));
             tabs.Add(CreateFieldItemsTab(model));
             //tabs.Items.Add(CreateShopsTab(model));
-            tabs.Add(CreateMiscTab(model));
+            tabs.Add(CreateMiscTab(model, itemsDisplay, allItems));
 
             Content = tabs;
         }
@@ -94,13 +95,13 @@ namespace PokemonRandomizer.UI.Views
             return c1 |= c2;
         }
 
-        private TabItem CreateMiscTab(ItemDataModel model)
+        private TabItem CreateMiscTab(ItemDataModel model, List<string> allItemsDisplay, List<Item> allItems)
         {
             var stack = CreateStack();
             stack.Header("PC Potion Randomization");
             var strategyCb = stack.Add(new EnumComboBoxUI<PcItemOption>("Randomization Strategy", PCPotionStrategyDropdown, model.PcPotionOption));
             strategyCb.BindVisibility(stack.Add(new ItemSettingsUI(model.PcItemSettings, false)), (int)PcItemOption.Random);
-            strategyCb.BindVisibility(stack.Add(new EnumComboBoxUI<Item>("Custom PC Potion Item", EnumUtils.GetDisplayValues<Item>(), model.CustomPcItem, EnumUtils.GetValues<Item>().ToList())), (int)PcItemOption.Custom);
+            strategyCb.BindVisibility(stack.Add(new EnumComboBoxUI<Item>("Custom PC Potion Item", allItemsDisplay, model.CustomPcItem, allItems)), (int)PcItemOption.Custom);
 
             stack.Header("Pickup Item Randomization");
             var pickupRand = stack.Add(new RandomChanceUI("Randomize Pickup Items", model.RandomizePickupItems, model.PickupItemRandChance));
@@ -109,7 +110,7 @@ namespace PokemonRandomizer.UI.Views
             stack.Header("Custom Poké Mart Item");
             var customMartItemCb = stack.Add(new BoundCheckBoxUI(model.AddItemToPokemarts, "Add Custom Item To Poké Marts"));
             var customMartItemStack = customMartItemCb.BindVisibility(stack.Add(CreateStack()));
-            customMartItemStack.Add(new EnumComboBoxUI<Item>("Item to Add", EnumUtils.GetDisplayValues<Item>(), model.CustomMartItem, EnumUtils.GetValues<Item>().ToList()));
+            customMartItemStack.Add(new EnumComboBoxUI<Item>("Item to Add", allItemsDisplay, model.CustomMartItem, allItems));
             var modifyMartItemPriceCb = customMartItemStack.Add(new BoundCheckBoxUI(model.OverrideCustomMartItemPrice, "Override Item Price"));
             modifyMartItemPriceCb.BindVisibility(customMartItemStack.Add(new BoundSliderUI("Item Price", model.CustomMartItemPrice, false, 100, 100, 9800)));
 

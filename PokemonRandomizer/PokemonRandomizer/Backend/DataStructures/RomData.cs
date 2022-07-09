@@ -131,6 +131,21 @@ namespace PokemonRandomizer.Backend.DataStructures
         public ItemData GetItemData(Item i) => ItemDataLookup[i];
         public Trainer GetTrainer(int trainerIndex) => Trainers[trainerIndex];
         public HashSet<Move> GetAllMoves() => MoveDataLookup.Keys.ToHashSet();
+        public List<Item> GetAllItemsOrdered(bool includeNone = false)
+        {
+            var list = new List<Item>(includeNone ? ItemData.Count + 1 : ItemData.Count);
+            if (includeNone)
+            {
+                list.Add(Item.None);
+            }
+            foreach (var item in ItemData)
+            {
+                if (item.IsUnused)
+                    continue;
+                list.Add(item.Item);
+            }
+            return list;
+        }
 
         // updates the metrics from the current data
         public void CalculateMetrics()
