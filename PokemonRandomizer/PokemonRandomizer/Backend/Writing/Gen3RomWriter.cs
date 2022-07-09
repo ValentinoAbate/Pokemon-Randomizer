@@ -371,12 +371,12 @@ namespace PokemonRandomizer.Backend.Writing
                 return;
             int tmHmSize = info.Size(ElementNames.tmHmCompat);
             // Setup Move Tutor Compat offset
-            int tutorCompatOffset = info.FindOffset(ElementNames.tutorMoves, rom);
-            if (tutorCompatOffset == Rom.nullPointer)
-                return;
-            int tutorSize = info.Size(ElementNames.tutorCompat);
-            // Skip over the tutor move definitions to get to the compatibilities, and +tutorSize to skip the null pkmn
-            tutorCompatOffset += (info.Num(ElementNames.tutorMoves) * info.Size(ElementNames.tutorMoves));
+            int tutorCompatOffset = info.FindOffset(ElementNames.tutorCompat, rom);
+            int tutorSize = 0;
+            if (tutorCompatOffset != Rom.nullPointer)
+            {
+                tutorSize = info.Size(ElementNames.tutorCompat);
+            }
             // Setup moveset offset
             int originalMovesetOffset = info.FindOffset(ElementNames.movesets, rom);
             if (originalMovesetOffset == Rom.nullPointer)
@@ -503,6 +503,8 @@ namespace PokemonRandomizer.Backend.Writing
         }
         private void WriteTutorCompat(PokemonBaseStats pokemon, int offset, Rom rom)
         {
+            if (pokemon.moveTutorCompat.Count <= 0)
+                return;
             bool[] mtValues = new bool[pokemon.moveTutorCompat.Count];
             pokemon.moveTutorCompat.CopyTo(mtValues, 0);
             rom.WriteBits(offset, 1, mtValues.Select((b) => b ? 1 : 0).ToArray());

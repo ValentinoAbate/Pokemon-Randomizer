@@ -132,18 +132,20 @@
     <!-- TMs, HMs, and Move Tutors -->
 
     <!-- TM Move mappings -->
-    <tmMoves offset="0x615b94" duplicateOffset="0x616040"/>
+	<!-- offset="0x615b94" duplicateOffset="0x616040" -->
+    <tmMoves pointer="0x1B6D10"/>
     <!-- HM move mappings -->
-    <hmMoves offset="0x615bf8" duplicateOffset="0x6160A4"/>
+	<!-- offset="0x615bf8" duplicateOffset="0x6160A4" -->
+    <hmMoves pointer="0x06E828"/>
     <!-- MT move mappings -->
-    <moveTutorMoves num="30" offset="0x61500c"/>
+    <moveTutorMoves pointer="0x1B236C" num="30" offset="0x61500c"/>
 
     <!-- Pokemon Definitions -->
 
     <pokemonBaseStats pointer="0x0001BC"/>
-    <tmHmCompat offset="0x31E898" pointer="0x06E048"/>
+    <tmHmCompat pointer="0x06E048" offset="0x31E898"/>
     <!-- Move Tutor compat offset is determined from the move mappings offset. Default offset is given here (bulbasaur is actually +4 from here) -->
-    <moveTutorCompat size="4" offset="0x615048"/>
+    <moveTutorCompat pointer="0x1B2390" size="4" offset="0x615048"/>
 	<!-- Note: moveset pointer actually points to the moveset pointer table, not the first moveset, and will need to be followed to depth 2-->
     <movesets pointer="0x06930C" bulbaOffset="0x3230dc"/>
     <!-- pointer found in Hex Editor Advance's Table reference file. offset found from following pointer -->
@@ -245,7 +247,16 @@
 
     <moveDescriptions pointer="0x0A0494"/>
 
-    <!-- Pokemon Definitions -->
+	<!-- TMs, HMs, and Move Tutors -->
+
+	<!-- TM Move mappings -->
+	<tmMoves pointer="0x06F038"/>
+	<!-- HM move mappings -->
+	<hmMoves pointer="0x040A24"/>
+
+	<!-- Pokemon Definitions -->
+
+	<tmHmCompat pointer="0x0403B0"/>
 
     <pokemonPalettes pointer="0x040954"/>
     <pokemonPalettesShiny pointer="0x04098C"/>
@@ -261,6 +272,11 @@
   <AXPE0>
     <!-- Metadata -->
     <inheritFrom>AXVE0</inheritFrom>
+
+	<!-- TMs, HMs, and Move Tutors -->
+
+	<!-- TM Move mappings -->
+	<tmMoves pointer="0x06F03C"/>
   </AXPE0>
 
   
@@ -274,7 +290,16 @@
 
     <moveDescriptions pointer="0x0A04B4"/>
 
-    <!-- Pokemon Definitions -->
+	<!-- TMs, HMs, and Move Tutors -->
+
+	<!-- TM Move mappings -->
+	<tmMoves pointer="0x06F058"/>
+	<!-- HM move mappings -->
+	<hmMoves pointer="0x040A44"/>
+
+	<!-- Pokemon Definitions -->
+
+	<tmHmCompat pointer="0x0403D0"/>
 
     <pokemonPalettes pointer="0x040974"/>
     <pokemonPalettesShiny pointer="0x0409AC"/>
@@ -290,6 +315,11 @@
   <AXPE1>
     <!-- Metadata -->
     <inheritFrom>AXVE1</inheritFrom>
+
+	<!-- TMs, HMs, and Move Tutors -->
+
+	<!-- TM Move mappings -->
+	<tmMoves pointer="0x06F05C"/>
   </AXPE1>
   
   <!-- FRLG Constants -->
@@ -373,16 +403,18 @@
     <!-- TMs, HMs, and Move Tutors -->
 
     <!-- TM Move mappings -->
-    <tmMoves offset="0x45A5A4" duplicateOffset ="0x45A80C"/>
+	<!-- offset="0x45A80C" duplicateOffset ="0x45A5A4" -->
+    <tmMoves pointer="0x125A8C"/>
     <!-- HM move mappings -->
-    <hmMoves offset="0x45A608" duplicateOffset ="0x45A870"/>
+	<!-- offset="0x45A870" duplicateOffset ="0x45A608" -->
+    <hmMoves pointer="0x0441DC"/>
     <!-- MT move mappings -->
-    <moveTutorMoves offset="0x459B60"/>
+    <moveTutorMoves pointer="0x120BE4" offset="0x459B60"/>
 
     <!-- Pokemon Definitions -->
 
-    <tmHmCompat offset="0x252BC8" pointer="0x043C68"/>
-    <moveTutorCompat offset="0x459B7E"/>
+    <tmHmCompat pointer="0x043C68" offset="0x252BC8"/>
+    <moveTutorCompat pointer="0x120C30" offset="0x459B7E"/>
 	<!-- Note: moveset pointer actually points to the moveset pointer table, not the first moveset, and will need to be followed to depth 2-->
     <movesets pointer="0x03EA7C" bulbaOffset="0x257494"/>
     <!-- offset from thethethethe's forum post (archived on the wayback machine): https://web.archive.org/web/20180316234519/http://pokemonhackersonline.com/showthread.php?t=2586 -->
@@ -431,6 +463,17 @@
 
     <moveDescriptions pointer="0x0E5418"/>
 
+	<!-- TMs, HMs, and Move Tutors -->
+
+	<!-- TM Move mappings -->
+	<tmMoves pointer="0x125A64"/>
+	<!-- MT move mappings -->
+	<moveTutorMoves pointer="0x120BBC"/>
+
+	<!-- Pokemon Definitions -->
+
+	<moveTutorCompat pointer="0x120C08"/>
+
 	<!-- Trainer Battle Definitions -->
 
 	<trainerClassNames pointer="0x0D8074"/>
@@ -450,7 +493,19 @@
 
     <moveDescriptions pointer="0x0E5454"/>
 
-    <!-- Pokemon Definitions -->
+	<!-- TMs, HMs, and Move Tutors -->
+
+	<!-- TM Move mappings -->
+	<tmMoves pointer="0x125B04"/>
+	<!-- HM move mappings -->
+	<hmMoves pointer="0x0441F0"/>
+	<!-- MT move mappings -->
+	<moveTutorMoves pointer="0x120C5C"/>
+
+	<!-- Pokemon Definitions -->
+
+	<tmHmCompat pointer="0x043C7C"/>
+	<moveTutorCompat pointer="0x120CA8"/>
 
 	<evolutions pointer="0x042F80"/>
     <!-- Note: moveset pointer actually points to the moveset pointer table, not the first moveset, and will need to be followed to depth 2-->
@@ -478,7 +533,19 @@
 
     <moveDescriptions pointer="0x0E542C"/>
 
+	<!-- TMs, HMs, and Move Tutors -->
+
+	<!-- TM Move mappings -->
+	<tmMoves pointer="0x125ADC"/>
+	<!-- MT move mappings -->
+	<moveTutorMoves pointer="0x120C34"/>
+
+	<!-- Pokemon Definitions -->
+
+	<moveTutorCompat pointer="0x120C80"/>
+
 	<!-- Trainer Battle Definitions -->
+	  
 	<trainerClassNames pointer="0x0D8088"/>
     
     <!-- Items -->

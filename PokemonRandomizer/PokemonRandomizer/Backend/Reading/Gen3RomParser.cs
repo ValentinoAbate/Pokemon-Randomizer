@@ -198,13 +198,13 @@ namespace PokemonRandomizer.Backend.Reading
             int numTms = info.Num(ElementNames.tmMoves);
             int numHms = info.Num(ElementNames.hmMoves);
             // Setup Move Tutor Compat offset
-            int tutorCompatOffset = info.FindOffset(ElementNames.tutorMoves, rom);
-            if (tutorCompatOffset == Rom.nullPointer)
-                return pokemon;
-            int tutorSize = info.Size(ElementNames.tutorCompat);
-            int numTutorMoves = info.Num(ElementNames.tutorMoves);
-            // Skip over the tutor move definitions to get to the compatibilities
-            tutorCompatOffset += (numTutorMoves * info.Size(ElementNames.tutorMoves));
+            int tutorCompatOffset = info.FindOffset(ElementNames.tutorCompat, rom);
+            int tutorSize = 0, numTutorMoves = 0;
+            if (tutorCompatOffset != Rom.nullPointer)
+            {
+                tutorSize = info.Size(ElementNames.tutorCompat);
+                numTutorMoves = info.Num(ElementNames.tutorMoves);
+            }
             // Setup moveset offset
             int movesetOffset = info.FindOffset(ElementNames.movesets, rom);
             if (movesetOffset == Rom.nullPointer)
@@ -212,9 +212,11 @@ namespace PokemonRandomizer.Backend.Reading
             movesetOffset = rom.ReadPointer(movesetOffset);
             // Setup Name offset
             int namesOffset = info.FindOffset(ElementNames.pokemonNames, rom);
-            if (namesOffset == Rom.nullPointer)
-                return pokemon;
-            int nameLength = info.Length(ElementNames.pokemonNames);
+            int nameLength = 0;
+            if (namesOffset != Rom.nullPointer)
+            {
+                nameLength = info.Length(ElementNames.pokemonNames);
+            }
             // Setup palette offsets
             int pokemonPaletteSize = info.Size(ElementNames.pokemonPalettes);
             int normalPaletteOffset = info.FindOffset(ElementNames.pokemonPalettes, rom);
@@ -234,7 +236,7 @@ namespace PokemonRandomizer.Backend.Reading
                 // Create Pokemon
                 PokemonBaseStats pkmn = ReadBaseStatsSingle(rom, pkmnOffset + (i * pkmnSize), InternalIndexToPokemon(i));
                 // Read name
-                pkmn.Name = rom.ReadString(namesOffset + (i * nameLength), nameLength);
+                pkmn.Name = namesOffset != Rom.nullPointer ? rom.ReadString(namesOffset + (i * nameLength), nameLength) : pkmn.species.ToDisplayString();
                 // Read Learn Set
                 movesetOffset = ReadLearnSet(rom, movesetOffset, out pkmn.learnSet);
                 // Read Tm/Hm/Mt compat
@@ -303,6 +305,11 @@ namespace PokemonRandomizer.Backend.Reading
         // Read the move tutor compatibility BitArray at offset
         private void ReadTutorCompat(Rom rom, int offset, int numMoveTutors, int tutorCompatSize, out BitArray tutCompat)
         {
+            if(numMoveTutors == 0)
+            {
+                tutCompat = new BitArray(numMoveTutors);
+                return;
+            }
             tutCompat = new BitArray(numMoveTutors);
             byte[] tutChunk = rom.ReadBlock(offset, tutorCompatSize);
             int mask = 0;
