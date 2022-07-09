@@ -791,7 +791,7 @@ namespace PokemonRandomizer.Backend.Randomization
                     // Randomize the first battle
                     trainerRand.Randomize(firstBattle, pokemonSet, trainerSettings, false);
                     // Set the appropriate starter as the ace
-                    firstBattle.Pokemon[firstBattle.Pokemon.Count - 1].species = data.Starters[originalStarters ? i : data.RivalRemap[i]];
+                    firstBattle.Pokemon[^1].species = data.Starters[originalStarters ? i : data.RivalRemap[i]];
                     // Procedurally generate the rest of the battles
                     trainerRand.RandomizeReoccurring(firstBattle, battles, pokemonSet, trainerSettings);
                     if (settings.EasyFirstRivalBattle)
