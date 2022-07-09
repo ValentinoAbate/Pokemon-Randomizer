@@ -48,7 +48,7 @@ namespace PokemonRandomizer.Backend.Reading
             var pokemon = ReadPokemonBaseStats(rom, info, out byte[] skippedData);
             // Find the offset of the eggMoves if we have the data
             int? eggMovesOffset = info.FindOffset(ElementNames.eggMoves, rom);
-            if (eggMovesOffset.HasValue)
+            if (eggMovesOffset.HasValue && eggMovesOffset.Value != Rom.nullPointer)
             {
                 ReadEggMoves(rom, eggMovesOffset.Value, info, pokemon);
             }
