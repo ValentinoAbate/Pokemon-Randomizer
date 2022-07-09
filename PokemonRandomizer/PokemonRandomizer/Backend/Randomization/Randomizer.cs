@@ -71,7 +71,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 fossilSet.Add(Pokemon.RELICANTH);
             var babySet = pokemonSet.Where(PokemonUtils.IsBaby).ToHashSet();
             var types = DefinePokemonTypes();
-            var items = DefineItemSet();
+            var items = data.GetAllValidItemData();
 
             #region Type Definitions
             // Randomize type traits
@@ -953,11 +953,6 @@ namespace PokemonRandomizer.Backend.Randomization
             types.Remove(PokemonType.FAI);
             types.Remove(PokemonType.Unknown);
             return types;
-        }
-
-        private IEnumerable<ItemData> DefineItemSet()
-        {
-            return data.ItemData.Where((i) => i.Item != Item.None);
         }
 
         #endregion

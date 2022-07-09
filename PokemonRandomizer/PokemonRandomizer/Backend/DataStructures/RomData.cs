@@ -142,6 +142,17 @@ namespace PokemonRandomizer.Backend.DataStructures
             }
             return set;
         }
+        public List<ItemData> GetAllValidItemData()
+        {
+            var list = new List<ItemData>(ItemData.Count);
+            foreach(var item in ItemData)
+            {
+                if (item.Item == Item.None || item.IsUnused)
+                    continue;
+                list.Add(item);
+            }
+            return list;
+        }
         public HashSet<Item> GetAllItems()
         {
             var set = new HashSet<Item>(ItemDataLookup.Count);
