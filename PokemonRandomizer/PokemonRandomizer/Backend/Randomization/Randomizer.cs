@@ -131,7 +131,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 if (item.IsTM())
                 {
                     var moveData = data.GetMoveData(data.TMMoves[tmInd++]);
-                    if (!tmTypePalettes.ContainsKey(moveData.type))
+                    if (item.paletteOffset != Rom.nullPointer && !tmTypePalettes.ContainsKey(moveData.type))
                     {
                         tmTypePalettes.Add(moveData.type, item.paletteOffset);
                     }

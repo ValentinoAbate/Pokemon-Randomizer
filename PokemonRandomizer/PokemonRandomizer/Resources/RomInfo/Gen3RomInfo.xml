@@ -226,6 +226,7 @@
     
     <!-- Items -->
 
+	<itemDefinitions num="349"/>
     <pickupItems pointer="0x02AFB8" num="10"/>
     
     <!-- Static Pokemon -->
@@ -268,6 +269,10 @@
 	<!-- Trainer Battle Definitions -->
 
 	<trainerClassNames pointer="0x1217BC"/>
+	  
+	<!-- Item Data -->
+	  
+	<itemDefinitions pointer="0x0A98F0"/>
   </AXVE0>
   <AXPE0>
     <!-- Metadata -->
@@ -311,6 +316,10 @@
 	<!-- Trainer Battle Definitions -->
 
 	<trainerClassNames pointer="0x0F70A8"/>
+
+	<!-- Item Data -->
+
+	<itemDefinitions pointer="0x0A9910"/>
   </AXVE1>
   <AXPE1>
     <!-- Metadata -->
@@ -359,7 +368,7 @@
 
     <!-- Items -->
 
-    <itemDefinitions tmDescriptionLineLength="24" tmDescriptionMaxLines="4"/>
+    <itemDefinitions pointer="0x0001C8" num="375" tmDescriptionLineLength="24" tmDescriptionMaxLines="4"/>
     <pickupItems num="16"/>
 
     <!-- Static Pokemon -->
@@ -424,7 +433,6 @@
 
     <!-- Items -->
 
-    <itemDefinitions pointer="0x0001C8" num="375"/>
     <itemSprites pointer="0x09899C"/>
     <itemEffectsTable offset="0x2528BC"/>
     <stoneEffect offset="0x252856"/>
