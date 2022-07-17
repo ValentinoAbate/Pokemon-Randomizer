@@ -149,7 +149,7 @@
 	<!-- Note: moveset pointer actually points to the moveset pointer table, not the first moveset, and will need to be followed to depth 2-->
     <movesets pointer="0x06930C" bulbaOffset="0x3230dc"/>
     <!-- pointer found in Hex Editor Advance's Table reference file. offset found from following pointer -->
-    <eggMoves offset="0x32ADD8" pointer="0x0703F0" />
+    <eggMoves offset="0x32ADD8" pointer="0x0703F0"/>
     <evolutions offset="0x32531C" pointer="0x06D140"/>
     <pokemonNames pointer="0x000144"/>
 
@@ -254,6 +254,7 @@
 	<tmMoves pointer="0x06F038"/>
 	<!-- HM move mappings -->
 	<hmMoves pointer="0x040A24"/>
+    <eggMoves pointer="0x041B44"/>
 
 	<!-- Pokemon Definitions -->
 
@@ -301,6 +302,7 @@
 	<tmMoves pointer="0x06F058"/>
 	<!-- HM move mappings -->
 	<hmMoves pointer="0x040A44"/>
+	<eggMoves pointer="0x041B64"/>
 
 	<!-- Pokemon Definitions -->
 
@@ -509,6 +511,7 @@
 	<hmMoves pointer="0x0441F0"/>
 	<!-- MT move mappings -->
 	<moveTutorMoves pointer="0x120C5C"/>
+	<eggMoves pointer="0x045C64"/>
 
 	<!-- Pokemon Definitions -->
 
