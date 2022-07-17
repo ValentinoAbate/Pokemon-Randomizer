@@ -2,12 +2,14 @@
 using PokemonRandomizer.Backend.DataStructures;
 using PokemonRandomizer.Backend.EnumTypes;
 using PokemonRandomizer.Backend.Utilities;
+using PokemonRandomizer.Backend.Utilities.Debug;
 using System.Collections.Generic;
 
 namespace PokemonRandomizer.Backend.Reading
 {
     public abstract class RomParser
     {
+        private const int maxEggMoveLoops = 10000;
         public abstract RomData Parse(Rom rom, RomMetadata metadata, XmlManager info);
 
         // Read the attacks starting at offset (returns the index after completion)
@@ -44,16 +46,25 @@ namespace PokemonRandomizer.Backend.Reading
             var pkmn = Pokemon.None;
             int counter = 0;
             // Limit on loop just in case we are at the wrong place
-            while (++counter < 3000)
+            while (true)
             {
+                if(counter++ >= maxEggMoveLoops)
+                {
+                    Logger.main.Error($"Egg move counter exceeded {maxEggMoveLoops}. Egg move offset ({offset:x2}) is likely incorrect. Returning with no egg move data to prevent an infinite loop");
+                    return;
+                }
                 int number = rom.ReadUInt16();
                 if (number > pkmnSigniture + 1000 || number < 0)
+                {
                     break;
+                }
                 if (number >= pkmnSigniture)
                 {
                     pkmn = InternalIndexToPokemon(number - pkmnSigniture);
                     if (pkmn > Pokemon.None)
+                    {
                         moves.Add(pkmn, new List<Move>());
+                    }
                 }
                 else if (pkmn != Pokemon.None)
                 {
