@@ -49,7 +49,7 @@ namespace PokemonRandomizer.Backend.Writing
             // Write the move definitions
             WriteMoveData(data.MoveData, rom, info, ref repoints);
             WritePokemonBaseStats(data, rom, info, ref repoints);
-            WriteTypeDefinitions(data, rom, info, ref repoints);
+            WriteTypeDefinitions(data.TypeDefinitions, rom, info, ref repoints);
             WriteEncounters(data, rom, info);
             WriteTrainerBattles(data, rom, info, ref repoints);
             mapWriter.WriteMapData(data, rom, info, metadata);
@@ -554,38 +554,44 @@ namespace PokemonRandomizer.Backend.Writing
             rom.WriteUInt16(pokemon.shinyPaletteIndex);
             rom.LoadOffset();
         }
-        private void WriteTypeDefinitions(RomData data, Rom rom, XmlManager info, ref RepointList repoints)
+        private void WriteTypeDefinitions(TypeEffectivenessChart typeDefinitions, Rom rom, XmlManager info, ref RepointList repoints)
         {
+            int typeDefinitionOffset = info.FindOffset(ElementNames.typeEffectiveness, rom);
+            if(typeDefinitionOffset == Rom.nullPointer || typeDefinitions.Count <= 0)
+            {
+                return;
+            }
             #region Convert TypeChart to byte[]
-            List<byte> typeData = new List<byte>();
-            foreach (var typePair in data.TypeDefinitions.Keys)
+            var typeData = new List<byte>((typeDefinitions.Count * 3) + TypeEffectivenessChart.separatorSequence.Length + TypeEffectivenessChart.endSequence.Length);
+            foreach (var typePair in typeDefinitions.Keys)
             {
                 typeData.Add((byte)typePair.attackingType);
                 typeData.Add((byte)typePair.defendingType);
-                typeData.Add((byte)data.TypeDefinitions.GetEffectiveness(typePair));
+                typeData.Add((byte)typeDefinitions.GetEffectiveness(typePair));
             }
             typeData.AddRange(TypeEffectivenessChart.separatorSequence);
-            foreach (var typePair in data.TypeDefinitions.KeysIgnoreAfterForesight)
+            foreach (var typePair in typeDefinitions.KeysIgnoreAfterForesight)
             {
                 typeData.Add((byte)typePair.attackingType);
                 typeData.Add((byte)typePair.defendingType);
-                typeData.Add((byte)data.TypeDefinitions.GetEffectiveness(typePair));
+                typeData.Add((byte)typeDefinitions.GetEffectiveness(typePair));
             }
             typeData.AddRange(TypeEffectivenessChart.endSequence);
             #endregion
 
             #region Write to File
             //Move and Repoint if necessary
-            if (data.TypeDefinitions.Count > data.TypeDefinitions.InitCount)
+            if (typeDefinitions.Count > typeDefinitions.InitCount)
             {
-                int oldOffset = info.Offset("typeEffectiveness");
                 int? newOffset = rom.WriteInFreeSpace(typeData.ToArray());
-                if(newOffset != null)
-                    repoints.Add(oldOffset, (int)newOffset);                   
+                if(newOffset.HasValue)
+                {
+                    repoints.Add(typeDefinitionOffset, newOffset.Value);
+                }
             }
             else
             {
-                rom.WriteBlock(info.Offset("typeEffectiveness"), typeData.ToArray());
+                rom.WriteBlock(typeDefinitionOffset, typeData.ToArray());
             }
             #endregion
         }

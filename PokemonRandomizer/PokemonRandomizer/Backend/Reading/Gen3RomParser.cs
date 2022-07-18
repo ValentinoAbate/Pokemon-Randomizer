@@ -740,8 +740,8 @@ namespace PokemonRandomizer.Backend.Reading
         // Read Type Effectiveness data
         private TypeEffectivenessChart ReadTypeEffectivenessData(Rom rom, XmlManager info)
         {
-            TypeEffectivenessChart ret = new TypeEffectivenessChart();
-            if (!info.FindAndSeekOffset("typeEffectiveness", rom))
+            var ret = new TypeEffectivenessChart();
+            if (!info.FindAndSeekOffset(ElementNames.typeEffectiveness, rom))
                 return ret;
             bool ignoreAfterForesight = false;
             // Run until the end of structure sequence (0xff 0xff 0x00)

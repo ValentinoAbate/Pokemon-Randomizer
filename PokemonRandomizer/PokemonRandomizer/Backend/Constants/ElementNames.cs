@@ -38,6 +38,7 @@
         public const string trainerClassNames = "trainerClassNames";
         public const string trades = "trades";
         public const string setBerryTreeScript = "setBerryTreeScript";
+        public const string typeEffectiveness = "typeEffectiveness";
 
         // Trainer metadata
         public const string gymLeaders = "gymLeaders";
