@@ -305,7 +305,7 @@
   </AXPE0>
 
   
-  <!-- Ruby Sapphire (1.1) Rom Info -->
+  <!-- Ruby Sapphire (1.1 and 1.2) Rom Info -->
 
   <AXVE1>
     <!-- Metadata -->
@@ -360,6 +360,14 @@
 
 	<starterPokemon offset="0x3F773C"/>
   </AXPE1>
+  <AXVE2>
+	  <!-- Metadata -->
+     <inheritFrom>AXVE1</inheritFrom>
+  </AXVE2>
+  <AXPE2>
+    <!-- Metadata -->
+    <inheritFrom>AXPE1</inheritFrom>
+  </AXPE2>
   
   <!-- FRLG Constants -->
 
