@@ -79,6 +79,10 @@
     <!-- Items -->
 
     <itemDefinitions tmDescriptionLineLength="18" tmDescriptionMaxLines="3"/>
+
+	<!-- Static Pokemon -->
+
+	<starterPokemon skip1="0" skip2="0"/>
     
     <!-- Special Trainer Battles -->
 
@@ -172,7 +176,7 @@
     <!-- Static Pokemon -->
 
     <!-- offset from dabomstew's UP randomizer source https://github.com/Dabomstew/universal-pokemon-randomizer -->
-    <starterPokemon offset="0x5B1DF8" skip1="0" skip2="0"/>
+    <starterPokemon offset="0x5B1DF8"/>
     <!-- offsets from dabomstew's UP randomizer source https://github.com/Dabomstew/universal-pokemon-randomizer -->
     <catchingTutOpponent offset="0xB0870"/>
     <catchingTutPlayer offset="0x139472"/>
@@ -271,6 +275,7 @@
 
     <!-- Static Pokemon -->
 
+	<starterPokemon offset="0x3F76C4"/>
     <trades pointer="0x04D8D4"/>
 
 	<!-- Trainer Battle Definitions -->
@@ -293,6 +298,10 @@
 
 	<!-- TM Move mappings -->
 	<tmMoves pointer="0x06F03C"/>
+	  
+    <!-- Static Pokemon -->
+
+	<starterPokemon offset="0x3F771C"/>
   </AXPE0>
 
   
@@ -323,6 +332,7 @@
 
     <!-- Static Pokemon -->
 
+    <starterPokemon offset="0x3F76E0"/>
     <trades pointer="0x04D8F4"/>
 
 	<!-- Trainer Battle Definitions -->
@@ -345,6 +355,10 @@
 
 	<!-- TM Move mappings -->
 	<tmMoves pointer="0x06F05C"/>
+	  
+	<!-- Static Pokemon -->
+
+	<starterPokemon offset="0x3F773C"/>
   </AXPE1>
   
   <!-- FRLG Constants -->
@@ -389,6 +403,7 @@
 
     <!-- Static Pokemon -->
 
+	<starterPokemon skip1="459" skip2="52" />
     <trades num="9"/>
 
 	<trainerClassNames num="107" length="13"/>
@@ -457,15 +472,13 @@
     <itemEvents spriteSetIndex="92"/>
     <pickupItems pointer="0x02CEE4"/>
 
-    <!-- from dabomstew's UP randomizer source https://github.com/Dabomstew/universal-pokemon-randomizer (untested)-->
-    <starterItems offset="0x000000"/>
     <pcPotion offset="0x402220"/>
 
     <!-- Static Pokemon -->
 
     <!-- from user Uncommon's forum post https://www.pokecommunity.com/showthread.php?t=406241 -->
     <!-- 0x16BB5 (Bulbasaur), 0x16D82 (Squirtle), 0x16DB8 (Charmander) -->
-    <starterPokemon offset="0x169BB5" skip1="459" skip2="52" />
+    <starterPokemon offset="0x169BB5"/>
     <trades pointer="0x053AD4"/>
 
     <!-- Trainer Battle Definitions -->
@@ -506,6 +519,10 @@
 	<trainerClassNames pointer="0x0D8074"/>
 
     <!-- Items -->
+	  
+	<!-- Static Pokemon -->
+
+    <starterPokemon offset="0x169B91"/>
 
   </BPGE0>
   
@@ -553,6 +570,7 @@
     
     <!-- Static Pokemon -->
 
+	<starterPokemon offset="0x169C2D"/>
     <trades pointer="0x053AE8"/>
 
   </BPRE1>
@@ -581,6 +599,10 @@
 	<trainerClassNames pointer="0x0D8088"/>
     
     <!-- Items -->
+	  
+	<!-- Static Pokemon -->
+
+	<starterPokemon offset="0x169C09"/>
     
   </BPGE1>
 
