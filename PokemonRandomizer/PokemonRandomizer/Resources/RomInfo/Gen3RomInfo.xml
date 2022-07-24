@@ -128,7 +128,7 @@
 
     <!-- Type Data -->
 
-    <typeEffectiveness offset="0x31ace8"/>
+    <typeEffectiveness pointer="0x047134" offset="0x31ace8"/>
     
     <!-- Move Data -->
 
@@ -211,6 +211,10 @@
     <inheritFrom>rseConstants</inheritFrom>
 	<!-- Alternate FreespaceStart (Unconfirmed): 0x6B09F8 -->
     <freeSpace byte="0xFF" startAddy="0x800000"/>
+
+	<!-- Type Data -->
+
+	<typeEffectiveness pointer="0x01CDC8"/>
     
     <!-- Pokedex -->
 
@@ -444,7 +448,7 @@
     <!-- Type Data -->
 
     <!-- The address where the type effectiveness definitions start -->
-    <typeEffectiveness offset="0x24F050"/>
+    <typeEffectiveness pointer="0x01E944" offset="0x24F050"/>
 
     <!-- Move Data -->
 
@@ -540,6 +544,10 @@
     <!-- Metadata -->
 
     <inheritFrom>BPRE0</inheritFrom>
+
+	<!-- Type Data -->
+
+	<typeEffectiveness pointer="0x01E958"/>
 
     <!-- Move Data -->
 
