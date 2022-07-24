@@ -293,6 +293,7 @@
 	<!-- Item Data -->
 	  
 	<itemDefinitions pointer="0x0A98F0"/>
+	<pcPotion offset="0x4062F0"/>
   </AXVE0>
   <AXPE0>
     <!-- Metadata -->
@@ -306,6 +307,10 @@
     <!-- Static Pokemon -->
 
 	<starterPokemon offset="0x3F771C"/>
+
+	<!-- Item Data -->
+
+	<pcPotion offset="0x406348"/>
   </AXPE0>
 
   
@@ -350,6 +355,7 @@
 	<!-- Item Data -->
 
 	<itemDefinitions pointer="0x0A9910"/>
+	<pcPotion offset="0x40630C"/>
   </AXVE1>
   <AXPE1>
     <!-- Metadata -->
@@ -363,6 +369,10 @@
 	<!-- Static Pokemon -->
 
 	<starterPokemon offset="0x3F773C"/>
+
+	<!-- Item Data -->
+
+	<pcPotion offset="0x406368"/>
   </AXPE1>
   <AXVE2>
 	  <!-- Metadata -->
@@ -530,7 +540,9 @@
 
 	<trainerClassNames pointer="0x0D8074"/>
 
-    <!-- Items -->
+	<!-- Item Data -->
+
+	<pcPotion offset="0x40205C"/>
 	  
 	<!-- Static Pokemon -->
 
@@ -575,6 +587,7 @@
     <!-- Items -->
 
     <pickupItems pointer="0x02CEF8"/>
+	<pcPotion offset="0x402290"/>
 
 	<!-- Trainer Battle Definitions -->
 	<trainerBattles num="743" pointer="0x00FC14"/>
@@ -615,6 +628,8 @@
 	<trainerClassNames pointer="0x0D8088"/>
     
     <!-- Items -->
+
+	<pcPotion offset="0x4020CC"/>
 	  
 	<!-- Static Pokemon -->
 
