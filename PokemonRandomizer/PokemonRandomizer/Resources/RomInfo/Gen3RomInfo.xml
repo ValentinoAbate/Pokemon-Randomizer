@@ -298,6 +298,7 @@
 	  
 	<itemDefinitions pointer="0x0A98F0"/>
 	<pcPotion offset="0x4062F0"/>
+    <setBerryTreeScript offset="0x19F940"/>
   </AXVE0>
   <AXPE0>
     <!-- Metadata -->
@@ -315,6 +316,7 @@
 	<!-- Item Data -->
 
 	<pcPotion offset="0x406348"/>
+	<setBerryTreeScript offset="0x19F960"/>
   </AXPE0>
 
   
@@ -364,6 +366,7 @@
 
 	<itemDefinitions pointer="0x0A9910"/>
 	<pcPotion offset="0x40630C"/>
+    <setBerryTreeScript offset="0x19F8D0"/>
   </AXVE1>
   <AXPE1>
     <!-- Metadata -->
@@ -381,6 +384,7 @@
 	<!-- Item Data -->
 
 	<pcPotion offset="0x406368"/>
+    <setBerryTreeScript offset="0x19F8F0"/>
   </AXPE1>
   <AXVE2>
 	  <!-- Metadata -->

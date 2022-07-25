@@ -20,9 +20,9 @@ namespace PokemonRandomizer.UI.Views
             stack.Add(new BoundCheckBoxUI(model.UpdateDOTMoves, "Update Wrap Moves", "Updates the moves Wrap, Bind, Fire Spin, Sand Tomb, Whirlpool, and Clamp to their Gen V power, accuracy, and PP"));
             stack.Header("Randomizer Options");
             stack.Add(new BoundCheckBoxUI(model.CountRelicanthAsFossil, "Count Relicanth as a Fossil Pokemon"));
-            if (metadata.IsEmerald)
+            if (metadata.IsRubySapphireOrEmerald)
             {
-                stack.Header("Emerald Options");
+                stack.Header("Ruby/Sapphire/Emerald Options");
                 stack.Add(new BoundCheckBoxUI(model.RandomizeWallyAce, "Randomize Catching Tutorial Pokemon / Wally Ace"));
                 stack.Add(new BoundCheckBoxUI(model.EasyFirstRivalbattle, "Easy First Rival Battle") { ToolTip = easyRivalBattleTooltip });
                 var berryRand = stack.Add(new RandomChanceUI("Randomize Berry Trees", model.RandomizeBerryTrees, model.BerryTreeRandomizationChance) { ToolTip = "Randomize which berry trees start in the berry tree slots. WARNING: this only works for new save files. Loading a save state of an old save file will bypass the script that sets the starting berry trees." });
