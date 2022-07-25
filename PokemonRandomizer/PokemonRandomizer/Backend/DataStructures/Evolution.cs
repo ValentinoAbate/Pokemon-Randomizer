@@ -4,7 +4,7 @@ using PokemonRandomizer.Backend.Utilities;
 namespace PokemonRandomizer.Backend.DataStructures
 {
     public enum EvolutionType
-        {
+    {
             None,                       // 0x0000 - No Evolution in this slot
             Friendship,                 // 0x0001 - Evolves by friendship without regards to time of day
             FriendshipDay,              // 0x0002 - Evolves by friendship during the day

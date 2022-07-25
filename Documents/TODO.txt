@@ -87,13 +87,6 @@ IDEAS //////////////////////////////////////////////////////////////////////////
 	- Pokemon are given to the player in poke balls in the starting town
 	- Pokemon are optionally given to the player as in-game trades in the first town (allowing the player to give custom IV values and nicknames, etc)?
 		- May cause boosted exp which could be undesirable (may be some way to reset OT)
-- Item Randomization
-	- Add a "ban useless items" setting instead of ban mail
-	- The list of "useless"/banned items items will default to contain:
-		- Mail
-		- Scarves
-		- Shoal Items (salt / shell)
-	- The list can be custom configured in the randomizer settings part though!
 - Misc / Minor / Polish
 	- Raining routes should auto-water berries
 	- Change the devon goods guy's shroomish text into something that is in that area
@@ -105,10 +98,9 @@ IDEAS //////////////////////////////////////////////////////////////////////////
 
 FEATURES ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- FireRed v1.1, LeafGreen v1.0 + v1.1, Sapphire v1.0 + v1.11, and Ruby v1.0 + v1.11 compatibility
+- FireRed v1.1, LeafGreen v1.0 + v1.1, Sapphire v1.0 + v1.1 + v1.2, and Ruby v1.0 + v1.1 + v1.2 compatibility
 
 - National Pokedex from game start hack
-- Gen IV compatibility
 - ROM Data XML export (randomized rom exports its offsets so it can be re-randomized)
 	- Include data in a human-readable format
 - Item randomization
@@ -120,14 +112,12 @@ FEATURES ///////////////////////////////////////////////////////////////////////
 		- starter
 		- gift
 	- Use cost as optional weighting
-
 - Script reading / writing
 	- Maps
 	- Signs
 	- Triggers
 - Multi-Rom Data aggregation
 	- For instance, use emerald as a base but pull additional classes and moveset updates from FireRed
-- Berry Tree Randomization
 - Game corner prize randomization
 - Egg move writing
 - Move description writing
@@ -146,14 +136,14 @@ FEATURES ///////////////////////////////////////////////////////////////////////
 	- Dark mode UI
 	- Drag rom into application
 	- Random Compatibility on chance needs to be more clear (change label based on compatibility option)
+- Gen IV compatibility
+	- Evolution level calculation for new evo types that don't have an explicit level
+	- Catching tut potentially doesn't need to be a male pokemon
 
 CLEANUP /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 - Remove all unecessary manual pointer prefix searches and replace with find offset calls
 - Move encounter set reading code out of the encounter set classes to make the model gen-agnostic
-- Move movedata reading code out of the MoveData classes to make the model gen-agnostic
-- Move Trainer / Trainerpokemon reading code out of the trainer classes to make the model gen-agnostic
-- Move Evolution Reading code out of the Evolution classes to make the model gen agnostic
 - Move Elt name constants into constants class(es)
 - Check to see if pkmn base stat offsets point to after the null pokemon
 - Make "Size" and other rom data shortcut methods safe to fail with warnings
@@ -161,8 +151,6 @@ CLEANUP ////////////////////////////////////////////////////////////////////////
 
 FIXES ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-- RUBY AND SAPPHIRE
-	- Both don't have move tutors, so these need to be optionally supported
 - Pokemon that evolve with stones have bad default movesets due to not learning stuff by level up.
 	- Still an issue, but fixed in smart moveset generation. Currently no fix for default movesets
 - Emerald post-battle snow fix
