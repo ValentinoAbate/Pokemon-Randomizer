@@ -31,7 +31,6 @@ IDEAS //////////////////////////////////////////////////////////////////////////
 	- (Em/Ru/Sap - Add a final rival battle before victory road or something)
 	- Secret Agents (any non-trainer NPC may become a trainer)
 		- Allow limiters that when removed can extend this to pokemon centers, etx
-	- Difficulty: All trainers use good AI
 	- Difficulty: Trainers use held items
 	- Trainers can use battle items?
 - Catching Tut ideas
@@ -73,7 +72,7 @@ IDEAS //////////////////////////////////////////////////////////////////////////
 	- Map categories can be for "Routes" (Maps with "Route" in the name) and named maps
 - Variant Randomization
 	- Palettes:
-		- Make the similar color / dection algo just fall back on the the simple color change for now, allow for a different fallback later
+		- Make the similar color / detection algo just fall back on the the simple color change for now, allow for a different fallback later
 	- Typing
 		- Disallow all future original types from being new added types
 		- Maybe: prevent single type pokemon that evolve into dual-typed pokemon from becoming dual-typed? (or maybe as an option at least)
