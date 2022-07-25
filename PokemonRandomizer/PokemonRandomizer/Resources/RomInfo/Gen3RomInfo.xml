@@ -285,6 +285,8 @@
 
 	<starterPokemon offset="0x3F76C4"/>
     <trades pointer="0x04D8D4"/>
+	<catchingTutOpponent offset="0x81B00"/>
+    <catchingTutPlayer offset="0x10F62E"/>
 
 	<!-- Trainer Battle Definitions -->
 
@@ -353,6 +355,8 @@
 
     <starterPokemon offset="0x3F76E0"/>
     <trades pointer="0x04D8F4"/>
+	<catchingTutOpponent offset="0x81B20"/>
+    <catchingTutPlayer offset="0x10F64E"/>
 
 	<!-- Trainer Battle Definitions -->
 
@@ -514,6 +518,7 @@
     <!-- 0x16BB5 (Bulbasaur), 0x16D82 (Squirtle), 0x16DB8 (Charmander) -->
     <starterPokemon offset="0x169BB5"/>
     <trades pointer="0x053AD4"/>
+	<catchingTutOpponent offset="0x7F88C"/>
 
     <!-- Trainer Battle Definitions -->
 
@@ -563,6 +568,7 @@
 	<!-- Static Pokemon -->
 
     <starterPokemon offset="0x169B91"/>
+	<catchingTutOpponent offset="0x7F860"/>
 
   </BPGE0>
   
@@ -621,6 +627,7 @@
 
 	<starterPokemon offset="0x169C2D"/>
     <trades pointer="0x053AE8"/>
+	<catchingTutOpponent offset="0x7F8A0"/>
 
   </BPRE1>
   <BPGE1>
@@ -658,6 +665,7 @@
 	<!-- Static Pokemon -->
 
 	<starterPokemon offset="0x169C09"/>
+	<catchingTutOpponent offset="0x7F874"/>
     
   </BPGE1>
 
