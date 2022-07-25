@@ -98,6 +98,10 @@ IDEAS //////////////////////////////////////////////////////////////////////////
 FEATURES ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 - FireRed v1.1, LeafGreen v1.0 + v1.1, Sapphire v1.0 + v1.1 + v1.2, and Ruby v1.0 + v1.1 + v1.2 compatibility
+	- Test all R/S variant sprites
+	- Hail hack support
+	- New evo stone (item effect table) support
+	- Check R/S special trainers
 
 - National Pokedex from game start hack
 - ROM Data XML export (randomized rom exports its offsets so it can be re-randomized)
