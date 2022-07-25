@@ -257,6 +257,10 @@
   <AXVE0>
     <!-- Metadata -->
     <inheritFrom>rsConstants</inheritFrom>
+	  
+	<!-- Hacks and Tweaks -->
+
+    <runIndoors offset="0xE5E00"/>
     
     <!-- Move Data -->
 
@@ -319,6 +323,10 @@
   <AXVE1>
     <!-- Metadata -->
     <inheritFrom>AXVE0</inheritFrom>
+	  
+	<!-- Hacks and Tweaks -->
+
+    <runIndoors offset="0xE5E20"/>
     
     <!-- Move Data -->
 
@@ -520,6 +528,10 @@
     <!-- Metadata -->
 
     <inheritFrom>BPRE0</inheritFrom>
+	  
+	<!-- Hacks and Tweaks -->
+
+    <runIndoors offset="0xBD468"/>
 
     <!-- Move Data -->
 
@@ -556,6 +568,10 @@
     <!-- Metadata -->
 
     <inheritFrom>BPRE0</inheritFrom>
+	
+    <!-- Hacks and Tweaks -->
+
+    <runIndoors offset="0xBD4A8"/>
 
 	<!-- Type Data -->
 
@@ -607,6 +623,10 @@
     <!-- Metadata -->
     
     <inheritFrom>BPRE1</inheritFrom>
+	  
+    <!-- Hacks and Tweaks -->
+
+    <runIndoors offset="0xBD47C"/>
 
     <!-- Move Data -->
 
