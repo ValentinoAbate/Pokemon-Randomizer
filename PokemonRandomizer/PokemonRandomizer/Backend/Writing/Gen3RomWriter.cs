@@ -217,9 +217,10 @@ namespace PokemonRandomizer.Backend.Writing
                     rom.WriteBlock(info.HexAttr(ElementNames.GenIII.hailHack, "snowMessageOffset"), hailMessageBlock);
                     // Fix Three snow flakes spawning issue
                     rom.WriteBlock(info.HexAttr(ElementNames.GenIII.hailHack, "snowFixOffset"), new byte[] { 0x4B, 0xE0 });
-                    if(info.HasElementWithAttr(ElementNames.GenIII.hailHack, "snowPostBattleFixOffset")) 
+                    // Fix Thee snow flakes post-battle x position issue
+                    if(info.HasElementWithAttr(ElementNames.GenIII.hailHack, "snowPostBattleFixOffset") && info.HasElementWithAttr(ElementNames.GenIII.hailHack, "snowPostBattleAsm")) 
                     {
-                        rom.WriteBlock(info.HexAttr(ElementNames.GenIII.hailHack, "snowPostBattleFixOffset"), new byte[] { 0x04, 0x1C, 0xE1, 0xF7, 0x32, 0xF8, 0x0D, 0x4A, 0xD9, 0x21, 0xC9, 0x00, 0x88, 0x5C });
+                        rom.WriteBlock(info.HexAttr(ElementNames.GenIII.hailHack, "snowPostBattleFixOffset"), info.ByteArrayAttr(ElementNames.GenIII.hailHack, "snowPostBattleAsm"));
                     }
                 }
                 if (option.HasFlag(Settings.HailHackOption.SteadySnow))

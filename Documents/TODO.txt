@@ -157,7 +157,6 @@ FIXES //////////////////////////////////////////////////////////////////////////
 
 - Pokemon that evolve with stones have bad default movesets due to not learning stuff by level up.
 	- Still an issue, but fixed in smart moveset generation. Currently no fix for default movesets
-- Emerald post-battle snow fix
 - TM Compat and Learnset generation could be dependent on each other
 - Potentially: write catching tut on emerald has some differences from clean ROMs (see diff9)
 - Fix professor Oak's aides for National Dex mode:
