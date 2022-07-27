@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 namespace PokemonRandomizer.Backend.RomHandling.Parsing
 {
-    public abstract class RomParser
+    public abstract class RomParser : RomHandler
     {
         private const int maxEggMoveLoops = 10000;
         public abstract RomData Parse(Rom rom, RomMetadata metadata, XmlManager info);
@@ -109,9 +109,5 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
             }
             rom.LoadOffset();
         }
-
-        protected abstract Pokemon InternalIndexToPokemon(int internalIndex);
-        protected abstract Item InternalIndexToItem(int internalIndex);
-        protected static Move InternalIndexToMove(int internalIndex) => (Move)internalIndex;
     }
 }

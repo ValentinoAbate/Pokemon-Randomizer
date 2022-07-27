@@ -10,11 +10,14 @@ using PokemonRandomizer.Backend.DataStructures.Scripts;
 using PokemonRandomizer.Backend.Metadata;
 using static PokemonRandomizer.Backend.DataStructures.MoveData;
 using PokemonRandomizer.Backend.Constants;
+using PokemonRandomizer.Backend.RomHandling.IndexTranslators;
 
 namespace PokemonRandomizer.Backend.RomHandling.Parsing
 {
     public class Gen3RomParser : RomParser
     {
+        protected override IIndexTranslator IndexTranslator => Gen3IndexTranslator.Main;
+
         private readonly Gen3ScriptParser scriptParser;
         private readonly Gen3MapParser mapParser;
         private readonly Gen3PaletteParser paletteParser;
@@ -95,16 +98,6 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
             Timer.main.Stop();
             Timer.main.Log("ROM Parsing");
             return data;
-        }
-
-        protected override Pokemon InternalIndexToPokemon(int internalIndex)
-        {
-            return (Pokemon)internalIndex;
-        }
-
-        protected override Item InternalIndexToItem(int internalIndex)
-        {
-            return (Item)internalIndex;
         }
 
         // Read national dex order

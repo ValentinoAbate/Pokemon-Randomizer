@@ -2,6 +2,7 @@
 using PokemonRandomizer.Backend.DataStructures;
 using PokemonRandomizer.Backend.DataStructures.DS;
 using PokemonRandomizer.Backend.EnumTypes;
+using PokemonRandomizer.Backend.RomHandling.IndexTranslators;
 using PokemonRandomizer.Backend.Utilities;
 using PokemonRandomizer.Backend.Utilities.Debug;
 using System;
@@ -12,6 +13,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
 {
     public class Gen4RomParser : DSRomParser
     {
+        protected override IIndexTranslator IndexTranslator => Gen4IndexTranslator.Main;
         public override RomData Parse(Rom rom, RomMetadata metadata, XmlManager info)
         {
             // Parse the NDS file structure
@@ -48,16 +50,6 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
 
 
             throw new NotImplementedException("Gen IV Rom parsing not supported");
-        }
-
-        protected override Pokemon InternalIndexToPokemon(int internalIndex)
-        {
-            return PokemonUtils.Gen4InternalToPokemon(internalIndex);
-        }
-
-        protected override Item InternalIndexToItem(int internalIndex)
-        {
-            return ItemUtils.Gen4InternalToItem(internalIndex);
         }
 
         private List<PokemonBaseStats> ReadPokemonBaseStats(Rom rom, DSFileSystemData dsFileSystem, XmlManager info)
@@ -141,8 +133,8 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
             pkmn.eggGroups[0] = (EggGroup)rom.ReadByte();
             pkmn.eggGroups[1] = (EggGroup)rom.ReadByte();
             // fill in abilities
-            pkmn.abilities[0] = AbilityUtils.PostGen3InternalToAbility(rom.ReadByte());
-            pkmn.abilities[1] = AbilityUtils.PostGen3InternalToAbility(rom.ReadByte());
+            pkmn.abilities[0] = InternalIndexToAbility(rom.ReadByte());
+            pkmn.abilities[1] = InternalIndexToAbility(rom.ReadByte());
             pkmn.safariZoneRunRate = rom.ReadByte();
             byte searchFlip = rom.ReadByte();
             // read color

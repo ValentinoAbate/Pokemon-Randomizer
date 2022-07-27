@@ -697,9 +697,9 @@ namespace PokemonRandomizer.Backend.Utilities
             return genIVInternalToItem[gen4InternalIndex];
         }
 
-        public static int ItemToGen4Internal(Item pokemon)
+        public static int ItemToGen4Internal(Item item)
         {
-            return itemToGenIVInternal[pokemon];
+            return itemToGenIVInternal[item];
         }
     }
 }

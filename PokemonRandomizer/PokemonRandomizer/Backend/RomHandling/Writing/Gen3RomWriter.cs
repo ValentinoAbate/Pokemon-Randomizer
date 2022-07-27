@@ -9,6 +9,7 @@ using PokemonRandomizer.Backend.Scripting.GenIII;
 using PokemonRandomizer.Backend.Utilities.Debug;
 using PokemonRandomizer.Backend.DataStructures.Scripts;
 using PokemonRandomizer.Backend.Constants;
+using PokemonRandomizer.Backend.RomHandling.IndexTranslators;
 
 namespace PokemonRandomizer.Backend.RomHandling.Writing
 {
@@ -16,6 +17,8 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
     //to write to a file
     public class Gen3RomWriter : RomWriter
     {
+        protected override IIndexTranslator IndexTranslator => Gen3IndexTranslator.Main;
+
         private readonly Dictionary<Item, Item> itemRemaps = new Dictionary<Item, Item>();
         private readonly HashSet<Item> failedItemRemaps = new HashSet<Item>();
         private readonly Gen3ScriptWriter scriptWriter;
@@ -121,11 +124,6 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
             Timer.main.Stop();
             Timer.main.Log("ROM Writing");
             return rom;
-        }
-
-        protected override int ItemToInternalIndex(Item item)
-        {
-            return (int)item;
         }
 
         private Item RemapItem(Item item)
