@@ -10,7 +10,7 @@ namespace PokemonRandomizer.Backend.Randomization
 {
     internal class WeatherRandomizer
     {
-        private Random rand;
+        private readonly Random rand;
         public WeatherRandomizer(Random rand)
         {
             this.rand = rand;

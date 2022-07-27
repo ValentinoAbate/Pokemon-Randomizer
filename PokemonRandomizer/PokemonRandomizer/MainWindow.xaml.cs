@@ -44,7 +44,7 @@ namespace PokemonRandomizer
             }
         }
 
-        public bool LogNotEmpty => Logger.main.Count > 0;
+        public static bool LogNotEmpty => Logger.main.Count > 0;
 
         #endregion
 
@@ -649,31 +649,25 @@ namespace PokemonRandomizer
 
         private static byte[] CompressBytes(byte[] bytes)
         {
-            using (var outputStream = new MemoryStream())
+            using var outputStream = new MemoryStream();
+            using (var compressStream = new BrotliStream(outputStream, CompressionLevel.Optimal))
             {
-                using (var compressStream = new BrotliStream(outputStream, CompressionLevel.Optimal))
-                {
-                    compressStream.Write(bytes, 0, bytes.Length);
-                }
-                outputStream.Flush();
-                return outputStream.ToArray();
+                compressStream.Write(bytes, 0, bytes.Length);
             }
+            outputStream.Flush();
+            return outputStream.ToArray();
         }
 
         private static byte[] DecompressBytes(byte[] bytes)
         {
-            using (var inputStream = new MemoryStream(bytes))
+            using var inputStream = new MemoryStream(bytes);
+            using var outputStream = new MemoryStream();
+            using (var decompressStream = new BrotliStream(inputStream, CompressionMode.Decompress))
             {
-                using (var outputStream = new MemoryStream())
-                {
-                    using (var decompressStream = new BrotliStream(inputStream, CompressionMode.Decompress))
-                    {
-                        decompressStream.CopyTo(outputStream);
-                    }
-                    outputStream.Flush();
-                    return outputStream.ToArray();
-                }
+                decompressStream.CopyTo(outputStream);
             }
+            outputStream.Flush();
+            return outputStream.ToArray();
         }
 
         private void LoadPreset(object sender, RoutedEventArgs e)
