@@ -11,7 +11,7 @@ using PokemonRandomizer.Backend.Metadata;
 using static PokemonRandomizer.Backend.DataStructures.MoveData;
 using PokemonRandomizer.Backend.Constants;
 
-namespace PokemonRandomizer.Backend.Reading
+namespace PokemonRandomizer.Backend.RomHandling.Parsing
 {
     public class Gen3RomParser : RomParser
     {
@@ -111,12 +111,12 @@ namespace PokemonRandomizer.Backend.Reading
         private void ReadNationalDexOrder(IList<PokemonBaseStats> pokemon, Rom rom, XmlManager info)
         {
             int[] order = new int[info.Num(ElementNames.pokemonBaseStats) + 1];
-            int offset  = info.FindOffset(ElementNames.nationalDexOrder, rom);
+            int offset = info.FindOffset(ElementNames.nationalDexOrder, rom);
             if (offset == Rom.nullPointer)
                 return;
             foreach (var p in pokemon)
             {
-                p.NationalDexIndex = rom.ReadUInt16(offset + (((int)p.species - 1) * 2));
+                p.NationalDexIndex = rom.ReadUInt16(offset + ((int)p.species - 1) * 2);
             }
         }
         // Read the move definitions
@@ -224,7 +224,7 @@ namespace PokemonRandomizer.Backend.Reading
             #endregion
 
             // Find skip index if one exists
-            int skipAt = info.HasElementWithAttr(ElementNames.pokemonBaseStats, "skipAt") ? info.IntAttr(ElementNames.pokemonBaseStats, "skipAt") : -1; 
+            int skipAt = info.HasElementWithAttr(ElementNames.pokemonBaseStats, "skipAt") ? info.IntAttr(ElementNames.pokemonBaseStats, "skipAt") : -1;
             for (int i = 1; i <= numPokemonBaseStats; i++)
             {
                 if (i == skipAt) // potentially skip empty slots
@@ -234,16 +234,16 @@ namespace PokemonRandomizer.Backend.Reading
                     movesetOffset += skipNum * 4; // (don't know why this is 4, cuz move segments are variable lengths possibly terminators?)
                 }
                 // Create Pokemon
-                PokemonBaseStats pkmn = ReadBaseStatsSingle(rom, pkmnOffset + (i * pkmnSize), InternalIndexToPokemon(i));
+                PokemonBaseStats pkmn = ReadBaseStatsSingle(rom, pkmnOffset + i * pkmnSize, InternalIndexToPokemon(i));
                 // Read name
-                pkmn.Name = namesOffset != Rom.nullPointer ? rom.ReadString(namesOffset + (i * nameLength), nameLength) : pkmn.species.ToDisplayString();
+                pkmn.Name = namesOffset != Rom.nullPointer ? rom.ReadString(namesOffset + i * nameLength, nameLength) : pkmn.species.ToDisplayString();
                 // Read Learn Set
                 movesetOffset = ReadLearnSet(rom, movesetOffset, out pkmn.learnSet);
                 // Read Tm/Hm/Mt compat
-                ReadTMHMCompat(rom, tmHmCompatOffset + (i * tmHmSize), numTms, numHms, tmHmSize, out pkmn.TMCompat, out pkmn.HMCompat);
-                ReadTutorCompat(rom, tutorCompatOffset + (i * tutorSize), numTutorMoves, tutorSize, out pkmn.moveTutorCompat);
-                ReadEvolutions(rom, evolutionOffset + (i * evolutionSize), evolutionsPerPokemon, evolutionPadding, out pkmn.evolvesTo);
-                ReadPalettes(rom, normalPaletteOffset + (i * pokemonPaletteSize), shinyPaletteOffset + (i * pokemonPaletteSize), pkmn);
+                ReadTMHMCompat(rom, tmHmCompatOffset + i * tmHmSize, numTms, numHms, tmHmSize, out pkmn.TMCompat, out pkmn.HMCompat);
+                ReadTutorCompat(rom, tutorCompatOffset + i * tutorSize, numTutorMoves, tutorSize, out pkmn.moveTutorCompat);
+                ReadEvolutions(rom, evolutionOffset + i * evolutionSize, evolutionsPerPokemon, evolutionPadding, out pkmn.evolvesTo);
+                ReadPalettes(rom, normalPaletteOffset + i * pokemonPaletteSize, shinyPaletteOffset + i * pokemonPaletteSize, pkmn);
                 pokemon.Add(pkmn);
             }
             return pokemon;
@@ -305,7 +305,7 @@ namespace PokemonRandomizer.Backend.Reading
         // Read the move tutor compatibility BitArray at offset
         private void ReadTutorCompat(Rom rom, int offset, int numMoveTutors, int tutorCompatSize, out BitArray tutCompat)
         {
-            if(numMoveTutors == 0)
+            if (numMoveTutors == 0)
             {
                 tutCompat = new BitArray(numMoveTutors);
                 return;
@@ -350,14 +350,14 @@ namespace PokemonRandomizer.Backend.Reading
         // Read the starter items
         private List<Item> ReadStarterItems(Rom rom, XmlManager info)
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
         //Read the catching tut pokemon
         private Pokemon ReadCatchingTutOpponent(Rom rom, XmlManager info)
         {
             // Currently have no idea how to actually read this so just return RALTS
             // Maybe add a constant in the ROM info later
-            return Pokemon.RALTS; 
+            return Pokemon.RALTS;
         }
 
         private List<InGameTrade> ReadInGameTrades(Rom rom, XmlManager info)
@@ -391,12 +391,12 @@ namespace PokemonRandomizer.Backend.Reading
         // Read the Trainer Class names
         private List<string> ReadTrainerClassNames(Rom rom, XmlManager info)
         {
-            if(!info.FindAndSeekOffset(ElementNames.trainerClassNames, rom))
+            if (!info.FindAndSeekOffset(ElementNames.trainerClassNames, rom))
                 return new List<string>();
             int numClasses = info.Num(ElementNames.trainerClassNames);
             int nameLength = info.Length(ElementNames.trainerClassNames);
             var classNames = new List<string>(numClasses);
-            for(int i = 0; i < numClasses; ++i)
+            for (int i = 0; i < numClasses; ++i)
             {
                 classNames.Add(rom.ReadFixedLengthString(nameLength));
             }
@@ -525,7 +525,7 @@ namespace PokemonRandomizer.Backend.Reading
             // Setup team metadata
             var teamNames = info.ArrayAttr(ElementNames.teamData, AttributeNames.elementNames);
             var allTeams = new List<VillainousTeamInfo>(2);
-            foreach(var name in teamNames)
+            foreach (var name in teamNames)
             {
                 if (!info.HasElement(name))
                 {
@@ -539,7 +539,7 @@ namespace PokemonRandomizer.Backend.Reading
                     GruntClassName = info.AttrLowerCase(name, "gruntClass")
                 };
                 var adminNames = info.ArrayAttrLowerCase(name, "adminNames");
-                if(adminNames.Length > 0)
+                if (adminNames.Length > 0)
                 {
                     teamData.AdminNames.AddRange(adminNames);
                 }
@@ -582,7 +582,7 @@ namespace PokemonRandomizer.Backend.Reading
                 else if (trainerClass == leaderClass)
                 {
                     trainer.TrainerCategory = Trainer.Category.GymLeader;
-                } 
+                }
                 else if (trainerClass == eliteFourClass)
                 {
                     trainer.TrainerCategory = Trainer.Category.EliteFour;
@@ -597,7 +597,7 @@ namespace PokemonRandomizer.Backend.Reading
                 }
                 else // See if this trainer is a member of a villainous team
                 {
-                    foreach(var team in allTeams)
+                    foreach (var team in allTeams)
                     {
                         if (team.TryProcessMember(trainer))
                         {
@@ -607,7 +607,7 @@ namespace PokemonRandomizer.Backend.Reading
                 }
             }
             // Add valid team data to ROM data
-            foreach(var team in allTeams)
+            foreach (var team in allTeams)
             {
                 if (team.TeamData.IsValid)
                 {
@@ -619,7 +619,7 @@ namespace PokemonRandomizer.Backend.Reading
         private void SetTrainerThemeOverrides(RomData data, XmlManager info)
         {
             var nameOverrides = info.ArrayAttr(ElementNames.nameTrainerTypeOverrides, AttributeNames.elementNames);
-            foreach(var nameOverride in nameOverrides)
+            foreach (var nameOverride in nameOverrides)
             {
                 string name = info.Attr(nameOverride, AttributeNames.name);
                 var types = info.TypeArrayAttr(nameOverride, AttributeNames.types);
@@ -677,13 +677,13 @@ namespace PokemonRandomizer.Backend.Reading
                 rom.SaveOffset();
 
                 #region Load the actual Encounter sets for this area
-                if(grassPtr > 0 && grassPtr < rom.Length)
+                if (grassPtr > 0 && grassPtr < rom.Length)
                 {
                     var grassPokemon = new EncounterSet(EncounterSet.Type.Grass, bank, map, rom, grassPtr, grassSlots);
                     encounters.Add(grassPokemon);
                     // TODO: Log in map
                 }
-                if(surfPtr > 0 && surfPtr < rom.Length)
+                if (surfPtr > 0 && surfPtr < rom.Length)
                 {
                     var surfPokemon = new EncounterSet(EncounterSet.Type.Surf, bank, map, rom, surfPtr, surfSlots);
                     encounters.Add(surfPokemon);
@@ -695,7 +695,7 @@ namespace PokemonRandomizer.Backend.Reading
                     encounters.Add(rockSmashPokemon);
                     // TODO: Log in map
                 }
-                if(fishPtr > 0 && fishPtr < rom.Length)
+                if (fishPtr > 0 && fishPtr < rom.Length)
                 {
                     var fishPokemon = new EncounterSet(EncounterSet.Type.Fish, bank, map, rom, fishPtr, fishSlots);
                     encounters.Add(fishPokemon);
@@ -704,7 +704,7 @@ namespace PokemonRandomizer.Backend.Reading
                 #endregion
 
                 // Load the saved offset to check the next header
-                rom.LoadOffset(); 
+                rom.LoadOffset();
             }
 
             return encounters;
@@ -717,19 +717,19 @@ namespace PokemonRandomizer.Backend.Reading
                 // TODO: log
                 return null;
             }
-            if(!info.HasElementWithAttr(ElementNames.firstEncounter, "map"))
+            if (!info.HasElementWithAttr(ElementNames.firstEncounter, "map"))
             {
                 // TODO: log
                 return null;
             }
-            if(!info.HasElementWithAttr(ElementNames.firstEncounter, "bank"))
+            if (!info.HasElementWithAttr(ElementNames.firstEncounter, "bank"))
             {
                 // TODO: log
                 return null;
             }
             int map = info.IntAttr(ElementNames.firstEncounter, "map");
             int bank = info.IntAttr(ElementNames.firstEncounter, "bank");
-            foreach(var encounter in encounters)
+            foreach (var encounter in encounters)
             {
                 if (encounter.map == map && encounter.bank == bank && encounter.type == EncounterSet.Type.Grass)
                     return encounter;
@@ -768,7 +768,7 @@ namespace PokemonRandomizer.Backend.Reading
                 return new List<ItemData>();
             int numItemDefinitions = info.Num(ElementNames.itemData);
             var itemData = new List<ItemData>(numItemDefinitions);
-            for(int i = 0; i < numItemDefinitions; ++i)
+            for (int i = 0; i < numItemDefinitions; ++i)
             {
                 var item = new ItemData
                 {
@@ -795,7 +795,7 @@ namespace PokemonRandomizer.Backend.Reading
             // If we have the offset for the item sprites, read the item sprite data
             if (!info.FindAndSeekOffset(ElementNames.itemSprites, rom))
                 return itemData;
-            foreach(var item in itemData)
+            foreach (var item in itemData)
             {
                 item.spriteOffset = rom.ReadPointer();
                 item.paletteOffset = rom.ReadPointer();
@@ -831,7 +831,7 @@ namespace PokemonRandomizer.Backend.Reading
                     {
                         item = (Item)rom.ReadUInt16(),
                         chance = rom.ReadUInt16(),
-                    }); 
+                    });
                 }
             }
             return data;

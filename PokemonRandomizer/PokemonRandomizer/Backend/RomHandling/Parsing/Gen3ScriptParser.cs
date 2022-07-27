@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace PokemonRandomizer.Backend.Reading
+namespace PokemonRandomizer.Backend.RomHandling.Parsing
 {
     using DataStructures;
     using DataStructures.Scripts;
@@ -27,12 +27,12 @@ namespace PokemonRandomizer.Backend.Reading
             {
                 visited.Add(rom.InternalOffset);
                 var command = ReadCommand(rom);
-                if(command.code == Gen3Command.end || command.code == Gen3Command.@return)
+                if (command.code == Gen3Command.end || command.code == Gen3Command.@return)
                 {
                     script.Add(command);
                     break;
                 }
-                else if(command.code == Gen3Command.@goto)
+                else if (command.code == Gen3Command.@goto)
                 {
                     var gotoCommand = new GotoCommand()
                     {
@@ -46,7 +46,7 @@ namespace PokemonRandomizer.Backend.Reading
                     }
                     break;
                 }
-                else if(command.code == Gen3Command.gotoif)
+                else if (command.code == Gen3Command.gotoif)
                 {
                     var gotoCommand = new GotoIfCommand()
                     {
@@ -60,11 +60,11 @@ namespace PokemonRandomizer.Backend.Reading
                         gotoCommand.script = Parse(rom, gotoCommand.offset, metadata, ref visited);
                     }
                 }
-                else if(command.code == Gen3Command.special)
+                else if (command.code == Gen3Command.special)
                 {
                     script.Add(ParseSpecialCommand(command, metadata));
                 }
-                else if(command.code == Gen3Command.copyvarifnotzero)
+                else if (command.code == Gen3Command.copyvarifnotzero)
                 {
                     // Check for give item multi-command
                     if (TryParseGiveItemMultiCommand(rom, command, out GiveItemCommand giveItemCommand))
@@ -90,7 +90,7 @@ namespace PokemonRandomizer.Backend.Reading
                 {
                     script.Add(ParseTrainerBattleCommand(rom, command, metadata, ref visited));
                 }
-                else if(command.code == Gen3Command.givePokemon)
+                else if (command.code == Gen3Command.givePokemon)
                 {
                     var givePokemonCommand = new GivePokemonCommand()
                     {
@@ -106,17 +106,17 @@ namespace PokemonRandomizer.Backend.Reading
                     // Add new give pokemon command
                     script.Add(givePokemonCommand);
                 }
-                else if(command.code == Gen3Command.giveEgg)
+                else if (command.code == Gen3Command.giveEgg)
                 {
                     // Add new give egg event
                     script.Add(new GiveEggCommand() { pokemon = (Pokemon)command.ArgData(0) });
                 }
-                else if(command.code == Gen3Command.pokemart || command.code == Gen3Command.pokemart2 || command.code == Gen3Command.pokemart3)
+                else if (command.code == Gen3Command.pokemart || command.code == Gen3Command.pokemart2 || command.code == Gen3Command.pokemart3)
                 {
                     // Add new poke mart event
                     script.Add(ParseShopCommand(rom, command));
                 }
-                else if(command.code == Gen3Command.setberrytree)
+                else if (command.code == Gen3Command.setberrytree)
                 {
                     script.Add(ParseBerryTreeCommand(rom, command));
                 }
@@ -145,7 +145,7 @@ namespace PokemonRandomizer.Backend.Reading
             }
             var command3 = ReadCommand(rom);
             // If the third command isn't callstd with an valid give item arg return false
-            if (command3.code != Gen3Command.callstd || (command3.ArgData(0) != CallStd.giveItemObtain && command3.ArgData(0) != CallStd.giveItemFind))
+            if (command3.code != Gen3Command.callstd || command3.ArgData(0) != CallStd.giveItemObtain && command3.ArgData(0) != CallStd.giveItemFind)
             {
                 rom.LoadOffset();
                 return false;
@@ -183,12 +183,12 @@ namespace PokemonRandomizer.Backend.Reading
                 trainerIndex = command.ArgData(1),
                 unknown = command.ArgData(2),
             };
-            if(battle.trainerType == TrainerBattleCommand.Type.ContinueScriptAfterBattle)
+            if (battle.trainerType == TrainerBattleCommand.Type.ContinueScriptAfterBattle)
             {
                 battle.defeatedTextOffset = command.ArgData(3);
                 return battle;
             }
-            if(battle.trainerType == TrainerBattleCommand.Type.ProfessorOakTutorial)
+            if (battle.trainerType == TrainerBattleCommand.Type.ProfessorOakTutorial)
             {
                 battle.defeatedTextOffset = command.ArgData(3);
                 battle.winTextOffset = command.ArgData(4);
@@ -198,7 +198,7 @@ namespace PokemonRandomizer.Backend.Reading
             battle.encounterTextOffset = command.ArgData(3);
             battle.defeatedTextOffset = command.ArgData(4);
             // Return if there are no extra arguments
-            if(battle.trainerType == TrainerBattleCommand.Type.Standard || battle.trainerType == TrainerBattleCommand.Type.Rematch)
+            if (battle.trainerType == TrainerBattleCommand.Type.Standard || battle.trainerType == TrainerBattleCommand.Type.Rematch)
             {
                 return battle;
             }
@@ -269,7 +269,7 @@ namespace PokemonRandomizer.Backend.Reading
                     _ => command,
                 };
             }
-            else if(metadata.IsEmerald)
+            else if (metadata.IsEmerald)
             {
                 return specialCode switch
                 {

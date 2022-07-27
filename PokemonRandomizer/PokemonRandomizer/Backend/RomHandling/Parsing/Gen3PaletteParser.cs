@@ -1,7 +1,7 @@
 ﻿using PokemonRandomizer.Backend.DataStructures;
 using PokemonRandomizer.Backend.Utilities;
 
-namespace PokemonRandomizer.Backend.Reading
+namespace PokemonRandomizer.Backend.RomHandling.Parsing
 {
     public class Gen3PaletteParser
     {

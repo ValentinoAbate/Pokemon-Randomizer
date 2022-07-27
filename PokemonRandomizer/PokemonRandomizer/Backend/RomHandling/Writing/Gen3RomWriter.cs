@@ -10,7 +10,7 @@ using PokemonRandomizer.Backend.Utilities.Debug;
 using PokemonRandomizer.Backend.DataStructures.Scripts;
 using PokemonRandomizer.Backend.Constants;
 
-namespace PokemonRandomizer.Backend.Writing
+namespace PokemonRandomizer.Backend.RomHandling.Writing
 {
     //This class takes a modified RomData object and converts it to a byte[]
     //to write to a file
@@ -72,7 +72,7 @@ namespace PokemonRandomizer.Backend.Writing
             // Write the pc potion item
             int pcPotionOffset = info.FindOffset(ElementNames.pcPotion, rom);
             if (pcPotionOffset != Rom.nullPointer)
-            { 
+            {
                 rom.WriteUInt16(pcPotionOffset, (int)RemapItem(data.PcStartItem));
             }
             // Write the run indoors hack if applicable
@@ -98,17 +98,17 @@ namespace PokemonRandomizer.Backend.Writing
             }
             // Apply evolve without national dex hack if supported
             // Right now, only supports level-up evolves (not evo stones)
-            if(settings.EvolveWithoutNationalDex && metadata.IsFireRedOrLeafGreen)
+            if (settings.EvolveWithoutNationalDex && metadata.IsFireRedOrLeafGreen)
             {
                 int offset = info.FindOffset(ElementNames.GenIII.evolveWithoutNatDex, rom);
-                if(offset != Rom.nullPointer)
+                if (offset != Rom.nullPointer)
                 {
                     // Get the data from the attribute
                     var byteData = info.ByteArrayAttr(ElementNames.GenIII.evolveWithoutNatDex, "data");
                     rom.WriteBlock(offset, byteData);
                 }
                 offset = info.FindOffset(ElementNames.GenIII.stoneEvolveWithoutNatDex, rom);
-                if(offset != Rom.nullPointer)
+                if (offset != Rom.nullPointer)
                 {
                     // Get the data from the attribute
                     var byteData = info.ByteArrayAttr(ElementNames.GenIII.stoneEvolveWithoutNatDex, "data");
@@ -218,7 +218,7 @@ namespace PokemonRandomizer.Backend.Writing
                     // Fix Three snow flakes spawning issue
                     rom.WriteBlock(info.HexAttr(ElementNames.GenIII.hailHack, "snowFixOffset"), new byte[] { 0x4B, 0xE0 });
                     // Fix Thee snow flakes post-battle x position issue
-                    if(info.HasElementWithAttr(ElementNames.GenIII.hailHack, "snowPostBattleFixOffset") && info.HasElementWithAttr(ElementNames.GenIII.hailHack, "snowPostBattleAsm")) 
+                    if (info.HasElementWithAttr(ElementNames.GenIII.hailHack, "snowPostBattleFixOffset") && info.HasElementWithAttr(ElementNames.GenIII.hailHack, "snowPostBattleAsm"))
                     {
                         rom.WriteBlock(info.HexAttr(ElementNames.GenIII.hailHack, "snowPostBattleFixOffset"), info.ByteArrayAttr(ElementNames.GenIII.hailHack, "snowPostBattleAsm"));
                     }
@@ -393,7 +393,7 @@ namespace PokemonRandomizer.Backend.Writing
             int movesetIndex = 0;
             int skipNum = info.IntAttr(ElementNames.pokemonBaseStats, "skip");
             // Create an empty ROM block to write the learnsetData to
-            Rom moveData = new Rom(romData.Pokemon.Sum((stats) => (stats.learnSet.Count * 2) + 2) + (skipNum * 4), rom.FreeSpaceByte);
+            Rom moveData = new Rom(romData.Pokemon.Sum((stats) => stats.learnSet.Count * 2 + 2) + skipNum * 4, rom.FreeSpaceByte);
             // If any of the movesets have changed we will have to perform repoint operations
             bool needToRelocateMoveData = romData.Pokemon.Any((stats) => stats.learnSet.Count != stats.learnSet.OriginalCount);
             // Find a block to write to in so we can log repoints if we need to
@@ -409,8 +409,8 @@ namespace PokemonRandomizer.Backend.Writing
                     moveData.WriteBlock(movesetIndex, romData.SkippedLearnSetData);
                     movesetIndex += skipNum * 4; // (don't know why this is 4, cuz move segments are variable lengths possibly terminators?)
                 }
-                var stats = romData.GetBaseStats((Pokemon)(i));
-                WriteBaseStatsSingle(stats, pkmnOffset + (i * pkmnSize), rom);
+                var stats = romData.GetBaseStats((Pokemon)i);
+                WriteBaseStatsSingle(stats, pkmnOffset + i * pkmnSize, rom);
                 // Log a repoint if necessary
                 if (needToRelocateMoveData)
                 {
@@ -426,17 +426,17 @@ namespace PokemonRandomizer.Backend.Writing
                     // Write moveset
                     movesetIndex = WriteAttacks(moveData, stats.learnSet, movesetIndex);
                 }
-                WriteTMHMCompat(stats, tmHmCompatOffset + (i * tmHmSize), rom);
-                WriteTutorCompat(stats, tutorCompatOffset + (i * tutorSize), rom);
-                WriteEvolutions(stats, evolutionOffset + (i * evolutionSize), rom);
-                WritePokemonPalettes(stats, normalPaletteOffset + (i * pokemonPaletteSize), shinyPaletteOffset + (i * pokemonPaletteSize), rom);
+                WriteTMHMCompat(stats, tmHmCompatOffset + i * tmHmSize, rom);
+                WriteTutorCompat(stats, tutorCompatOffset + i * tutorSize, rom);
+                WriteEvolutions(stats, evolutionOffset + i * evolutionSize, rom);
+                WritePokemonPalettes(stats, normalPaletteOffset + i * pokemonPaletteSize, shinyPaletteOffset + i * pokemonPaletteSize, rom);
             }
             // If we don't need to repoint move data, write it in it's original location
             if (!needToRelocateMoveData)
             {
                 rom.WriteBlock(originalMovesetOffset, moveData.File);
             }
-            else if(ableToRelocateMoveData) // else move and log repoint
+            else if (ableToRelocateMoveData) // else move and log repoint
             {
                 rom.WriteBlock((int)newMoveDataOffset, moveData.File);
                 repoints.Add(originalMovesetOffset, (int)newMoveDataOffset);
@@ -515,10 +515,10 @@ namespace PokemonRandomizer.Backend.Writing
             rom.Seek(offset);
             foreach (var evo in pokemon.evolvesTo)
             {
-                if(evo.Type == EvolutionType.UseItem)
+                if (evo.Type == EvolutionType.UseItem)
                 {
                     var item = evo.ItemParamater;
-                    if(failedItemRemaps.Contains(item))
+                    if (failedItemRemaps.Contains(item))
                     {
                         rom.WriteUInt16((int)EvolutionType.LevelUp);
                         rom.WriteUInt16(32);
@@ -558,12 +558,12 @@ namespace PokemonRandomizer.Backend.Writing
         private void WriteTypeDefinitions(TypeEffectivenessChart typeDefinitions, Rom rom, XmlManager info, ref RepointList repoints)
         {
             int typeDefinitionOffset = info.FindOffset(ElementNames.typeEffectiveness, rom);
-            if(typeDefinitionOffset == Rom.nullPointer || typeDefinitions.Count <= 0)
+            if (typeDefinitionOffset == Rom.nullPointer || typeDefinitions.Count <= 0)
             {
                 return;
             }
             #region Convert TypeChart to byte[]
-            var typeData = new List<byte>((typeDefinitions.Count * 3) + TypeEffectivenessChart.separatorSequence.Length + TypeEffectivenessChart.endSequence.Length);
+            var typeData = new List<byte>(typeDefinitions.Count * 3 + TypeEffectivenessChart.separatorSequence.Length + TypeEffectivenessChart.endSequence.Length);
             foreach (var typePair in typeDefinitions.Keys)
             {
                 typeData.Add((byte)typePair.attackingType);
@@ -585,7 +585,7 @@ namespace PokemonRandomizer.Backend.Writing
             if (typeDefinitions.Count > typeDefinitions.InitCount)
             {
                 int? newOffset = rom.WriteInFreeSpace(typeData.ToArray());
-                if(newOffset.HasValue)
+                if (newOffset.HasValue)
                 {
                     repoints.Add(typeDefinitionOffset, newOffset.Value);
                 }
@@ -792,7 +792,7 @@ namespace PokemonRandomizer.Backend.Writing
                             tmDescriptionLineLength, tmDescriptionMaxLines, tmDescriptionRemovals, tmDescriptionReplacements);
                     }
                 }
-                if(item.Description.Length == item.OriginalDescription.Length)
+                if (item.Description.Length == item.OriginalDescription.Length)
                 {
                     rom.WritePointer(item.descriptionOffset);
                     // Description may have changed even if length didn't
@@ -823,7 +823,7 @@ namespace PokemonRandomizer.Backend.Writing
         }
 
         private void WritePickupData(PickupData data, Rom rom, XmlManager info, RomMetadata metadata)
-        { 
+        {
             if (!info.FindAndSeekOffset(ElementNames.pickupItems, rom))
                 return;
             int numItems = info.Num(ElementNames.pickupItems);

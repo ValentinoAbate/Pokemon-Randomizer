@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PokemonRandomizer.Backend.Writing
+namespace PokemonRandomizer.Backend.RomHandling.Writing
 {
     using DataStructures;
     using DataStructures.Scripts;
@@ -15,13 +15,13 @@ namespace PokemonRandomizer.Backend.Writing
         }
         public void Write(Script script, Rom rom, int offset, RomMetadata metadata)
         {
-            if(script == null)
+            if (script == null)
             {
                 return;
             }
             rom.SaveOffset();
             rom.Seek(offset);
-            foreach(var command in script)
+            foreach (var command in script)
             {
                 switch (command)
                 {
@@ -74,12 +74,12 @@ namespace PokemonRandomizer.Backend.Writing
                     case SetBerryTreeCommand setBerryTreeCommand:
                         rom.WriteByte(Gen3Command.setberrytree);
                         rom.WriteByte(setBerryTreeCommand.treeId);
-                        rom.WriteByte((byte)((setBerryTreeCommand.berry + 1) - Item.Cheri_Berry));
+                        rom.WriteByte((byte)(setBerryTreeCommand.berry + 1 - Item.Cheri_Berry));
                         rom.WriteByte(setBerryTreeCommand.growthStage);
                         break;
                     case Gen3Command gen3Command:
                         rom.WriteByte(gen3Command.code);
-                        foreach(var arg in gen3Command.args)
+                        foreach (var arg in gen3Command.args)
                         {
                             switch (arg.type)
                             {
@@ -148,12 +148,12 @@ namespace PokemonRandomizer.Backend.Writing
         private void WriteShopCommand(Rom rom, ShopCommand command)
         {
             rom.WriteByte(command.code);
-            if(command.shop.items.Count <= command.shop.OriginalSize)
+            if (command.shop.items.Count <= command.shop.OriginalSize)
             {
                 rom.WritePointer(command.shopOffset);
                 // Write the shop contents
                 rom.SaveAndSeekOffset(command.shopOffset);
-                foreach(var item in command.shop.items)
+                foreach (var item in command.shop.items)
                 {
                     rom.WriteUInt16((int)remapItem(item));
                 }

@@ -2,7 +2,7 @@
 using PokemonRandomizer.Backend.EnumTypes;
 using PokemonRandomizer.Backend.Utilities;
 
-namespace PokemonRandomizer.Backend.Writing
+namespace PokemonRandomizer.Backend.RomHandling.Writing
 {
     public abstract class RomWriter
     {

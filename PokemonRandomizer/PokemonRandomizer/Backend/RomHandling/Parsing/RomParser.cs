@@ -5,7 +5,7 @@ using PokemonRandomizer.Backend.Utilities;
 using PokemonRandomizer.Backend.Utilities.Debug;
 using System.Collections.Generic;
 
-namespace PokemonRandomizer.Backend.Reading
+namespace PokemonRandomizer.Backend.RomHandling.Parsing
 {
     public abstract class RomParser
     {

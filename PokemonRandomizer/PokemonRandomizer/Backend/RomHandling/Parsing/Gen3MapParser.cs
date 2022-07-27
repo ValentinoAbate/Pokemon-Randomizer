@@ -2,8 +2,9 @@
 using PokemonRandomizer.Backend.EnumTypes;
 using PokemonRandomizer.Backend.Utilities;
 using PokemonRandomizer.Backend.Constants;
+using System;
 
-namespace PokemonRandomizer.Backend.Reading
+namespace PokemonRandomizer.Backend.RomHandling.Parsing
 {
     public class Gen3MapParser
     {
@@ -18,16 +19,16 @@ namespace PokemonRandomizer.Backend.Reading
             // Read data from XML file
             int bankPtrOffset = info.FindOffset(ElementNames.mapBankPointers, rom);
             if (bankPtrOffset == Rom.nullPointer)
-                return new Map[0][];
+                return Array.Empty<Map[]>();
             int labelOffset = info.FindOffset(ElementNames.mapLabels, rom);
             if (labelOffset == Rom.nullPointer)
-                return new Map[0][];
+                return Array.Empty<Map[]>();
             Map[][] mapBanks = new Map[info.Num(ElementNames.mapBankPointers)][];
             int[] bankLengths = info.IntArrayAttr(ElementNames.maps, "bankLengths");
             // Construct map data structures
             for (int i = 0; i < mapBanks.Length; ++i)
             {
-                int bankPtr = rom.ReadPointer(bankPtrOffset + (i * Rom.pointerSize));
+                int bankPtr = rom.ReadPointer(bankPtrOffset + i * Rom.pointerSize);
                 mapBanks[i] = ReadMapBank(rom, metadata, bankPtr, bankLengths[i], labelOffset);
             }
             return mapBanks;
@@ -37,7 +38,7 @@ namespace PokemonRandomizer.Backend.Reading
             Map[] maps = new Map[numMaps];
             for (int i = 0; i < maps.Length; ++i)
             {
-                int mapAddy = rom.ReadPointer(offset + (i * Rom.pointerSize));
+                int mapAddy = rom.ReadPointer(offset + i * Rom.pointerSize);
                 maps[i] = ReadMap(rom, metadata, mapAddy, labelOffset);
             }
             return maps;

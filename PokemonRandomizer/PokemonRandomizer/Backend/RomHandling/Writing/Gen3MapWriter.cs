@@ -4,7 +4,7 @@ using PokemonRandomizer.Backend.DataStructures;
 using PokemonRandomizer.Backend.Utilities;
 using PokemonRandomizer.Backend.Constants;
 
-namespace PokemonRandomizer.Backend.Writing
+namespace PokemonRandomizer.Backend.RomHandling.Writing
 {
     public class Gen3MapWriter
     {
@@ -30,7 +30,7 @@ namespace PokemonRandomizer.Backend.Writing
             // Construct map data structures
             for (int i = 0; i < data.MapBanks.Length; ++i)
             {
-                int bankPtr = rom.ReadPointer(bankPtrOffset + (i * Rom.pointerSize));
+                int bankPtr = rom.ReadPointer(bankPtrOffset + i * Rom.pointerSize);
                 WriteBank(data.MapBanks[i], rom, metadata, bankPtr, labelOffset);
             }
         }
@@ -42,7 +42,7 @@ namespace PokemonRandomizer.Backend.Writing
         {
             for (int i = 0; i < maps.Length; ++i)
             {
-                int mapOffset = rom.ReadPointer(bankOffset + (i * Rom.pointerSize));
+                int mapOffset = rom.ReadPointer(bankOffset + i * Rom.pointerSize);
                 WriteMap(maps[i], rom, metadata, mapOffset, labelOffset);
             }
         }
@@ -103,7 +103,7 @@ namespace PokemonRandomizer.Backend.Writing
             if (eventData.npcEventOffset != Rom.nullPointer)
             {
                 rom.Seek(eventData.npcEventOffset);
-                foreach(var npc in eventData.npcEvents)
+                foreach (var npc in eventData.npcEvents)
                 {
                     rom.WriteByte(npc.npcEventIndex);
                     rom.WriteUInt16(npc.spriteSetIndex);
@@ -160,7 +160,7 @@ namespace PokemonRandomizer.Backend.Writing
             if (eventData.signEventOffset != Rom.nullPointer)
             {
                 rom.Seek(eventData.signEventOffset);
-                foreach(var sign in eventData.signEvents)
+                foreach (var sign in eventData.signEvents)
                 {
                     rom.WriteUInt16(sign.xPos);
                     rom.WriteUInt16(sign.yPos);
@@ -174,7 +174,7 @@ namespace PokemonRandomizer.Backend.Writing
                         rom.WriteByte(sign.hiddenID);
                         rom.WriteByte(sign.hiddenItemAmount);
                     }
-                    else if(sign.signType == MapEventData.SignEvent.Type.SecretBase)
+                    else if (sign.signType == MapEventData.SignEvent.Type.SecretBase)
                     {
                         rom.WriteByte(sign.secretBaseID);
                         rom.WriteBlock(sign.unknownSecretBaseBlock);
@@ -194,7 +194,7 @@ namespace PokemonRandomizer.Backend.Writing
             rom.WritePointer(data.dataOffset);
             // TODO: allow for adding connections
             rom.Seek(data.dataOffset);
-            foreach(var connection in data.connections)
+            foreach (var connection in data.connections)
             {
                 rom.WriteUInt32((int)connection.type);
                 rom.WriteUInt32(connection.offset);

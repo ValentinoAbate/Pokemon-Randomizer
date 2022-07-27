@@ -8,7 +8,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace PokemonRandomizer.Backend.Reading
+namespace PokemonRandomizer.Backend.RomHandling.Parsing
 {
     public class Gen4RomParser : DSRomParser
     {
@@ -30,18 +30,18 @@ namespace PokemonRandomizer.Backend.Reading
                 var eggMoveData = dsFileSystem.GetArm9OverlayData(rom, info.Overlay(ElementNames.eggMoves), out int startOffset, out _);
                 ReadEggMoves(eggMoveData, startOffset + info.Offset(ElementNames.eggMoves), info, pokemon);
             }
-            else if(info.HasElementWithAttr(ElementNames.eggMoves, XmlManager.pathAttr))
+            else if (info.HasElementWithAttr(ElementNames.eggMoves, XmlManager.pathAttr))
             {
                 if (dsFileSystem.GetFile(info.Path(ElementNames.eggMoves), out int startOffset, out _))
                 {
                     ReadEggMoves(rom, startOffset + info.Offset(ElementNames.eggMoves), info, pokemon);
-                } 
+                }
             }
             // Move Tutor Compatibility
             ReadMoveTutorCompatibility(pokemon, rom, dsFileSystem, info, metadata);
             data.Pokemon = pokemon;
             var infoGen = new InfoFileGenerator();
-            foreach(var line in infoGen.GenerateInfoFile(data, metadata))
+            foreach (var line in infoGen.GenerateInfoFile(data, metadata))
             {
                 Logger.main.Info(line);
             }
@@ -62,7 +62,7 @@ namespace PokemonRandomizer.Backend.Reading
 
         private List<PokemonBaseStats> ReadPokemonBaseStats(Rom rom, DSFileSystemData dsFileSystem, XmlManager info)
         {
-            if(!dsFileSystem.GetNarcFile(rom, info.Path(ElementNames.pokemonBaseStats), out var pokemonNARC))
+            if (!dsFileSystem.GetNarcFile(rom, info.Path(ElementNames.pokemonBaseStats), out var pokemonNARC))
             {
                 return new List<PokemonBaseStats>();
             }
@@ -164,13 +164,13 @@ namespace PokemonRandomizer.Backend.Reading
             hmCompat = new BitArray(numHms);
             for (int i = 0; i < compat.Length; ++i)
             {
-                if(i < numTms)
+                if (i < numTms)
                 {
                     tmCompat.Set(i, compat[i] == 1);
                     continue;
                 }
                 int hmInd = i - numTms;
-                if(hmInd >= 0 && hmInd < numHms)
+                if (hmInd >= 0 && hmInd < numHms)
                 {
                     hmCompat.Set(hmInd, compat[i] == 1);
                 }
@@ -190,7 +190,7 @@ namespace PokemonRandomizer.Backend.Reading
             int skip = Math.Max(0, info.Size(ElementNames.tutorMoves) - 2);
             // Get overlay data
             var overlayData = dsFileSystem.GetArm9OverlayData(rom, info.Overlay(ElementNames.tutorMoves), out int startOffset, out _);
-            if(overlayData.Length <= 0)
+            if (overlayData.Length <= 0)
             {
                 return Array.Empty<Move>();
             }
@@ -207,7 +207,7 @@ namespace PokemonRandomizer.Backend.Reading
         {
             if (!info.HasElement(ElementNames.tutorMoves) || !info.HasElement(ElementNames.tutorCompat))
             {
-                foreach(var p in pokemon)
+                foreach (var p in pokemon)
                 {
                     p.moveTutorCompat = new BitArray(0);
                 }
@@ -216,7 +216,7 @@ namespace PokemonRandomizer.Backend.Reading
             Rom mtCompat;
             if (metadata.IsHGSS)
             {
-                if(!dsFileSystem.GetFile(info.Path(ElementNames.tutorCompat), out int offset, out _))
+                if (!dsFileSystem.GetFile(info.Path(ElementNames.tutorCompat), out int offset, out _))
                 {
                     Logger.main.Error($"Error reading Move Tutor Compatibility. Can't find compatiblity file");
                     foreach (var p in pokemon)
@@ -224,7 +224,7 @@ namespace PokemonRandomizer.Backend.Reading
                         p.moveTutorCompat = new BitArray(0);
                     }
                     return;
-                }           
+                }
                 mtCompat = rom;
                 mtCompat.Seek(offset);
             }
@@ -246,7 +246,7 @@ namespace PokemonRandomizer.Backend.Reading
                 rom.ReadBits(rom.InternalOffset, ref compatBuffer, numTutorMoves);
                 rom.Skip(bytesPerCompat);
                 var compat = pokemon[i].moveTutorCompat = new BitArray(numTutorMoves);
-                for(int j = 0; j < numTutorMoves; ++j)
+                for (int j = 0; j < numTutorMoves; ++j)
                 {
                     compat.Set(j, compatBuffer[j] == 1);
                 }

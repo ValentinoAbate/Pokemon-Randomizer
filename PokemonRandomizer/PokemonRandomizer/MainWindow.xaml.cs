@@ -6,15 +6,15 @@ using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Windows;
+using PokemonRandomizer.Backend.RomHandling.Parsing;
+using PokemonRandomizer.Backend.RomHandling.Writing;
 
 namespace PokemonRandomizer
 {
     using Backend.DataStructures;
     using Backend.EnumTypes;
-    using Backend.Reading;
     using Backend.Utilities;
     using Backend.Utilities.Debug;
-    using Backend.Writing;
     using PokemonRandomizer.AppSettings;
     using System.Diagnostics;
     using System.IO.Compression;
