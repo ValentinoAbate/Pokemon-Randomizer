@@ -565,7 +565,8 @@
 	<trainerClassNames pointer="0x0D8074"/>
 
 	<!-- Item Data -->
-
+	  
+    <itemSprites pointer="0x098970"/>
 	<pcPotion offset="0x40205C"/>
 	  
 	<!-- Static Pokemon -->
@@ -615,6 +616,7 @@
 
     <!-- Items -->
 
+    <itemSprites pointer="0x0989B0"/>
     <pickupItems pointer="0x02CEF8"/>
 	<pcPotion offset="0x402290"/>
 
@@ -663,6 +665,7 @@
     
     <!-- Items -->
 
+    <itemSprites pointer="0x098984"/>
 	<pcPotion offset="0x4020CC"/>
 	  
 	<!-- Static Pokemon -->
