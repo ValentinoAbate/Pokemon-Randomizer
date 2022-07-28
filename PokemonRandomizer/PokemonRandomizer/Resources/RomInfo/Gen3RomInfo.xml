@@ -406,6 +406,11 @@
 
     <inheritFrom>constants</inheritFrom>
     <freeSpace byte="0xFF" startAddy="0x800000"/>
+	  
+	<!-- Hacks and Tweaks -->
+	  
+	<evolveWithoutNationalDex signature="0x972814DD" data="[0x00,0x00,0x14,0xE0]"/>
+    <stoneEvolveWithoutNationalDex signature="0x972808D9" data="[0x00,0x00,0x08,0xE0]"/>
 
     <!-- Pokedex -->
 
@@ -468,8 +473,6 @@
 
     <runIndoors offset="0xBD494"/>
     <textSpeed offset="0x41F428"/>
-    <evolveWithoutNationalDex offset="0xCE91A" data="[0x00,0x00,0x14,0xE0]"/>
-    <stoneEvolveWithoutNationalDex signature="0x972808D9" data="[0x00,0x00,0x08,0xE0]"/>
 
     <!-- Type Data -->
 

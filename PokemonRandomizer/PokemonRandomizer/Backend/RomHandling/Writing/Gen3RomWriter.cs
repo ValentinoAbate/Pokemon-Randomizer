@@ -100,7 +100,6 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
                 ApplyHailHack(settings.HailHackSetting, rom, info);
             }
             // Apply evolve without national dex hack if supported
-            // Right now, only supports level-up evolves (not evo stones)
             if (settings.EvolveWithoutNationalDex && metadata.IsFireRedOrLeafGreen)
             {
                 int offset = info.FindOffset(ElementNames.GenIII.evolveWithoutNatDex, rom);
