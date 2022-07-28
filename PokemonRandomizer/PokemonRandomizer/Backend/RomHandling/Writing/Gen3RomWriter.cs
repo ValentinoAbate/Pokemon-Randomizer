@@ -132,7 +132,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
         private void CreateNewEvolutionStones(IEnumerable<Item> newEvolutionStones, List<ItemData> itemData, Rom rom, XmlManager info)
         {
             // Item remapping (for generating new evolution stones)
-            var blankItemsWithEffects = new Queue<int>();
+            var blankItemsWithEffects = new Queue<int>(Item.Sitrus_Berry - Item.Potion);
             for (int i = (int)Item.Potion; i < (int)Item.Sitrus_Berry; ++i)
             {
                 if (itemData[i].IsUnused)
@@ -144,7 +144,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
             itemRemaps.Clear();
             failedItemRemaps.Clear();
             int itemEffectTableOffset = info.FindOffset(ElementNames.itemEffectsTable, rom);
-            int stoneEffectOffset = info.FindOffset(ElementNames.stoneEffect, rom);
+            int stoneEffectOffset = rom.ReadPointer(itemEffectTableOffset + ItemEffectTableOffset(Item.Moon_Stone));
             if (itemEffectTableOffset != Rom.nullPointer && stoneEffectOffset != Rom.nullPointer)
             {
                 // Get the moonstone data
@@ -171,8 +171,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
                     // Add the item to the remap
                     itemRemaps.Add(item, newItemData.Item);
                     // Link the evolution stone script
-                    int tableIndex = (newItemData.Item - Item.Potion) * Rom.pointerSize;
-                    rom.WritePointer(itemEffectTableOffset + tableIndex, stoneEffectOffset);
+                    rom.WritePointer(itemEffectTableOffset + ItemEffectTableOffset(newItemData.Item), stoneEffectOffset);
                 }
             }
             else
@@ -183,6 +182,8 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
                 }
             }
         }
+
+        private static int ItemEffectTableOffset(Item item) => (item - Item.Potion) * Rom.pointerSize;
 
         private void ApplyHailHack(Settings.HailHackOption option, Rom rom, XmlManager info)
         {

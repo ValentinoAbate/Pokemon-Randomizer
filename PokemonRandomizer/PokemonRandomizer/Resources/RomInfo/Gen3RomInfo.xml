@@ -163,7 +163,6 @@
     <itemDefinitions pointer="0x0001C8" num="377"/>
     <itemSprites pointer="0x1B0034"/>
     <itemEffectsTable offset="0x31E58C"/>
-    <stoneEffect offset="0x31E6D0"/>
     <itemEvents spriteSetIndex="59"/>
     <pickupItems pointer="0x055DF4" num="18"/>
     <pickupRareItems pointer="0x055D2C" num="11"/>
@@ -299,6 +298,7 @@
 	<!-- Item Data -->
 	  
 	<itemDefinitions pointer="0x0A98F0"/>
+    <itemEffectsTable offset="0x1FCDE4"/>
 	<pcPotion offset="0x4062F0"/>
     <setBerryTreeScript offset="0x19F940"/>
   </AXVE0>
@@ -317,6 +317,7 @@
 
 	<!-- Item Data -->
 
+    <itemEffectsTable offset="0x1FCD74"/>
 	<pcPotion offset="0x406348"/>
 	<setBerryTreeScript offset="0x19F960"/>
   </AXPE0>
@@ -369,6 +370,7 @@
 	<!-- Item Data -->
 
 	<itemDefinitions pointer="0x0A9910"/>
+    <itemEffectsTable offset="0x1FCDFC"/>
 	<pcPotion offset="0x40630C"/>
     <setBerryTreeScript offset="0x19F8D0"/>
   </AXVE1>
@@ -387,6 +389,7 @@
 
 	<!-- Item Data -->
 
+    <itemEffectsTable offset="0x1FCD8C"/>
 	<pcPotion offset="0x406368"/>
     <setBerryTreeScript offset="0x19F8F0"/>
   </AXPE1>
@@ -509,7 +512,6 @@
 
     <itemSprites pointer="0x09899C"/>
     <itemEffectsTable offset="0x2528BC"/>
-    <stoneEffect offset="0x252856"/>
     <itemEvents spriteSetIndex="92"/>
     <pickupItems pointer="0x02CEE4"/>
 
@@ -567,6 +569,7 @@
 	<!-- Item Data -->
 	  
     <itemSprites pointer="0x098970"/>
+    <itemEffectsTable offset="0x252898"/>
 	<pcPotion offset="0x40205C"/>
 	  
 	<!-- Static Pokemon -->
@@ -617,6 +620,7 @@
     <!-- Items -->
 
     <itemSprites pointer="0x0989B0"/>
+    <itemEffectsTable offset="0x25292C"/>
     <pickupItems pointer="0x02CEF8"/>
 	<pcPotion offset="0x402290"/>
 
@@ -666,6 +670,7 @@
     <!-- Items -->
 
     <itemSprites pointer="0x098984"/>
+    <itemEffectsTable offset="0x252908"/>
 	<pcPotion offset="0x4020CC"/>
 	  
 	<!-- Static Pokemon -->
