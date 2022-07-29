@@ -10,7 +10,7 @@ Procedural Pokemon Randomizer is a Pokemon randomizer I'm creating as a fun side
 	- Reoccuring trainer logic: trainers that you see multiple times (like rivals, etc.) will raise a team that keeps members but grows and evolves over the course of the game
 	- Battle type randomization: randomize the battle type of trainers you encounter! I prefer all double battles.
 	- Trainer settings per trainer category: Use different randomization settings for Gym Leaders, Ace Trainers, Team Leaders, and more!
-	- The Dunsparse Plague: anything can evolve into Dunspare... half of the time. Affects NPCs too!
+	- The Dunsparse Plague: anything can evolve into Dunsparse... half of the time. Affects NPCs too!
 	- Bonus Moves: add bonus moves to pokemon movesets at a level that makes sense. Can draw moves from the pokemon's egg moves or make a random choice!
 	- ...And much more!
 
