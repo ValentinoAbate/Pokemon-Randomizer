@@ -44,7 +44,7 @@ namespace PokemonRandomizer
             }
         }
 
-        public static bool LogNotEmpty => Logger.main.Count > 0;
+        public bool LogNotEmpty => Logger.main.Count > 0;
 
         #endregion
 
