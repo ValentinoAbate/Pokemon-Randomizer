@@ -41,7 +41,10 @@ namespace PokemonRandomizer.Backend.DataStructures
         public bool IsFireRedOrLeafGreen => Gen == Generation.III && (MatchCode(gameCodeFr) || MatchCode(gameCodeLg));
         public bool IsFireRed => Gen == Generation.III && MatchCode(gameCodeFr);
         public bool IsRubySapphireOrEmerald => Gen == Generation.III && (MatchCode(gameCodeEm) || MatchCode(gameCodeRu) || MatchCode(gameCodeSp));
+        public bool IsRubyOrSapphire => Gen == Generation.III && (MatchCode(gameCodeRu) || MatchCode(gameCodeSp));
         public bool IsEmerald => Gen == Generation.III && MatchCode(gameCodeEm);
+        public bool IsRuby => Gen == Generation.III && MatchCode(gameCodeRu);
+        public bool IsSapphire => Gen == Generation.III && MatchCode(gameCodeSp);
         public bool IsPlatinum => Gen == Generation.IV && MatchCode(gameCodePlatinum);
         public bool IsHGSS => Gen == Generation.IV && (MatchCode(gameCodeHg) || MatchCode(gameCodeSs));
         public Generation Gen { get; private set; }

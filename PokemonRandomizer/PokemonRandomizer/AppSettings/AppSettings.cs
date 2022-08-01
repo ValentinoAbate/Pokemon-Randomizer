@@ -335,7 +335,7 @@ namespace PokemonRandomizer.AppSettings
             {
                 if (Metadata == null || WeatherSetting == WeatherOption.Unchanged)
                     return HailHackOption.None;
-                if (Metadata.IsEmerald)
+                if (Metadata.IsEmerald || (Metadata.IsRuby && Metadata.Version == 0))
                     return HailHackOption.Snow;
                 if (Metadata.IsFireRedOrLeafGreen)
                     return HailHackOption.Both;
