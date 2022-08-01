@@ -317,7 +317,7 @@
 
     <itemEffectsTable offset="0x1FCD74"/>
 	<pcPotion offset="0x406348"/>
-	<setBerryTreeScript offset="0x19F960"/>
+	<setBerryTreeScript offset="0x19F8D0"/>
   </AXPE0>
 
   
@@ -370,7 +370,7 @@
 	<itemDefinitions pointer="0x0A9910"/>
     <itemEffectsTable offset="0x1FCDFC"/>
 	<pcPotion offset="0x40630C"/>
-    <setBerryTreeScript offset="0x19F8D0"/>
+    <setBerryTreeScript offset="0x19F960"/>
   </AXVE1>
   <AXPE1>
     <!-- Metadata -->
