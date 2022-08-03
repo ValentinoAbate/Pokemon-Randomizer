@@ -9,6 +9,7 @@ namespace PokemonRandomizer.UI.Views
     {
         private const string easyRivalBattleTooltip = "Sets the first rival battle to have level 1 pokemon. Useful for randomized starters (this battle must be cleared in RSE)";
         private const string evolveWithoutNatDexTooltip = "Allow pokemon to evolve without needing national dex in FRLG";
+        private const string mewDeoxysObeyTooltip = "FRLG and Emerald have a special check that makes Mew and Deoxys that aren't recieved from events disobey in battle. This fix removes that mechanic";
         public MiscDataView(MiscDataModel model, RomMetadata metadata)
         {
             // Create stack and add content
@@ -35,6 +36,11 @@ namespace PokemonRandomizer.UI.Views
             {
                 stack.Header("Fire Red and Leaf Green Options");
                 stack.Add(new BoundCheckBoxUI(model.EvolveWithoutNationalDex, "Evolve Without National Dex") { ToolTip = evolveWithoutNatDexTooltip });
+            }
+            if(metadata.IsFireRedOrLeafGreen || metadata.IsEmerald)
+            {
+                stack.Header("Fire Red, Leaf Green, and Emerald Options");
+                stack.Add(new BoundCheckBoxUI(model.DeoxysMewObeyFix, "Fix Mew and Deoxys Obedience Issues") { ToolTip = mewDeoxysObeyTooltip });
             }
         }
     }

@@ -456,6 +456,9 @@ namespace PokemonRandomizer
         // RSE Hacks and Tweaks
         public abstract bool EasyFirstRivalBattle { get; }
 
+        // FRLG + E Hacks and Tweaks
+        public abstract bool DeoxysMewObeyFix { get; }
+
         // Randomizer Settings
         public abstract bool CountRelicanthAsFossil { get; }
 

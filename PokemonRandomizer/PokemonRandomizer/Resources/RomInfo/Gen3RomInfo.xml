@@ -15,8 +15,12 @@
   <!-- Gen III Constants -->
   <!-- Data in here should be assumed to be constant for all of gen III, or constant to FRLG+E, in which case they will be overridden in rsConstants -->
   <constants>
-    <!-- from dabomstew's UP randomizer source https://github.com/Dabomstew/universal-pokemon-randomizer -->
-    <wildPokemon pointerPrefix="0x0348048009E00000FFFF0000" grassSlots="12" surfSlots="5" rockSmashSlots="5" fishSlots="10"/>
+	<!-- Hacks and Tweaks -->
+	  
+	<!-- Constant for FRLG+E (Doesn't apply to R/S, so the fix will not even be attempted for these games) -->
+	<deoxysMewObeyFix signature="0xCD21490088420FD0" mewOffset="0x16"/>
+	  
+
     <pokedexOrder pointerPrefix="0x0448814208D0481C0004000C05E00000"/>
     
     <!-- Type Data -->
@@ -58,6 +62,8 @@
     <pokemonPalettes pointer="0x000130" size="8"/>
     <!-- Constant for FRLG+E (R/S will override) -->
     <pokemonPalettesShiny pointer="0x000134" size="8"/>
+    <!-- from dabomstew's UP randomizer source https://github.com/Dabomstew/universal-pokemon-randomizer -->
+    <wildPokemon pointerPrefix="0x0348048009E00000FFFF0000" grassSlots="12" surfSlots="5" rockSmashSlots="5" fishSlots="10"/>
 
     <!-- Map Data -->
     

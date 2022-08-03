@@ -62,6 +62,7 @@
             public const string evolveWithoutNatDex = "evolveWithoutNationalDex";
             public const string stoneEvolveWithoutNatDex = "stoneEvolveWithoutNationalDex";
             public const string hailHack = "hailHack";
+            public const string deoxysMewObeyFix = "deoxysMewObeyFix";
         }
 
         public abstract class GenIV

@@ -117,6 +117,10 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
                     rom.WriteBlock(offset, byteData);
                 }
             }
+            if (settings.DeoxysMewObeyFix && (metadata.IsEmerald || metadata.IsFireRedOrLeafGreen))
+            {
+                ApplyDeoxysMewObeyFix(rom, info);
+            }
 
             // Perform all of the repoint operations
             rom.RepointMany(repoints);
@@ -233,6 +237,34 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
             {
                 Logger.main.Error("Failed to write hail hack routine in free space. Hail hack will not be applied");
             }
+        }
+
+        private void ApplyDeoxysMewObeyFix(Rom rom, XmlManager info)
+        {
+            int deoxysCheckOffset = info.FindOffset(ElementNames.GenIII.deoxysMewObeyFix, rom);
+            if(deoxysCheckOffset == Rom.nullPointer)
+            {
+                Logger.main.Error("Attempting to apply deoxys/mew obey fix, but could not find the proper offset. Fix will not be applied");
+                return;
+            }
+            rom.Seek(deoxysCheckOffset);
+            // Use the glitch pokemon index (0x00) instead of deoxys
+            rom.WriteByte(0x00);
+            rom.WriteByte(Gen3Opcodes.setRegister | Gen3Opcodes.reg1);
+            // 2nd repetition is esxsentially nop to clear the commands that use to be here
+            rom.WriteByte(0x00);
+            rom.WriteByte(Gen3Opcodes.setRegister | Gen3Opcodes.reg1);
+            // Skip to the mew check
+            rom.Seek(deoxysCheckOffset + info.HexAttr(ElementNames.GenIII.deoxysMewObeyFix, "mewOffset"));
+            // Change mew check to glitch pokemon check
+            int mewCheck = ((Gen3Opcodes.cmpRegister | Gen3Opcodes.reg0) << 8) | (PokemonToInternalIndex(Pokemon.MEW));
+            if (rom.ReadUInt16(rom.InternalOffset) != mewCheck)
+            {
+                Logger.main.Error("Attempting to apply deoxys/mew obey fix, mew check was not found where it was expected. Only deoxys will be fixed");
+                return;
+            }
+            int glitchPokemonCheck = ((Gen3Opcodes.cmpRegister | Gen3Opcodes.reg0) << 8) | (0x00);
+            rom.WriteUInt16(glitchPokemonCheck);
         }
 
         private void WriteMoveData(List<MoveData> data, Rom rom, XmlManager info, ref RepointList repoints)

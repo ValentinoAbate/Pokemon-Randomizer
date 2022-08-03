@@ -394,6 +394,9 @@ namespace PokemonRandomizer.AppSettings
         // RSE Hacks and Tweaks
         public override bool EasyFirstRivalBattle => true;
 
+        // FRLG + E Hacks and Tweaks
+        public override bool DeoxysMewObeyFix => true;
+
         // Randomizer Settings
         public override bool CountRelicanthAsFossil => true;
 
