@@ -193,7 +193,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
                 return;
             }
             // Hail Weather Hack. Makes the weather types "steady snow" and "three snowflakes" cause hail in battle
-            // Hack routine compiled from bluRose's ASM routine. Thanks blueRose (https://www.pokecommunity.com/member.php?u=471720)!
+            // Hack routine for FR 1.0 and Emerald compiled from bluRose's ASM routine. Thanks blueRose (https://www.pokecommunity.com/member.php?u=471720)!
             // Emerald offsets from Panda Face (https://www.pokecommunity.com/member.php?u=660920)
             // Three snow flake spawning issue fix from ShinyDragonHunter (https://www.pokecommunity.com/member.php?u=241758)
             // Thread with all relevant posts: https://www.pokecommunity.com/showthread.php?t=351387&page=2
