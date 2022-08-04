@@ -113,6 +113,12 @@ namespace PokemonRandomizer.Backend.Randomization
                             shopCommand.shop.items.Add(settings.CustomMartItem);
                         }
                         break;
+                    case SetWeatherCommand setWeatherCommand:
+                        if(args.map != null && args.map.OriginalWeather != args.map.weather && setWeatherCommand.weather == args.map.OriginalWeather)
+                        {
+                            setWeatherCommand.weather = args.map.weather;
+                        }
+                        break;
                 }
             }
         }
@@ -136,6 +142,7 @@ namespace PokemonRandomizer.Backend.Randomization
             public HashSet<Pokemon> fossilSet;
             public HashSet<Pokemon> babySet;
             public GymMetadata gymMetadata;
+            public Map map;
             public bool IsGym => gymMetadata != null;
         }
     }

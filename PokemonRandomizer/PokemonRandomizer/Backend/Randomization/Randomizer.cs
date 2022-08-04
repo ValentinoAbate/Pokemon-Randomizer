@@ -549,8 +549,25 @@ namespace PokemonRandomizer.Backend.Randomization
                     continue;
                 // Randomize Weather
                 weatherRand.RandomizeWeather(map, settings);
+
+                // Set Proper metadata on script randomizer arguments arg
+                if (map.IsGym)
+                {
+                    // If the dictionary already contains the map name, it means this is a multi-map gym
+                    if (!gymMetadataDict.ContainsKey(map.Name))
+                    {
+                        gymMetadataDict.Add(map.Name, new GymMetadata());
+                    }
+                    scriptRandomizationArgs.gymMetadata = gymMetadataDict[map.Name];
+                }
+                else
+                {
+                    scriptRandomizationArgs.gymMetadata = null;
+                }
+                scriptRandomizationArgs.map = map;
+
                 // Randomize Hidden Items
-                foreach(var sEvent in map.eventData.signEvents)
+                foreach (var sEvent in map.eventData.signEvents)
                 {
                     if(sEvent.IsHiddenItem)
                     {
@@ -566,21 +583,6 @@ namespace PokemonRandomizer.Backend.Randomization
                             delayedRandomizationCalls.Add(() => sEvent.hiddenItem = itemRand.RandomItem(items, sEvent.hiddenItem, settings.FieldItemSettings));
                         }
                     }
-                }
-
-                // Set Proper metadata on script randomizer arguments arg
-                if (map.IsGym)
-                {
-                    // If the dictionary already contains the map name, it means this is a multi-map gym
-                    if (!gymMetadataDict.ContainsKey(map.Name))
-                    {
-                        gymMetadataDict.Add(map.Name, new GymMetadata());
-                    }
-                    scriptRandomizationArgs.gymMetadata = gymMetadataDict[map.Name];
-                }
-                else
-                {
-                    scriptRandomizationArgs.gymMetadata = null;
                 }
 
                 // Randomize NPCs

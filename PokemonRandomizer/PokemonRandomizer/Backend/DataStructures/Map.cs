@@ -165,6 +165,13 @@
 
         public bool HasClearWeather => weather == Weather.Clear || weather == Weather.Cloudy || weather == Weather.House;
 
+        public Weather OriginalWeather { get; private set; }
+
+        public void SetOriginalValues()
+        {
+            OriginalWeather = weather;
+        }
+
         public override string ToString()
         {
             return Name ?? "Error: no name";

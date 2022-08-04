@@ -26,7 +26,11 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
             while (true)
             {
                 visited.Add(rom.InternalOffset);
-                var command = ReadCommand(rom);
+                var command = ReadCommand(rom, out bool knownCommand);
+                if (!knownCommand)
+                {
+                    break;
+                }
                 if (command.code == Gen3Command.end || command.code == Gen3Command.@return)
                 {
                     script.Add(command);
@@ -120,6 +124,10 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
                 {
                     script.Add(ParseBerryTreeCommand(rom, command));
                 }
+                else if (command.code == Gen3Command.setweather)
+                {
+                    script.Add(new SetWeatherCommand() { weather = (Map.Weather)command.ArgData(0) });
+                }
                 else // Not a special code, just push the command
                 {
                     script.Add(command);
@@ -136,14 +144,14 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
             if (command1.ArgData(0) != Gen3Command.itemTypeVar || rom.Peek() == Gen3Command.end)
                 return false;
             rom.SaveOffset();
-            var command2 = ReadCommand(rom);
+            var command2 = ReadCommand(rom, out _);
             // If the second command copyvarifnotzero with a target of var 0x8001 return false
             if (command2.code != Gen3Command.copyvarifnotzero || command2.ArgData(0) != Gen3Command.itemQuantityVar)
             {
                 rom.LoadOffset();
                 return false;
             }
-            var command3 = ReadCommand(rom);
+            var command3 = ReadCommand(rom, out _);
             // If the third command isn't callstd with an valid give item arg return false
             if (command3.code != Gen3Command.callstd || command3.ArgData(0) != CallStd.giveItemObtain && command3.ArgData(0) != CallStd.giveItemFind)
             {
@@ -284,15 +292,17 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
         /// <summary>
         /// Read a raw command from the ROM
         /// </summary>
-        private Gen3Command ReadCommand(Rom rom)
+        private Gen3Command ReadCommand(Rom rom, out bool success)
         {
             var command = new Gen3Command() { code = rom.ReadByte() };
             if (!Gen3Command.commandMap.ContainsKey(command.code))
             {
                 Logger.main.Error($"Unrecognized script command code: {command.code:x2}");
+                success = false;
                 return command;
             }
             ReadArgs(ref command, rom, Gen3Command.commandMap[command.code]);
+            success = true;
             return command;
         }
 
