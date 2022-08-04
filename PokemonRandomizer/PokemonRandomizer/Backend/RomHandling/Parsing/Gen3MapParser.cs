@@ -100,6 +100,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
 
             #endregion
 
+            map.SetOriginalValues();
             rom.LoadOffset();
             return map;
         }
@@ -194,7 +195,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
                 rom.Seek(eventData.triggerEventOffset);
                 for (int i = 0; i < eventData.numTriggerEvents; i++)
                 {
-                    eventData.triggerEvents.Add(new MapEventData.TriggerEvent
+                    var trigger = new MapEventData.TriggerEvent
                     {
                         xPos = rom.ReadUInt16(),
                         yPos = rom.ReadUInt16(),
@@ -203,7 +204,12 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
                         variableValue = rom.ReadUInt16(),
                         unknownUInt162 = rom.ReadUInt16(),
                         scriptOffset = rom.ReadPointer(),
-                    });
+                    };
+                    if (trigger.scriptOffset != Rom.nullPointer)
+                    {
+                        trigger.script = scriptParser.Parse(rom, trigger.scriptOffset, metadata);
+                    }
+                    eventData.triggerEvents.Add(trigger);
                 }
             }
             // Read Sign Events

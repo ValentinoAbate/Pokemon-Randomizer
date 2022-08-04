@@ -106,6 +106,7 @@ namespace PokemonRandomizer.Backend.DataStructures
 			public int variableValue;
 			public int unknownUInt162;
 			public int scriptOffset;
+			public Script script;
 		}
 	}
 }

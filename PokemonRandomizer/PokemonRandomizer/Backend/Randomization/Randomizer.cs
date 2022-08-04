@@ -592,6 +592,15 @@ namespace PokemonRandomizer.Backend.Randomization
                         scriptRand.RandomizeScript(npc.script, settings, scriptRandomizationArgs);
                     }
                 }
+
+                // Randomize Trigger Events
+                foreach (var trigger in map.eventData.triggerEvents)
+                {
+                    if(trigger.script != null)
+                    {
+                        scriptRand.RandomizeScript(trigger.script, settings, scriptRandomizationArgs);
+                    }
+                }
             }
             #endregion
 

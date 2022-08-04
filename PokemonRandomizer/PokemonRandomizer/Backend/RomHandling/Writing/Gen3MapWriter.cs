@@ -154,6 +154,10 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
                     rom.WriteUInt16(trigger.variableValue);
                     rom.WriteUInt16(trigger.unknownUInt162);
                     rom.WritePointer(trigger.scriptOffset);
+                    if (trigger.script != null)
+                    {
+                        scriptWriter.Write(trigger.script, rom, trigger.scriptOffset, metadata);
+                    }
                 }
             }
             // Write Sign Events
