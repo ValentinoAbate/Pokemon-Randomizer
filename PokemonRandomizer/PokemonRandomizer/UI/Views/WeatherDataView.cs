@@ -40,9 +40,12 @@ namespace PokemonRandomizer.UI.Views
             new WeightedSetUI<Weather>.MenuBoxItem { Item = Weather.Rain, Header="Rain"},
             new WeightedSetUI<Weather>.MenuBoxItem { Item = Weather.RainThunderstorm, Header="Thunderstorm"},
             new WeightedSetUI<Weather>.MenuBoxItem { Item = Weather.RainHeavyThunderstrorm, Header="Heavy Thunderstorm"},
+            new WeightedSetUI<Weather>.MenuBoxItem { Item = Weather.RainSometimes1, Header="Rain (Sometimes) #1"},
+            new WeightedSetUI<Weather>.MenuBoxItem { Item = Weather.RainSometimes2, Header="Rain (Sometimes) #2"},
             new WeightedSetUI<Weather>.MenuBoxItem { Item = Weather.StrongSunlight, Header="Strong Sunlight"},
             new WeightedSetUI<Weather>.MenuBoxItem { Item = Weather.Sandstorm, Header="Sandstorm"},
-            new WeightedSetUI<Weather>.MenuBoxItem { Item = Weather.Snow, Header="Snow", ToolTip = "For supported games (Emerald), will look nicer and affect in-battle weather"},
+            new WeightedSetUI<Weather>.MenuBoxItem { Item = Weather.Snow, Header="Snow"},
+            new WeightedSetUI<Weather>.MenuBoxItem { Item = Weather.Chaos, Header="Alternating Rain and Strong Sunlight (Emerald Only)"},
         };
     }
 }

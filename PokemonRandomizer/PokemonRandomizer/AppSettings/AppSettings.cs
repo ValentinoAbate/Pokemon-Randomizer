@@ -343,6 +343,19 @@ namespace PokemonRandomizer.AppSettings
             }
         }
 
+        public override WeightedSet<Map.Weather> WeatherWeights
+        {
+            get
+            {
+                var weights = base.WeatherWeights;
+                if (!Metadata.IsEmerald)
+                {
+                    weights.RemoveIfContains(Map.Weather.Chaos);
+                }
+                return weights;
+            }
+        }
+
         #endregion
 
         #region Items

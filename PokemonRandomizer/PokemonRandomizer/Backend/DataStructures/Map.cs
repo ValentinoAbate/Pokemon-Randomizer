@@ -31,15 +31,24 @@
             Cloudy,
             StrongSunlight,
             RainHeavyThunderstrorm,
-            UnderwaterMist,             /// 0x0C: Underground flashes (Strong sunlight in battle),
-                                        /// 0x0F - 0xFF: Unknown/unused,
+            UnderwaterMist,
+            Chaos,                    // Groudon / Kyogre weather cycle (Emerald Only)
+            RainSometimes1 = 20,      // Used in Route 119, clear 1/4 days, rain 2/4 days, and thunder 1/4 days
+            RainSometimes2 = 21       // Used in Hoenn Route 123
         }
 
         public static bool WeatherAffectsBattle(Weather w, Settings.HailHackOption hailHack)
         {
-            return w == Weather.Rain || w == Weather.RainThunderstorm || w == Weather.RainHeavyThunderstrorm ||
-                w == Weather.Sandstorm || w == Weather.StrongSunlight || (w == Weather.Snow && hailHack.HasFlag(Settings.HailHackOption.Snow)) ||
-                (w == Weather.SnowSteady && hailHack.HasFlag(Settings.HailHackOption.SteadySnow));
+            if(w is Weather.SnowSteady)
+            {
+                return hailHack.HasFlag(Settings.HailHackOption.SteadySnow);
+            }
+            else if(w is Weather.Snow)
+            {
+                return hailHack.HasFlag(Settings.HailHackOption.Snow);
+            }
+            return w is Weather.Rain or Weather.RainThunderstorm or Weather.RainHeavyThunderstrorm or Weather.Sandstorm
+                or Weather.StrongSunlight or Weather.Chaos or Weather.RainSometimes1 or Weather.RainSometimes2;
         }
 
 

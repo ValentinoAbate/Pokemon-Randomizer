@@ -112,8 +112,8 @@ namespace PokemonRandomizer.Backend.DataStructures
 				{ Map.Weather.Sandstorm, 9 },
 				{ Map.Weather.Cloudy, 10 },
 				{ Map.Weather.StrongSunlight, 11 },
-				// COORD_EVENT_WEATHER_ROUTE119_CYCLE      20
-				// COORD_EVENT_WEATHER_ROUTE123_CYCLE      21
+				{ Map.Weather.RainSometimes1, 20 },
+				{ Map.Weather.RainSometimes2, 21 },
 			};
 			private static readonly Dictionary<int, Map.Weather> internalToWeather;
 			static TriggerEvent()

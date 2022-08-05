@@ -330,23 +330,29 @@ namespace PokemonRandomizer.AppSettings
         };
         protected override WeightedSet<Map.Weather> CustomWeatherWeights { get; } = new WeightedSet<Map.Weather>
         {
-            { Map.Weather.Rain, 0.85f },
+            { Map.Weather.Rain, 0.75f },
             { Map.Weather.RainThunderstorm, 0.125f },
             { Map.Weather.RainHeavyThunderstrorm, 0.025f },
             { Map.Weather.Snow, 0.85f },
             { Map.Weather.SnowSteady, 0.1f },
             { Map.Weather.StrongSunlight, 0.7f },
             { Map.Weather.Sandstorm, 0.85f },
+            { Map.Weather.Chaos, 0.25f },
+            { Map.Weather.RainSometimes1, 0.05f },
+            { Map.Weather.RainSometimes2, 0.05f },
         };
         protected override WeightedSet<Map.Weather> BattleWeatherBalancedWeights { get; } = new WeightedSet<Map.Weather>
         {
-            { Map.Weather.Rain, 0.85f },
+            { Map.Weather.Rain, 0.75f },
             { Map.Weather.RainThunderstorm, 0.125f },
             { Map.Weather.RainHeavyThunderstrorm, 0.025f },
             { Map.Weather.Snow, 0.85f },
             { Map.Weather.SnowSteady, 0.1f },
             { Map.Weather.StrongSunlight, 0.7f },
             { Map.Weather.Sandstorm, 0.85f },
+            { Map.Weather.Chaos, 0.25f },
+            { Map.Weather.RainSometimes1, 0.05f },
+            { Map.Weather.RainSometimes2, 0.05f },
         };
 
         #endregion

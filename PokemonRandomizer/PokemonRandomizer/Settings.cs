@@ -382,7 +382,7 @@ namespace PokemonRandomizer
         /// Weighting for each weather type. Depenend on the current weather setting
         /// May split weather settings by map type
         /// </summary>
-        public WeightedSet<Map.Weather> WeatherWeights 
+        public virtual WeightedSet<Map.Weather> WeatherWeights 
         { 
             get
             {
