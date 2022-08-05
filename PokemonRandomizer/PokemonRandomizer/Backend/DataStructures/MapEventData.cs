@@ -99,6 +99,42 @@ namespace PokemonRandomizer.Backend.DataStructures
 
 		public class TriggerEvent
         {
+			private static readonly Dictionary<Map.Weather, int> weatherToInternal = new()
+			{
+				{ Map.Weather.ClearWithCloudsInWater, 1 },
+				{ Map.Weather.Clear, 2 },
+				{ Map.Weather.Rain, 3 },
+				{ Map.Weather.Snow, 4 },
+				{ Map.Weather.RainThunderstorm, 5 },
+				{ Map.Weather.MistSteady, 6 },
+				{ Map.Weather.MistFromTopRight, 7 },
+				{ Map.Weather.SnowSteady, 8 },
+				{ Map.Weather.Sandstorm, 9 },
+				{ Map.Weather.Cloudy, 10 },
+				{ Map.Weather.StrongSunlight, 11 },
+				// COORD_EVENT_WEATHER_ROUTE119_CYCLE      20
+				// COORD_EVENT_WEATHER_ROUTE123_CYCLE      21
+			};
+			private static readonly Dictionary<int, Map.Weather> internalToWeather;
+			static TriggerEvent()
+            {
+				internalToWeather = new(weatherToInternal.Count);
+				foreach(var kvp in weatherToInternal)
+                {
+					internalToWeather[kvp.Value] = kvp.Key;
+                }
+            }
+			public bool IsWeatherTrigger => scriptOffset == Rom.nullPointer || script == null;
+			public Map.Weather Weather
+            {
+				get => IsWeatherTrigger && internalToWeather.ContainsKey(variableIndex) ? internalToWeather[variableIndex] : Map.Weather.House;
+                set
+                {
+					if (!IsWeatherTrigger || !weatherToInternal.ContainsKey(value))
+						return;
+					variableIndex = weatherToInternal[value];
+                }
+            }
 			public int xPos;
 			public int yPos;
 			public int unknownUInt16;
