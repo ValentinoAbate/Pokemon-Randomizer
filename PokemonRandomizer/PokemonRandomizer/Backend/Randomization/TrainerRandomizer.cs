@@ -119,7 +119,7 @@ namespace PokemonRandomizer.Backend.Randomization
             {
                 return;
             }
-            for (int i = 0; i < bonusPokemon && trainer.Pokemon.Count <= Trainer.maxPokemon; i++)
+            for (int i = 0; i < bonusPokemon && trainer.Pokemon.Count < Trainer.maxPokemon; i++)
             {
                 trainer.Pokemon.Add(new TrainerPokemon(trainer.Pokemon[^1]));
             }
