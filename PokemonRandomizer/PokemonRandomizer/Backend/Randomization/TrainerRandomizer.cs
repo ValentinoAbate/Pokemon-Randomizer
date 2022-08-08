@@ -33,15 +33,16 @@ namespace PokemonRandomizer.Backend.Randomization
 
         #region Trainer Randomization
 
-        private void RandomizeTrainerPokemon(Trainer trainer, IEnumerable<Pokemon> pokemonSet, PokemonSettings settings)
+        private void RandomizeTrainerPokemon(Trainer trainer, IEnumerable<Pokemon> pokemonSet, PokemonSettings settings, WeightedSet<PokemonType> typeOccurence, int? startIndex = null, int? endIndex = null)
         {
-            // Class based?
-            // Local environment based
-            // Get type sample
+            // Get type sample if necessary
+            var partyTypeOccurence = typeOccurence ?? GetTrainerTypeOccurence(trainer);
             bool useTheming = shouldApplyTheming(trainer.TrainerCategory);
-            var partyTypeOccurence = useTheming ? PokemonMetrics.TypeOccurence(trainer.Pokemon.Select(p => dataT.GetBaseStats(p.species))) : null;
-            foreach (var pokemon in trainer.Pokemon)
+            // Set ending index
+            endIndex ??= trainer.Pokemon.Count;
+            for (int i = startIndex ?? 0; i < endIndex; i++)
             {
+                var pokemon = trainer.Pokemon[i];
                 // Chose pokemon
                 var metrics = useTheming ? CreatePokemonMetrics(trainer, pokemonSet, pokemon.species, partyTypeOccurence, settings.Data) : Enumerable.Empty<Metric<Pokemon>>();
                 pokemon.species = pokeRand.RandomPokemon(pokemonSet, pokemon.species, metrics, settings, pokemon.level);
@@ -52,6 +53,11 @@ namespace PokemonRandomizer.Backend.Randomization
                     pokemon.moves = movesetGenerator.SmartMoveSet(dataT.GetBaseStats(pokemon.species), pokemon.level);
                 }
             }
+        }
+
+        private void RandomizeTrainerPokemon(Trainer trainer, IEnumerable<Pokemon> pokemonSet, PokemonSettings settings, int? startIndex = null, int? endIndex = null)
+        {
+            RandomizeTrainerPokemon(trainer, pokemonSet, settings, null, startIndex, endIndex);
         }
 
         private IEnumerable<Metric<Pokemon>> CreatePokemonMetrics(Trainer trainer, IEnumerable<Pokemon> all, Pokemon pokemon, WeightedSet<PokemonType> partyTypeOccurence, IReadOnlyList<MetricData> data)
@@ -74,6 +80,12 @@ namespace PokemonRandomizer.Backend.Randomization
                 }
             }
             return metrics;
+        }
+
+        private WeightedSet<PokemonType> GetTrainerTypeOccurence(Trainer trainer)
+        {
+            bool useTheming = shouldApplyTheming(trainer.TrainerCategory);
+            return useTheming ? PokemonMetrics.TypeOccurence(trainer.Pokemon, p => dataT.GetBaseStats(p.species)) : null;
         }
 
         private void PropogateThemeData(List<Trainer> allBattles, Trainer.Category priorityCategory)
@@ -257,7 +269,7 @@ namespace PokemonRandomizer.Backend.Randomization
                     foreach (var battle in battles)
                     {
                         var pkmnSettings = CreatePokemonSettings(battle, settings);
-                        RandomizeTrainerPokemon(battle, pokemonSet, pkmnSettings);
+                        var typeOccurence = GetTrainerTypeOccurence(battle);
                         // Migrate Ace pokemon from the last battle
                         var currAce = battle.Pokemon[^1];
                         var lastAce = lastBattle.Pokemon[^1];
@@ -266,6 +278,7 @@ namespace PokemonRandomizer.Backend.Randomization
                         {
                             currAce.moves = movesetGenerator.SmartMoveSet(dataT.GetBaseStats(currAce.species), currAce.level);
                         }
+                        RandomizeTrainerPokemon(battle, pokemonSet, pkmnSettings, typeOccurence, 0, battle.Pokemon.Count - 1);
                         lastBattle = battle;
                     };
                 }
@@ -275,7 +288,7 @@ namespace PokemonRandomizer.Backend.Randomization
                     foreach (var battle in battles)
                     {
                         var pkmnSettings = CreatePokemonSettings(battle, settings);
-                        RandomizeTrainerPokemon(battle, pokemonSet, pkmnSettings);
+                        var typeOccurence = GetTrainerTypeOccurence(battle);
                         int lastBattleSize = lastBattle.Pokemon.Count;
                         int battleSize = battle.Pokemon.Count;
                         // Migrate pokemon from the last battle
@@ -289,6 +302,7 @@ namespace PokemonRandomizer.Backend.Randomization
                                 currPokemon.moves = movesetGenerator.SmartMoveSet(dataT.GetBaseStats(currPokemon.species), currPokemon.level);
                             }
                         }
+                        RandomizeTrainerPokemon(battle, pokemonSet, pkmnSettings, typeOccurence, 0, battleSize - lastBattleSize);
                         lastBattle = battle;
                     }
                 }
