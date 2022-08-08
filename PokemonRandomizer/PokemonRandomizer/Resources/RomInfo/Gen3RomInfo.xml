@@ -97,6 +97,8 @@
 	<teamAqua leaderClass ="Aqua Leader" adminClass="Aqua Admin" gruntClass ="Team Aqua" primaryTypes="[WAT]" secondaryTypes="[DRK,PSN]"/>
 	<teamMagma leaderClass ="Magma Leader" adminClass="Magma Admin" gruntClass ="Team Magma" primaryTypes="[FIR,GRD]" secondaryTypes="[DRK,PSN]"/>
     <aceTrainers classNames="[Cooltrainer]" classNums="[5,48]"/>
+	<classTrainerTypeOverrides elementNames="[breederOverride]"/>
+	<breederOverride className="[pk][mn] breeder" types=""/>
 
     <!-- Map Data -->
 
