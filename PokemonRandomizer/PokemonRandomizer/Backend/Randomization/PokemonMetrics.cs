@@ -86,5 +86,20 @@ namespace PokemonRandomizer.Backend.Randomization
             }
             return set;
         }
+
+        public static WeightedSet<PokemonType> TypeOccurence<T>(IEnumerable<T> pokemon, Func<T, PokemonBaseStats> selector)
+        {
+            var set = new WeightedSet<PokemonType>(16);
+            foreach (var p in pokemon)
+            {
+                var baseStats = selector(p);
+                set.Add(baseStats.OriginalPrimaryType);
+                if (!baseStats.OriginallySingleTyped)
+                {
+                    set.Add(baseStats.OriginalSecondaryType);
+                }
+            }
+            return set;
+        }
     }
 }

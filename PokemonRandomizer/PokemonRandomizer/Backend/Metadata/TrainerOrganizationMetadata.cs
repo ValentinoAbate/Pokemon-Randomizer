@@ -35,7 +35,7 @@ namespace PokemonRandomizer.Backend.Metadata
         protected TrainerThemeData GetTrainerTypeThemeData(Trainer trainer, IDataTranslator dataT)
         {
             // Calculate Trainer Type Occurence
-            var typeSet = PokemonMetrics.TypeOccurence(trainer.Pokemon.Select(p => dataT.GetBaseStats(p.species)));
+            var typeSet = PokemonMetrics.TypeOccurence(trainer.Pokemon, p => dataT.GetBaseStats(p.species));
             // Find maximum occurence(s)
             var max = float.MinValue;
             var types = new List<PokemonType>(6);

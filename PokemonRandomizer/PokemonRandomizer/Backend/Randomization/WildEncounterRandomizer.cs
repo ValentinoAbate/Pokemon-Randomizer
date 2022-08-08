@@ -72,7 +72,7 @@ namespace PokemonRandomizer.Backend.Randomization
             else if (strategy == Strategy.GlobalOneToOne)
             {
                 // Set wide type occurence data
-                var typeOccurence = PokemonMetrics.TypeOccurence(pokemonSet.Select(dataT.GetBaseStats));
+                var typeOccurence = PokemonMetrics.TypeOccurence(pokemonSet, dataT.GetBaseStats);
                 // Create the mapping
                 var mapping = new Dictionary<Pokemon, Pokemon>();
                 foreach (var pokemon in pokemonSet)
@@ -104,7 +104,7 @@ namespace PokemonRandomizer.Backend.Randomization
 
         private WeightedSet<PokemonType> EncounterTypeOccurence(EncounterSet encounter)
         {
-            return PokemonMetrics.TypeOccurence(encounter.Select(e => dataT.GetBaseStats(e.pokemon)));
+            return PokemonMetrics.TypeOccurence(encounter, e => dataT.GetBaseStats(e.pokemon));
         }
 
         private IEnumerable<Metric<Pokemon>> CreateMetrics(IEnumerable<Pokemon> all, Pokemon pokemon, EncounterSet.Type slotType, WeightedSet<PokemonType> typeOccurence, IReadOnlyList<MetricData> data)
