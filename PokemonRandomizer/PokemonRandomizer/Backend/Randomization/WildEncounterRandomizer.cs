@@ -66,7 +66,7 @@ namespace PokemonRandomizer.Backend.Randomization
                         mapping.Add(pokemon, pokeRand.RandomPokemon(pokemonSet, pokemon, metrics, settings));
                     }
                     // Remap
-                    RemapEncounter(encounterSet, mapping, settings.RestrictIllegalEvolutions);
+                    RemapEncounter(encounterSet, mapping, settings);
                 }
             }
             else if (strategy == Strategy.GlobalOneToOne)
@@ -85,17 +85,21 @@ namespace PokemonRandomizer.Backend.Randomization
                 // Remap the encounters
                 foreach (var encounterSet in encounters)
                 {
-                    RemapEncounter(encounterSet, mapping, settings.RestrictIllegalEvolutions);
+                    RemapEncounter(encounterSet, mapping, settings);
                 }
             }
         }
 
-        private void RemapEncounter(EncounterSet encounterSet, Dictionary<Pokemon, Pokemon> map, bool restrictEvos)
+        private void RemapEncounter(EncounterSet encounterSet, Dictionary<Pokemon, Pokemon> map, PokemonSettings settings)
         {
             foreach (var enc in encounterSet)
             {
                 enc.pokemon = map[enc.pokemon];
-                if (restrictEvos)
+                if (settings.ForceHighestLegalEvolution)
+                {
+                    enc.pokemon = evoUtils.MaxEvolution(enc.pokemon, enc.level, settings.RestrictIllegalEvolutions);
+                }
+                else if (settings.RestrictIllegalEvolutions)
                 {
                     enc.pokemon = evoUtils.CorrectImpossibleEvo(enc.pokemon, enc.level);
                 }
