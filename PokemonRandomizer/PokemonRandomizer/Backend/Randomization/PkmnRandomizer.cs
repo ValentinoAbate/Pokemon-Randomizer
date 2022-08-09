@@ -50,25 +50,43 @@ namespace PokemonRandomizer.Backend.Randomization
         {
             return SafePokemon(pokemon, RandomPokemonUnsafe(all, data, settings));
         }
+        public Pokemon RandomPokemonRestricted(IEnumerable<Pokemon> all, IEnumerable<Pokemon> restricted, Pokemon pokemon, PokemonSettings settings, int level)
+        {
+            return SafePokemon(pokemon, RandomPokemonUnsafe(all, restricted, CreateBasicMetrics(all, pokemon, settings.Data), settings, level));
+        }
+        public Pokemon RandomPokemonRestricted(IEnumerable<Pokemon> all, IEnumerable<Pokemon> restricted, Pokemon pokemon, PokemonSettings settings)
+        {
+            return SafePokemon(pokemon, RandomPokemonUnsafe(all, restricted, CreateBasicMetrics(all, pokemon, settings.Data), settings));
+        }
+        public Pokemon RandomPokemonRestricted(IEnumerable<Pokemon> all, IEnumerable<Pokemon> restricted, Pokemon pokemon, IEnumerable<Metric<Pokemon>> data, PokemonSettings settings, int level)
+        {
+            return SafePokemon(pokemon, RandomPokemonUnsafe(all, restricted, data, settings, level));
+        }
+        public Pokemon RandomPokemonRestricted(IEnumerable<Pokemon> all, IEnumerable<Pokemon> restricted, Pokemon pokemon, IEnumerable<Metric<Pokemon>> data, PokemonSettings settings)
+        {
+            return SafePokemon(pokemon, RandomPokemonUnsafe(all, restricted, data, settings));
+        }
 
         // Unsafe methods (if there is no valid pokemon, Pokemon.None will be returned)
 
-        private Pokemon RandomPokemonUnsafe(IEnumerable<Pokemon> all, IEnumerable<Metric<Pokemon>> data, PokemonSettings settings, int level)
+
+
+        private Pokemon RandomPokemonUnsafe(IEnumerable<Pokemon> all, IEnumerable<Pokemon> restricted, IEnumerable<Metric<Pokemon>> data, PokemonSettings settings, int level)
         {
-            var choices = settings.RestrictIllegalEvolutions ? all.Where(p => evoUtils.IsPokemonValidLevel(dataT.GetBaseStats(p), level)) : all;
+            var levelRestricted = settings.RestrictIllegalEvolutions ? restricted.Where(p => evoUtils.IsPokemonValidLevel(dataT.GetBaseStats(p), level)) : restricted;
             if (settings.ForceHighestLegalEvolution)
             {
-                choices = choices.Where(p => evoUtils.IsMaxEvolution(p, level));
+                levelRestricted = levelRestricted.Where(p => evoUtils.IsMaxEvolution(p, level));
             }
-            var newPokemon = RandomPokemonUnsafe(choices, data, settings);
+            var newPokemon = RandomPokemonUnsafe(all, levelRestricted, data, settings);
             // If we got a null result, propegate that
             if (newPokemon == Pokemon.None)
                 return Pokemon.None;
             return newPokemon;
         }
-        private Pokemon RandomPokemonUnsafe(IEnumerable<Pokemon> all, IEnumerable<Metric<Pokemon>> data, PokemonSettings settings)
+        private Pokemon RandomPokemonUnsafe(IEnumerable<Pokemon> all, IEnumerable<Pokemon> restricted, IEnumerable<Metric<Pokemon>> data, PokemonSettings settings)
         {
-            if (!all.Any())
+            if (!restricted.Any())
             {
                 return Pokemon.None;
             }
@@ -81,21 +99,28 @@ namespace PokemonRandomizer.Backend.Randomization
             if (!data.Any())
             {
                 if (settings.BanLegendaries) // Remove legendaries if banned
-                    return rand.Choice(all.Where(p => !p.IsLegendary()));
-                return rand.Choice(all); 
+                    return rand.Choice(restricted.Where(p => !p.IsLegendary()));
+                return rand.Choice(restricted); 
             }
             // Process the metrics
-            var set = Metric<Pokemon>.ProcessGroup(data);
+            var metricChoices = Metric<Pokemon>.ProcessGroup(data);
             // Remove any pokemon that were not in the input set
-            var choices = all.ToHashSet();
-            set.RemoveWhere(p => !choices.Contains(p));
+            var restrictedHashSet = restricted.ToHashSet();
+            metricChoices.RemoveWhere(p => !restrictedHashSet.Contains(p));
             if (settings.BanLegendaries) // Remove legendaries if banned
             {
-                set.RemoveWhere(PokemonUtils.IsLegendary);
+                metricChoices.RemoveWhere(PokemonUtils.IsLegendary);
             }
-            return set.Count > 0 ? rand.Choice(set) : Pokemon.None;
+            return metricChoices.Count > 0 ? rand.Choice(metricChoices) : Pokemon.None;
         }
-
+        private Pokemon RandomPokemonUnsafe(IEnumerable<Pokemon> all, IEnumerable<Metric<Pokemon>> data, PokemonSettings settings, int level)
+        {
+            return RandomPokemonUnsafe(all, all, data, settings, level);
+        }
+        private Pokemon RandomPokemonUnsafe(IEnumerable<Pokemon> all, IEnumerable<Metric<Pokemon>> data, PokemonSettings settings)
+        {
+            return RandomPokemonUnsafe(all, all, data, settings);
+        }
 
         #endregion
 
