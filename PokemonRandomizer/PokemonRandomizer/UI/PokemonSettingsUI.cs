@@ -29,7 +29,7 @@ namespace PokemonRandomizer.UI
             stack.Add(new BoundCheckBoxUI(settings.BanLegendaries, b => settings.BanLegendaries = b, "Ban Legendaries"));
             stack.Add(new BoundCheckBoxUI(settings.RestrictIllegalEvolutions, b => settings.RestrictIllegalEvolutions = b, "Ban Illegal Evolutions"));
             stack.Add(new BoundCheckBoxUI(settings.ForceHighestLegalEvolution, b => settings.ForceHighestLegalEvolution = b, "Force Highest Legal Evolution"));
-            stack.Add(new BoundSliderUI("Noise", settings.Noise, d => settings.Noise = (float)d) { ToolTip = "The percentage chance a completely random pokemon will be chosen, (bypasses other settings)" });
+            stack.Add(new BoundSliderUI("Ignore Restrictions Chance", settings.Noise, d => settings.Noise = (float)d, true, 0.001, 0, 0.025) { ToolTip = "The percentage chance a completely random pokemon will be chosen, (ignores restrictions such as evolution legality and bans)" });
             Content = stack;
         }
     }
