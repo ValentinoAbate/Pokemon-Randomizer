@@ -44,7 +44,7 @@ namespace PokemonRandomizer.Backend.Randomization
                         // Create metrics
                         var metrics = CreateMetrics(pokemonSet, enc.pokemon, encounterSet.type, typeOccurence, settings.Data);
                         // Choose pokemon
-                        enc.pokemon = pokeRand.RandomPokemon(pokemonSet, enc.pokemon, metrics, settings);
+                        enc.pokemon = pokeRand.RandomPokemon(pokemonSet, enc.pokemon, metrics, settings, enc.level);
                     }
                 }
             }
