@@ -68,7 +68,7 @@ namespace PokemonRandomizer.UI.Views
             banLegendariesStack.Add(new BoundCheckBoxUI(model.BanLegendaries, "Normal Trainers") { VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(0, 2, 2, 2) });
             banLegendariesStack.Add(new BoundCheckBoxUI(model.BanLegendariesMiniboss, "Minibosses") { ToolTip = minibossTooltip, VerticalAlignment = VerticalAlignment.Center });
             banLegendariesStack.Add(new BoundCheckBoxUI(model.BanLegendariesBoss, "Bosses") { ToolTip = bossTooltip, VerticalAlignment = VerticalAlignment.Center });
-            pokemonStack.Add(new BoundSliderUI("Ignore Restrictions Chance", model.PokemonNoise, true, 0.01, 0, 0.33) { ToolTip = ignoreRestrictionsTooltip });
+            pokemonStack.Add(new BoundSliderUI("Ignore Restrictions Chance", model.PokemonNoise, true, 0.001, 0, 0.02) { ToolTip = ignoreRestrictionsTooltip });
             // Bonus pokemon
             var bonusPokemonStack = pokemonStack.Add(CreateHorizontalStack());
             bonusPokemonStack.Add(new BoundSliderUI("Bonus Pokemon", model.NumBonusPokemon, false, 1, 0, 6));
@@ -76,7 +76,7 @@ namespace PokemonRandomizer.UI.Views
             bonusPokemonStack.Add(new BoundCheckBoxUI(model.BonusPokemon, "Normal Trainers") { VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(0,2,2,2) });
             bonusPokemonStack.Add(new BoundCheckBoxUI(model.BonusPokemonMiniboss, "Minibosses") { ToolTip = minibossTooltip, VerticalAlignment = VerticalAlignment.Center });
             bonusPokemonStack.Add(new BoundCheckBoxUI(model.BonusPokemonBoss, "Bosses") { ToolTip = bossTooltip, VerticalAlignment = VerticalAlignment.Center });
-            pokemonStack.Add(new BoundCheckBoxUI(model.ForceCustomMoves, "Force Custom Moves") { ToolTip = "Use custom movesets for all trainers. The moves chosen are based on the moves the pokemon or a pre-evolution can know at the level it appears at (no TMs, etc.). This setting can help pokemon that evolve from stones have usable movesets, and makes movesets less predictable" });
+            pokemonStack.Add(new BoundCheckBoxUI(model.ForceCustomMoves, "Always Generate Movesets") { ToolTip = "Specifically chooses movesets for all trainer pokemon instead of using the default move generation. The moves chosen are based on the moves the pokemon or a pre-evolution can know at the level it appears at (no TMs, etc.). This setting can help pokemon that evolve from stones have usable movesets, and makes movesets less predictable" });
             pokemonStack.Add(new EnumComboBoxUI<PokemonPcgStrategy>("Recurring Trainer Pokemon Randomization Strategy", PokemonStrategyDropdown, model.PokemonStrategy));
             // Battle Type Randomization
             stack.Header("Battle Type");

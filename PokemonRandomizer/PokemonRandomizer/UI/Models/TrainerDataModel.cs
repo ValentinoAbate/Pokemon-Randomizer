@@ -26,7 +26,7 @@ namespace PokemonRandomizer.UI.Models
         public Box<bool> BanLegendariesBoss { get; set; } = new Box<bool>(false); 
         public Box<bool> RestrictIllegalEvolutions { get; set; } = new Box<bool>(true);
         public Box<bool> ForceHighestLegalEvolution { get; set; } = new Box<bool>(true);
-        public Box<double> PokemonNoise { get; set; } = new Box<double>(0.003);
+        public Box<double> PokemonNoise { get; set; } = new Box<double>(0.001);
         public Box<DuplicateReductionOption> DuplicateReduction { get; set; } = new Box<DuplicateReductionOption>(DuplicateReductionOption.Moderate);
         // Battle Type Settings
         public Box<bool> RandomizeBattleType { get; set; } = new Box<bool>(false);
@@ -36,7 +36,7 @@ namespace PokemonRandomizer.UI.Models
         public Box<double> LevelMult { get; set; } = new Box<double>(1);
         public Box<double> MinIVs { get; set; } = new Box<double>(0);
         public Box<bool> SmartAI { get; set; } = new Box<bool>(false);
-        public Box<bool> ForceCustomMoves { get; set; } = new Box<bool>(false);
+        public Box<bool> ForceCustomMoves { get; set; } = new Box<bool>(true);
         public Box<double> NumBonusPokemon { get; set; } = new Box<double>(0);
         public Box<bool> BonusPokemon { get; set; } = new Box<bool>(false);
         public Box<bool> BonusPokemonMiniboss { get; set; } = new Box<bool>(false);
