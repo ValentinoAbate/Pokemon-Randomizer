@@ -93,11 +93,12 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
             // Event Data
             if (map.eventDataOffset != Rom.nullPointer)
                 map.eventData = ReadMapEventData(rom, map.eventDataOffset, metadata);
+            // Script Data
+            if (map.mapScriptsOffset != Rom.nullPointer)
+                map.scriptData = ReadMapScriptData(rom, map.mapScriptsOffset, metadata);
             // Connections
             if (map.connectionOffset != Rom.nullPointer)
                 map.connections = ReadMapConnectionData(rom, map.connectionOffset);
-            // TODO: Script Data
-
             #endregion
 
             map.SetOriginalValues();
@@ -247,6 +248,44 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
             }
 
             return eventData;
+        }
+        private MapScriptData ReadMapScriptData(Rom rom, int offset, RomMetadata metadata)
+        {
+            var mapScriptData = new MapScriptData();
+            rom.Seek(offset);
+
+            var type = (MapScriptData.Type)rom.ReadByte();
+            while(type != MapScriptData.Type.NoScripts)
+            {
+                int scriptOffset = rom.ReadPointer();
+                var mapScript = new MapScriptData.MapScript()
+                {
+                    type = type,
+                    scriptOffset = scriptOffset,
+                };
+                if (scriptOffset != Rom.nullPointer)
+                {
+                    if (type is MapScriptData.Type.OnEnterMap or MapScriptData.Type.SetMapTile or MapScriptData.Type.OnEnterMapAndMenuClose or MapScriptData.Type.OnEnterMapAndMenuClose2)
+                    {
+                        mapScript.script = scriptParser.Parse(rom, scriptOffset, metadata);
+                    } 
+                    else if (type is MapScriptData.Type.ValidateAndLoad1 or MapScriptData.Type.ValidateAndLoad2)
+                    {
+                        rom.SaveAndSeekOffset(mapScript.scriptOffset);
+                        mapScript.flag = rom.ReadUInt16();
+                        mapScript.value = rom.ReadUInt16();
+                        mapScript.scriptOffset2 = rom.ReadPointer();
+                        rom.LoadOffset();
+                        if(mapScript.scriptOffset2 != Rom.nullPointer)
+                        {
+                            mapScript.script = scriptParser.Parse(rom, mapScript.scriptOffset2, metadata);
+                        }
+                    }
+                }
+                mapScriptData.scripts.Add(mapScript);
+                type = (MapScriptData.Type)rom.ReadByte();
+            }
+            return mapScriptData;
         }
         private ConnectionData ReadMapConnectionData(Rom rom, int offset)
         {
