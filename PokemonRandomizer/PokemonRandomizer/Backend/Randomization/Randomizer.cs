@@ -975,6 +975,45 @@ namespace PokemonRandomizer.Backend.Randomization
 
         #endregion
 
+        private void LogDuplicateTrainerPokemon()
+        {
+            var pokemonOccurrence = new Dictionary<Pokemon, int>(6);
+            var duplicateOccurence = new Dictionary<int, int>(6);
+            for (int i = 1; i < 7; i++)
+            {
+                duplicateOccurence.Add(i, 0);
+            }
+            foreach (var trainer in data.Trainers)
+            {
+                pokemonOccurrence.Clear();
+                foreach (var pokemon in trainer.Pokemon)
+                {
+                    if (!pokemonOccurrence.ContainsKey(pokemon.species))
+                    {
+                        pokemonOccurrence.Add(pokemon.species, 1);
+                    }
+                    else
+                    {
+                        pokemonOccurrence[pokemon.species]++;
+                    }
+                }
+                foreach (var pokemon in pokemonOccurrence)
+                {
+                    if (pokemon.Value > 1)
+                    {
+                        duplicateOccurence[pokemon.Value]++;
+                    }
+                }
+            }
+
+            Logger.main.Info("Duplicate Trainer Pokemon Count");
+            Logger.main.Info($"Duplicates: {duplicateOccurence[2]}");
+            Logger.main.Info($"Triplicates: {duplicateOccurence[3]}");
+            Logger.main.Info($"Quadruplets: {duplicateOccurence[4]}");
+            Logger.main.Info($"Quintuplets: {duplicateOccurence[5]}");
+            Logger.main.Info($"Sextuplets: {duplicateOccurence[6]}");
+        }
+
         private void RandomizeBerryTress(Script berryTreeScript, Settings s, IEnumerable<ItemData> allItems)
         {
             if (berryTreeScript == null || s.BerryTreeRandChance <= 0)

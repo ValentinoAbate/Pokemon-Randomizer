@@ -267,6 +267,17 @@ namespace PokemonRandomizer.AppSettings
         public override bool TrainerRestrictIllegalEvolutions => trainerData.RestrictIllegalEvolutions;
         public override bool TrainerForceHighestLegalEvolution => trainerData.ForceHighestLegalEvolution;
         public override double TrainerPokemonNoise => trainerData.PokemonNoise;
+        public override double TrainerPokemonDuplicateReductionMultiplier
+        {
+            get => trainerData.DuplicateReduction.Value switch
+            {
+                TrainerDataModel.DuplicateReductionOption.Weak => 0.75,
+                TrainerDataModel.DuplicateReductionOption.Moderate => 0.5,
+                TrainerDataModel.DuplicateReductionOption.Strong => 0.25,
+                TrainerDataModel.DuplicateReductionOption.Strict => 0,
+                _ => 1,
+            };
+        }
         public override TrainerSettings.PokemonPcgStrategy RecurringTrainerPokemonStrategy => trainerData.PokemonStrategy;
         protected override bool TrainerForceCustomMovesets => trainerData.ForceCustomMoves;
         protected override int BonusPokemon => (int)(trainerData.NumBonusPokemon.Value);

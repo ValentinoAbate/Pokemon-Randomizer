@@ -21,7 +21,7 @@ namespace PokemonRandomizer.Backend.Randomization
 
         public WeightedSet<T> Processed(int priorityScale)
         {
-            var processed = new WeightedSet<T>(input);
+            var processed = new WeightedSet<T>(Input);
             processed.Normalize();
             processed.RemoveWhere(t => processed[t] <= filter);
             processed.Multiply((float)Math.Pow(power, priorityScale - priority));
@@ -29,13 +29,13 @@ namespace PokemonRandomizer.Backend.Randomization
             return processed;
         }
 
-        private readonly WeightedSet<T> input;
+        public WeightedSet<T> Input { get; }
         private readonly float filter;
         private readonly int priority;
 
         public Metric(WeightedSet<T> input, float filter, int priority)
         {
-            this.input = input;
+            this.Input = input;
             this.filter = filter;
             this.priority = priority;
         }

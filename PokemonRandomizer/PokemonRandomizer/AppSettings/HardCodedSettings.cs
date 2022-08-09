@@ -172,6 +172,7 @@ namespace PokemonRandomizer.AppSettings
         public override bool TrainerRestrictIllegalEvolutions => true;
         public override bool TrainerForceHighestLegalEvolution => true;
         public override double TrainerPokemonNoise => 0.003;
+        public override double TrainerPokemonDuplicateReductionMultiplier => 0.5;
         public override TrainerSettings.PokemonPcgStrategy RecurringTrainerPokemonStrategy => TrainerSettings.PokemonPcgStrategy.KeepParty;
         protected override bool TrainerForceCustomMovesets => true;
         protected override int BonusPokemon => 0;

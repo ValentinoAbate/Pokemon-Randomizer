@@ -33,7 +33,7 @@ namespace PokemonRandomizer.Backend.Randomization
 
         #region Trainer Randomization
 
-        private void RandomizeTrainerPokemon(Trainer trainer, IEnumerable<Pokemon> pokemonSet, PokemonSettings settings, WeightedSet<PokemonType> typeOccurence, int? startIndex = null, int? endIndex = null)
+        private void RandomizeTrainerPokemon(Trainer trainer, IEnumerable<Pokemon> pokemonSet, PokemonSettings settings, float duplicateMultiplier, WeightedSet<PokemonType> typeOccurence, int? startIndex = null, int? endIndex = null)
         {
             // Get type sample if necessary
             var partyTypeOccurence = typeOccurence ?? GetTrainerTypeOccurence(trainer);
@@ -45,6 +45,29 @@ namespace PokemonRandomizer.Backend.Randomization
                 var pokemon = trainer.Pokemon[i];
                 // Chose pokemon
                 var metrics = useTheming ? CreatePokemonMetrics(trainer, pokemonSet, pokemon.species, partyTypeOccurence, settings.Data) : Enumerable.Empty<Metric<Pokemon>>();
+                if(duplicateMultiplier != 1)
+                {
+                    // Add a metric if none exist
+                    if (!metrics.Any())
+                    {
+                        metrics = new List<Metric<Pokemon>>() { new Metric<Pokemon>(new WeightedSet<Pokemon>(pokemonSet), 0, 1)};
+                    }
+                    // Remove duplicates from all metrics
+                    for (int pokemonIndex = 0; pokemonIndex < i; pokemonIndex++)
+                    {
+                        foreach(var metric in metrics)
+                        {
+                            metric.Input.Multiply(trainer.Pokemon[pokemonIndex].species, duplicateMultiplier);
+                        }
+                    }
+                    for (int pokemonIndex = endIndex.Value; pokemonIndex < trainer.Pokemon.Count; pokemonIndex++)
+                    {
+                        foreach (var metric in metrics)
+                        {
+                            metric.Input.Multiply(trainer.Pokemon[pokemonIndex].species, duplicateMultiplier);
+                        }
+                    }
+                }
                 pokemon.species = pokeRand.RandomPokemon(pokemonSet, pokemon.species, metrics, settings, pokemon.level);
 
                 // Reset special moves if necessary
@@ -55,9 +78,9 @@ namespace PokemonRandomizer.Backend.Randomization
             }
         }
 
-        private void RandomizeTrainerPokemon(Trainer trainer, IEnumerable<Pokemon> pokemonSet, PokemonSettings settings, int? startIndex = null, int? endIndex = null)
+        private void RandomizeTrainerPokemon(Trainer trainer, IEnumerable<Pokemon> pokemonSet, PokemonSettings settings, float duplicateMultiplier, int? startIndex = null, int? endIndex = null)
         {
-            RandomizeTrainerPokemon(trainer, pokemonSet, settings, null, startIndex, endIndex);
+            RandomizeTrainerPokemon(trainer, pokemonSet, settings, duplicateMultiplier, null, startIndex, endIndex);
         }
 
         private IEnumerable<Metric<Pokemon>> CreatePokemonMetrics(Trainer trainer, IEnumerable<Pokemon> all, Pokemon pokemon, WeightedSet<PokemonType> partyTypeOccurence, IReadOnlyList<MetricData> data)
@@ -194,7 +217,7 @@ namespace PokemonRandomizer.Backend.Randomization
             // Set pokemon
             if (settings.RandomizePokemon)
             {
-                RandomizeTrainerPokemon(trainer, pokemonSet, CreatePokemonSettings(trainer, settings));
+                RandomizeTrainerPokemon(trainer, pokemonSet, CreatePokemonSettings(trainer, settings), settings.DuplicateMultiplier);
             }
         }
 
@@ -260,7 +283,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 {
                     foreach (var battle in battles)
                     {
-                        RandomizeTrainerPokemon(battle, pokemonSet, CreatePokemonSettings(battle, settings));
+                        RandomizeTrainerPokemon(battle, pokemonSet, CreatePokemonSettings(battle, settings), settings.DuplicateMultiplier);
                     }
                 }
                 else if (settings.PokemonStrategy == TrainerSettings.PokemonPcgStrategy.KeepAce)
@@ -278,7 +301,7 @@ namespace PokemonRandomizer.Backend.Randomization
                         {
                             currAce.moves = movesetGenerator.SmartMoveSet(dataT.GetBaseStats(currAce.species), currAce.level);
                         }
-                        RandomizeTrainerPokemon(battle, pokemonSet, pkmnSettings, typeOccurence, 0, battle.Pokemon.Count - 1);
+                        RandomizeTrainerPokemon(battle, pokemonSet, pkmnSettings, settings.DuplicateMultiplier, typeOccurence, 0, battle.Pokemon.Count - 1);
                         lastBattle = battle;
                     };
                 }
@@ -302,7 +325,7 @@ namespace PokemonRandomizer.Backend.Randomization
                                 currPokemon.moves = movesetGenerator.SmartMoveSet(dataT.GetBaseStats(currPokemon.species), currPokemon.level);
                             }
                         }
-                        RandomizeTrainerPokemon(battle, pokemonSet, pkmnSettings, typeOccurence, 0, battleSize - lastBattleSize);
+                        RandomizeTrainerPokemon(battle, pokemonSet, pkmnSettings, settings.DuplicateMultiplier, typeOccurence, 0, battleSize - lastBattleSize);
                         lastBattle = battle;
                     }
                 }

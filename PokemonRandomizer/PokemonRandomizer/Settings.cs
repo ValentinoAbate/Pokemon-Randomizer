@@ -138,6 +138,7 @@ namespace PokemonRandomizer
             RestrictIllegalEvolutions = TrainerRestrictIllegalEvolutions,
             ForceHighestLegalEvolution = TrainerForceHighestLegalEvolution,
             PokemonNoise = (float)TrainerPokemonNoise,
+            DuplicateMultiplier = (float)TrainerPokemonDuplicateReductionMultiplier,
             RandomizeBattleType = RandomizeTrainerBattleType,
             BattleTypeStrategy = RecurringTrainerBattleTypeStrategy,
             DoubleBattleChance = DoubleBattleChance,
@@ -223,6 +224,7 @@ namespace PokemonRandomizer
         public abstract bool TrainerRestrictIllegalEvolutions { get; }
         public abstract bool TrainerForceHighestLegalEvolution { get; }
         public abstract double TrainerPokemonNoise { get; }
+        public abstract double TrainerPokemonDuplicateReductionMultiplier { get; }
         public abstract TrainerSettings.PokemonPcgStrategy RecurringTrainerPokemonStrategy { get; }
         protected abstract bool TrainerForceCustomMovesets { get; }
         protected abstract int BonusPokemon { get; }
@@ -528,6 +530,7 @@ namespace PokemonRandomizer
             public bool RestrictIllegalEvolutions { get; set; } = true;
             public bool ForceHighestLegalEvolution { get; set; } = false;
             public float PokemonNoise { get; set; } = 0;
+            public float DuplicateMultiplier { get; set; } = 1;
             public TrainerTypeDataSource MetricType { get; set; } = TrainerTypeDataSource.Individual;
             public Trainer.Category PriorityThemeCategory { get; set; } = Trainer.Category.GymLeader;
             public bool RandomizeBattleType { get; set; }

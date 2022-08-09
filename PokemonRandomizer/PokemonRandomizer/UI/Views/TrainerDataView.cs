@@ -31,6 +31,15 @@ namespace PokemonRandomizer.UI.Views
             new ComboBoxItem() {Content="Party Type", ToolTip="Each pokemon will be be more likely to randomize to a pokemon whose type appears in the trainer's original party, weighted by the number of times that type appears"},
         };
 
+        private static CompositeCollection DuplicateReductionOptionDropdown => new()
+        {
+            new ComboBoxItem() { Content = "None" },
+            new ComboBoxItem() { Content = "Weak", ToolTip = "Trainers will be 75% as likely to have duplicate pokemon" },
+            new ComboBoxItem() { Content = "Moderate", ToolTip = "Trainers will be 50% as likely to have duplicate pokemon" },
+            new ComboBoxItem() { Content = "Strong", ToolTip = "Trainers will be 25% as likely to have duplicate pokemon" },
+            new ComboBoxItem() { Content = "Strict", ToolTip = "Trainers will not have duplicate pokemon except when restrictions are ignored" },
+        };
+
         private const string typeThemingTooltip = "Choose Pokemon based on their trainer's type theming. Most trainers will have their type theme determined by the types of their original party and their trainer class" +
             "\nGym Leaders, Gym Trainers, the Elite Four, and the Champion will have the type theme of their original Gym / Elite Four position unless that theme is randomized by other settings" +
             "\nSpecial trainer classes like Rivals and Ace/Cool Trainers will have no type theme";
@@ -48,6 +57,7 @@ namespace PokemonRandomizer.UI.Views
             var pokemonStack = stack.Add(pokemonRand.BindEnabled(CreateStack()));
             var typeBox = pokemonStack.Add(new BoundCheckBoxUI(model.TypeTheming, "Type Theming (Intelligent)") { ToolTip = typeThemingTooltip });
             pokemonStack.Add(typeBox.BindEnabled(new EnumComboBoxUI<TrainerTypeDataSource>("Normal Trainer Type Data Source", MetricDataDropdown, model.TypeDataSource) { ToolTip = "The type data source intelligent type theming will use for trainers that don't have special logic" }));
+            pokemonStack.Add(new EnumComboBoxUI<TrainerDataModel.DuplicateReductionOption>("Duplicate Pokemon Reduction", DuplicateReductionOptionDropdown, model.DuplicateReduction));
             var pokemonDetailsStack = pokemonStack.Add(CreateHorizontalStack());
             pokemonDetailsStack.Add(new BoundCheckBoxUI(model.RestrictIllegalEvolutions, "Ban Illegal Evolutions"));
             pokemonDetailsStack.Add(new BoundCheckBoxUI(model.ForceHighestLegalEvolution, "Force Highest Legal Evolution"));

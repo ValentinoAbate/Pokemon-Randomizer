@@ -7,9 +7,13 @@ namespace PokemonRandomizer.UI.Models
     using static Settings.TrainerSettings;
     public class TrainerDataModel : DataModel
     {
-        public TrainerDataModel()
+        public enum DuplicateReductionOption
         {
-
+            None,
+            Weak,
+            Moderate,
+            Strong,
+            Strict,
         }
 
         // Pokemon Settings
@@ -23,6 +27,7 @@ namespace PokemonRandomizer.UI.Models
         public Box<bool> RestrictIllegalEvolutions { get; set; } = new Box<bool>(true);
         public Box<bool> ForceHighestLegalEvolution { get; set; } = new Box<bool>(true);
         public Box<double> PokemonNoise { get; set; } = new Box<double>(0.003);
+        public Box<DuplicateReductionOption> DuplicateReduction { get; set; } = new Box<DuplicateReductionOption>(DuplicateReductionOption.Moderate);
         // Battle Type Settings
         public Box<bool> RandomizeBattleType { get; set; } = new Box<bool>(false);
         public Box<BattleTypePcgStrategy> BattleTypeStrategy { get; set; } = new Box<BattleTypePcgStrategy>(BattleTypePcgStrategy.KeepSameType);
