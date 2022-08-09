@@ -114,9 +114,12 @@ FEATURES ///////////////////////////////////////////////////////////////////////
 		- gift
 	- Use cost as optional weighting
 - Script reading / writing
-	- Maps
+	- Maps (writing)
 	- Signs
-	- Triggers
+	- Call and aassociated functions (0x04) script parsing
+        - const byte @return                             = 0x03;
+        - const byte call                                = 0x04;
+        - const byte callif                              = 0x07;
 - Multi-Rom Data aggregation
 	- For instance, use emerald as a base but pull additional classes and moveset updates from FireRed
 - Game corner prize randomization
