@@ -54,12 +54,17 @@ namespace PokemonRandomizer.Backend.Randomization
 
         private void RandomizeScript(Script script, Settings settings, Args args, Dictionary<Item, List<ItemCommand>> itemMap)
         {
+            if (script == null)
+                return;
             foreach (var command in script)
             {
                 switch (command)
                 {
                     case GotoCommand @goto:
                         RandomizeScript(@goto.script, settings, args, itemMap);
+                        break;
+                    case CallCommand call:
+                        RandomizeScript(call.script, settings, args, itemMap);
                         break;
                     case TrainerBattleCommand trainerBattleCommand:
                         if (args.IsGym)

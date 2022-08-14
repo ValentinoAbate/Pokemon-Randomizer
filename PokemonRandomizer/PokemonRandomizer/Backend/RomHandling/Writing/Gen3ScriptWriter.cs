@@ -35,6 +35,17 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
                         rom.WritePointer(@goto.offset);
                         Write(@goto.script, rom, @goto.offset, metadata);
                         break;
+                    case CallIfCommand callIf:
+                        rom.WriteByte(Gen3Command.callif);
+                        rom.WriteByte(callIf.condition);
+                        rom.WritePointer(callIf.offset);
+                        Write(callIf.script, rom, callIf.offset, metadata);
+                        break;
+                    case CallCommand call:
+                        rom.WriteByte(Gen3Command.call);
+                        rom.WritePointer(call.offset);
+                        Write(call.script, rom, call.offset, metadata);
+                        break;
                     case GivePokedexCommand givePokedex:
                         WriteGivePokedexCommand(rom, givePokedex, metadata);
                         break;

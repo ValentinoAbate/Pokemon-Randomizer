@@ -64,6 +64,33 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
                         gotoCommand.script = Parse(rom, gotoCommand.offset, metadata, ref visited);
                     }
                 }
+                else if (command.code == Gen3Command.call)
+                {
+                    var callCommand = new CallCommand()
+                    {
+                        offset = command.ArgData(0),
+                    };
+                    script.Add(callCommand);
+                    // If we haven't encountered this offset, then parse the script at the call location
+                    if (!visited.Contains(callCommand.offset))
+                    {
+                        callCommand.script = Parse(rom, callCommand.offset, metadata, ref visited);
+                    }
+                }
+                else if (command.code == Gen3Command.callif)
+                {
+                    var callCommand = new CallIfCommand()
+                    {
+                        condition = (byte)command.ArgData(0),
+                        offset = command.ArgData(1),
+                    };
+                    script.Add(callCommand);
+                    // If we haven't encountered this offset, then parse the branch
+                    if (!visited.Contains(callCommand.offset))
+                    {
+                        callCommand.script = Parse(rom, callCommand.offset, metadata, ref visited);
+                    }
+                }
                 else if (command.code == Gen3Command.special)
                 {
                     script.Add(ParseSpecialCommand(command, metadata));

@@ -160,7 +160,7 @@ namespace PokemonRandomizer.Backend.Scripting.GenIII
         public const byte showmoney                           = 0x93;
         public const byte hidemoney                           = 0x94;
         public const byte updatemoney                         = 0x95;
-        public const byte nop96                               = 0x96;
+        public const byte cmd96                               = 0x96;
         public const byte fadescreen                          = 0x97;
         public const byte fadescreendelay                     = 0x98;
         public const byte darken                              = 0x99;
@@ -446,7 +446,7 @@ namespace PokemonRandomizer.Backend.Scripting.GenIII
             {showmoney           , byte2             },
             {hidemoney           , byte2             },
             {updatemoney         , byte2             },
-            {nop96               , noArgs            },
+            {cmd96               , word              }, // Used in a map script in emerald contest hall (13.4)
             {fadescreen          , byte1             },
             {fadescreendelay     , byte2             },
             {darken              , word              },
