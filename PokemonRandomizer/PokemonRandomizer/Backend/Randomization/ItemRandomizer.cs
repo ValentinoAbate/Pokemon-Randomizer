@@ -117,19 +117,13 @@ namespace PokemonRandomizer.Backend.Randomization
         {
             var list = new List<KeyValuePair<Item, int>>(occurences);
             list.Sort((i1, i2) => i1.Key.CompareTo(i2.Key));
+            int sum = 0;
             foreach(var i in list)
             {
                 Logger.main.Info($"{i.Key.ToDisplayString()}: {i.Value}");
+                sum += i.Value;
             }
-            int sumTMs = 0;
-            foreach(var i in list)
-            {
-                if (i.Key.IsTM())
-                {
-                    sumTMs += i.Value;
-                }
-            }
-            Logger.main.Info($"Total TMs: {sumTMs}");
+            Logger.main.Info($"Total Item Randomizations: {sum}");
         }
 
         public class RandomizerSettings
