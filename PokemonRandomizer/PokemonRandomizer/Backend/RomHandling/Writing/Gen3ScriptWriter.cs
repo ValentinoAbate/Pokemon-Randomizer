@@ -19,8 +19,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
             {
                 return;
             }
-            rom.SaveOffset();
-            rom.Seek(offset);
+            rom.SaveAndSeekOffset(offset);
             foreach (var command in script)
             {
                 switch (command)
