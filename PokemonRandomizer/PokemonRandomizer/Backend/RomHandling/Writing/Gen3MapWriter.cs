@@ -76,11 +76,19 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
 
             // Event Data
             if (map.eventData != null)
+            {
                 WriteMapEventData(rom, map.eventData, map.eventDataOffset, metadata);
+            }
+            // Script Data
+            if (map.scriptData != null)
+            {
+                WriteMapScriptData(rom, map.scriptData, map.mapScriptsOffset, metadata);
+            }
             // Connections
             if (map.connections != null)
+            {
                 WriteMapConnectionData(rom, map.connections, map.connectionOffset);
-            // TODO: Script Data
+            }
             #endregion
         }
 
@@ -190,10 +198,35 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
                 }
             }
         }
+        private void WriteMapScriptData(Rom rom, MapScriptData data, int offset, RomMetadata metadata)
+        {
+            rom.SaveAndSeekOffset(offset);
+            // Write Scripts
+            foreach(var mapScript in data.scripts)
+            {
+                rom.WriteByte((byte)mapScript.type);
+                rom.WritePointer(mapScript.scriptOffset);
+                if (mapScript.IsSimpleScriptType)
+                {
+                    scriptWriter.Write(mapScript.script, rom, mapScript.scriptOffset, metadata);
+                }
+                else if (mapScript.IsFlagValueScriptType)
+                {
+                    rom.SaveAndSeekOffset(mapScript.scriptOffset);
+                    rom.WriteUInt16((ushort)mapScript.flag);
+                    rom.WriteUInt16((ushort)mapScript.value);
+                    rom.WritePointer(mapScript.scriptOffset2);
+                    scriptWriter.Write(mapScript.script, rom, mapScript.scriptOffset2, metadata);
+                    rom.LoadOffset();
+                }
+            }
+            // Write Terminator
+            rom.WriteByte((byte)MapScriptData.Type.NoScripts);
+            rom.LoadOffset();
+        }
         private void WriteMapConnectionData(Rom rom, ConnectionData data, int offset)
         {
-            rom.SaveOffset();
-            rom.Seek(offset);
+            rom.SaveAndSeekOffset(offset);
             rom.WriteUInt32(data.connections.Count);
             rom.WritePointer(data.dataOffset);
             // TODO: allow for adding connections

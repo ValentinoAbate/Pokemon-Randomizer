@@ -17,7 +17,7 @@ namespace PokemonRandomizer.Backend.DataStructures
             OnEnterMap,
             ValidateAndLoad2, // Loads handler to 0x03000F28 (playback)
             OnEnterMapAndMenuClose,
-            Unknown1,
+            Unknown1,         // May have something to do with entering/exiting via dive. Used in Emeralds underwater map before buried relic (24-70)
             OnEnterMapAndMenuClose2,
             Unknown2,
             Unknown3,
@@ -31,6 +31,8 @@ namespace PokemonRandomizer.Backend.DataStructures
         public readonly List<MapScript> scripts = new List<MapScript>();
         public class MapScript
         {
+            public bool IsSimpleScriptType => type is Type.OnEnterMap or Type.SetMapTile or Type.OnEnterMapAndMenuClose or Type.OnEnterMapAndMenuClose2;
+            public bool IsFlagValueScriptType => type is Type.ValidateAndLoad1 or Type.ValidateAndLoad2;
             public Type type;
             public int scriptOffset;
             public int scriptOffset2;

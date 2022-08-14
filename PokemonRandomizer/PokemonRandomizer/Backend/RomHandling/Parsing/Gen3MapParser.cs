@@ -3,6 +3,7 @@ using PokemonRandomizer.Backend.EnumTypes;
 using PokemonRandomizer.Backend.Utilities;
 using PokemonRandomizer.Backend.Constants;
 using System;
+using PokemonRandomizer.Backend.Utilities.Debug;
 
 namespace PokemonRandomizer.Backend.RomHandling.Parsing
 {
@@ -265,11 +266,11 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
                 };
                 if (scriptOffset != Rom.nullPointer)
                 {
-                    if (type is MapScriptData.Type.OnEnterMap or MapScriptData.Type.SetMapTile or MapScriptData.Type.OnEnterMapAndMenuClose or MapScriptData.Type.OnEnterMapAndMenuClose2)
+                    if (mapScript.IsSimpleScriptType)
                     {
                         mapScript.script = scriptParser.Parse(rom, scriptOffset, metadata);
                     } 
-                    else if (type is MapScriptData.Type.ValidateAndLoad1 or MapScriptData.Type.ValidateAndLoad2)
+                    else if (mapScript.IsFlagValueScriptType)
                     {
                         rom.SaveAndSeekOffset(mapScript.scriptOffset);
                         mapScript.flag = rom.ReadUInt16();
@@ -280,6 +281,10 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
                         {
                             mapScript.script = scriptParser.Parse(rom, mapScript.scriptOffset2, metadata);
                         }
+                    }
+                    else
+                    {
+                        Logger.main.Info($"Map Script With Unknown Type: {type}");
                     }
                 }
                 mapScriptData.scripts.Add(mapScript);
