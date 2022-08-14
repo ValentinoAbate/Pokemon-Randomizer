@@ -446,7 +446,7 @@ namespace PokemonRandomizer.Backend.Scripting.GenIII
             {showmoney           , byte2             },
             {hidemoney           , byte2             },
             {updatemoney         , byte2             },
-            {cmd96               , word              }, // Used in a map script in emerald contest hall (13.4)
+            {cmd96               , word              }, // Used in a map script in emerald contest hall (13.4). Has no args in FR
             {fadescreen          , byte1             },
             {fadescreendelay     , byte2             },
             {darken              , word              },
