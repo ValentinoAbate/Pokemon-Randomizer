@@ -51,6 +51,7 @@
                     <MenuItem Name="menuDebugClearLog" IsEnabled="{Binding LogNotEmpty}" Header="Clear Debug Log" Click="ClearLog"/>
                     <MenuItem Name="menuDebugQuickRandomize" IsEnabled="{Binding IsROMLoaded}" Header="Quick Randomize" Click="QuickRandomize"/>
                     <MenuItem Name="menuDebugSaveCleanRom" IsEnabled="{Binding IsROMLoaded}" Header="Save Clean ROM" Click="SaveCleanROM"/>
+                    <MenuItem Name="menuDebugSaveCleanRomAndDiff" IsEnabled="{Binding IsROMLoaded}" Header="Save Clean ROM + Diff" Click="SaveCleanROMAndDiff"/>
                     <MenuItem Name="menuDebugDiffRoms" IsEnabled="{Binding IsROMLoaded}" Header="Diff Roms" Click="DiffRoms"/>
                 </MenuItem>
                 <MenuItem Header="Help">

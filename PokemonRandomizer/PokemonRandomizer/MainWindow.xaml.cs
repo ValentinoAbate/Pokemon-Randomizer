@@ -101,6 +101,7 @@ namespace PokemonRandomizer
 
         private HardCodedSettings hardCodedSettings;
         private AppSettings.AppSettings appSettings;
+        private CleanSettings cleanSettings;
 
         private int errorCount = 0;
 
@@ -172,14 +173,16 @@ namespace PokemonRandomizer
 
         private void InitializeAppData()
         {
-            if (hardCodedSettings == null)
+            InitializeSettings();
+            InitializeUI();
+            if (IsROMLoaded)
             {
-                hardCodedSettings = new HardCodedSettings(AppData);
+                InitializeRomDependentUI(RomData, Metadata);
             }
-            else
-            {
-                hardCodedSettings.UpdateData(AppData);
-            }
+        }
+
+        private void InitializeSettings()
+        {
             if (appSettings == null)
             {
                 appSettings = new AppSettings.AppSettings(AppData);
@@ -188,10 +191,21 @@ namespace PokemonRandomizer
             {
                 appSettings.UpdateData(AppData);
             }
-            InitializeUI();
-            if (IsROMLoaded)
+            if (hardCodedSettings == null)
             {
-                InitializeRomDependentUI(RomData, Metadata);
+                hardCodedSettings = new HardCodedSettings(AppData);
+            }
+            else
+            {
+                hardCodedSettings.UpdateData(AppData);
+            }
+            if (cleanSettings == null)
+            {
+                cleanSettings = new CleanSettings(AppData);
+            }
+            else
+            {
+                cleanSettings.UpdateData(AppData);
             }
         }
 
@@ -478,7 +492,29 @@ namespace PokemonRandomizer
             if (Metadata.Gen == Generation.III)
             {
                 var writer = new Gen3RomWriter();
-                WriteRom(() => writer.Write(RomData, Rom, Metadata, RomInfo, AppSettings).File, "Saving Clean Rom...");
+                WriteRom(() => writer.Write(RomData, Rom, Metadata, RomInfo, cleanSettings).File, "Saving Clean Rom...");
+            }
+        }
+
+        private void SaveCleanROMAndDiff(object sender, RoutedEventArgs e)
+        {
+            if (Metadata.Gen == Generation.III)
+            {
+                var writer = new Gen3RomWriter();
+                Rom rom2 = null;
+                byte[] WriteClean()
+                {
+                    return (rom2 = writer.Write(RomData, Rom, Metadata, RomInfo, cleanSettings)).File;
+                }
+                void DiffCleanRomWithRom(bool success)
+                {
+                    if (!success || rom2 == null)
+                    {
+                        return;
+                    }
+                    DiffRoms(Rom, rom2);
+                }
+                WriteRom(WriteClean, "Saving Clean Rom...", DiffCleanRomWithRom);
             }
         }
 
@@ -500,31 +536,30 @@ namespace PokemonRandomizer
                 {
                     // Open Rom to diff
                     var rawRom2 = File.ReadAllBytes(openFileDialog.FileName);
-                    var metadata2 = new RomMetadata(rawRom2);
-                    if(metadata2.Gen != Metadata.Gen)
-                    {
-                        LogError("Diff Error: Roms have different generations");
-                        return;
-                    }
-                    var rom2 = new Rom(rawRom2);
                     // Diff Roms
-                    var diffData = RomDiff.Diff(Rom, rom2);
-                    // Save diff file
-                    var saveFileDialog = new SaveFileDialog
-                    {
-                        Filter = textFileFilter,
-                        Title = "Save Diff File",
-                        FileName = "diff",
-                    };
-                    if (saveFileDialog.ShowDialog() == true)
-                    {
-                        SaveFile(saveFileDialog.FileName, "Diff", diffData.Readout().ToArray(), File.WriteAllLines);
-                    }
+                    DiffRoms(Rom, new Rom(rawRom2));
                 }
                 catch (IOException exception)
                 {
                     LogException(openRomError, exception);
                 }
+            }
+        }
+
+        private void DiffRoms(Rom rom1, Rom rom2)
+        {
+            // Diff Roms
+            var diffData = RomDiff.Diff(rom1, rom2);
+            // Save diff file
+            var saveFileDialog = new SaveFileDialog
+            {
+                Filter = textFileFilter,
+                Title = "Save Diff File",
+                FileName = "diff",
+            };
+            if (saveFileDialog.ShowDialog() == true)
+            {
+                SaveFile(saveFileDialog.FileName, "Diff", diffData.Readout().ToArray(), File.WriteAllLines);
             }
         }
 

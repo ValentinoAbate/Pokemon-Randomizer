@@ -8,15 +8,7 @@ namespace PokemonRandomizer.AppSettings
     using UI.Models;
     public class HardCodedSettings : Settings
     {
-        public HardCodedSettings(ApplicationDataModel data)
-        {
-            UpdateData(data);
-        }
-
-        public virtual void UpdateData(ApplicationDataModel data)
-        {
-
-        }
+        public HardCodedSettings(ApplicationDataModel data) : base(data) { }
 
         #region Type Relation Definitions
 
@@ -290,6 +282,8 @@ namespace PokemonRandomizer.AppSettings
         /// </summary>
         public override bool SafeStarterMovesets { get => true; }
         #endregion
+
+        public override bool WriteCatchingTutPokemon => true;
 
         #endregion
 

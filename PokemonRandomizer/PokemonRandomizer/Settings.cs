@@ -2,12 +2,22 @@
 using PokemonRandomizer.Backend.EnumTypes;
 using PokemonRandomizer.Backend.Randomization;
 using PokemonRandomizer.Backend.Utilities;
+using PokemonRandomizer.UI.Models;
 using System.Collections.Generic;
 
 namespace PokemonRandomizer
 {
     public abstract class Settings
     {
+        public Settings(ApplicationDataModel data)
+        {
+            UpdateData(data);
+        }
+
+        public virtual void UpdateData(ApplicationDataModel data)
+        {
+
+        }
 
         #region Type Relation Definitions
 
@@ -324,6 +334,8 @@ namespace PokemonRandomizer
         /// </summary>
         public abstract bool SafeStarterMovesets { get; }
         #endregion
+
+        public abstract bool WriteCatchingTutPokemon { get; }
 
         #endregion
 

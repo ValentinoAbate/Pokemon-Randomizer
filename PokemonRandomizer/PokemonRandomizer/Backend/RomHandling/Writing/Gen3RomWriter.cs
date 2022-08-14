@@ -65,7 +65,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
             // Write the in-game trades
             WriteInGameTrades(data.Trades, rom, info);
             // Catching tut currently only supported on RSE
-            if (metadata.IsRubySapphireOrEmerald)
+            if (settings.WriteCatchingTutPokemon && metadata.IsRubySapphireOrEmerald)
             {
                 WriteCatchingTutOpponent(data, rom, info);
             }
