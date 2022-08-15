@@ -26,7 +26,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
             while (true)
             {
                 visited.Add(rom.InternalOffset);
-                var command = ReadCommand(rom, out bool knownCommand);
+                var command = ReadCommand(rom, metadata, out bool knownCommand);
                 if (!knownCommand)
                 {
                     break;
@@ -98,7 +98,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
                 else if (command.code == Gen3Command.copyvarifnotzero)
                 {
                     // Check for give item multi-command
-                    if (TryParseGiveItemMultiCommand(rom, command, out GiveItemCommand giveItemCommand))
+                    if (TryParseGiveItemMultiCommand(rom, metadata, command, out GiveItemCommand giveItemCommand))
                     {
                         script.Add(giveItemCommand);
                     }
@@ -164,21 +164,21 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
             return script;
         }
 
-        private bool TryParseGiveItemMultiCommand(Rom rom, Gen3Command command1, out GiveItemCommand giveItemMultiCommand)
+        private bool TryParseGiveItemMultiCommand(Rom rom, RomMetadata metadata, Gen3Command command1, out GiveItemCommand giveItemMultiCommand)
         {
             giveItemMultiCommand = null;
             // If the first command isn't setting variable 0x8000 or the next command is end return false
             if (command1.ArgData(0) != Gen3Command.itemTypeVar || rom.Peek() == Gen3Command.end)
                 return false;
             rom.SaveOffset();
-            var command2 = ReadCommand(rom, out _);
+            var command2 = ReadCommand(rom, metadata, out _);
             // If the second command copyvarifnotzero with a target of var 0x8001 return false
             if (command2.code != Gen3Command.copyvarifnotzero || command2.ArgData(0) != Gen3Command.itemQuantityVar)
             {
                 rom.LoadOffset();
                 return false;
             }
-            var command3 = ReadCommand(rom, out _);
+            var command3 = ReadCommand(rom, metadata, out _);
             // If the third command isn't callstd with an valid give item arg return false
             if (command3.code != Gen3Command.callstd || command3.ArgData(0) != CallStd.giveItemObtain && command3.ArgData(0) != CallStd.giveItemFind)
             {
@@ -319,16 +319,36 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
         /// <summary>
         /// Read a raw command from the ROM
         /// </summary>
-        private Gen3Command ReadCommand(Rom rom, out bool success)
+        private Gen3Command ReadCommand(Rom rom, RomMetadata metadata, out bool success)
         {
             var command = new Gen3Command() { code = rom.ReadByte() };
-            if (!Gen3Command.commandMap.ContainsKey(command.code))
+            Gen3Command.Arg[] args = null;
+            if (Gen3Command.commandMap.ContainsKey(command.code))
+            {
+                args = Gen3Command.commandMap[command.code];
+
+            }
+            else if(metadata.IsFireRedOrLeafGreen)
+            {
+                if (Gen3Command.frlgCommandMap.ContainsKey(command.code))
+                {
+                    args = Gen3Command.frlgCommandMap[command.code];
+                }
+            }
+            else if (metadata.IsRubySapphireOrEmerald)
+            {
+                if (Gen3Command.rseCommandMap.ContainsKey(command.code))
+                {
+                    args = Gen3Command.rseCommandMap[command.code];
+                }
+            }
+            if(args == null)
             {
                 Logger.main.Error($"Unrecognized script command code: {command.code:x2}");
                 success = false;
                 return command;
             }
-            ReadArgs(ref command, rom, Gen3Command.commandMap[command.code]);
+            ReadArgs(ref command, rom, args);
             success = true;
             return command;
         }

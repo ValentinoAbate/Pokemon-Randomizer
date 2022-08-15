@@ -160,7 +160,8 @@ namespace PokemonRandomizer.Backend.Scripting.GenIII
         public const byte showmoney                           = 0x93;
         public const byte hidemoney                           = 0x94;
         public const byte updatemoney                         = 0x95;
-        public const byte cmd96                               = 0x96;
+        public const byte getpricereductionrse                = 0x96;
+        public const byte nop96frlg                           = 0x96;
         public const byte fadescreen                          = 0x97;
         public const byte fadescreendelay                     = 0x98;
         public const byte darken                              = 0x99;
@@ -221,7 +222,8 @@ namespace PokemonRandomizer.Backend.Scripting.GenIII
         public const byte setworldmapflag                     = 0xD0;
         public const byte warpteleport2                       = 0xD1;
         public const byte setcatchlocation                    = 0xD2;
-        public const byte braillelength                       = 0xD3;  
+        public const byte braillelengthfrlg                   = 0xD3; 
+        public const byte moverotatingtilesem                 = 0xD3; 
         public const byte bufferitems                         = 0xD4;
         public const byte nopD5                               = 0xD5;
         public const byte cmdD6                               = 0xD6;
@@ -294,7 +296,7 @@ namespace PokemonRandomizer.Backend.Scripting.GenIII
 
         #endregion
 
-        public static readonly Dictionary<byte, Arg[]> commandMap = new Dictionary<byte, Arg[]>()
+        public static readonly Dictionary<byte, Arg[]> commandMap = new()
         {
             {nop                 , noArgs            },
             {nop1                , noArgs            },
@@ -446,7 +448,6 @@ namespace PokemonRandomizer.Backend.Scripting.GenIII
             {showmoney           , byte2             },
             {hidemoney           , byte2             },
             {updatemoney         , byte2             },
-            {cmd96               , word              }, // Used in a map script in emerald contest hall (13.4). Has no args in FR
             {fadescreen          , byte1             },
             {fadescreendelay     , byte2             },
             {darken              , word              },
@@ -507,7 +508,6 @@ namespace PokemonRandomizer.Backend.Scripting.GenIII
             {setworldmapflag     , word              },
             {warpteleport2       , warpArgs          },
             {setcatchlocation    , wordByte          },
-            {braillelength       , pointer           },
             {bufferitems         , byteWord2         }, // Byte word 2
             {nopD5               , noArgs            },
             {cmdD6               , noArgs            },
@@ -523,6 +523,18 @@ namespace PokemonRandomizer.Backend.Scripting.GenIII
             {warp8               , warpArgs          },
             {buffercontesttype   , wordByte          },
             {bufferitems2        , byteWord2         },
+        };
+
+        public static readonly Dictionary<byte, Arg[]> frlgCommandMap = new()
+        {
+            {braillelengthfrlg   , pointer           },
+            {nop96frlg           , noArgs            },
+        };
+
+        public static readonly Dictionary<byte, Arg[]> rseCommandMap = new()
+        {
+            {moverotatingtilesem , byteWord          }, // In Emerald For the rotating tile puzzles in Mossdeep Gym / Trick House Room 7. Moves the objects one rotation on the colored puzzle specified by puzzleNumber.
+            {getpricereductionrse, word              }, // Gets the price reduction for the index given. 
         };
 
         public static Arg[] GetTrainerArgs(int trainerType)
