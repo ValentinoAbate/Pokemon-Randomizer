@@ -41,6 +41,11 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
                     script.Add(command);
                     break;
                 }
+                else if (command.code == Gen3Command.callstd && command.ArgData(0) == CallStd.unknown28)
+                {
+                    script.Add(command);
+                    break;
+                }
                 else if (command.code == Gen3Command.@goto)
                 {
                     var gotoCommand = new GotoCommand()

@@ -17,5 +17,6 @@
         public const byte messageBoxPokenavEm = 0x0A;
         public const byte putItemAwayFRLG = 0x08;
         public const byte recieveItemFRLG = 0x09;
+        public const byte unknown28 = 0x28;
     }
 }
