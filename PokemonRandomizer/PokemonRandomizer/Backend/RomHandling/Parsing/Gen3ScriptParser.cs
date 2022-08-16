@@ -36,7 +36,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
                     }
                     break;
                 }
-                if (command.code == Gen3Command.end || command.code == Gen3Command.@return)
+                if (command.code is Gen3Command.end or Gen3Command.@return or Gen3Command.gotostd or Gen3Command.killscript or Gen3Command.jumpram)
                 {
                     script.Add(command);
                     break;
