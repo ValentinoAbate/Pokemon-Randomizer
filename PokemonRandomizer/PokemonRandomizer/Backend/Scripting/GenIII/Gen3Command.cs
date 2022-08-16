@@ -455,7 +455,7 @@ namespace PokemonRandomizer.Backend.Scripting.GenIII
             {preparemsg2         , pointer           },
             {doanimation         , word              },
             {setanimation        , byteWord          },
-            {checkanimation      , word2             },
+            {checkanimation      , word              },
             {sethealingplace     , word              },
             {checkgender         , noArgs            },
             {cry                 , word2             },
