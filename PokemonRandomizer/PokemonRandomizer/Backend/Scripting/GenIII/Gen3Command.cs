@@ -226,7 +226,8 @@ namespace PokemonRandomizer.Backend.Scripting.GenIII
         public const byte setcatchlocation                    = 0xD2;
         public const byte braillelengthfrlg                   = 0xD3; 
         public const byte moverotatingtilesem                 = 0xD3; 
-        public const byte bufferitems                         = 0xD4;
+        public const byte bufferitemsfrlg                     = 0xD4;
+        public const byte turnrotatingtilesem                 = 0xD4;
         public const byte initrotatingtilesem                 = 0xD5;
         public const byte freerotatingtilesem                 = 0xD6;
         public const byte warpmossdeepgymem                   = 0xD7;
@@ -508,7 +509,6 @@ namespace PokemonRandomizer.Backend.Scripting.GenIII
             {setworldmapflag     , word              },
             {warpteleport2       , warpArgs          },
             {setcatchlocation    , wordByte          },
-            {bufferitems         , byteWord2         }, // Byte word 2
             {initrotatingtilesem , word              },
             {freerotatingtilesem , noArgs            },
             {warpmossdeepgymem   , warpArgs          },
@@ -531,6 +531,7 @@ namespace PokemonRandomizer.Backend.Scripting.GenIII
             {nop8Afrlg           , noArgs            },
             {nop96frlg           , noArgs            },
             {braillelengthfrlg   , pointer           },
+            {bufferitemsfrlg     , byteWord2         }, // Byte word 2
         };
 
         public static readonly Dictionary<byte, Arg[]> rseCommandMap = new()
@@ -538,7 +539,8 @@ namespace PokemonRandomizer.Backend.Scripting.GenIII
             {initclockrse        , word2             }, // Initialize the RTC
             {setberrytreerse     , byte3             },
             {getpricereductionrse, word              }, // Gets the price reduction for the index given. 
-            {moverotatingtilesem , byteWord          }, // In Emerald For the rotating tile puzzles in Mossdeep Gym / Trick House Room 7. Moves the objects one rotation on the colored puzzle specified by puzzleNumber.
+            {moverotatingtilesem , word              }, // In Emerald For the rotating tile puzzles in Mossdeep Gym / Trick House Room 7. Moves the objects one rotation on the colored puzzle specified by puzzleNumber.
+            {turnrotatingtilesem , noArgs            }, // For the rotating tile puzzles in Mossdeep Gym / Trick House Room 7. Updates the facing direction of all objects on the puzzle tiles
         };
 
         public static Arg[] GetTrainerArgs(int trainerType)
