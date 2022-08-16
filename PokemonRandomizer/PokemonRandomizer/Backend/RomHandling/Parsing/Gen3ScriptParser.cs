@@ -147,7 +147,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
                     // Add new poke mart event
                     script.Add(ParseShopCommand(rom, command));
                 }
-                else if (command.code == Gen3Command.setberrytree)
+                else if (command.code == Gen3Command.setberrytreerse)
                 {
                     script.Add(ParseBerryTreeCommand(rom, command));
                 }

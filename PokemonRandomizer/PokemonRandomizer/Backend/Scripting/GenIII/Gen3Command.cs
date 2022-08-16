@@ -54,7 +54,8 @@ namespace PokemonRandomizer.Backend.Scripting.GenIII
         public const byte setflag                             = 0x29;
         public const byte clearflag                           = 0x2A;
         public const byte checkflag                           = 0x2B;
-        public const byte nop2C                               = 0x2C;
+        public const byte nop2Cfrlg                           = 0x2C;
+        public const byte initclockrse                        = 0x2C;
         public const byte checkdailyflags                     = 0x2D;
         public const byte resetvars                           = 0x2E;
         public const byte sound                               = 0x2F;
@@ -148,7 +149,8 @@ namespace PokemonRandomizer.Backend.Scripting.GenIII
         public const byte pokemart2                           = 0x87;
         public const byte pokemart3                           = 0x88;
         public const byte pokecasino                          = 0x89;
-        public const byte setberrytree                        = 0x8A;
+        public const byte nop8Afrlg                           = 0x8A;
+        public const byte setberrytreerse                     = 0x8A;
         public const byte choosecontextpkmn                   = 0x8B;
         public const byte startcontest                        = 0x8C;
         public const byte showcontestresults                  = 0x8D;
@@ -188,8 +190,8 @@ namespace PokemonRandomizer.Backend.Scripting.GenIII
         public const byte doorchange                          = 0xAE;
         public const byte setdooropened2                      = 0xAF;
         public const byte setdoorclosed2                      = 0xB0;
-        public const byte nopB1                               = 0xB1;
-        public const byte nopB2                               = 0xB2;
+        public const byte nopB1                               = 0xB1; // addelevmenuitem RS
+        public const byte nopB2                               = 0xB2; // showelevmenu RS
         public const byte checkcoins                          = 0xB3;
         public const byte givecoins                           = 0xB4;
         public const byte removecoins                         = 0xB5;
@@ -225,12 +227,12 @@ namespace PokemonRandomizer.Backend.Scripting.GenIII
         public const byte braillelengthfrlg                   = 0xD3; 
         public const byte moverotatingtilesem                 = 0xD3; 
         public const byte bufferitems                         = 0xD4;
-        public const byte nopD5                               = 0xD5;
-        public const byte cmdD6                               = 0xD6;
-        public const byte warp7                               = 0xD7;
-        public const byte cmdD8                               = 0xD8;
-        public const byte cmdD9                               = 0xD9;
-        public const byte hidebox2                            = 0xDA;
+        public const byte initrotatingtilesem                 = 0xD5;
+        public const byte freerotatingtilesem                 = 0xD6;
+        public const byte warpmossdeepgymem                   = 0xD7;
+        public const byte selectapproachingtr                 = 0xD8;
+        public const byte lockfortrainerem                    = 0xD9;
+        public const byte closebraillemessage                 = 0xDA;
         public const byte preparemsg3                         = 0xDB;
         public const byte fadescreen3                         = 0xDC;
         public const byte buffertrainerclass                  = 0xDD;
@@ -342,7 +344,6 @@ namespace PokemonRandomizer.Backend.Scripting.GenIII
             {setflag             , word              },
             {clearflag           , word              },
             {checkflag           , word              },
-            {nop2C               , noArgs            },
             {checkdailyflags     , noArgs            },
             {resetvars           , noArgs            },
             {sound               , word              },
@@ -436,7 +437,6 @@ namespace PokemonRandomizer.Backend.Scripting.GenIII
             {pokemart2           , pointer           },
             {pokemart3           , pointer           },
             {pokecasino          , word              },
-            {setberrytree        , byte3             },
             {choosecontextpkmn   , noArgs            },
             {startcontest        , noArgs            },
             {showcontestresults  , noArgs            },
@@ -474,7 +474,7 @@ namespace PokemonRandomizer.Backend.Scripting.GenIII
             {doorchange          , noArgs            },
             {setdooropened2      , word2             },
             {setdoorclosed2      , word2             },
-            {nopB1               , noArgs            },
+            {nopB1               , noArgs            }, // seems to have args in Em: addelevmenuitem a:req, b:req, c:req, d:req (byte word3)
             {nopB2               , noArgs            },
             {checkcoins          , word              },
             {givecoins           , word              },
@@ -509,12 +509,12 @@ namespace PokemonRandomizer.Backend.Scripting.GenIII
             {warpteleport2       , warpArgs          },
             {setcatchlocation    , wordByte          },
             {bufferitems         , byteWord2         }, // Byte word 2
-            {nopD5               , noArgs            },
-            {cmdD6               , noArgs            },
-            {warp7               , warpArgs          },
-            {cmdD8               , noArgs            },
-            {cmdD9               , noArgs            },
-            {hidebox2            , noArgs            },
+            {initrotatingtilesem , word              },
+            {freerotatingtilesem , noArgs            },
+            {warpmossdeepgymem   , warpArgs          },
+            {selectapproachingtr , noArgs            }, // selectapproachingtrainer
+            {lockfortrainerem    , noArgs            },
+            {closebraillemessage , noArgs            },
             {preparemsg3         , pointer           },
             {fadescreen3         , byte1             },
             {buffertrainerclass  , wordByte          },
@@ -527,14 +527,18 @@ namespace PokemonRandomizer.Backend.Scripting.GenIII
 
         public static readonly Dictionary<byte, Arg[]> frlgCommandMap = new()
         {
-            {braillelengthfrlg   , pointer           },
+            {nop2Cfrlg           , noArgs            },
+            {nop8Afrlg           , noArgs            },
             {nop96frlg           , noArgs            },
+            {braillelengthfrlg   , pointer           },
         };
 
         public static readonly Dictionary<byte, Arg[]> rseCommandMap = new()
         {
-            {moverotatingtilesem , byteWord          }, // In Emerald For the rotating tile puzzles in Mossdeep Gym / Trick House Room 7. Moves the objects one rotation on the colored puzzle specified by puzzleNumber.
+            {initclockrse        , word2             }, // Initialize the RTC
+            {setberrytreerse     , byte3             },
             {getpricereductionrse, word              }, // Gets the price reduction for the index given. 
+            {moverotatingtilesem , byteWord          }, // In Emerald For the rotating tile puzzles in Mossdeep Gym / Trick House Room 7. Moves the objects one rotation on the colored puzzle specified by puzzleNumber.
         };
 
         public static Arg[] GetTrainerArgs(int trainerType)
