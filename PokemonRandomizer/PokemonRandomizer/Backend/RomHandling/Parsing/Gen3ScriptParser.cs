@@ -11,21 +11,28 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
 
     public class Gen3ScriptParser
     {
+        private readonly HashSet<int> scriptOffsets = new HashSet<int>();
+        private readonly HashSet<int> visitedOffsets = new HashSet<int>(255);
         public Script Parse(Rom rom, int offset, RomMetadata metadata)
         {
-            var visited = new HashSet<int>();
-            var script = Parse(rom, offset, offset, metadata, ref visited);
-            return script;
+            visitedOffsets.Clear();
+            return Parse(rom, offset, offset, metadata);
         }
 
-        private Script Parse(Rom rom, int offset, int originalOffset, RomMetadata metadata, ref HashSet<int> visited)
+        private Script Parse(Rom rom, int offset, int originalOffset, RomMetadata metadata)
         {
+            // If we have already been to this offset or we have already parsed this script
+            if (visitedOffsets.Contains(offset) || scriptOffsets.Contains(offset))
+            {
+                return null;
+            }
+            scriptOffsets.Add(offset);
             rom.SaveOffset();
             rom.Seek(offset);
             var script = new Script();
             while (true)
             {
-                visited.Add(rom.InternalOffset);
+                visitedOffsets.Add(rom.InternalOffset);
                 var command = ReadCommand(rom, metadata, out bool knownCommand);
                 if (!knownCommand)
                 {
@@ -53,11 +60,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
                         offset = command.ArgData(0),
                     };
                     script.Add(gotoCommand);
-                    // If we haven't encountered this offset, then parse the script at the goto location
-                    if (!visited.Contains(gotoCommand.offset))
-                    {
-                        gotoCommand.script = Parse(rom, gotoCommand.offset, originalOffset, metadata, ref visited);
-                    }
+                    gotoCommand.script = Parse(rom, gotoCommand.offset, originalOffset, metadata);
                     break;
                 }
                 else if (command.code == Gen3Command.gotoif)
@@ -68,11 +71,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
                         offset = command.ArgData(1),
                     };
                     script.Add(gotoCommand);
-                    // If we haven't encountered this offset, then parse the branch
-                    if (!visited.Contains(gotoCommand.offset))
-                    {
-                        gotoCommand.script = Parse(rom, gotoCommand.offset, originalOffset, metadata, ref visited);
-                    }
+                    gotoCommand.script = Parse(rom, gotoCommand.offset, originalOffset, metadata);
                 }
                 else if (command.code == Gen3Command.call)
                 {
@@ -81,11 +80,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
                         offset = command.ArgData(0),
                     };
                     script.Add(callCommand);
-                    // If we haven't encountered this offset, then parse the script at the call location
-                    if (!visited.Contains(callCommand.offset))
-                    {
-                        callCommand.script = Parse(rom, callCommand.offset, originalOffset, metadata, ref visited);
-                    }
+                    callCommand.script = Parse(rom, callCommand.offset, originalOffset, metadata);
                 }
                 else if (command.code == Gen3Command.callif)
                 {
@@ -95,11 +90,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
                         offset = command.ArgData(1),
                     };
                     script.Add(callCommand);
-                    // If we haven't encountered this offset, then parse the branch
-                    if (!visited.Contains(callCommand.offset))
-                    {
-                        callCommand.script = Parse(rom, callCommand.offset, originalOffset, metadata, ref visited);
-                    }
+                    callCommand.script = Parse(rom, callCommand.offset, originalOffset, metadata);
                 }
                 else if (command.code == Gen3Command.special)
                 {
@@ -129,7 +120,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
                 }
                 else if (command.code == Gen3Command.trainerbattle)
                 {
-                    script.Add(ParseTrainerBattleCommand(rom, command, originalOffset, metadata, ref visited));
+                    script.Add(ParseTrainerBattleCommand(rom, command, originalOffset, metadata));
                 }
                 else if (command.code == Gen3Command.givePokemon)
                 {
@@ -220,7 +211,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
             }
         }
 
-        private TrainerBattleCommand ParseTrainerBattleCommand(Rom rom, Gen3Command command, int originalOffset, RomMetadata metadata, ref HashSet<int> visited)
+        private TrainerBattleCommand ParseTrainerBattleCommand(Rom rom, Gen3Command command, int originalOffset, RomMetadata metadata)
         {
             var battle = new TrainerBattleCommand()
             {
@@ -251,10 +242,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
             if (battle.trainerType == TrainerBattleCommand.Type.GymLeader || battle.trainerType == TrainerBattleCommand.Type.MatchCallRegister)
             {
                 battle.postBattleScriptOffset = command.ArgData(5);
-                if (!visited.Contains(battle.postBattleScriptOffset))
-                {
-                    battle.postBattleScript = Parse(rom, battle.postBattleScriptOffset, originalOffset, metadata, ref visited);
-                }
+                battle.postBattleScript = Parse(rom, battle.postBattleScriptOffset, originalOffset, metadata);
                 return battle;
             }
             // Double battles
@@ -263,10 +251,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
             if (battle.trainerType == TrainerBattleCommand.Type.DoubleBattleWithExtraScript || battle.trainerType == TrainerBattleCommand.Type.DoubleBattleGymLeader)
             {
                 battle.postBattleScriptOffset = command.ArgData(6);
-                if (!visited.Contains(battle.postBattleScriptOffset))
-                {
-                    battle.postBattleScript = Parse(rom, battle.postBattleScriptOffset, originalOffset, metadata, ref visited);
-                }
+                battle.postBattleScript = Parse(rom, battle.postBattleScriptOffset, originalOffset, metadata);
             }
             return battle;
         }
@@ -389,6 +374,11 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
                     });
                 }
             }
+        }
+
+        public void Clear()
+        {
+            scriptOffsets.Clear();
         }
     }
 }

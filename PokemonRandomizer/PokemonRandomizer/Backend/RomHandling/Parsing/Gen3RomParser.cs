@@ -33,6 +33,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
         public override RomData Parse(Rom rom, RomMetadata metadata, XmlManager info)
         {
             Timer.main.Start();
+            scriptParser.Clear();
             RomData data = new RomData();
 
             #region Move Mappings (TMs/HMs/Tutors)
