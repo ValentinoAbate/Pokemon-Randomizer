@@ -124,7 +124,7 @@ namespace PokemonRandomizer.Backend.DataStructures
 					internalToWeather[kvp.Value] = kvp.Key;
                 }
             }
-			public bool IsWeatherTrigger => scriptOffset == Rom.nullPointer || script == null;
+			public bool IsWeatherTrigger => scriptOffset == Rom.nullPointer;
 			public Map.Weather Weather
             {
 				get => IsWeatherTrigger && internalToWeather.ContainsKey(variableIndex) ? internalToWeather[variableIndex] : Map.Weather.House;
