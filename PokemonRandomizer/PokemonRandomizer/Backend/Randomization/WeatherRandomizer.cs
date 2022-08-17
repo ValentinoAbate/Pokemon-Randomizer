@@ -1,4 +1,5 @@
 ﻿using PokemonRandomizer.Backend.DataStructures;
+using PokemonRandomizer.Backend.DataStructures.Scripts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,6 +16,7 @@ namespace PokemonRandomizer.Backend.Randomization
         {
             this.rand = rand;
         }
+
         public void RandomizeWeather(Map map, Settings settings)
         {
             if (settings.WeatherSetting == Settings.WeatherOption.Unchanged)
@@ -61,7 +63,94 @@ namespace PokemonRandomizer.Backend.Randomization
                 choices.RemoveIfContains(Weather.RainSometimes2);
             }
             if (choices.Count > 0)
-                m.weather = rand.Choice(choices);
+            {
+                var newWeather = rand.Choice(choices);
+                if(newWeather == m.weather)
+                {
+                    return;
+                }
+                SetWeather(m, newWeather);
+            }
+        }
+
+        private void SetWeather(Map map, Weather newWeather)
+        {
+            if (!map.HasClearWeather)
+            {
+                map.weather = newWeather;
+                return;
+            }
+            bool isHeaderWeather = true;
+            var setWeatherCommands = new List<SetWeatherCommand>();
+            var weatherTriggers = new List<MapEventData.TriggerEvent>(map.eventData.triggerEvents.Count);
+            foreach (var trigger in map.eventData.triggerEvents)
+            {
+                if (trigger.IsWeatherTrigger)
+                {
+                    if(trigger.Weather != map.weather)
+                    {
+                        isHeaderWeather = false;
+                    }
+                    weatherTriggers.Add(trigger);
+                }
+                else if (trigger.script != null)
+                {
+                    FindWeatherCommands(map, trigger.script, setWeatherCommands, out bool foundNonHeaderWeather);
+                    if (foundNonHeaderWeather)
+                    {
+                        isHeaderWeather = false;
+                    }
+                }
+            }
+            foreach (var mapScript in map.scriptData.scripts)
+            {
+                FindWeatherCommands(map, mapScript.script, setWeatherCommands, out bool foundNonHeaderWeather);
+                if (foundNonHeaderWeather)
+                {
+                    isHeaderWeather = false;
+                }
+            }
+            if (isHeaderWeather)
+            {
+                map.weather = newWeather;
+            }
+            else
+            {
+                foreach(var trigger in weatherTriggers)
+                {
+                    if (trigger.Weather == map.weather)
+                    {
+                        continue; // TODO: Desert exception
+                    }
+                    trigger.Weather = newWeather;
+                }
+                foreach(var command in setWeatherCommands)
+                {
+                    if(command.weather == map.weather)
+                    {
+                        continue; // TODO: Desert exception
+                    }
+                    command.weather = newWeather;
+                }
+            }
+        }
+
+        private void FindWeatherCommands(Map map, Script script, List<SetWeatherCommand> commands, out bool foundNonHeaderWeather)
+        {
+            foundNonHeaderWeather = false;
+            if (script == null)
+                return;
+            foreach (var command in script)
+            {
+                if (command is SetWeatherCommand weatherCommand)
+                {
+                    if (weatherCommand.weather != map.weather)
+                    {
+                        foundNonHeaderWeather = true;
+                    }
+                    commands.Add(weatherCommand);
+                }
+            }
         }
     }
 }

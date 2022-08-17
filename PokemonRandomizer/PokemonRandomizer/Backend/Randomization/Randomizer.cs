@@ -564,7 +564,6 @@ namespace PokemonRandomizer.Backend.Randomization
                 {
                     scriptRandomizationArgs.gymMetadata = null;
                 }
-                scriptRandomizationArgs.map = map;
 
                 // Randomize Hidden Items
                 foreach (var sEvent in map.eventData.signEvents)
@@ -598,14 +597,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 // Randomize Trigger Events
                 foreach (var trigger in map.eventData.triggerEvents)
                 {
-                    if(trigger.IsWeatherTrigger)
-                    {
-                        if(map.weather != map.OriginalWeather && trigger.Weather == map.OriginalWeather)
-                        {
-                            trigger.Weather = map.weather;
-                        }
-                    }
-                    else if(trigger.script != null)
+                    if(trigger.script != null)
                     {
                         scriptRand.RandomizeScript(trigger.script, settings, scriptRandomizationArgs);
                     }
