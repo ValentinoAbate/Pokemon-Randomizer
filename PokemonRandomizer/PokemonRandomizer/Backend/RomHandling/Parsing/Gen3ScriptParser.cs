@@ -154,7 +154,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
                 }
                 else if (command.code == Gen3Command.setweather)
                 {
-                    script.Add(new SetWeatherCommand() { weather = (Map.Weather)command.ArgData(0) });
+                    script.Add(new SetWeatherCommand() { Weather = (Map.Weather)command.ArgData(0) });
                 }
                 else // Not a special code, just push the command
                 {

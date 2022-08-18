@@ -172,7 +172,9 @@
 
         public bool IsGym => battleField == 0x01;
 
-        public bool HasClearWeather => weather is Weather.Clear or Weather.Cloudy or Weather.House;
+        public bool HasClearWeather => IsWeatherClear(weather);
+
+        public static bool IsWeatherClear(Weather weather) => weather is Weather.Clear or Weather.Cloudy or Weather.House;
 
         public Weather OriginalWeather { get; private set; }
 

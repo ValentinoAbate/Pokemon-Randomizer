@@ -1,5 +1,6 @@
 ﻿using PokemonRandomizer.Backend.DataStructures;
 using PokemonRandomizer.Backend.DataStructures.Scripts;
+using PokemonRandomizer.Backend.Utilities;
 using System;
 using System.Collections.Generic;
 using static PokemonRandomizer.Backend.DataStructures.Map;
@@ -66,89 +67,88 @@ namespace PokemonRandomizer.Backend.Randomization
                 {
                     return;
                 }
-                SetWeather(m, newWeather);
+                if (!m.HasClearWeather)
+                {
+                    m.weather = newWeather;
+                    return;
+                }
+                var nonHeaderWeathers = new Dictionary<Weather, List<IHasWeather>>(3);
+                GetNonHeaderWeathers(m, ref nonHeaderWeathers);
+                if(nonHeaderWeathers.Count <= 0)
+                {
+                    m.weather = newWeather;
+                    return;
+                }
+                // TODO: Desert exception
+                //if (settings.randomizeAllWeather(map))
+                //{
+                //    m.weather = newWeather;
+                //    choices.Remove(newWeather);
+                //    if (choices.Count <= 0)
+                //    {
+                //        return;
+                //    }
+                //    newWeather = rand.Choice(choices);
+                //}
+                if (settings.OnlyChangeClearWeather)
+                {
+                    return;
+                }
+                foreach(var kvp in nonHeaderWeathers)
+                {
+                    foreach(var setWeather in kvp.Value)
+                    {
+                        setWeather.Weather = newWeather;
+                    }
+                    choices.Remove(newWeather);
+                    if(choices.Count <= 0)
+                    {
+                        return;
+                    }
+                    newWeather = rand.Choice(choices);
+                }
+                // If settings says override all weathers
             }
         }
 
-        private void SetWeather(Map map, Weather newWeather)
+        private void GetNonHeaderWeathers(Map map, ref Dictionary<Weather, List<IHasWeather>> nonHeaderWeathers)
         {
-            if (!map.HasClearWeather)
-            {
-                map.weather = newWeather;
-                return;
-            }
-            bool isHeaderWeather = true;
-            var setWeatherCommands = new List<SetWeatherCommand>();
-            var weatherTriggers = new List<MapEventData.TriggerEvent>(map.eventData.triggerEvents.Count);
+            nonHeaderWeathers.Clear();
             foreach (var trigger in map.eventData.triggerEvents)
             {
                 if (trigger.IsWeatherTrigger)
                 {
-                    if(trigger.Weather != map.weather)
+                    if (IsEligibleNonHeaderWeather(trigger.Weather))
                     {
-                        isHeaderWeather = false;
+                        nonHeaderWeathers.AddOrAppend(trigger.Weather, trigger);
                     }
-                    weatherTriggers.Add(trigger);
                 }
                 else if (trigger.script != null)
                 {
-                    FindWeatherCommands(map, trigger.script, setWeatherCommands, out bool foundNonHeaderWeather);
-                    if (foundNonHeaderWeather)
-                    {
-                        isHeaderWeather = false;
-                    }
+                    FindWeatherCommands(trigger.script, nonHeaderWeathers);
                 }
             }
             foreach (var mapScript in map.scriptData.scripts)
             {
-                FindWeatherCommands(map, mapScript.script, setWeatherCommands, out bool foundNonHeaderWeather);
-                if (foundNonHeaderWeather)
-                {
-                    isHeaderWeather = false;
-                }
-            }
-            if (isHeaderWeather)
-            {
-                map.weather = newWeather;
-            }
-            else
-            {
-                foreach(var trigger in weatherTriggers)
-                {
-                    if (trigger.Weather == map.weather)
-                    {
-                        continue; // TODO: Desert exception
-                    }
-                    trigger.Weather = newWeather;
-                }
-                foreach(var command in setWeatherCommands)
-                {
-                    if(command.weather == map.weather)
-                    {
-                        continue; // TODO: Desert exception
-                    }
-                    command.weather = newWeather;
-                }
+                FindWeatherCommands(mapScript.script, nonHeaderWeathers);
             }
         }
 
-        private void FindWeatherCommands(Map map, Script script, List<SetWeatherCommand> commands, out bool foundNonHeaderWeather)
+        private void FindWeatherCommands(Script script, Dictionary<Weather, List<IHasWeather>> weatherCommands)
         {
-            bool found = false;
             void ProcessCommand(Command command)
             {
-                if (command is SetWeatherCommand weatherCommand)
+                if (command is SetWeatherCommand weatherCommand && IsEligibleNonHeaderWeather(weatherCommand.Weather))
                 {
-                    if (weatherCommand.weather != map.weather)
-                    {
-                        found = true;
-                    }
-                    commands.Add(weatherCommand);
+                    weatherCommands.AddOrAppend(weatherCommand.Weather, weatherCommand);
                 }
             }
             script?.ApplyRecursively(ProcessCommand);
-            foundNonHeaderWeather = found;
         }
 
+        private static bool IsEligibleNonHeaderWeather(Weather weather)
+        {
+            return !IsWeatherClear(weather) && weather != Weather.Chaos;
+        }
     }
 }

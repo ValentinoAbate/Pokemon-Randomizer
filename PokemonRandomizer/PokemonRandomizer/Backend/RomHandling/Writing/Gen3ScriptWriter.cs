@@ -89,7 +89,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
                         break;
                     case SetWeatherCommand setWeatherCommand:
                         rom.WriteByte(Gen3Command.setweather);
-                        rom.WriteUInt16((int)setWeatherCommand.weather);
+                        rom.WriteUInt16((int)setWeatherCommand.Weather);
                         break;
                     case Gen3Command gen3Command:
                         rom.WriteByte(gen3Command.code);

@@ -97,7 +97,7 @@ namespace PokemonRandomizer.Backend.DataStructures
 			public byte bankIndex;
 		}
 
-		public class TriggerEvent
+		public class TriggerEvent : IHasWeather
         {
 			private static readonly Dictionary<Map.Weather, int> weatherToInternal = new()
 			{
