@@ -53,7 +53,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 choices.RemoveIfContains(Weather.RainHeavyThunderstrorm);
                 choices.RemoveIfContains(Weather.Sandstorm);
                 choices.RemoveIfContains(Weather.Snow);
-                choices.RemoveIfContains(Weather.SnowSteady);
+                choices.RemoveIfContains(Weather.FallingAsh);
                 choices.RemoveIfContains(Weather.StrongSunlight);
                 choices.RemoveIfContains(Weather.Chaos);
                 choices.RemoveIfContains(Weather.RainSometimes1);
@@ -134,8 +134,6 @@ namespace PokemonRandomizer.Backend.Randomization
 
         private void FindWeatherCommands(Map map, Script script, List<SetWeatherCommand> commands, out bool foundNonHeaderWeather)
         {
-            if (script == null)
-                return;
             bool found = false;
             void ProcessCommand(Command command)
             {
