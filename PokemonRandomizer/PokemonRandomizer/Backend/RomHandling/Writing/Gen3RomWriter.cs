@@ -225,7 +225,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
                         rom.WriteBlock(info.HexAttr(ElementNames.GenIII.hailHack, "snowPostBattleFixOffset"), info.ByteArrayAttr(ElementNames.GenIII.hailHack, "snowPostBattleAsm"));
                     }
                 }
-                if (option.HasFlag(Settings.HailHackOption.SteadySnow))
+                if (option.HasFlag(Settings.HailHackOption.FallingAsh))
                 {
                     // Add battle weather routine
                     rom.WritePointer(info.HexAttr(ElementNames.GenIII.hailHack, "steadySnowRoutineOffset"), (int)hailHackroutineOffset);

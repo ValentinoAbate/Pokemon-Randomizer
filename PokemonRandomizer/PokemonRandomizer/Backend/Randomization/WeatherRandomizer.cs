@@ -2,9 +2,6 @@
 using PokemonRandomizer.Backend.DataStructures.Scripts;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using static PokemonRandomizer.Backend.DataStructures.Map;
 
 namespace PokemonRandomizer.Backend.Randomization
@@ -137,20 +134,23 @@ namespace PokemonRandomizer.Backend.Randomization
 
         private void FindWeatherCommands(Map map, Script script, List<SetWeatherCommand> commands, out bool foundNonHeaderWeather)
         {
-            foundNonHeaderWeather = false;
             if (script == null)
                 return;
-            foreach (var command in script)
+            bool found = false;
+            void ProcessCommand(Command command)
             {
                 if (command is SetWeatherCommand weatherCommand)
                 {
                     if (weatherCommand.weather != map.weather)
                     {
-                        foundNonHeaderWeather = true;
+                        found = true;
                     }
                     commands.Add(weatherCommand);
                 }
             }
+            script?.ApplyRecursively(ProcessCommand);
+            foundNonHeaderWeather = found;
         }
+
     }
 }

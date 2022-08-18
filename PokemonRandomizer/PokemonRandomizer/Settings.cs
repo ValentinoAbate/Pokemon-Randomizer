@@ -378,8 +378,8 @@ namespace PokemonRandomizer
         { 
             None = 0,
             Snow = 1,
-            SteadySnow = 2,
-            Both = Snow | SteadySnow,
+            FallingAsh = 2,
+            Both = Snow | FallingAsh,
         }
 
         /// <summary>

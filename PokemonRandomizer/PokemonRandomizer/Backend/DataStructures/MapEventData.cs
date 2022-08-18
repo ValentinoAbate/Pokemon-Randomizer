@@ -108,7 +108,7 @@ namespace PokemonRandomizer.Backend.DataStructures
 				{ Map.Weather.RainThunderstorm, 5 },
 				{ Map.Weather.MistSteady, 6 },
 				{ Map.Weather.MistFromTopRight, 7 },
-				{ Map.Weather.SnowSteady, 8 },
+				{ Map.Weather.FallingAsh, 8 },
 				{ Map.Weather.Sandstorm, 9 },
 				{ Map.Weather.Cloudy, 10 },
 				{ Map.Weather.StrongSunlight, 11 },

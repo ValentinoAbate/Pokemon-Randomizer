@@ -24,7 +24,7 @@
             Snow,
             RainThunderstorm,
             MistSteady,
-            SnowSteady,
+            FallingAsh,
             Sandstorm,
             MistFromTopRight,
             MistDenseBright,
@@ -39,9 +39,9 @@
 
         public static bool WeatherAffectsBattle(Weather w, Settings.HailHackOption hailHack)
         {
-            if(w is Weather.SnowSteady)
+            if(w is Weather.FallingAsh)
             {
-                return hailHack.HasFlag(Settings.HailHackOption.SteadySnow);
+                return hailHack.HasFlag(Settings.HailHackOption.FallingAsh);
             }
             else if(w is Weather.Snow)
             {
@@ -168,11 +168,11 @@
 
         public string Name { get; set; }
 
-        public bool IsOutdoors => mapType == Type.Route || mapType == Type.City || mapType == Type.Village;
+        public bool IsOutdoors => mapType is Type.Route or Type.City or Type.Village;
 
         public bool IsGym => battleField == 0x01;
 
-        public bool HasClearWeather => weather == Weather.Clear || weather == Weather.Cloudy || weather == Weather.House;
+        public bool HasClearWeather => weather is Weather.Clear or Weather.Cloudy or Weather.House;
 
         public Weather OriginalWeather { get; private set; }
 
