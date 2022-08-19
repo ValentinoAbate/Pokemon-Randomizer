@@ -538,6 +538,8 @@ namespace PokemonRandomizer.Backend.Randomization
                 items = items,
                 pokemonSet = pokemonSet,
                 fossilSet = fossilSet,
+                staticPokemonMap = new Dictionary<Pokemon, Pokemon>(),
+                staticPokemonSet = new HashSet<Pokemon>(pokemonSet),
             };
             // Initialize gym metadata
             var gymMetadataDict = new Dictionary<string, GymMetadata>(16); // 8 gyms + extra room for invalid gyms

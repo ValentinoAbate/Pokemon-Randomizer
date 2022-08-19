@@ -308,6 +308,7 @@ namespace PokemonRandomizer
         }
 
         public abstract double StaticEncounterRandChance { get; }
+        public abstract PokemonSettings StaticEncounterSettings { get; }
         public abstract LegendaryRandSetting StaticLegendaryRandomizationStrategy { get; }
         public abstract bool PreventDuplicateStaticEncounters { get; }
         public abstract bool RemapStaticEncounters { get; }
@@ -579,6 +580,17 @@ namespace PokemonRandomizer
             public bool ForceHighestLegalEvolution { get; set; } = false;
             public bool BanLegendaries { get; set; } = false;
             public float Noise { get; set; } = 0;
+
+            public PokemonSettings() { }
+
+            public PokemonSettings(PokemonSettings other)
+            {
+                Data = new List<MetricData>(other.Data);
+                RestrictIllegalEvolutions = other.RestrictIllegalEvolutions;
+                ForceHighestLegalEvolution = other.ForceHighestLegalEvolution;
+                BanLegendaries = other.BanLegendaries;
+                Noise = other.Noise;
+            }
         }
 
         public class MetricData

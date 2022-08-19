@@ -105,6 +105,9 @@ namespace PokemonRandomizer.Backend.Randomization
 
                         }
                         break;
+                    case SetWildBattleCommand setWildBattle:
+                        RandomizeStaticPokemon(setWildBattle, settings, args);
+                        break;
                     case GiveEggCommand giveEgg:
                         if (rand.RollSuccess(settings.GiftPokemonRandChance))
                         {
@@ -134,12 +137,67 @@ namespace PokemonRandomizer.Backend.Randomization
             }
         }
 
+        private void RandomizeStaticPokemon(SetWildBattleCommand command, Settings settings, Args args)
+        {
+            // Roll randomization
+            if (!rand.RollSuccess(settings.StaticEncounterRandChance))
+            {
+                return;
+            }
+            bool isLegendary = PokemonUtils.IsLegendary(command.Pokemon);
+            // Skip Legendaries Logic
+            if (isLegendary && settings.StaticLegendaryRandomizationStrategy == Settings.LegendaryRandSetting.DontRandomize)
+            {
+                return;
+            }
+            // Remap if in map
+            if (settings.RemapStaticEncounters && args.staticPokemonMap.ContainsKey(command.Pokemon))
+            {
+                command.Pokemon = args.staticPokemonMap[command.Pokemon];
+                return;
+            }
+            IEnumerable<Pokemon> restrictedPokemon;
+            Settings.PokemonSettings pokemonSettings;
+            // Keep Legendaries Logic
+            if(isLegendary && settings.StaticLegendaryRandomizationStrategy == Settings.LegendaryRandSetting.RandomizeEnsureLegendary)
+            {
+                restrictedPokemon = args.staticPokemonSet.Where(PokemonUtils.IsLegendary);
+                pokemonSettings = new Settings.PokemonSettings(settings.StaticEncounterSettings)
+                {
+                    BanLegendaries = false,
+                };
+            }
+            else
+            {
+                restrictedPokemon = args.staticPokemonSet;
+                pokemonSettings = settings.StaticEncounterSettings;
+            }
+            // Get new pokemon
+            var newPokemon = pokeRand.RandomPokemonRestricted(args.pokemonSet, restrictedPokemon, command.Pokemon, pokemonSettings);
+            // Add to map if remap
+            if (settings.RemapStaticEncounters)
+            {
+                args.staticPokemonMap.Add(command.Pokemon, newPokemon);
+            }
+            // Remove from set if prevent dupes
+            if (settings.PreventDuplicateStaticEncounters)
+            {
+                args.staticPokemonSet.Remove(newPokemon);
+            }
+            // Modify command
+            command.Pokemon = newPokemon;
+        }
+
         public class Args
         {
             public IEnumerable<ItemData> items;
             public IEnumerable<Pokemon> pokemonSet;
+            // Gift Pokemon Randomization Params
             public HashSet<Pokemon> fossilSet;
             public HashSet<Pokemon> babySet;
+            // Static Pokemon Randomization Params
+            public HashSet<Pokemon> staticPokemonSet;
+            public Dictionary<Pokemon, Pokemon> staticPokemonMap;
             public GymMetadata gymMetadata;
             public bool IsGym => gymMetadata != null;
         }

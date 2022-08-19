@@ -239,6 +239,10 @@ namespace PokemonRandomizer.AppSettings
         #region Static Encounters
 
         public override double StaticEncounterRandChance => 1;
+        public override PokemonSettings StaticEncounterSettings { get; } = new PokemonSettings()
+        {
+            BanLegendaries = true,
+        };
         public override LegendaryRandSetting StaticLegendaryRandomizationStrategy => LegendaryRandSetting.RandomizeEnsureLegendary;
         public override bool PreventDuplicateStaticEncounters => true;
         public override bool RemapStaticEncounters => true;

@@ -236,6 +236,7 @@ namespace PokemonRandomizer.AppSettings
         #region Static Encounters
 
         public override double StaticEncounterRandChance => RandomChance(staticEncounterData.RandomizeStatics, staticEncounterData.StaticRandChance);
+        public override PokemonSettings StaticEncounterSettings => staticEncounterData.Settings;
         public override LegendaryRandSetting StaticLegendaryRandomizationStrategy => staticEncounterData.LegendarySetting;
         public override bool PreventDuplicateStaticEncounters => staticEncounterData.PreventDupes;
         public override bool RemapStaticEncounters => staticEncounterData.Remap;
