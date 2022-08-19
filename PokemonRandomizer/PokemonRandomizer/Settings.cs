@@ -298,6 +298,17 @@ namespace PokemonRandomizer
         public abstract bool EnsureGiftEggsAreBabyPokemon { get; }
         #endregion
 
+        #region Static Encounters
+
+        public enum LegendaryRandSetting
+        {
+            Randomize,
+            DontRandomize,
+            RandomizeEnsureLegendary,
+        }
+
+        #endregion
+
         #region Trade Pokemon
         public enum TradePokemonIVSetting
         {

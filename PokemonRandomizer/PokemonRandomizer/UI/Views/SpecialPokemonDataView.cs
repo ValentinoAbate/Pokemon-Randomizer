@@ -19,6 +19,8 @@ namespace PokemonRandomizer.UI.Views
             tabs.Add(CreateTabItem("Dream Team", new DreamTeamDataView(model.DreamTeamData, pokemonNames, pokemon)));
             // Gift pokemon
             tabs.Add(CreateGiftPokemonTab(model.GiftData));
+            // Static Pokemon
+            tabs.Add(CreateStaticPokemonTab(model.StaticPokemonData));
             // Trade pokemon
             tabs.Add(CreateTradePokemonTab(model.TradeData));
 
@@ -34,6 +36,26 @@ namespace PokemonRandomizer.UI.Views
             stack.Add(new BoundCheckBoxUI(model.EnsureFossilRevivesAreFossilPokemon, "Ensure Fossil Revives are Fossil Pokemon"));
             stack.Add(new BoundCheckBoxUI(model.EnsureGiftEggsAreBabyPokemon, "Ensure Gift Eggs are Baby Pokemon"));
             return CreateTabItem("Gift Pokemon", stack);
+        }
+
+        public CompositeCollection StaticLegendaryOptionDropdown => new CompositeCollection()
+        {
+            new ComboBoxItem() {Content="Randomize", ToolTip="Wild Legendaries will be randomized in the same way as other static wild encounters" },
+            new ComboBoxItem() {Content="Skip (Don't Randomize)", ToolTip="Wild Legendaries will not be randomized, even if other static wild encounters are" },
+            new ComboBoxItem() {Content="Randomize (Ensure Legendary)", ToolTip="Wild Legendaries will randomize to another Legendary, even if \"Ban Legenaries\" is checked"},
+        };
+
+        private TabItem CreateStaticPokemonTab(StaticPokemonDataModel model)
+        {
+            var stack = CreateStack();
+            stack.Header("Randomization");
+            var staticRand = stack.Add(new RandomChanceUI("Randomize Static Wild Pokemon", model.RandomizeStaticEncounters, model.StaticEncounterRandChance));
+            var optionsStack = stack.Add(staticRand.BindEnabled(CreateStack()));
+            optionsStack.Add(new PokemonSettingsUI(model.StaticEncountersSettings));
+            optionsStack.Add(new EnumComboBoxUI<Settings.LegendaryRandSetting>("Legendary Logic", StaticLegendaryOptionDropdown, model.LegendarySetting));
+            optionsStack.Add(new BoundCheckBoxUI(model.Remap, "Remap Static Enounters", "Randomizes all instances of a static wild pokemon to the same new pokemon"));
+            optionsStack.Add(new BoundCheckBoxUI(model.Remap, "Prevent Duplicates", "Prevents the same new pokemon being chosen twice during static wild pokemon randomization"));
+            return CreateTabItem("Static Wild Pokemon", stack);
         }
 
         private static CompositeCollection TradeIVDropdown => new()
