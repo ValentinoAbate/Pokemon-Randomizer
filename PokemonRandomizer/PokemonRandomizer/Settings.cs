@@ -307,6 +307,11 @@ namespace PokemonRandomizer
             RandomizeEnsureLegendary,
         }
 
+        public abstract double StaticEncounterRandChance { get; }
+        public abstract LegendaryRandSetting StaticLegendaryRandomizationStrategy { get; }
+        public abstract bool PreventDuplicateStaticEncounters { get; }
+        public abstract bool RemapStaticEncounters { get; }
+
         #endregion
 
         #region Trade Pokemon

@@ -236,6 +236,15 @@ namespace PokemonRandomizer.AppSettings
         public override bool EnsureGiftEggsAreBabyPokemon => true;
         #endregion
 
+        #region Static Encounters
+
+        public override double StaticEncounterRandChance => 1;
+        public override LegendaryRandSetting StaticLegendaryRandomizationStrategy => LegendaryRandSetting.RandomizeEnsureLegendary;
+        public override bool PreventDuplicateStaticEncounters => true;
+        public override bool RemapStaticEncounters => true;
+
+        #endregion
+
         #region Trade Pokemon
         public override double TradePokemonGiveRandChance => 1;
         public override double TradePokemonRecievedRandChance => 1;

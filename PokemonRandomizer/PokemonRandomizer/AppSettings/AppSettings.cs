@@ -20,6 +20,7 @@ namespace PokemonRandomizer.AppSettings
         private InGameTradesDataModel tradeData;
         private StartersDataModel starterData;
         private GiftPokemonDataModel giftData;
+        private StaticPokemonDataModel staticEncounterData;
         private DreamTeamDataModel dreamTeamData;
         private WildEncounterDataModel wildEncounterData;
         private TrainerDataModel trainerData;
@@ -37,6 +38,7 @@ namespace PokemonRandomizer.AppSettings
             starterData = specialPokemonData.StarterData;
             tradeData = specialPokemonData.TradeData;
             giftData = specialPokemonData.GiftData;
+            staticEncounterData = specialPokemonData.StaticPokemonData;
             dreamTeamData = specialPokemonData.DreamTeamData;
             variantData = data.VariantPokemonData;
             tmHmTutorData = data.TmHmTutorData;
@@ -229,6 +231,15 @@ namespace PokemonRandomizer.AppSettings
         public override PokemonSettings GiftSpeciesSettings => giftData.GiftSpeciesSettings;
         public override bool EnsureFossilRevivesAreFossilPokemon => giftData.EnsureFossilRevivesAreFossilPokemon;
         public override bool EnsureGiftEggsAreBabyPokemon => giftData.EnsureGiftEggsAreBabyPokemon;
+        #endregion
+
+        #region Static Encounters
+
+        public override double StaticEncounterRandChance => RandomChance(staticEncounterData.RandomizeStatics, staticEncounterData.StaticRandChance);
+        public override LegendaryRandSetting StaticLegendaryRandomizationStrategy => staticEncounterData.LegendarySetting;
+        public override bool PreventDuplicateStaticEncounters => staticEncounterData.PreventDupes;
+        public override bool RemapStaticEncounters => staticEncounterData.Remap;
+
         #endregion
 
         #region Trade Pokemon
