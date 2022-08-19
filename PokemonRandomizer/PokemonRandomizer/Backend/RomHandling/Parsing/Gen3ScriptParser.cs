@@ -122,6 +122,20 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
                 {
                     script.Add(ParseTrainerBattleCommand(rom, command, originalOffset, metadata));
                 }
+                else if(command.code == Gen3Command.setwildbattle)
+                {
+                    var setWildBattleCommand = new SetWildBattleCommand
+                    {
+                        Pokemon = (Pokemon)command.ArgData(0),
+                        Level = (byte)command.ArgData(1),
+                        HeldItem = (Item)command.ArgData(2),
+                    };
+                    if((int)setWildBattleCommand.Pokemon > 10000)
+                    {
+                        Logger.main.Error("Variable Set Pokemon Detected");
+                    }
+                    script.Add(setWildBattleCommand);
+                }
                 else if (command.code == Gen3Command.givePokemon)
                 {
                     var givePokemonCommand = new GivePokemonCommand()

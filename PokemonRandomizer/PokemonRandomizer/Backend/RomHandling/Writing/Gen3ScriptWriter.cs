@@ -67,6 +67,12 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
                     case TrainerBattleCommand trainerBattle:
                         WriteTrainerBattleCommand(rom, trainerBattle, metadata);
                         break;
+                    case SetWildBattleCommand setWildBattle:
+                        rom.WriteByte(Gen3Command.setwildbattle);
+                        rom.WriteUInt16((int)setWildBattle.Pokemon);
+                        rom.WriteByte(setWildBattle.Level);
+                        rom.WriteUInt16((int)remapItem(setWildBattle.HeldItem));
+                        break;
                     case GivePokemonCommand givePokemon:
                         rom.WriteByte(Gen3Command.givePokemon);
                         rom.WriteUInt16((int)givePokemon.pokemon);
