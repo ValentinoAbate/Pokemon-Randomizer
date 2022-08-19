@@ -18,7 +18,7 @@
 
         public override string ToString()
         {
-            return "give " + pokemon.ToDisplayString() + " lvl " + level + " w/ " + heldItem.ToDisplayString();
+            return $"Give {pokemon.ToDisplayString()} lvl {level} w/ {heldItem.ToDisplayString()}";
         }
     }
 }
