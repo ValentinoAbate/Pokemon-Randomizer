@@ -194,6 +194,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
                     else // Script type
                     {
                         rom.WritePointer(sign.scriptOffset);
+                        scriptWriter.Write(sign.script, rom, sign.scriptOffset, metadata);
                     }
                 }
             }

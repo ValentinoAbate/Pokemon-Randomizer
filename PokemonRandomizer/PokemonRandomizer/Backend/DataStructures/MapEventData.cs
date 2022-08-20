@@ -60,7 +60,8 @@ namespace PokemonRandomizer.Backend.DataStructures
 				SecretBase,
 			}
 
-			public bool IsHiddenItem => signType == Type.HiddenItem1 || signType == Type.HiddenItem2 || signType == Type.HiddenItem3;
+			public bool IsHiddenItem => signType is Type.HiddenItem1 or Type.HiddenItem2 or Type.HiddenItem3;
+			public bool IsScript => signType is Type.Script or Type.ScriptPlayerFacingUp or Type.ScriptPlayerFacingDown or Type.ScriptPlayerFacingRight or Type.ScriptPlayerFacingLeft;
 
 			public int xPos;
 			public int yPos;
@@ -71,6 +72,7 @@ namespace PokemonRandomizer.Backend.DataStructures
 
 			// Script variables
 			public int scriptOffset;
+			public Script script;
 
 			// Hidden item variables
 			public EnumTypes.Item hiddenItem;

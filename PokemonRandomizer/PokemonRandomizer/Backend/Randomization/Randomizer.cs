@@ -567,9 +567,10 @@ namespace PokemonRandomizer.Backend.Randomization
                     scriptRandomizationArgs.gymMetadata = null;
                 }
 
-                // Randomize Hidden Items
+                // Randomize Sign Events Items
                 foreach (var sEvent in map.eventData.signEvents)
                 {
+                    // Hidden Items
                     if(sEvent.IsHiddenItem)
                     {
                         if (settings.UseSeperateHiddenItemSettings)
@@ -582,6 +583,14 @@ namespace PokemonRandomizer.Backend.Randomization
                         else if(rand.RollSuccess(settings.FieldItemRandChance))
                         {
                             delayedRandomizationCalls.Add(() => sEvent.hiddenItem = itemRand.RandomItem(items, sEvent.hiddenItem, settings.FieldItemSettings));
+                        }
+                    }
+                    else if (sEvent.IsScript)
+                    {
+                        // Randomize Sign Scripts
+                        if(sEvent.script != null)
+                        {
+                            scriptRand.RandomizeScript(sEvent.script, settings, scriptRandomizationArgs);
                         }
                     }
                 }

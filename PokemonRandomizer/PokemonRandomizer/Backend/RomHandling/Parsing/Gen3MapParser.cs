@@ -243,6 +243,10 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
                     else // Script type
                     {
                         signEvent.scriptOffset = rom.ReadPointer();
+                        if (signEvent.scriptOffset != Rom.nullPointer)
+                        {
+                            signEvent.script = scriptParser.Parse(rom, signEvent.scriptOffset, metadata);
+                        }
                     }
                     eventData.signEvents.Add(signEvent);
                 }
