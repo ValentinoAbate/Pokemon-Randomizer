@@ -93,7 +93,7 @@ namespace PokemonRandomizer.Backend.Randomization
                     case ItemCommand itemCommand:
                         if(itemCommand.InputType == CommandInputType.Normal)
                         {
-                            UpdateItemMap(itemCommand, itemMap);
+                            itemMap.AddOrAppend(itemCommand.Item, itemCommand);
                         }
                         break;
                     case GivePokemonCommand givePokemon:
@@ -122,18 +122,6 @@ namespace PokemonRandomizer.Backend.Randomization
                         }
                         break;
                 }
-            }
-        }
-
-        private void UpdateItemMap(ItemCommand command, Dictionary<Item, List<ItemCommand>> itemMap)
-        {
-            if (!itemMap.ContainsKey(command.Item))
-            {
-                itemMap.Add(command.Item, new List<ItemCommand> { command });
-            }
-            else
-            {
-                itemMap[command.Item].Add(command);
             }
         }
 
