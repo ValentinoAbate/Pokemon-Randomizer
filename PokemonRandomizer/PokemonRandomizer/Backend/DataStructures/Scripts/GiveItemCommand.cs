@@ -10,8 +10,6 @@ namespace PokemonRandomizer.Backend.DataStructures.Scripts
             Obtain,
             Find,
         }
-
-        public override Type ItemType { get; set; } = Type.Normal;
         public override Item Item { get; set; }
         public int amount;
         public MessageType messageType;

@@ -91,13 +91,13 @@ namespace PokemonRandomizer.Backend.Randomization
                         }
                         break;
                     case ItemCommand itemCommand:
-                        if(itemCommand.ItemType == ItemCommand.Type.Normal)
+                        if(itemCommand.InputType == CommandInputType.Normal)
                         {
                             UpdateItemMap(itemCommand, itemMap);
                         }
                         break;
                     case GivePokemonCommand givePokemon:
-                        if (givePokemon.type == GivePokemonCommand.Type.Normal && rand.RollSuccess(settings.GiftPokemonRandChance))
+                        if (givePokemon.InputType == CommandInputType.Normal && rand.RollSuccess(settings.GiftPokemonRandChance))
                         {
                             // Should choose from fossil set?
                             bool fossil = settings.EnsureFossilRevivesAreFossilPokemon && args.fossilSet.Count > 0 && givePokemon.pokemon.IsFossil();

@@ -115,7 +115,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
                         Item = (Item)command.ArgData(0),
                         quantity = command.ArgData(1),
                     };
-                    MarkItemCommandType(checkItemRoomCommand);
+                    MarkCommandInputType(checkItemRoomCommand, command.ArgData(0));
                     script.Add(checkItemRoomCommand);
                 }
                 else if (command.code == Gen3Command.trainerbattle)
@@ -130,11 +130,18 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
                         Level = (byte)command.ArgData(1),
                         HeldItem = (Item)command.ArgData(2),
                     };
-                    if((int)setWildBattleCommand.Pokemon > 10000)
-                    {
-                        Logger.main.Error("Variable Set Pokemon Detected");
-                    }
+                    MarkCommandInputType(setWildBattleCommand, command.ArgData(0));
                     script.Add(setWildBattleCommand);
+                }
+                else if (command.code == Gen3Command.cry)
+                {
+                    var cryCommand = new CryCommand()
+                    {
+                        Pokemon = (Pokemon)command.ArgData(0),
+                        effect = command.ArgData(1),
+                    };
+                    MarkCommandInputType(cryCommand, command.ArgData(0));
+                    script.Add(cryCommand);
                 }
                 else if (command.code == Gen3Command.givePokemon)
                 {
@@ -144,11 +151,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
                         level = (byte)command.ArgData(1),
                         heldItem = (Item)command.ArgData(2)
                     };
-                    // Mark command type
-                    if ((int)givePokemonCommand.pokemon > 10000)
-                    {
-                        givePokemonCommand.type = (int)givePokemonCommand.pokemon > 32768 ? GivePokemonCommand.Type.Variable : GivePokemonCommand.Type.Unknown;
-                    }
+                    MarkCommandInputType(givePokemonCommand, command.ArgData(0));
                     // Add new give pokemon command
                     script.Add(givePokemonCommand);
                 }
@@ -207,21 +210,21 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
                 amount = command2.ArgData(1),
                 messageType = (GiveItemCommand.MessageType)command3.ArgData(0),
             };
-            MarkItemCommandType(giveItemMultiCommand);
+            MarkCommandInputType(giveItemMultiCommand, (int)giveItemMultiCommand.Item);
             rom.DumpOffset();
             return true;
         }
 
-        private void MarkItemCommandType(ItemCommand command)
+        private void MarkCommandInputType(IHasCommandInputType command, int input)
         {
             // Mark command type
-            if ((int)command.Item > 10000)
+            if (input > 10000)
             {
-                command.ItemType = (int)command.Item > 32768 ? ItemCommand.Type.Variable : ItemCommand.Type.Unknown;
+                command.InputType = input > 32768 ? CommandInputType.Variable : CommandInputType.Unknown;
             }
             else
             {
-                command.ItemType = ItemCommand.Type.Normal;
+                command.InputType = CommandInputType.Normal;
             }
         }
 
