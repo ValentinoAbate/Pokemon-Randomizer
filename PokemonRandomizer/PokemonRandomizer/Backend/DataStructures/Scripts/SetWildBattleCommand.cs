@@ -8,6 +8,7 @@ namespace PokemonRandomizer.Backend.DataStructures.Scripts
         public override Pokemon Pokemon { get; set; }
         public byte Level { get; set; }
         public Item HeldItem { get; set; }
+        public bool IsEventPokemon { get; set; }
 
         public override bool IsSource => true;
 

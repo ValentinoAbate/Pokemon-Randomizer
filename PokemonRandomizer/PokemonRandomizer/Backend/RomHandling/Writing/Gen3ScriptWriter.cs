@@ -68,10 +68,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
                         WriteTrainerBattleCommand(rom, trainerBattle, metadata);
                         break;
                     case SetWildBattleCommand setWildBattle:
-                        rom.WriteByte(Gen3Command.setwildbattle);
-                        rom.WriteUInt16((int)setWildBattle.Pokemon);
-                        rom.WriteByte(setWildBattle.Level);
-                        rom.WriteUInt16((int)remapItem(setWildBattle.HeldItem));
+                        WriteSetWildBattleCommand(rom, setWildBattle, metadata);
                         break;
                     case CryCommand cryCommand:
                         rom.WriteByte(Gen3Command.cry);
@@ -198,6 +195,39 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
                 var newOffset = rom.WriteInFreeSpace(dataBlock.File);
                 // If successful, write the new offset, else write the old one
                 rom.WritePointer(newOffset ?? command.shopOffset);
+            }
+        }
+
+        private void WriteSetWildBattleCommand(Rom rom, SetWildBattleCommand command, RomMetadata metadata)
+        {
+            if (command.IsEventPokemon)
+            {
+                // Write give event pokemon multicommand
+                rom.WriteByte(Gen3Command.setvar);
+                rom.WriteUInt16(Gen3Command.eventPokemonSpeciesVar);
+                rom.WriteUInt16((int)command.Pokemon);
+                rom.WriteByte(Gen3Command.setvar);
+                rom.WriteUInt16(Gen3Command.eventPokemonLevelVar);
+                rom.WriteUInt16(command.Level);
+                rom.WriteByte(Gen3Command.setvar);
+                rom.WriteUInt16(Gen3Command.eventPokemonItemVar);
+                rom.WriteUInt16((int)remapItem(command.HeldItem));
+                rom.WriteByte(Gen3Command.special);
+                if (metadata.IsEmerald)
+                {
+                    rom.WriteUInt16(Gen3Command.specialSetWildEventPokemonEmerald);
+                }
+                else
+                {
+                    rom.WriteUInt16(Gen3Command.specialSetWildEventPokemonFrlg);
+                }
+            }
+            else
+            {
+                rom.WriteByte(Gen3Command.setwildbattle);
+                rom.WriteUInt16((int)command.Pokemon);
+                rom.WriteByte(command.Level);
+                rom.WriteUInt16((int)remapItem(command.HeldItem));
             }
         }
 

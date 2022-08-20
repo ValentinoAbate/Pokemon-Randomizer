@@ -96,6 +96,18 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
                 {
                     script.Add(ParseSpecialCommand(command, metadata));
                 }
+                else if (command.code == Gen3Command.setvar)
+                {
+                    // Check for set wild event pokemon multi-command
+                    if(TryParseSetEventWildBattleMultiCommand(rom, metadata, command, out SetWildBattleCommand setWildBattleCommand))
+                    {
+                        script.Add(setWildBattleCommand);
+                    }
+                    else
+                    {
+                        script.Add(command);
+                    }
+                }
                 else if (command.code == Gen3Command.copyvarifnotzero)
                 {
                     // Check for give item multi-command
@@ -122,7 +134,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
                 {
                     script.Add(ParseTrainerBattleCommand(rom, command, originalOffset, metadata));
                 }
-                else if(command.code == Gen3Command.setwildbattle)
+                else if (command.code == Gen3Command.setwildbattle)
                 {
                     var setWildBattleCommand = new SetWildBattleCommand
                     {
@@ -190,7 +202,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
                 return false;
             rom.SaveOffset();
             var command2 = ReadCommand(rom, metadata, out _);
-            // If the second command copyvarifnotzero with a target of var 0x8001 return false
+            // If the second command isn't copyvarifnotzero with a target of var 0x8001 return false
             if (command2.code != Gen3Command.copyvarifnotzero || command2.ArgData(0) != Gen3Command.itemQuantityVar)
             {
                 rom.LoadOffset();
@@ -211,6 +223,53 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
                 messageType = (GiveItemCommand.MessageType)command3.ArgData(0),
             };
             MarkCommandInputType(giveItemMultiCommand, (int)giveItemMultiCommand.Item);
+            rom.DumpOffset();
+            return true;
+        }
+
+        private bool TryParseSetEventWildBattleMultiCommand(Rom rom, RomMetadata metadata, Gen3Command command1, out SetWildBattleCommand setWildEventBattleCommand)
+        {
+            setWildEventBattleCommand = null;
+            // Event multicommand only in Emerald and FRLG
+            if (!(metadata.IsEmerald || metadata.IsFireRedOrLeafGreen))
+            {
+                return false;
+            }
+            // If the first command isn't setting variable 0x8004 or the next command is end return false
+            if (command1.ArgData(0) != Gen3Command.eventPokemonSpeciesVar || rom.Peek() == Gen3Command.end)
+            {
+                return false;
+            }
+            rom.SaveOffset();
+            var command2 = ReadCommand(rom, metadata, out _);
+            // If the second command isn't setvar with a target of var 0x8005 return false
+            if (command2.code != Gen3Command.setvar || command2.ArgData(0) != Gen3Command.eventPokemonLevelVar)
+            {
+                rom.LoadOffset();
+                return false;
+            }
+            var command3 = ReadCommand(rom, metadata, out _);
+            // If the second command isn't setvar with a target of var 0x8006 return false
+            if (command3.code != Gen3Command.setvar || command3.ArgData(0) != Gen3Command.eventPokemonItemVar)
+            {
+                rom.LoadOffset();
+                return false;
+            }
+            var command4 = ReadCommand(rom, metadata, out _);
+            var specialCode = metadata.IsEmerald ? Gen3Command.specialSetWildEventPokemonEmerald : Gen3Command.specialSetWildEventPokemonFrlg;
+            if (command4.code != Gen3Command.special || command4.ArgData(0) != specialCode)
+            {
+                rom.LoadOffset();
+                return false;
+            }
+            setWildEventBattleCommand = new SetWildBattleCommand
+            {
+                Pokemon = (Pokemon)command1.ArgData(1),
+                Level = (byte)command2.ArgData(1),
+                HeldItem = (Item)command3.ArgData(1),
+                IsEventPokemon = true,
+            };
+            MarkCommandInputType(setWildEventBattleCommand, (int)setWildEventBattleCommand.Pokemon);
             rom.DumpOffset();
             return true;
         }
