@@ -3,12 +3,13 @@ using PokemonRandomizer.Backend.Utilities;
 using System;
 namespace PokemonRandomizer.Backend.DataStructures.Scripts
 {
-    public class SetWildBattleCommand : Command, IHasCommandInputType
+    public class SetWildBattleCommand : PokemonCommand
     {
-        public Pokemon Pokemon { get; set; }
+        public override Pokemon Pokemon { get; set; }
         public byte Level { get; set; }
         public Item HeldItem { get; set; }
-        public CommandInputType InputType { get; set; }
+
+        public override bool IsSource => true;
 
         public override string ToString()
         {

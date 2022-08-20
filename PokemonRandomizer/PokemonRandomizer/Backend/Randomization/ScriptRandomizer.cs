@@ -17,6 +17,7 @@ namespace PokemonRandomizer.Backend.Randomization
         private readonly List<Action> delayedRandomizationCalls;
         private readonly IDataTranslator dataT;
         private readonly Dictionary<Item, List<ItemCommand>> itemMap = new(4);
+        private readonly Dictionary<Pokemon, List<PokemonCommand>> staticPokemonMap = new(4);
 
         public ScriptRandomizer(Random rand, PkmnRandomizer pokeRand, ItemRandomizer itemRand, IDataTranslator dataT, List<Action> delayedRandomizationCalls)
         {
@@ -30,11 +31,13 @@ namespace PokemonRandomizer.Backend.Randomization
         public void RandomizeScript(Script script, Settings settings, Args args)
         {
             itemMap.Clear();
+            staticPokemonMap.Clear();
             RandomizeScript(script, settings, args, itemMap);
             foreach(var kvp in itemMap)
             {
                 delayedRandomizationCalls.Add(() => RemapItems(kvp.Key, kvp.Value, settings, args));
             }
+            RemapStaticPokemon(settings, args);
         }
 
         private void RemapItems(Item oldItem, IEnumerable<ItemCommand> commands, Settings settings, Args args)
@@ -50,6 +53,23 @@ namespace PokemonRandomizer.Backend.Randomization
             foreach(var command in commands)
             {
                 command.Item = newItem;
+            }
+        }
+
+        private void RemapStaticPokemon(Settings settings, Args args)
+        {
+            foreach (var (pokemon, commands) in staticPokemonMap)
+            {
+                // No  sources, no need to randomize
+                if (!commands.Any(i => i.IsSource))
+                    continue;
+                var newPokemon = RandomizeStaticPokemon(pokemon, settings, args);
+                if (newPokemon == pokemon)
+                    continue;
+                foreach(var command in commands)
+                {
+                    command.Pokemon = newPokemon;
+                }
             }
         }
 
@@ -107,7 +127,16 @@ namespace PokemonRandomizer.Backend.Randomization
                         }
                         break;
                     case SetWildBattleCommand setWildBattle:
-                        RandomizeStaticPokemon(setWildBattle, settings, args);
+                        if (setWildBattle.InputType == CommandInputType.Normal)
+                        {
+                            staticPokemonMap.AddOrAppend(setWildBattle.Pokemon, setWildBattle);
+                        }
+                        break;
+                    case CryCommand cryCommand:
+                        if(cryCommand.InputType == CommandInputType.Normal)
+                        {
+                            staticPokemonMap.AddOrAppend(cryCommand.Pokemon, cryCommand);
+                        }
                         break;
                     case GiveEggCommand giveEgg:
                         if (rand.RollSuccess(settings.GiftPokemonRandChance))
@@ -126,24 +155,33 @@ namespace PokemonRandomizer.Backend.Randomization
             }
         }
 
-        private void RandomizeStaticPokemon(SetWildBattleCommand command, Settings settings, Args args)
+        private Pokemon RandomizeStaticPokemon(Pokemon pokemon, Settings settings, Args args)
         {
+            // Remap if in map
+            if (settings.RemapStaticEncounters && args.staticPokemonMap.ContainsKey(pokemon))
+            {
+                return args.staticPokemonMap[pokemon];
+            }
             // Roll randomization
             if (!rand.RollSuccess(settings.StaticEncounterRandChance))
             {
-                return;
+                // Add failure to map
+                if (settings.RemapStaticEncounters)
+                {
+                    args.staticPokemonMap.Add(pokemon, pokemon);
+                }
+                return pokemon;
             }
-            bool isLegendary = PokemonUtils.IsLegendary(command.Pokemon);
+            bool isLegendary = PokemonUtils.IsLegendary(pokemon);
             // Skip Legendaries Logic
             if (isLegendary && settings.StaticLegendaryRandomizationStrategy == Settings.LegendaryRandSetting.DontRandomize)
             {
-                return;
-            }
-            // Remap if in map
-            if (settings.RemapStaticEncounters && args.staticPokemonMap.ContainsKey(command.Pokemon))
-            {
-                command.Pokemon = args.staticPokemonMap[command.Pokemon];
-                return;
+                // Add failure to map
+                if (settings.RemapStaticEncounters)
+                {
+                    args.staticPokemonMap.Add(pokemon, pokemon);
+                }
+                return pokemon;
             }
             IEnumerable<Pokemon> restrictedPokemon;
             Settings.PokemonSettings pokemonSettings;
@@ -162,19 +200,18 @@ namespace PokemonRandomizer.Backend.Randomization
                 pokemonSettings = settings.StaticEncounterSettings;
             }
             // Get new pokemon
-            var newPokemon = pokeRand.RandomPokemonRestricted(args.pokemonSet, restrictedPokemon, command.Pokemon, pokemonSettings);
+            var newPokemon = pokeRand.RandomPokemonRestricted(args.pokemonSet, restrictedPokemon, pokemon, pokemonSettings);
             // Add to map if remap
             if (settings.RemapStaticEncounters)
             {
-                args.staticPokemonMap.Add(command.Pokemon, newPokemon);
+                args.staticPokemonMap.Add(pokemon, newPokemon);
             }
             // Remove from set if prevent dupes
             if (settings.PreventDuplicateStaticEncounters)
             {
                 args.staticPokemonSet.Remove(newPokemon);
             }
-            // Modify command
-            command.Pokemon = newPokemon;
+            return newPokemon;
         }
 
         public class Args
