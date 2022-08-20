@@ -16,6 +16,7 @@ namespace PokemonRandomizer.Backend.Randomization
         private readonly ItemRandomizer itemRand;
         private readonly List<Action> delayedRandomizationCalls;
         private readonly IDataTranslator dataT;
+        private readonly Dictionary<Item, List<ItemCommand>> itemMap = new(4);
 
         public ScriptRandomizer(Random rand, PkmnRandomizer pokeRand, ItemRandomizer itemRand, IDataTranslator dataT, List<Action> delayedRandomizationCalls)
         {
@@ -28,7 +29,7 @@ namespace PokemonRandomizer.Backend.Randomization
 
         public void RandomizeScript(Script script, Settings settings, Args args)
         {
-            var itemMap = new Dictionary<Item, List<ItemCommand>>(4);
+            itemMap.Clear();
             RandomizeScript(script, settings, args, itemMap);
             foreach(var kvp in itemMap)
             {
