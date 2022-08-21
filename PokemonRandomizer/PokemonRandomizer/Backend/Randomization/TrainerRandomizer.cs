@@ -191,11 +191,6 @@ namespace PokemonRandomizer.Backend.Randomization
         /// <summary> Radnomize the given trainer encounter </summary>
         public void Randomize(Trainer trainer, IEnumerable<Pokemon> pokemonSet, TrainerSettings settings, bool safe = true)
         {
-            // Set data type
-            if (settings.ForceCustomMoves)
-            {
-                ForceCustomMoves(trainer);
-            }
             // Add extra pokemon
             AddBonusPokemon(trainer);
             // Apply level scaling
@@ -217,6 +212,11 @@ namespace PokemonRandomizer.Backend.Randomization
             // Set pokemon
             if (settings.RandomizePokemon)
             {
+                // Set data type
+                if (settings.ForceCustomMoves)
+                {
+                    ForceCustomMoves(trainer);
+                }
                 RandomizeTrainerPokemon(trainer, pokemonSet, CreatePokemonSettings(trainer, settings), settings.DuplicateMultiplier);
             }
         }
@@ -228,14 +228,6 @@ namespace PokemonRandomizer.Backend.Randomization
         /// </summary>
         public void RandomizeReoccurring(Trainer firstBattle, List<Trainer> battles, IEnumerable<Pokemon> pokemonSet, TrainerSettings settings)
         {
-            // Set data type
-            if (settings.ForceCustomMoves)
-            {
-                foreach(var battle in battles)
-                {
-                    ForceCustomMoves(battle);
-                }
-            }
             // Add bonus pokemon
             foreach (var battle in battles)
             {
@@ -279,6 +271,14 @@ namespace PokemonRandomizer.Backend.Randomization
             // Pokemon
             if (settings.RandomizePokemon)
             {
+                // Set data type
+                if (settings.ForceCustomMoves)
+                {
+                    foreach (var battle in battles)
+                    {
+                        ForceCustomMoves(battle);
+                    }
+                }
                 if (settings.PokemonStrategy == TrainerSettings.PokemonPcgStrategy.None)
                 {
                     foreach (var battle in battles)
