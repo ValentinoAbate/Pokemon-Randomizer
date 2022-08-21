@@ -10,6 +10,7 @@ namespace PokemonRandomizer.UI.Views
         private const string easyRivalBattleTooltip = "Sets the first rival battle to have level 1 pokemon. Useful for randomized starters (this battle must be cleared in RSE)";
         private const string evolveWithoutNatDexTooltip = "Allow pokemon to evolve without needing national dex in FRLG";
         private const string mewDeoxysObeyTooltip = "FRLG and Emerald have a special check that makes Mew and Deoxys that aren't recieved from events disobey in battle. This fix removes that mechanic";
+        private const string enableEventsTooltip = "Allows mystery gift/event events like Southern Island and Birth Island to be accessed without using the the mystery gift/event systems. You will still need to obtain the relevant item and fulfill all other conditions to unlock the event";
         public MiscDataView(MiscDataModel model, RomMetadata metadata)
         {
             // Create stack and add content
@@ -19,6 +20,7 @@ namespace PokemonRandomizer.UI.Views
             stack.Header(UISkin.Current.HacksAndTweaksHeader);
             stack.Add(new BoundCheckBoxUI(model.RunIndoors, "Run Indoors"));
             stack.Add(new BoundCheckBoxUI(model.UpdateDOTMoves, "Update Wrap Moves", "Updates the moves Wrap, Bind, Fire Spin, Sand Tomb, Whirlpool, and Clamp to their Gen V power, accuracy, and PP"));
+            stack.Add(new BoundCheckBoxUI(model.EnableEvents, "Enable Mystery Gift Events", enableEventsTooltip));
             stack.Header("Randomizer Options");
             stack.Add(new BoundCheckBoxUI(model.CountRelicanthAsFossil, "Count Relicanth as a Fossil Pokemon"));
             if (metadata.IsRubySapphireOrEmerald)
