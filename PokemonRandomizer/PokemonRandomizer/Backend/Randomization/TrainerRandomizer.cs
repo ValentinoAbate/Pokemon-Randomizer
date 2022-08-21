@@ -191,8 +191,11 @@ namespace PokemonRandomizer.Backend.Randomization
         /// <summary> Radnomize the given trainer encounter </summary>
         public void Randomize(Trainer trainer, IEnumerable<Pokemon> pokemonSet, TrainerSettings settings, bool safe = true)
         {
-            // Add extra pokemon
-            AddBonusPokemon(trainer);
+            if (settings.RandomizePokemon)
+            {
+                // Add extra pokemon
+                AddBonusPokemon(trainer);
+            }
             // Apply level scaling
             ApplyLevelScaling(trainer, settings);
             // Set item stock (if applicable)
@@ -228,10 +231,13 @@ namespace PokemonRandomizer.Backend.Randomization
         /// </summary>
         public void RandomizeReoccurring(Trainer firstBattle, List<Trainer> battles, IEnumerable<Pokemon> pokemonSet, TrainerSettings settings)
         {
-            // Add bonus pokemon
-            foreach (var battle in battles)
+            if (settings.RandomizePokemon)
             {
-                AddBonusPokemon(battle);
+                // Add bonus pokemon
+                foreach (var battle in battles)
+                {
+                    AddBonusPokemon(battle);
+                }
             }
             // Battle Type
             if (settings.RandomizeBattleType)
