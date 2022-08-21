@@ -8,6 +8,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
     using Scripting.GenIII;
     public class Gen3ScriptWriter
     {
+        public Settings Settings { get; set; }
         private readonly Func<Item, Item> remapItem;
         public Gen3ScriptWriter(Func<Item, Item> remapItem)
         {
@@ -20,8 +21,9 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
                 return;
             }
             rom.SaveAndSeekOffset(offset);
-            foreach (var command in script)
+            for (int i = 0; i < script.Count; ++i)
             {
+                var command = script[i];
                 switch (command)
                 {
                     case GotoIfCommand gotoIf:
@@ -100,6 +102,11 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
                         rom.WriteUInt16((int)setWeatherCommand.Weather);
                         break;
                     case Gen3Command gen3Command:
+                        if((i + 1) < script.Count && TryApplyEventPokemonFix(rom, gen3Command,script[i + 1], metadata))
+                        {
+                            ++i; // Skip next command
+                            break;
+                        }
                         rom.WriteByte(gen3Command.code);
                         foreach (var arg in gen3Command.args)
                         {
@@ -123,6 +130,49 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
                 }
             }
             rom.LoadOffset();
+        }
+
+        private bool TryApplyEventPokemonFix(Rom rom, Gen3Command command1, Command command2, RomMetadata metadata)
+        {
+            // Should we attempt to apply the hack?
+            if(Settings == null || !Settings.EnableMysteyGiftEvents)
+            {
+                return false;
+            }
+            // Is the first command checkflag on an event flag
+            if(command1.code != Gen3Command.checkflag || !IsSpecialEventEnableFlag(command1.ArgData(0), metadata))
+            {
+                return false;
+            }
+            // Is the second command gotoif 0x00?
+            if(command2 is not GotoIfCommand gotoIfCommand || gotoIfCommand.condition != 0x00)
+            {
+                return false;
+            }
+            // Do hack
+            // Set flag instead of checking it
+            rom.WriteByte(Gen3Command.setflag);
+            rom.WriteUInt16(command1.ArgData(0));
+            // Fill over goto w/ nops
+            rom.WriteRepeating(0x00, 6);
+            return true;
+        }
+
+        private bool IsSpecialEventEnableFlag(int flag, RomMetadata metadata)
+        {
+            if (metadata.IsEmerald)
+            {
+                return flag is Flags.Emerald.enableShipSouthernIsland or Flags.Emerald.enableShipBirthIsland 
+                    or Flags.Emerald.enableShipFarawayIsland or Flags.Emerald.enableShipNavelRock;
+            }
+            else if (metadata.IsFireRedOrLeafGreen)
+            {
+                return flag is Flags.FRLG.enableShipBirthIsland or Flags.FRLG.enableShipNavelRock;
+            }
+            else // Ruby / Sapphire
+            {
+                return flag == Flags.RubySapphire.hasEonTicket;
+            }
         }
 
         private void WriteTrainerBattleCommand(Rom rom, TrainerBattleCommand battle, RomMetadata metadata)

@@ -36,6 +36,9 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
             var rom = new Rom(originalRom);
             // Initialize repoint list
             var repoints = new RepointList();
+            // Attatch settings to script writer
+            scriptWriter.Settings = settings;
+            // Clear item remaps
             itemRemaps.Clear();
             failedItemRemaps.Clear();
             // Create new evolution stones

@@ -401,6 +401,7 @@ namespace PokemonRandomizer.AppSettings
         public override bool RunIndoors => true;
 
         public override bool StartWithNationalDex => false;
+        public override bool EnableMysteyGiftEvents => true;
 
         // FRLG Hacks and Tweaks
         public override bool EvolveWithoutNationalDex => true;

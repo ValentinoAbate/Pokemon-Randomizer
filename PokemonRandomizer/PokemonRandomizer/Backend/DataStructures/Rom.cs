@@ -107,6 +107,20 @@ namespace PokemonRandomizer.Backend.DataStructures
             Array.Copy(data, sourceInd, File, offset, length);
         }
 
+        public void WriteRepeating(int offset, byte value, int length)
+        {
+            for (int i = 0; i < length; i++)
+            {
+                WriteByte(offset + i, value);
+            }
+        }
+
+        public void WriteRepeating(byte value, int length)
+        {
+            WriteRepeating(InternalOffset, value, length);
+            InternalOffset += length;
+        }
+
         #region Free Space and Hacking Utils
         /// <summary>Scans for the first open block of free space above a certain size (in bytes).
         /// Returns null if no big enough block is found, else returns the offset of the block
