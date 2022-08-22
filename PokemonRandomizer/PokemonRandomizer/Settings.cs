@@ -480,7 +480,14 @@ namespace PokemonRandomizer
         // Gen III Hacks and Tweaks
         public abstract bool RunIndoors { get; }
         public abstract bool StartWithNationalDex { get; }
+        public enum MysteryGiftItemSetting
+        {
+            None,
+            StartingItem,
+            AllowInRandomization
+        }
         public abstract bool EnableMysteyGiftEvents { get; }
+        public abstract  MysteryGiftItemSetting MysteryGiftItemAcquisitionSetting { get; }
 
         // FRLG Hacks and Tweaks
         public abstract bool EvolveWithoutNationalDex { get; }

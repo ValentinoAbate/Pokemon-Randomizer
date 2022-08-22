@@ -402,6 +402,7 @@ namespace PokemonRandomizer.AppSettings
 
         public override bool StartWithNationalDex => false;
         public override bool EnableMysteyGiftEvents => true;
+        public override MysteryGiftItemSetting MysteryGiftItemAcquisitionSetting => MysteryGiftItemSetting.StartingItem;
 
         // FRLG Hacks and Tweaks
         public override bool EvolveWithoutNationalDex => true;

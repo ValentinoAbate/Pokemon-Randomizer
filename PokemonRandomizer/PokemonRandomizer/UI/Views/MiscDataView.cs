@@ -4,6 +4,7 @@ namespace PokemonRandomizer.UI.Views
 {
     using Models;
     using Backend.DataStructures;
+    using System.Windows.Data;
 
     public class MiscDataView : DataView<MiscDataModel>
     {
@@ -11,6 +12,13 @@ namespace PokemonRandomizer.UI.Views
         private const string evolveWithoutNatDexTooltip = "Allow pokemon to evolve without needing national dex in FRLG";
         private const string mewDeoxysObeyTooltip = "FRLG and Emerald have a special check that makes Mew and Deoxys that aren't recieved from events disobey in battle. This fix removes that mechanic";
         private const string enableEventsTooltip = "Allows mystery gift/event events like Southern Island and Birth Island to be accessed without using the the mystery gift/event systems. You will still need to obtain the relevant item and fulfill all other conditions to unlock the event";
+
+        public CompositeCollection MysteryGiftEventItemDropdown => new CompositeCollection()
+        {
+            new ComboBoxItem() {Content="None", ToolTip="Mystery Gift Event Items such as the EON TICKET will not be obtainable, except through normal means or another randomizer setting such as the \"Custom PC Potion\" or \"Custom Shop Item\" settings" },
+            new ComboBoxItem() {Content="Start Item(s)", ToolTip="New save files will start with every relevant Mystery Gift Event Item in their PC. WARNING: this only works for new save files. Loading a save state of an old save file will bypass the script that sets the PC starting items" },
+            new ComboBoxItem() {Content="Allow in Item Randomization", ToolTip="Mystery Gift Event Items will be able to appear as randomized items even though they are Key Items. They will be considered to be part of the \"Special\" item category for the purposes of duplicate reduction and all other item randomization settings"},
+        };
         public MiscDataView(MiscDataModel model, RomMetadata metadata)
         {
             // Create stack and add content
@@ -20,7 +28,9 @@ namespace PokemonRandomizer.UI.Views
             stack.Header(UISkin.Current.HacksAndTweaksHeader);
             stack.Add(new BoundCheckBoxUI(model.RunIndoors, "Run Indoors"));
             stack.Add(new BoundCheckBoxUI(model.UpdateDOTMoves, "Update Wrap Moves", "Updates the moves Wrap, Bind, Fire Spin, Sand Tomb, Whirlpool, and Clamp to their Gen V power, accuracy, and PP"));
-            stack.Add(new BoundCheckBoxUI(model.EnableEvents, "Enable Mystery Gift Events", enableEventsTooltip));
+            var enableEventsCb = stack.Add(new BoundCheckBoxUI(model.EnableEvents, "Enable Mystery Gift Events", enableEventsTooltip));
+            stack.Add(enableEventsCb.BindEnabled(new EnumComboBoxUI<Settings.MysteryGiftItemSetting>("Mystery Gift Event Item Acquisition", MysteryGiftEventItemDropdown, model.EventItemSetting)));
+
             stack.Header("Randomizer Options");
             stack.Add(new BoundCheckBoxUI(model.CountRelicanthAsFossil, "Count Relicanth as a Fossil Pokemon"));
             if (metadata.IsRubySapphireOrEmerald)

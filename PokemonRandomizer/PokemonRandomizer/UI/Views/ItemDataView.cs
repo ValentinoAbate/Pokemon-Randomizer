@@ -53,7 +53,7 @@ namespace PokemonRandomizer.UI.Views
             new BoundFlagsEnumListBoxUI<Categories>.MenuBoxItem { Item = Categories.EVBerry, Content="EV Berries", ToolTip="Berries that lower a Pokémon's EVs (Pomeg Berries, etc.)"},
             new BoundFlagsEnumListBoxUI<Categories>.MenuBoxItem { Item = Categories.EvolutionItem, Content="Evolution Items", ToolTip="Items that allow a Pokémon to evolve (Evolution Stones, Metal Coats, etc.). Overlaps with Held Items"},
             new BoundFlagsEnumListBoxUI<Categories>.MenuBoxItem { Item = Categories.Breeding, Content="Breeding Items", ToolTip="Items that have effects when held by a breeding Pokémon (Inscences, Light Ball, Everstone, etc.). Overlaps with Held Items"},
-            new BoundFlagsEnumListBoxUI<Categories>.MenuBoxItem { Item = Categories.Special, Content="Special Items", ToolTip="Special items that are normally very limited or rare (Master Ball, PP Max, and Liechi Berry)"},
+            new BoundFlagsEnumListBoxUI<Categories>.MenuBoxItem { Item = Categories.Special, Content="Special Items", ToolTip="Special items that are normally very limited or rare (Master Ball, PP Max, and Liechi Berry) and Mystery Gift Event items if \"Enable Mystery Gift Events\" is on with \"Allow in Item Randomization\""},
             new BoundFlagsEnumListBoxUI<Categories>.MenuBoxItem { Item = Categories.Flute, Content="Flutes", ToolTip="Flutes (Blue Flute, etc.), except Key Items (Poké Flute, etc.)"},
         };
 

@@ -459,6 +459,7 @@ namespace PokemonRandomizer.AppSettings
         // Gen III Hacks and Tweaks
         public override bool RunIndoors => miscData.RunIndoors;
         public override bool EnableMysteyGiftEvents => miscData.EnableEvents;
+        public override MysteryGiftItemSetting MysteryGiftItemAcquisitionSetting => EnableMysteyGiftEvents ? miscData.EventItemSetting : MysteryGiftItemSetting.None;
 
         // FRLG Hacks and Tweaks
         public override bool EvolveWithoutNationalDex => miscData.EvolveWithoutNationalDex;
