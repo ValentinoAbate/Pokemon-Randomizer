@@ -15,9 +15,9 @@ namespace PokemonRandomizer.UI.Views
 
         public CompositeCollection MysteryGiftEventItemDropdown => new CompositeCollection()
         {
-            new ComboBoxItem() {Content="None", ToolTip="Mystery Gift Event Items such as the EON TICKET will not be obtainable, except through normal means or another randomizer setting such as the \"Custom PC Potion\" or \"Custom Shop Item\" settings" },
-            new ComboBoxItem() {Content="Start Item(s)", ToolTip="New save files will start with every relevant Mystery Gift Event Item in their PC. WARNING: this only works for new save files. Loading a save state of an old save file will bypass the script that sets the PC starting items" },
-            new ComboBoxItem() {Content="Allow in Item Randomization", ToolTip="Mystery Gift Event Items will be able to appear as randomized items even though they are Key Items. They will be considered to be part of the \"Special\" item category for the purposes of duplicate reduction and all other item randomization settings"},
+            new ComboBoxItem() {Content="None", ToolTip="Mystery gift event items such as the Eon Ticket will not be obtainable, except through normal means or another randomizer setting such as the \"Custom PC Potion\" or \"Custom Shop Item\" settings" },
+            new ComboBoxItem() {Content="Start in PC", ToolTip="New save files will start with every relevant mystery gift event item in their PC. WARNING: this only works for new save files. Loading a save state of an old save file will bypass the script that sets the PC starting items" },
+            new ComboBoxItem() {Content="Allow in Item Randomization", ToolTip="Mystery gift event items will be able to appear as randomized items even though they are key items. They will be considered to be part of the \"Special\" item category for the purposes of duplicate reduction and all other item randomization settings"},
         };
         public MiscDataView(MiscDataModel model, RomMetadata metadata)
         {
