@@ -179,7 +179,7 @@
     
     <!-- from dabomstew's UP randomizer source https://github.com/Dabomstew/universal-pokemon-randomizer -->
     <starterItems offset="0xB117A"/>
-    <pcPotion offset="0x5DFEFC"/>
+    <pcPotion pointer="0x16AE54" offset="0x5DFEFC"/>
 
     <!-- Static Pokemon -->
 
@@ -308,7 +308,7 @@
 	  
 	<itemDefinitions pointer="0x0A98F0"/>
     <itemEffectsTable offset="0x1FCDE4"/>
-	<pcPotion offset="0x4062F0"/>
+	<pcPotion pointer="0x139C70" offset="0x4062F0"/>
     <setBerryTreeScript offset="0x19F940"/>
   </AXVE0>
   <AXPE0>
@@ -386,7 +386,7 @@
 
 	<itemDefinitions pointer="0x0A9910"/>
     <itemEffectsTable offset="0x1FCDFC"/>
-	<pcPotion offset="0x40630C"/>
+	<pcPotion pointer="0x139C90" offset="0x40630C"/>
     <setBerryTreeScript offset="0x19F960"/>
   </AXVE1>
   <AXPE1>
@@ -535,7 +535,7 @@
     <itemEvents spriteSetIndex="92"/>
     <pickupItems pointer="0x02CEE4"/>
 
-    <pcPotion offset="0x402220"/>
+    <pcPotion pointer="0x0EB6A8" offset="0x402220"/>
 
     <!-- Static Pokemon -->
 
@@ -592,7 +592,7 @@
 	  
     <itemSprites pointer="0x098970"/>
     <itemEffectsTable offset="0x252898"/>
-	<pcPotion offset="0x40205C"/>
+	<pcPotion pointer="0x0EB680" offset="0x40205C"/>
 	  
 	<!-- Static Pokemon -->
 
@@ -645,7 +645,7 @@
     <itemSprites pointer="0x0989B0"/>
     <itemEffectsTable offset="0x25292C"/>
     <pickupItems pointer="0x02CEF8"/>
-	<pcPotion offset="0x402290"/>
+	<pcPotion pointer="0x0EB6BC" offset="0x402290"/>
 
 	<!-- Trainer Battle Definitions -->
 	<trainerBattles num="743" pointer="0x00FC14"/>
@@ -695,7 +695,7 @@
 
     <itemSprites pointer="0x098984"/>
     <itemEffectsTable offset="0x252908"/>
-	<pcPotion offset="0x4020CC"/>
+	<pcPotion pointer="0x0EB694" offset="0x4020CC"/>
 	  
 	<!-- Static Pokemon -->
 
