@@ -106,6 +106,7 @@ namespace PokemonRandomizer.Backend.DataStructures
                 }
             }
         }
+        public List<ItemData> MysteryGiftEventItems { get; } = new(10);
         private Dictionary<Item, ItemData> ItemDataLookup { get; } = new(0);
         public PickupData PickupItems { get; set; }
         public List<InGameTrade> Trades { get; set; }

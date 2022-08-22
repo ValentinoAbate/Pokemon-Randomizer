@@ -87,7 +87,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
             data.Encounters = ReadEncounters(rom, info);
             data.FirstEncounterSet = FindFirstEncounter(data.Encounters, info);
             // Read in the item data
-            data.ItemData = ReadItemData(rom, info, metadata);
+            data.ItemData = ReadItemData(rom, info, metadata, data.MysteryGiftEventItems);
             // Read in the pickup items
             data.PickupItems = ReadPickupData(rom, info, metadata);
             // Read berry tree script (if applicable)
@@ -756,7 +756,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
             return ret;
         }
 
-        private List<ItemData> ReadItemData(Rom rom, XmlManager info, RomMetadata metadata)
+        private List<ItemData> ReadItemData(Rom rom, XmlManager info, RomMetadata metadata, List<ItemData> mysteryGiftEventItems)
         {
             if (!info.FindAndSeekOffset(ElementNames.itemData, rom))
                 return new List<ItemData>();
@@ -781,7 +781,10 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
                     battleEffectOffset = rom.ReadPointer(),
                     extraData = rom.ReadUInt32(),
                 };
-                item.IsMysterGiftEventItem = IsMysteryGiftEventItem(item, metadata);
+                if(item.IsMysterGiftEventItem = IsMysteryGiftEventItem(item, metadata))
+                {
+                    mysteryGiftEventItems.Add(item);
+                }
                 item.Description = rom.ReadString(item.descriptionOffset);
                 item.SetCategoryFlags();
                 item.SetOriginalValues();

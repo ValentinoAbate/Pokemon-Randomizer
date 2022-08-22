@@ -79,7 +79,32 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
             int pcPotionOffset = info.FindOffset(ElementNames.pcPotion, rom);
             if (pcPotionOffset != Rom.nullPointer)
             {
-                rom.WriteUInt16(pcPotionOffset, (int)RemapItem(data.PcStartItem));
+                if(settings.MysteryGiftItemAcquisitionSetting == Settings.MysteryGiftItemSetting.StartingItem)
+                {
+                    var pcItemArray = new Rom(new byte[(data.MysteryGiftEventItems.Count + 2) * 4], rom.FreeSpaceByte, 0);
+                    pcItemArray.WriteUInt16((int)RemapItem(data.PcStartItem));
+                    pcItemArray.WriteUInt16(1);
+                    foreach(var item in data.MysteryGiftEventItems)
+                    {
+                        pcItemArray.WriteUInt16(ItemToInternalIndex(RemapItem(item.Item)));
+                        pcItemArray.WriteUInt16(1);
+                    }
+                    pcItemArray.WriteRepeating(0x00, 4);
+                    int? newPCItemArrayOffset = rom.WriteInFreeSpace(pcItemArray.File);
+                    if(newPCItemArrayOffset.HasValue && newPCItemArrayOffset != Rom.nullPointer)
+                    {
+                        repoints.Add(pcPotionOffset, newPCItemArrayOffset.Value);
+                    }
+                    else
+                    {
+                        Logger.main.Error($"Expanded PC item table could not be written to free space. Mystery Gift Event Items will not start in the PC");
+                        rom.WriteUInt16(pcPotionOffset, (int)RemapItem(data.PcStartItem));
+                    }
+                }
+                else // Normal PC Potion Setting
+                {
+                    rom.WriteUInt16(pcPotionOffset, (int)RemapItem(data.PcStartItem));
+                }
             }
             // Write the run indoors hack if applicable
             if (settings.RunIndoors)

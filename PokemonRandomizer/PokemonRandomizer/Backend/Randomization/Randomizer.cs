@@ -75,7 +75,7 @@ namespace PokemonRandomizer.Backend.Randomization
             // Apply Allow Mystery Gift Item in Randomization if necessary
             if(settings.MysteryGiftItemAcquisitionSetting == Settings.MysteryGiftItemSetting.AllowInRandomization)
             {
-                foreach (var item in items)
+                foreach (var item in data.MysteryGiftEventItems)
                 {
                     if (item.IsMysterGiftEventItem)
                     {
