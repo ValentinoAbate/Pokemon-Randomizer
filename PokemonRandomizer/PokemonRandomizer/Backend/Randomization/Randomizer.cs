@@ -72,6 +72,18 @@ namespace PokemonRandomizer.Backend.Randomization
             var babySet = pokemonSet.Where(PokemonUtils.IsBaby).ToHashSet();
             var types = DefinePokemonTypes();
             var items = data.GetAllValidItemData();
+            // Apply Allow Mystery Gift Item in Randomization if necessary
+            if(settings.MysteryGiftItemAcquisitionSetting == Settings.MysteryGiftItemSetting.AllowInRandomization)
+            {
+                foreach (var item in items)
+                {
+                    if (item.IsMysterGiftEventItem)
+                    {
+                        item.ItemCategories &= ~ItemData.Categories.KeyItem;
+                        item.ItemCategories |= ItemData.Categories.Special;
+                    }
+                }
+            }
 
             #region Type Definitions
             // Randomize type traits

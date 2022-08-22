@@ -87,7 +87,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
             data.Encounters = ReadEncounters(rom, info);
             data.FirstEncounterSet = FindFirstEncounter(data.Encounters, info);
             // Read in the item data
-            data.ItemData = ReadItemData(rom, info);
+            data.ItemData = ReadItemData(rom, info, metadata);
             // Read in the pickup items
             data.PickupItems = ReadPickupData(rom, info, metadata);
             // Read berry tree script (if applicable)
@@ -756,7 +756,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
             return ret;
         }
 
-        private List<ItemData> ReadItemData(Rom rom, XmlManager info)
+        private List<ItemData> ReadItemData(Rom rom, XmlManager info, RomMetadata metadata)
         {
             if (!info.FindAndSeekOffset(ElementNames.itemData, rom))
                 return new List<ItemData>();
@@ -781,6 +781,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
                     battleEffectOffset = rom.ReadPointer(),
                     extraData = rom.ReadUInt32(),
                 };
+                item.IsMysterGiftEventItem = IsMysteryGiftEventItem(item, metadata);
                 item.Description = rom.ReadString(item.descriptionOffset);
                 item.SetCategoryFlags();
                 item.SetOriginalValues();
@@ -795,6 +796,18 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
                 item.paletteOffset = rom.ReadPointer();
             }
             return itemData;
+        }
+
+        private bool IsMysteryGiftEventItem(ItemData item, RomMetadata metadata)
+        {
+            return item.Item switch
+            {
+                Item.Eon_Ticket => metadata.IsRubySapphireOrEmerald,
+                Item.MysticTicket => metadata.IsEmerald || metadata.IsFireRedOrLeafGreen,
+                Item.AuroraTicket => metadata.IsEmerald || metadata.IsFireRedOrLeafGreen,
+                Item.Old_Sea_Map => metadata.IsEmerald,
+                _ => false,
+            };
         }
 
         private PickupData ReadPickupData(Rom rom, XmlManager info, RomMetadata metadata)

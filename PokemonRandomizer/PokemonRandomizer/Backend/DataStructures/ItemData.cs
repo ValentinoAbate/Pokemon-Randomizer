@@ -53,6 +53,7 @@ namespace PokemonRandomizer.Backend.DataStructures
         // 2: Key item (invisible) (ex: blue orb, oak's parcel)
         public byte keyItemValue;
         public bool RegisterableKeyItem { get; set; }
+        public bool IsMysterGiftEventItem { get; set; }
         // In RSE:
         // 1: General Items pocket
         // 3: TM Pocket
