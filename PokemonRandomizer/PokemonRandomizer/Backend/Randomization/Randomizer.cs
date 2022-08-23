@@ -153,6 +153,11 @@ namespace PokemonRandomizer.Backend.Randomization
             {
                 tmTypePalettes.Add(PokemonType.BUG, tmTypePalettes[PokemonType.GRS]);
             }
+            if (!tmTypePalettes.ContainsKey(PokemonType.Unknown) && tmTypePalettes.ContainsKey(PokemonType.NRM))
+            {
+                // Set curse to normal palette
+                tmTypePalettes.Add(PokemonType.Unknown, tmTypePalettes[PokemonType.NRM]);
+            }
             // Get Potential Move Choices
             var moves = data.GetAllMoves();
             if (moves.Contains(Move.None))
