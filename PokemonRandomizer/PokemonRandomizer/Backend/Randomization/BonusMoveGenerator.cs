@@ -22,25 +22,7 @@ namespace PokemonRandomizer.Backend.Randomization
             dataT = data;
             metrics = data.Metrics;
             // Setup allowed move set
-            availableAddMoves = data.GetAllMoves();
-            if (availableAddMoves.Contains(Move.None))
-            {
-                availableAddMoves.Remove(Move.None);
-            }
-            if (settings.BanSelfdestruct)
-            {
-                availableAddMoves.RemoveWhere(m => data.GetMoveData(m).IsSelfdestruct);
-            }
-            if (settings.DisableAddingHmMoves)
-            {
-                foreach (var move in data.HMMoves)
-                {
-                    if (availableAddMoves.Contains(move))
-                    {
-                        availableAddMoves.Remove(move);
-                    }
-                }
-            }
+            availableAddMoves = data.GetValidMoves(settings.DisableAddingHmMoves, settings.BanSelfdestruct);
         }
 
         public void GenerateBonusMoves(PokemonBaseStats pokemon, int numMoves, WeightedSet<AddMoveSource> addMoveSourceWeights)

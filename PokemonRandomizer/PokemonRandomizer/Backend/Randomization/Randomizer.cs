@@ -159,26 +159,17 @@ namespace PokemonRandomizer.Backend.Randomization
                 tmTypePalettes.Add(PokemonType.Unknown, tmTypePalettes[PokemonType.NRM]);
             }
             // Get Potential Move Choices
-            var moves = data.GetAllMoves();
-            if (moves.Contains(Move.None))
+            var moves = data.GetValidMoves(settings.PreventHmMovesInTMsAndTutors, false);
+            // Remove important TMs that will be kept if applicable if no duplicates is on
+            if (settings.KeepImportantTMsAndTutors && settings.PreventDuplicateTMsAndTutors)
             {
-                moves.Remove(Move.None); // Remove none as a possible choice
-            }
-            // Remove HM moves if applicable
-            if(settings.PreventHmMovesInTMsAndTutors)
-            {
-                foreach (var move in data.HMMoves)
+                foreach(var move in settings.ImportantTMsAndTutors)
                 {
-                    if (moves.Contains(move))
+                    if(moves.Contains(move) && data.TMMoves.Contains(move))
                     {
                         moves.Remove(move);
                     }
                 }
-            }
-            // Remove important TMs that will be kept if applicable if no duplicates is on
-            if (settings.KeepImportantTMsAndTutors && settings.PreventDuplicateTMsAndTutors)
-            {
-                moves.RemoveWhere(m => settings.ImportantTMsAndTutors.Contains(m) && data.TMMoves.Contains(m));
             }
             // Randomize TM mappings
             for(int i = 0; i < data.TMMoves.Length; ++i)

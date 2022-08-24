@@ -57,22 +57,7 @@ namespace PokemonRandomizer.Backend.Randomization
             types = new List<PokemonType>(EnumUtils.GetValues<PokemonType>());
             types.Remove(PokemonType.FAI);
             types.Remove(PokemonType.Unknown);
-            availableMoves = data.GetAllMoves();
-            if (availableMoves.Contains(Move.None))
-            {
-                availableMoves.Remove(Move.None);
-            }
-            if (settings.BanSelfdestruct)
-            {
-                availableMoves.RemoveWhere(m => data.GetMoveData(m).IsSelfdestruct);
-            }
-            foreach (var move in data.HMMoves)
-            {
-                if (availableMoves.Contains(move))
-                {
-                    availableMoves.Remove(move);
-                }
-            }
+            availableMoves = data.GetValidMoves(true, settings.BanSelfdestruct);
         }
 
         public void CreateVariant(PokemonBaseStats pokemon, Settings settings)

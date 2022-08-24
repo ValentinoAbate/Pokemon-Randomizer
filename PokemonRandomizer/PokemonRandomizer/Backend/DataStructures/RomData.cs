@@ -1,6 +1,7 @@
 ﻿using PokemonRandomizer.Backend.DataStructures.Scripts;
 using PokemonRandomizer.Backend.EnumTypes;
 using PokemonRandomizer.Backend.Metadata;
+using PokemonRandomizer.Backend.Utilities;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -140,6 +141,26 @@ namespace PokemonRandomizer.Backend.DataStructures
             foreach(var kvp in MoveDataLookup)
             {
                 set.Add(kvp.Key);
+            }
+            return set;
+        }
+        public HashSet<Move> GetValidMoves(bool ignoreHms, bool ignoreSelfdestruct)
+        {
+            var set = new HashSet<Move>(MoveDataLookup.Count);
+            foreach (var kvp in MoveDataLookup)
+            {
+                if (ignoreSelfdestruct && kvp.Value.IsSelfdestruct)
+                    continue;
+                set.Add(kvp.Key);
+            }
+            set.RemoveIfContains(Move.None);
+            set.RemoveIfContains(Move.STRUGGLE);
+            if (ignoreHms)
+            {
+                foreach (var move in HMMoves)
+                {
+                    set.RemoveIfContains(move);
+                }
             }
             return set;
         }
