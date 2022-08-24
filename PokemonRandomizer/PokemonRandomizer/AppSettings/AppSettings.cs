@@ -405,7 +405,16 @@ namespace PokemonRandomizer.AppSettings
         public override ItemRandomizer.Settings PcItemSettings => itemData.PcItemSettings;
 
         public override bool AddCustomItemToPokemarts => itemData.AddItemToPokemarts;
-        public override Item CustomMartItem => itemData.CustomMartItem;
+        public override Item CustomMartItem
+        {
+            get
+            {
+                // TMs and HMs cannot be added to shops with other items in FRLG
+                if (Metadata.IsFireRedOrLeafGreen && ItemUtils.IsTM(itemData.CustomMartItem) || ItemUtils.IsHM(itemData.CustomMartItem))
+                    return Item.None;
+                return itemData.CustomMartItem;
+            }
+        }
         public override bool OverrideCustomMartItemPrice => itemData.OverrideCustomMartItemPrice;
         public override int CustomMartItemPrice => (int)itemData.CustomMartItemPrice;
 

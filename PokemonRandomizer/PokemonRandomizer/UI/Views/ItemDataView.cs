@@ -1,27 +1,29 @@
 ﻿using System.Windows.Controls;
 using System.Windows.Data;
+using PokemonRandomizer.Backend.DataStructures;
+using PokemonRandomizer.Backend.Utilities;
 using static PokemonRandomizer.Backend.DataStructures.ItemData;
 
 namespace PokemonRandomizer.UI.Views
 {
     using Backend.EnumTypes;
     using Models;
-    using PokemonRandomizer.Backend.Utilities;
     using System.Collections.Generic;
     using System.Linq;
     using static Settings;
 
     public class ItemDataView : DataView<ItemDataModel>
     {
-        public ItemDataView(ItemDataModel model, List<Item> allItems)
+        public ItemDataView(ItemDataModel model, List<Item> allItems, RomMetadata metadata)
         {
-            var itemsDisplay = allItems.Select(EnumUtils.ToDisplayString).ToList();
+            var customItemOptions = metadata.IsFireRedOrLeafGreen ? allItems.Where(i => !ItemUtils.IsTM(i) && !ItemUtils.IsHM(i)).ToList() : allItems;
+            var allItemsDisplay = allItems.Select(EnumUtils.ToDisplayString).ToList();
             var tabs = new TabControl();
 
             tabs.Add(CreateItemRandomizerSettingsTab(model));
             tabs.Add(CreateFieldItemsTab(model));
             //tabs.Items.Add(CreateShopsTab(model));
-            tabs.Add(CreateMiscTab(model, itemsDisplay, allItems));
+            tabs.Add(CreateMiscTab(model, allItemsDisplay, allItems, metadata));
 
             Content = tabs;
         }
@@ -95,7 +97,7 @@ namespace PokemonRandomizer.UI.Views
             return c1 |= c2;
         }
 
-        private TabItem CreateMiscTab(ItemDataModel model, List<string> allItemsDisplay, List<Item> allItems)
+        private TabItem CreateMiscTab(ItemDataModel model, List<string> allItemsDisplay, List<Item> allItems, RomMetadata metadata)
         {
             var stack = CreateStack();
             stack.Header("PC Potion Randomization");
@@ -108,9 +110,17 @@ namespace PokemonRandomizer.UI.Views
             stack.Add(pickupRand.BindEnabled(new ItemSettingsUI(model.PickupItemSettings, false)));
 
             stack.Header("Custom Poké Mart Item");
+
+            var martItemOptions = metadata.IsFireRedOrLeafGreen ? allItems.Where(i => !ItemUtils.IsTM(i) && !ItemUtils.IsHM(i)).ToList() : allItems;
+            var martItemDisplay = martItemOptions.Select(EnumUtils.ToDisplayString).ToList();
+
             var customMartItemCb = stack.Add(new BoundCheckBoxUI(model.AddItemToPokemarts, "Add Custom Item To Poké Marts"));
             var customMartItemStack = customMartItemCb.BindVisibility(stack.Add(CreateStack()));
-            customMartItemStack.Add(new EnumComboBoxUI<Item>("Item to Add", allItemsDisplay, model.CustomMartItem, allItems));
+            customMartItemStack.Add(new EnumComboBoxUI<Item>("Item to Add", martItemDisplay, model.CustomMartItem, martItemOptions));
+            if (metadata.IsFireRedOrLeafGreen)
+            {
+                customMartItemStack.Add(new Label() { Content = "NOTE: TMs and HMs cannot be added as custom shop items in FRLG, as shops with TMs or HMs that also have any other items crash the game" });
+            }
             var modifyMartItemPriceCb = customMartItemStack.Add(new BoundCheckBoxUI(model.OverrideCustomMartItemPrice, "Override Item Price"));
             modifyMartItemPriceCb.BindVisibility(customMartItemStack.Add(new BoundSliderUI("Item Price", model.CustomMartItemPrice, false, 100, 100, 9800)));
 
