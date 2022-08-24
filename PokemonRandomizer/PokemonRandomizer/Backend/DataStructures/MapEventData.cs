@@ -101,7 +101,7 @@ namespace PokemonRandomizer.Backend.DataStructures
 
 		public class TriggerEvent : IHasWeather
         {
-			private static readonly Dictionary<Map.Weather, int> weatherToInternal = new()
+			public static readonly Dictionary<Map.Weather, int> weatherToInternal = new()
 			{
 				{ Map.Weather.ClearWithCloudsInWater, 1 },
 				{ Map.Weather.Clear, 2 },
@@ -117,7 +117,7 @@ namespace PokemonRandomizer.Backend.DataStructures
 				{ Map.Weather.RainSometimes1, 20 },
 				{ Map.Weather.RainSometimes2, 21 },
 			};
-			private static readonly Dictionary<int, Map.Weather> internalToWeather;
+			public static readonly Dictionary<int, Map.Weather> internalToWeather;
 			static TriggerEvent()
             {
 				internalToWeather = new(weatherToInternal.Count);
@@ -132,11 +132,16 @@ namespace PokemonRandomizer.Backend.DataStructures
 				get => IsWeatherTrigger && internalToWeather.ContainsKey(variableIndex) ? internalToWeather[variableIndex] : Map.Weather.House;
                 set
                 {
-					if (!IsWeatherTrigger || !weatherToInternal.ContainsKey(value))
+					if (!IsWeatherTrigger)
 						return;
-					variableIndex = weatherToInternal[value];
+					IntendedWeather = value;
+					if (weatherToInternal.ContainsKey(value))
+                    {
+						variableIndex = weatherToInternal[value];
+					}
                 }
             }
+			public Map.Weather IntendedWeather { get; private set; } = Map.Weather.House;
 			public int xPos;
 			public int yPos;
 			public int unknownUInt16;

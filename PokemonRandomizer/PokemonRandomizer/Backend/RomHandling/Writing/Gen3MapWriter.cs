@@ -3,6 +3,11 @@ using PokemonRandomizer.Backend.EnumTypes;
 using PokemonRandomizer.Backend.DataStructures;
 using PokemonRandomizer.Backend.Utilities;
 using PokemonRandomizer.Backend.Constants;
+using System.Collections.Generic;
+using PokemonRandomizer.Backend.DataStructures.Scripts;
+using PokemonRandomizer.Backend.Scripting.GenIII;
+using PokemonRandomizer.Backend.Utilities.Debug;
+using System.Linq;
 
 namespace PokemonRandomizer.Backend.RomHandling.Writing
 {
@@ -152,9 +157,48 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
             // Write Trigger Events
             if (eventData.triggerEventOffset != Rom.nullPointer)
             {
+                Dictionary<Map.Weather, int> newWeatherScriptOffsets = null;
+                bool applyTriggerFix = eventData.triggerEvents.Any(ShouldApplyWeatherTriggerFix);
+                // prepare trigger fix
+                if (applyTriggerFix)
+                {
+                    newWeatherScriptOffsets = new Dictionary<Map.Weather, int>(4);
+                    foreach (var trigger in eventData.triggerEvents)
+                    {
+                        if (!newWeatherScriptOffsets.ContainsKey(trigger.IntendedWeather))
+                        {
+                            int? scriptOffset = rom.FindFreeSpaceOffset(5);
+                            if (scriptOffset.HasValue)
+                            {
+                                var setWeatherScript = new Script
+                                {
+                                    new SetWeatherCommand() { Weather = trigger.IntendedWeather },
+                                    new Gen3Command() { code = Gen3Command.doweather },
+                                    new Gen3Command() { code = Gen3Command.end }
+                                };
+                                scriptWriter.Write(setWeatherScript, rom, scriptOffset.Value, metadata);
+                                newWeatherScriptOffsets.Add(trigger.IntendedWeather, scriptOffset.Value);
+                            }
+                            else
+                            {
+                                Logger.main.Error("Weather Trigger Fix Error: Could not find enough free space to write set weather script");
+                                applyTriggerFix = false;
+                                break;
+                            }
+                        }
+                    }
+                }
+
                 rom.Seek(eventData.triggerEventOffset);
                 foreach (var trigger in eventData.triggerEvents)
                 {
+                    if(trigger.IsWeatherTrigger && applyTriggerFix && newWeatherScriptOffsets.ContainsKey(trigger.IntendedWeather))
+                    {
+                        trigger.scriptOffset = newWeatherScriptOffsets[trigger.IntendedWeather];
+                        trigger.script = null;
+                        trigger.variableIndex = 0x0000;
+                        trigger.variableValue = 0x0000;
+                    }
                     rom.WriteUInt16(trigger.xPos);
                     rom.WriteUInt16(trigger.yPos);
                     rom.WriteUInt16(trigger.unknownUInt16);
@@ -198,6 +242,10 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
                     }
                 }
             }
+        }
+        private bool ShouldApplyWeatherTriggerFix(MapEventData.TriggerEvent t)
+        {
+            return t.IsWeatherTrigger && t.IntendedWeather != Map.Weather.House && t.IntendedWeather != MapEventData.TriggerEvent.internalToWeather[t.variableIndex];
         }
         private void WriteMapScriptData(Rom rom, MapScriptData data, int offset, RomMetadata metadata)
         {
