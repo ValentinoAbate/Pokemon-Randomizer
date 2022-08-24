@@ -101,7 +101,7 @@ namespace PokemonRandomizer.Backend.DataStructures
 
 		public class TriggerEvent : IHasWeather
         {
-			public static readonly Dictionary<Map.Weather, int> weatherToInternal = new()
+			private static readonly Dictionary<Map.Weather, int> weatherToInternal = new()
 			{
 				{ Map.Weather.ClearWithCloudsInWater, 1 },
 				{ Map.Weather.Clear, 2 },
@@ -117,7 +117,7 @@ namespace PokemonRandomizer.Backend.DataStructures
 				{ Map.Weather.RainSometimes1, 20 },
 				{ Map.Weather.RainSometimes2, 21 },
 			};
-			public static readonly Dictionary<int, Map.Weather> internalToWeather;
+			private static readonly Dictionary<int, Map.Weather> internalToWeather;
 			static TriggerEvent()
             {
 				internalToWeather = new(weatherToInternal.Count);

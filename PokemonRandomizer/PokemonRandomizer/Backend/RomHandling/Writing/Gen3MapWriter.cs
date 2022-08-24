@@ -245,7 +245,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
         }
         private bool ShouldApplyWeatherTriggerFix(MapEventData.TriggerEvent t)
         {
-            return t.IsWeatherTrigger && t.IntendedWeather != Map.Weather.House && t.IntendedWeather != MapEventData.TriggerEvent.internalToWeather[t.variableIndex];
+            return t.IsWeatherTrigger && t.IntendedWeather != Map.Weather.House && t.IntendedWeather != t.Weather;
         }
         private void WriteMapScriptData(Rom rom, MapScriptData data, int offset, RomMetadata metadata)
         {
