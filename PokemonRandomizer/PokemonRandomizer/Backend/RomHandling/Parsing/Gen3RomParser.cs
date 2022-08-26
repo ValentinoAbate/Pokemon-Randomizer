@@ -502,7 +502,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
                     Nature = rom.ReadByte(),
                     EVs = rom.ReadBlock(PokemonBaseStats.numStats),
                 };
-                rom.Skip(); // padding
+                rom.Skip(); // padding 0x00
                 for (int moveInd = 0; moveInd < TrainerPokemon.numMoves; ++moveInd)
                 {
                     pokemon.moves[moveInd] = InternalIndexToMove(rom.ReadUInt16());

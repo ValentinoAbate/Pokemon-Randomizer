@@ -59,6 +59,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
             WriteTypeDefinitions(data.TypeDefinitions, rom, info, ref repoints);
             WriteEncounters(data, rom, info);
             WriteTrainerBattles(data, rom, info, ref repoints);
+            WriteStevenAllyTrainerBattle(data, rom, info);
             mapWriter.WriteMapData(data, rom, info, metadata);
             WriteItemData(data.ItemData, rom, info);
             WritePickupData(data.PickupItems, rom, info, metadata);
@@ -794,6 +795,37 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
                     }
                 }
                 rom.LoadOffset();
+            }
+        }
+
+        private void WriteStevenAllyTrainerBattle(RomData data, Rom rom, XmlManager info)
+        {
+            if (!info.FindAndSeekOffset(ElementNames.GenIII.stevenAllyBattle, rom))
+            {
+                return;
+            }
+            if (!data.SpecialTrainers.ContainsKey(StevenAllyTrainer.specialTrainerKey))
+            {
+                return;
+            }
+            var battle = data.SpecialTrainers[StevenAllyTrainer.specialTrainerKey][0];
+            foreach(var pokemon in battle.Pokemon)
+            {
+                if(pokemon is not StevenAllyTrainerPokemon stevenPokemon)
+                {
+                    Logger.main.Error("Steven Ally Battle with non Steven Trainer Pokemon detected. Steven Ally Battle will not be written properly");
+                    return;
+                }
+                rom.WriteUInt16(PokemonToInternalIndex(stevenPokemon.species));
+                rom.WriteByte((byte)stevenPokemon.IVLevel);
+                rom.WriteByte((byte)stevenPokemon.level);
+                rom.WriteByte((byte)stevenPokemon.Nature);
+                rom.WriteBlock(stevenPokemon.EVs);
+                rom.Skip();
+                for (int moveInd = 0; moveInd < TrainerPokemon.numMoves; ++moveInd)
+                {
+                    rom.WriteUInt16(MoveToInternalIndex(pokemon.moves[moveInd]));
+                }
             }
         }
 
