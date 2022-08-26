@@ -198,6 +198,7 @@
     <!-- Special Trainer Battles -->
 
     <specialBosses names="[Steven]"/>
+	<stevenAllyBattle offset="0x5dd6d0"/>
 
     <!-- Map Data -->
 

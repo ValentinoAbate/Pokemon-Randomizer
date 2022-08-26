@@ -27,6 +27,7 @@ namespace PokemonRandomizer.Backend.DataStructures.Trainers
             SpecialBoss, // Post-game steven in emerald, Red, etc
         }
 
+        public const int multiBattlePartySize = 3;
         public const int maxPokemon = 6;
         public const string nullName = "??????";
         public const int nameLength = 12;

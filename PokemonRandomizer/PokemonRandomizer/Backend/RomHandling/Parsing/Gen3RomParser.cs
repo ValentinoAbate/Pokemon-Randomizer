@@ -79,6 +79,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
             // Trainers and associated data
             data.ClassNames = ReadTrainerClassNames(rom, info);
             data.Trainers = ReadTrainers(rom, info, data.ClassNames);
+            ReadStevenAllyTrainerBattle(rom, data, info);
             SetTrainerCategoryData(data, info);
             SetTrainerThemeOverrides(data, info);
             // Read type definitions
@@ -459,14 +460,14 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
                     }
                     else if (dataType == TrainerPokemon.DataType.SpecialMoves)
                     {
-                        for (int moveInd = 0; moveInd < 4; ++moveInd)
+                        for (int moveInd = 0; moveInd < TrainerPokemon.numMoves; ++moveInd)
                             p.moves[moveInd] = InternalIndexToMove(rom.ReadUInt16());
                         rom.Skip(2);
                     }
                     else if (dataType == TrainerPokemon.DataType.SpecialMovesAndHeldItem)
                     {
                         p.heldItem = InternalIndexToItem(rom.ReadUInt16());
-                        for (int moveInd = 0; moveInd < 4; ++moveInd)
+                        for (int moveInd = 0; moveInd < TrainerPokemon.numMoves; ++moveInd)
                             p.moves[moveInd] = InternalIndexToMove(rom.ReadUInt16());
                     }
                     trainer.PokemonData.Pokemon.Add(p);
@@ -477,6 +478,38 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
                 ret.Add(trainer);
             }
             return ret;
+        }
+
+        private void ReadStevenAllyTrainerBattle(Rom rom, RomData data, XmlManager info)
+        {
+            if (!info.FindAndSeekOffset(ElementNames.GenIII.stevenAllyBattle, rom))
+            {
+                return;
+            }
+            var stevenAllyBattle = new StevenAllyTrainer() 
+            { 
+                pokemonOffset = rom.InternalOffset
+            };
+            stevenAllyBattle.PokemonData = new Trainer.TrainerPokemonData(TrainerPokemon.DataType.SpecialMoves, Trainer.multiBattlePartySize);
+            for (int i = 0; i < Trainer.multiBattlePartySize; ++i)
+            {
+                var pokemon = new StevenAllyTrainerPokemon()
+                {
+                    dataType = TrainerPokemon.DataType.SpecialMoves,
+                    species = InternalIndexToPokemon(rom.ReadUInt16()),
+                    IVLevel = rom.ReadByte(),
+                    level = rom.ReadByte(),
+                    Nature = rom.ReadByte(),
+                    EVs = rom.ReadBlock(PokemonBaseStats.numStats),
+                };
+                rom.Skip(); // padding
+                for (int moveInd = 0; moveInd < TrainerPokemon.numMoves; ++moveInd)
+                {
+                    pokemon.moves[moveInd] = InternalIndexToMove(rom.ReadUInt16());
+                }
+                stevenAllyBattle.PokemonData.Pokemon.Add(pokemon);
+            }
+            data.SpecialTrainers.Add(StevenAllyTrainer.specialTrainerKey, new List<Trainer>() { stevenAllyBattle });
         }
         private class VillainousTeamInfo
         {
@@ -552,7 +585,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
             var specialBossNames = info.ArrayAttrLowerCase(ElementNames.specialBosses, AttributeNames.names);
             // Fetch the Ace Trainer Class Numbers for this ROM
             var aceTrainersClasses = info.IntArrayAttr(ElementNames.aceTrainers, "classNums");
-            foreach (var trainer in data.Trainers)
+            foreach (var trainer in data.AllTrainers)
             {
                 if (trainer.Invalid)
                     continue;

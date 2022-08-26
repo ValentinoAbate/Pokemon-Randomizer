@@ -8,6 +8,6 @@ namespace PokemonRandomizer.Backend.DataStructures.Trainers
 {
     public interface IHasTrainerPokemonEvs
     {
-        public int[] EVs { get; }
+        public byte[] EVs { get; set; }
     }
 }
