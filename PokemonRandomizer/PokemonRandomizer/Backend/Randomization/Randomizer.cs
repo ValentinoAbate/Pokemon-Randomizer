@@ -674,7 +674,7 @@ namespace PokemonRandomizer.Backend.Randomization
             var catchingTutorialTrainers = new List<Trainer>();
             var gruntTrainers = new List<Trainer>();
             var eliteFourMetadata = new EliteFourMetadata();
-            foreach (var trainer in data.Trainers)
+            foreach (var trainer in data.AllTrainers)
             {
                 if (trainer.Invalid)
                 {
