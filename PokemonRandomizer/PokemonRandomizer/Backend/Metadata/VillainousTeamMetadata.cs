@@ -1,4 +1,5 @@
 ﻿using PokemonRandomizer.Backend.DataStructures;
+using PokemonRandomizer.Backend.DataStructures.Trainers;
 using PokemonRandomizer.Backend.EnumTypes;
 using System;
 using System.Collections.Generic;
@@ -54,7 +55,7 @@ namespace PokemonRandomizer.Backend.Metadata
             {
                 return $"{TeamGrunts[0].Class.ToUpper()} ({ThemeData})";
             }
-            return $"{TeamLeaders[0].name}'s Team ({ThemeData})";
+            return $"{TeamLeaders[0].Name}'s Team ({ThemeData})";
         }
     }
 }

@@ -10,6 +10,7 @@ namespace PokemonRandomizer.AppSettings
     using PokemonRandomizer.Backend.DataStructures;
     using static PokemonRandomizer.Backend.Randomization.PokemonVariantRandomizer;
     using PokemonRandomizer.Backend.Utilities;
+    using PokemonRandomizer.Backend.DataStructures.Trainers;
 
     public class AppSettings : HardCodedSettings
     {

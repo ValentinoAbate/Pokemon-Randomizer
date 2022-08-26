@@ -11,6 +11,7 @@ using PokemonRandomizer.Backend.Metadata;
 using static PokemonRandomizer.Backend.DataStructures.MoveData;
 using PokemonRandomizer.Backend.Constants;
 using PokemonRandomizer.Backend.RomHandling.IndexTranslators;
+using PokemonRandomizer.Backend.DataStructures.Trainers;
 
 namespace PokemonRandomizer.Backend.RomHandling.Parsing
 {
@@ -397,16 +398,16 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
             return classNames;
         }
         // Readainers
-        private List<Trainer> ReadTrainers(Rom rom, XmlManager info, List<string> classNames)
+        private List<NormalTrainer> ReadTrainers(Rom rom, XmlManager info, List<string> classNames)
         {
             // If fail, reading trainer battles is not supported for this ROM
             if (!info.FindAndSeekOffset(ElementNames.trainerBattles, rom))
-                return new List<Trainer>();
+                return new List<NormalTrainer>();
             int numTrainers = info.Num(ElementNames.trainerBattles);
-            var ret = new List<Trainer>(numTrainers);
+            var ret = new List<NormalTrainer>(numTrainers);
             for (int trainerInd = 0; trainerInd < numTrainers; ++trainerInd)
             {
-                var trainer = new Trainer();
+                var trainer = new NormalTrainer();
                 trainer.ClassNames = classNames;
                 var dataType = (TrainerPokemon.DataType)rom.ReadByte();
                 trainer.trainerClass = rom.ReadByte();
@@ -417,14 +418,14 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
                 // Read sprite index (byte 3)
                 trainer.spriteIndex = rom.ReadByte();
                 // Read name (I think bytes 4 - 15?)
-                trainer.name = rom.ReadFixedLengthString(Trainer.nameLength);
+                trainer.Name = rom.ReadFixedLengthString(Trainer.nameLength);
                 // Read items (bytes 16-23)
                 for (int itemInd = 0; itemInd < 4; ++itemInd)
                 {
                     trainer.useItems[itemInd] = InternalIndexToItem(rom.ReadUInt16());
                 }
                 // Read double battle (byte 24)
-                trainer.isDoubleBattle = rom.ReadByte() == 1;
+                trainer.IsDoubleBattle = rom.ReadByte() == 1;
                 // What is in bytes 25-27?
                 rom.Skip(3);
                 // Read AI flags
@@ -499,7 +500,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
                     trainer.TrainerCategory = Trainer.Category.TeamLeader;
                     return true;
                 }
-                if (className == AdminClassName || AdminNames.Contains(trainer.name.ToLower()))
+                if (className == AdminClassName || AdminNames.Contains(trainer.Name.ToLower()))
                 {
                     TeamData.TeamAdmins.Add(trainer);
                     trainer.TrainerCategory = Trainer.Category.TeamAdmin;
@@ -556,7 +557,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
                 if (trainer.Invalid)
                     continue;
                 string trainerClass = trainer.Class.ToLower();
-                string name = trainer.name.ToLower();
+                string name = trainer.Name.ToLower();
                 if (name == wallyName)
                 {
                     trainer.TrainerCategory = Trainer.Category.CatchingTutTrainer;

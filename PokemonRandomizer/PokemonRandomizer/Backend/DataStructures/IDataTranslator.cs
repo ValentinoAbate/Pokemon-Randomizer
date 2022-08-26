@@ -1,4 +1,5 @@
-﻿using PokemonRandomizer.Backend.EnumTypes;
+﻿using PokemonRandomizer.Backend.DataStructures.Trainers;
+using PokemonRandomizer.Backend.EnumTypes;
 
 namespace PokemonRandomizer.Backend.DataStructures
 {

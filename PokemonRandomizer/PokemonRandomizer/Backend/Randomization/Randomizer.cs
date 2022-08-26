@@ -7,7 +7,7 @@ using PokemonRandomizer.Backend.Utilities.Debug;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
+using PokemonRandomizer.Backend.DataStructures.Trainers;
 
 namespace PokemonRandomizer.Backend.Randomization
 {
@@ -669,7 +669,7 @@ namespace PokemonRandomizer.Backend.Randomization
             }
 
             // Construct trainer by name map and separate rival + catching tut trainer battles
-            var normalTrainersByName = new Dictionary<string, List<Trainer>>(data.Trainers.Count);
+            var TrainersByName = new Dictionary<string, List<Trainer>>(data.Trainers.Count);
             var rivalTrainers = new Dictionary<string, List<Trainer>>(3);
             var catchingTutorialTrainers = new List<Trainer>();
             var gruntTrainers = new List<Trainer>();
@@ -680,7 +680,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 {
                     continue;
                 }
-                string name = trainer.name.ToLower();
+                string name = trainer.Name.ToLower();
 
                 // Theme Override
 
@@ -733,11 +733,11 @@ namespace PokemonRandomizer.Backend.Randomization
                     continue;
                 }
                 // All other trainers
-                if (!normalTrainersByName.ContainsKey(name))
+                if (!TrainersByName.ContainsKey(name))
                 {
-                    normalTrainersByName.Add(name, new List<Trainer>(10));
+                    TrainersByName.Add(name, new List<Trainer>(10));
                 }
-                normalTrainersByName[name].Add(trainer);
+                TrainersByName[name].Add(trainer);
                 if(trainer.TrainerCategory == Trainer.Category.Champion)
                 {
                     eliteFourMetadata.Champion.Add(trainer);
@@ -791,7 +791,7 @@ namespace PokemonRandomizer.Backend.Randomization
             #region Trainer Battles
             var trainerSettings = settings.BasicTrainerSettings;
             // Randomize trainers
-            foreach (var kvp in normalTrainersByName)
+            foreach (var kvp in TrainersByName)
             {
                 trainerRand.RandomizeAll(kvp.Value, pokemonSet, trainerSettings);
             }

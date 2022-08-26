@@ -5,6 +5,7 @@ namespace PokemonRandomizer.AppSettings
     using Backend.DataStructures;
     using Backend.EnumTypes;
     using Backend.Randomization;
+    using PokemonRandomizer.Backend.DataStructures.Trainers;
     using UI.Models;
     public class HardCodedSettings : Settings
     {

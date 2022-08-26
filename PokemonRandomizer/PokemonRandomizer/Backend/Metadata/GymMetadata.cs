@@ -1,4 +1,5 @@
 ﻿using PokemonRandomizer.Backend.DataStructures;
+using PokemonRandomizer.Backend.DataStructures.Trainers;
 using PokemonRandomizer.Backend.EnumTypes;
 using PokemonRandomizer.Backend.Randomization;
 using PokemonRandomizer.Backend.Utilities;
@@ -51,7 +52,7 @@ namespace PokemonRandomizer.Backend.Metadata
 
         public override string ToString()
         {
-            return !IsValid ? "Invalid" : $"{Leaders[0].name}'s Gym ({ThemeData})";
+            return !IsValid ? "Invalid" : $"{Leaders[0].Name}'s Gym ({ThemeData})";
         }
     }
 }

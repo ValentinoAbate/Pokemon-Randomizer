@@ -1,4 +1,5 @@
 ﻿using PokemonRandomizer.Backend.DataStructures.Scripts;
+using PokemonRandomizer.Backend.DataStructures.Trainers;
 using PokemonRandomizer.Backend.EnumTypes;
 using PokemonRandomizer.Backend.Metadata;
 using PokemonRandomizer.Backend.Utilities;
@@ -54,7 +55,7 @@ namespace PokemonRandomizer.Backend.DataStructures
         public PokemonBaseStats[] PokemonNationalDexOrder { get; private set; }
         private Dictionary<Pokemon, PokemonBaseStats> PokemonLookup { get; } = new(0);
         public List<string> ClassNames { get; set; }
-        public List<Trainer> Trainers { get; set; }
+        public List<NormalTrainer> Trainers { get; set; }
 
         #region Special Trainer Info
 

@@ -1,4 +1,5 @@
 ﻿using PokemonRandomizer.Backend.DataStructures;
+using PokemonRandomizer.Backend.DataStructures.Trainers;
 using System;
 using System.Collections.Generic;
 
@@ -65,7 +66,7 @@ namespace PokemonRandomizer.Backend.Metadata
 
             public void Add(Trainer trainer)
             {
-                Name = trainer.name;
+                Name = trainer.Name;
                 Battles.Add(trainer);
             }
 

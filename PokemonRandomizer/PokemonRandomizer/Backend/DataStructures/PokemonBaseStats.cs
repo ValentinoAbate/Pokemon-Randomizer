@@ -11,6 +11,8 @@ namespace PokemonRandomizer.Backend.DataStructures
 {
     public class PokemonBaseStats
     {
+        public const int numStats = 6;
+        public const int maxIV = 31;
         public Pokemon species;
 
         #region Helper Properties
@@ -57,7 +59,7 @@ namespace PokemonRandomizer.Backend.DataStructures
 
         #region Stats
 
-        public byte[] stats = new byte[6];
+        public byte[] stats = new byte[numStats];
         public byte Hp { get => stats[0]; set => stats[0] = value; }
         public byte Attack { get => stats[1]; set => stats[1] = value; }
         public byte Defense { get => stats[2]; set => stats[2] = value; }
@@ -70,7 +72,7 @@ namespace PokemonRandomizer.Backend.DataStructures
 
         #region EVs
 
-        public int[] evYields = new int[6]; // How many evs you get when you defeat this pokemon
+        public int[] evYields = new int[numStats]; // How many evs you get when you defeat this pokemon
         public int HpEvYield { get => evYields[0]; set => evYields[0] = value; }
         public int AttackEvYield { get => evYields[1]; set => evYields[1] = value; }
         public int DefenseEvYield { get => evYields[2]; set => evYields[2] = value; }

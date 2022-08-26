@@ -1,4 +1,5 @@
 ﻿using PokemonRandomizer.Backend.DataStructures;
+using PokemonRandomizer.Backend.DataStructures.Trainers;
 using PokemonRandomizer.UI.Utilities;
 using static PokemonRandomizer.Settings;
 

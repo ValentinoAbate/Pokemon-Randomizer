@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using PokemonRandomizer.Backend.EnumTypes;
 using PokemonRandomizer.Backend.Utilities;
 
-namespace PokemonRandomizer.Backend.DataStructures
+namespace PokemonRandomizer.Backend.DataStructures.Trainers
 {
     public class TrainerPokemon
     {

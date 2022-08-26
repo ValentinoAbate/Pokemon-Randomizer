@@ -10,6 +10,7 @@ using PokemonRandomizer.Backend.Utilities.Debug;
 using PokemonRandomizer.Backend.DataStructures.Scripts;
 using PokemonRandomizer.Backend.Constants;
 using PokemonRandomizer.Backend.RomHandling.IndexTranslators;
+using PokemonRandomizer.Backend.DataStructures.Trainers;
 
 namespace PokemonRandomizer.Backend.RomHandling.Writing
 {
@@ -728,7 +729,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
                     int? newPokemonOffset = rom.FindFreeSpaceOffset(PokemonDataSize(trainer.PokemonData));
                     if (!newPokemonOffset.HasValue)
                     {
-                        Logger.main.Error($"Trainer {trainer.name} needs to have it's pokemon repointed, but there is not enough free space. This trainer will not have any data written");
+                        Logger.main.Error($"Trainer {trainer.Name} needs to have it's pokemon repointed, but there is not enough free space. This trainer will not have any data written");
                         return;
                     }
                     repoints.Add((trainer.pokemonOffset, newPokemonOffset.Value));
@@ -747,12 +748,12 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
                 // Write sprite index (byte 3)
                 rom.WriteByte(trainer.spriteIndex);
                 // Write name (I think bytes 4 - 15?)
-                rom.WriteFixedLengthString(trainer.name, Trainer.nameLength);
+                rom.WriteFixedLengthString(trainer.Name, Trainer.nameLength);
                 // Write items (bytes 16-23)
                 for (int i = 0; i < 4; ++i)
                     rom.WriteUInt16((int)RemapItem(trainer.useItems[i]));
                 // Write double battle (byte 24)
-                rom.WriteByte(Convert.ToByte(trainer.isDoubleBattle));
+                rom.WriteByte(Convert.ToByte(trainer.IsDoubleBattle));
                 // What is in bytes 25-27?
                 rom.Skip(3);
                 // Write AI flags

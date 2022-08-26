@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using PokemonRandomizer.Backend.Utilities.Debug;
+using PokemonRandomizer.Backend.DataStructures.Trainers;
 
 namespace PokemonRandomizer.Backend.Randomization
 {

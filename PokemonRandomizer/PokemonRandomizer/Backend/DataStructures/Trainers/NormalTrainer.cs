@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using PokemonRandomizer.Backend.Utilities.Repointing;
 
-namespace PokemonRandomizer.Backend.DataStructures
+namespace PokemonRandomizer.Backend.DataStructures.Trainers
 {
     public enum Gender
     {
@@ -15,46 +15,19 @@ namespace PokemonRandomizer.Backend.DataStructures
         Other,
     }
 
-    public class Trainer
+    public class NormalTrainer : Trainer, IHasTrainerAI
     {
-        public const int maxPokemon = 6;
-        public enum Category
-        {
-            Trainer,
-            AceTrainer,
-            Rival,
-            TeamGrunt,
-            TeamAdmin,
-            TeamLeader,
-            GymLeader,
-            GymTrainer,
-            EliteFour,
-            Champion,
-            CatchingTutTrainer, // Wally, Etc
-            SpecialBoss, // Post-game steven in emerald, Red, etc
-        }
-
-        public static int AverageLevelComparer(Trainer t1, Trainer t2) => t1.AvgLvl.CompareTo(t2.AvgLvl);
-        public bool Invalid => string.IsNullOrWhiteSpace(name) || name == nullName;
-
-        public const string nullName = "??????";
-        public const int nameLength = 12;
         // The all of the class names (mostly for debugging)
         public IReadOnlyList<string> ClassNames { get; set; }
-        public string Class => ClassNames != null && trainerClass < ClassNames.Count ? ClassNames[trainerClass] : nullName;
-        public double AvgLvl => Pokemon.Count > 0 ? Pokemon.Average((p) => p.level) : 0;
+        public override string Class => ClassNames != null && trainerClass < ClassNames.Count ? ClassNames[trainerClass] : nullName;
 
-        public Category TrainerCategory { get; set; }
-        public TrainerThemeData ThemeData { get; set; }
 
-        public int offset;
-        public int trainerClass;
         public Gender gender;
         public byte musicIndex;
         public byte spriteIndex;
-        public string name;
+        public override string Name { get; set; }
         public Item[] useItems = new Item[4];
-        public bool isDoubleBattle;
+        public override bool IsDoubleBattle { get; set; }
         #region AI script flag documentation (Gen III)
         // Reference: https://www.pokecommunity.com/showthread.php?t=333767 (thanks Knizz and DaniilS) (may be partially incorrect)
         // Reference: https://github.com/pret/pokeemerald/blob/master/data/battle_ai_scripts.s (Thanks DizzyEggg et al.)
@@ -97,60 +70,11 @@ namespace PokemonRandomizer.Backend.DataStructures
         // Flag 30     - AI_Safari                         Safari Zone AI pokemon may flee (not used for trainers)
         // Flag 31     - AI_FirstBattle                    Run if at low hp (not used for trainers, unused)
         #endregion
-        public BitArray AIFlags;
-
-        public List<TrainerPokemon> Pokemon => PokemonData.Pokemon;
-        public TrainerPokemon.DataType DataType
-        {
-            get => PokemonData.DataType;
-            set => PokemonData.DataType = value;
-        } 
-        public TrainerPokemonData PokemonData { get; set; }
-
-        public int pokemonOffset;
-
-        public void EnsureSafeBattleType()
-        {
-            if(Pokemon.Count <= 1)
-            {
-                isDoubleBattle = false;
-            }
-        }
+        public BitArray AIFlags { get; set; }
 
         public override string ToString()
         {
-            return $"{Class} {name} ({TrainerCategory})";
+            return $"{Class} {Name} ({TrainerCategory})";
         }
-
-        public class TrainerPokemonData : IRepointable
-        {
-            public bool NeedsRepoint => DataType != originalDataType || Pokemon.Count > originalPokemonCount;
-            public TrainerPokemon.DataType DataType 
-            { 
-                get => dataType;
-                set
-                {
-                    if (dataType == value)
-                        return;
-                    dataType = value;
-                    foreach(var pokemon in Pokemon)
-                    {
-                        pokemon.dataType = value;
-                    }
-                }
-            }
-            private TrainerPokemon.DataType dataType;
-            private readonly TrainerPokemon.DataType originalDataType; 
-            public List<TrainerPokemon> Pokemon { get; }
-            private readonly int originalPokemonCount;
-            public TrainerPokemonData(TrainerPokemon.DataType dataType, int numPokemon)
-            {
-                Pokemon = new List<TrainerPokemon>(numPokemon);
-                originalPokemonCount = numPokemon;
-                this.dataType = dataType;
-                originalDataType = dataType;
-            }
-        }
-
     }
 }

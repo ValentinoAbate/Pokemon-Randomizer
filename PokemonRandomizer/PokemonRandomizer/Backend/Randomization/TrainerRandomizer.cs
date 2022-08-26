@@ -6,6 +6,7 @@ namespace PokemonRandomizer.Backend.Randomization
 {
     using DataStructures;
     using EnumTypes;
+    using PokemonRandomizer.Backend.DataStructures.Trainers;
     using PokemonRandomizer.Backend.Metadata;
     using static Settings;
     public class TrainerRandomizer
@@ -202,7 +203,7 @@ namespace PokemonRandomizer.Backend.Randomization
             // Set Battle Type
             if (settings.RandomizeBattleType)
             {
-                trainer.isDoubleBattle = rand.RollSuccess(settings.DoubleBattleChance);
+                trainer.IsDoubleBattle = rand.RollSuccess(settings.DoubleBattleChance);
             }
             // Fix any unsafe values if safe is set to true
             if (safe)
@@ -246,14 +247,14 @@ namespace PokemonRandomizer.Backend.Randomization
                 {
                     foreach (var battle in battles)
                     {
-                        battle.isDoubleBattle = rand.RollSuccess(settings.DoubleBattleChance);
+                        battle.IsDoubleBattle = rand.RollSuccess(settings.DoubleBattleChance);
                     }
                 }
                 else if (settings.BattleTypeStrategy == TrainerSettings.BattleTypePcgStrategy.KeepSameType)
                 {
                     foreach (var battle in battles)
                     {
-                        battle.isDoubleBattle = firstBattle.isDoubleBattle;
+                        battle.IsDoubleBattle = firstBattle.IsDoubleBattle;
                     }
                 }
             }
@@ -383,21 +384,21 @@ namespace PokemonRandomizer.Backend.Randomization
 
         private void ApplyAISettings(Trainer trainer, TrainerSettings settings)
         {
-            if (settings.UseSmartAI)
+            if (settings.UseSmartAI && trainer is IHasTrainerAI trainerAI)
             {
                 // Move failure check (basic)
-                trainer.AIFlags.Set(0, true);
+                trainerAI.AIFlags.Set(0, true);
                 // Go for KO
-                trainer.AIFlags.Set(1, true);
+                trainerAI.AIFlags.Set(1, true);
                 // Move failure check (advanced)
-                trainer.AIFlags.Set(2, true);
+                trainerAI.AIFlags.Set(2, true);
                 // If double battle, set double battle strats
-                if (trainer.isDoubleBattle)
+                if (trainer.IsDoubleBattle)
                 {
-                    trainer.AIFlags.Set(7, true);
+                    trainerAI.AIFlags.Set(7, true);
                 }
                 // HP Awareness
-                trainer.AIFlags.Set(8, true);
+                trainerAI.AIFlags.Set(8, true);
             }
         }
 
