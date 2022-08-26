@@ -62,6 +62,11 @@ namespace PokemonRandomizer.Backend.DataStructures.Trainers
             }
         }
 
+        public override string ToString()
+        {
+            return $"{Class} {Name} ({TrainerCategory})";
+        }
+
         public class TrainerPokemonData : IRepointable
         {
             public bool NeedsRepoint => DataType != originalDataType || Pokemon.Count > originalPokemonCount;

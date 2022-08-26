@@ -71,10 +71,5 @@ namespace PokemonRandomizer.Backend.DataStructures.Trainers
         // Flag 31     - AI_FirstBattle                    Run if at low hp (not used for trainers, unused)
         #endregion
         public BitArray AIFlags { get; set; }
-
-        public override string ToString()
-        {
-            return $"{Class} {Name} ({TrainerCategory})";
-        }
     }
 }
