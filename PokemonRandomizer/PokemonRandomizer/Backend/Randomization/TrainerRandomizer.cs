@@ -143,9 +143,9 @@ namespace PokemonRandomizer.Backend.Randomization
             {
                 return;
             }
-            for (int i = 0; i < bonusPokemon && trainer.Pokemon.Count < Trainer.maxPokemon; i++)
+            for (int i = 0; i < bonusPokemon && trainer.Pokemon.Count < trainer.MaxPokemon; i++)
             {
-                trainer.Pokemon.Add(new TrainerPokemon(trainer.Pokemon[^1]));
+                trainer.Pokemon.Add(trainer.Pokemon[^1].Clone());
             }
         }
 

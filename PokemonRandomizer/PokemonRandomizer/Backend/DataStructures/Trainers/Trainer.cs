@@ -28,10 +28,11 @@ namespace PokemonRandomizer.Backend.DataStructures.Trainers
         }
 
         public const int multiBattlePartySize = 3;
-        public const int maxPokemon = 6;
+        public const int maxPartySize = 6;
         public const string nullName = "??????";
         public const int nameLength = 12;
         public bool Invalid => string.IsNullOrWhiteSpace(Name) || Name == nullName;
+        public virtual int MaxPokemon => maxPartySize;
         public static int AverageLevelComparer(Trainer t1, Trainer t2) => t1.AvgLvl.CompareTo(t2.AvgLvl);
 
         public double AvgLvl => Pokemon.Count > 0 ? Pokemon.Average((p) => p.level) : 0;

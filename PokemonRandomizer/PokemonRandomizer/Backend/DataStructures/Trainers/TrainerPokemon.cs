@@ -28,17 +28,19 @@ namespace PokemonRandomizer.Backend.DataStructures.Trainers
         public int level;
         public int IVLevel;
 
-        public TrainerPokemon()
+        public virtual TrainerPokemon Clone()
         {
-
+            var other = new TrainerPokemon();
+            other.CopyBasicValuesFrom(this);
+            return other;
         }
 
-        public TrainerPokemon(TrainerPokemon other)
+        protected void CopyBasicValuesFrom(TrainerPokemon other)
         {
             dataType = other.dataType;
             species = other.species;
             heldItem = other.heldItem;
-            Array.Copy(other.moves, 0, moves, 0, numMoves);
+            Array.Copy(other.moves, moves, numMoves);
             level = other.level;
             IVLevel = other.IVLevel;
         }
