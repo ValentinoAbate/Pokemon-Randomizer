@@ -399,16 +399,16 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
             return classNames;
         }
         // Readainers
-        private List<NormalTrainer> ReadTrainers(Rom rom, XmlManager info, List<string> classNames)
+        private List<BasicTrainer> ReadTrainers(Rom rom, XmlManager info, List<string> classNames)
         {
             // If fail, reading trainer battles is not supported for this ROM
             if (!info.FindAndSeekOffset(ElementNames.trainerBattles, rom))
-                return new List<NormalTrainer>();
+                return new List<BasicTrainer>();
             int numTrainers = info.Num(ElementNames.trainerBattles);
-            var ret = new List<NormalTrainer>(numTrainers);
+            var ret = new List<BasicTrainer>(numTrainers);
             for (int trainerInd = 0; trainerInd < numTrainers; ++trainerInd)
             {
-                var trainer = new NormalTrainer();
+                var trainer = new BasicTrainer();
                 trainer.ClassNames = classNames;
                 var dataType = (TrainerPokemon.DataType)rom.ReadByte();
                 trainer.trainerClass = rom.ReadByte();

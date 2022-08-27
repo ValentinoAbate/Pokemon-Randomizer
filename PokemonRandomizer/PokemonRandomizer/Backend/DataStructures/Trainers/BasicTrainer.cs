@@ -15,7 +15,7 @@ namespace PokemonRandomizer.Backend.DataStructures.Trainers
         Other,
     }
 
-    public class NormalTrainer : Trainer, IHasTrainerAI
+    public class BasicTrainer : Trainer, IHasTrainerAI
     {
         // The all of the class names (mostly for debugging)
         public IReadOnlyList<string> ClassNames { get; set; }

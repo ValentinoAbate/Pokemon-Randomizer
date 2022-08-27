@@ -56,7 +56,7 @@ namespace PokemonRandomizer.Backend.DataStructures
         private Dictionary<Pokemon, PokemonBaseStats> PokemonLookup { get; } = new(0);
         public List<string> ClassNames { get; set; }
         public IEnumerable<Trainer> AllTrainers => Trainers.Concat(SpecialTrainers.SelectMany(kvp => kvp.Value));
-        public List<NormalTrainer> Trainers { get; set; }
+        public List<BasicTrainer> Trainers { get; set; }
         public Dictionary<string, List<Trainer>> SpecialTrainers { get; } = new();
 
         #region Special Trainer Info
