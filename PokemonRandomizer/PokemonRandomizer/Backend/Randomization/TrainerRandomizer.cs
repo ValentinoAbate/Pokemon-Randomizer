@@ -376,10 +376,9 @@ namespace PokemonRandomizer.Backend.Randomization
             {
                 foreach (var pokemon in trainer.Pokemon)
                 {
-                    pokemon.IVLevel = Math.Min(settings.MinIV, pokemon.IVLevel);
+                    pokemon.IVLevel = Math.Max(settings.MinIV, pokemon.IVLevel);
                 }
             }
-
         }
 
         private void ApplyAISettings(Trainer trainer, TrainerSettings settings)
