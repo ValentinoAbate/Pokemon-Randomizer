@@ -4,6 +4,7 @@ namespace PokemonRandomizer.Backend.DataStructures.Trainers
 {
     public class StevenAllyTrainerPokemon : TrainerPokemon, IHasTrainerPokemonNature, IHasTrainerPokemonEvs
     {
+        public override int MaxIV => PokemonBaseStats.maxIV;
         public int Nature { get; set; }
         public byte[] EVs { get; set; }
 

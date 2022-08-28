@@ -155,7 +155,8 @@ namespace PokemonRandomizer
             DoubleBattleChance = DoubleBattleChance,
             PriorityThemeCategory = PriorityThemeCategory,
             LevelMultiplier = TrainerPokemonLevelMultiplier,
-            MinIV = MathUtils.MapToByte(31, TrainerPokemonMinIV),
+            MinIV = (int)System.Math.Round(TrainerPokemonMinIV),
+            MinIV255 = MathUtils.MapInt(PokemonBaseStats.maxIV, byte.MaxValue, (int)System.Math.Round(TrainerPokemonMinIV)),
             UseSmartAI = UseSmartAI,
             ForceCustomMoves = TrainerForceCustomMovesets,
         };
@@ -578,6 +579,7 @@ namespace PokemonRandomizer
             // Difficulty Settings
             public double LevelMultiplier { get; set; } = 0;
             public int MinIV { get; set; } = 0;
+            public int MinIV255 { get; set; } = 0;
             public bool UseSmartAI { get; set; } = true;
             public bool ForceCustomMoves { get; set; } = true;
         }

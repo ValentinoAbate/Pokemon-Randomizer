@@ -8,6 +8,7 @@ namespace PokemonRandomizer.Backend.Randomization
     using EnumTypes;
     using PokemonRandomizer.Backend.DataStructures.Trainers;
     using PokemonRandomizer.Backend.Metadata;
+    using PokemonRandomizer.Backend.Utilities;
     using static Settings;
     public class TrainerRandomizer
     {
@@ -364,6 +365,10 @@ namespace PokemonRandomizer.Backend.Randomization
 
         private void ApplyLevelScaling(Trainer trainer, TrainerSettings settings)
         {
+            if (trainer.Pokemon.Count <= 0)
+            {
+                return;
+            }
             // Apply Difficulty Settings
             if (settings.LevelMultiplier > 0)
             {
@@ -372,11 +377,26 @@ namespace PokemonRandomizer.Backend.Randomization
                     pokemon.level = (int)Math.Max(0, Math.Min(100, pokemon.level * settings.LevelMultiplier));
                 }
             }
-            if(settings.MinIV != 0)
+            if (settings.MinIV != 0)
             {
+                // All pokemon should have the same maxIV, remap now
+                int min;
+                int max = trainer.Pokemon[0].MaxIV;
+                if (max == PokemonBaseStats.maxIV)
+                {
+                    min = settings.MinIV;
+                }
+                else if(max == byte.MaxValue)
+                {
+                    min = settings.MinIV255;
+                }
+                else // Remap to desired range from 0-31
+                {
+                    min = MathUtils.MapInt(PokemonBaseStats.maxIV, max, settings.MinIV);
+                }
                 foreach (var pokemon in trainer.Pokemon)
                 {
-                    pokemon.IVLevel = Math.Max(settings.MinIV, pokemon.IVLevel);
+                    pokemon.IVLevel = Math.Max(min, pokemon.IVLevel);
                 }
             }
         }

@@ -28,6 +28,8 @@ namespace PokemonRandomizer.Backend.DataStructures.Trainers
         public int level;
         public int IVLevel;
 
+        public virtual int MaxIV => byte.MaxValue;
+
         public virtual TrainerPokemon Clone()
         {
             var other = new TrainerPokemon();

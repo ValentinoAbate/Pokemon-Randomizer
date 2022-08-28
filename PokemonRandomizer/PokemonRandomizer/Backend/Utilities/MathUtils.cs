@@ -9,11 +9,17 @@
                 result *= @base;
             return result;
         }
-        public static byte MapToByte(double max, double value)
+
+        public static int MapInt(int currentMax, int newMax, int value)
         {
-            //compute t
-            double t = (1 / max) * value;
-            return (byte)System.Math.Round(byte.MaxValue * t);
+            return (int)System.Math.Round(Map(currentMax, newMax, value));
+        }
+
+        public static double Map(double currentMax, double newMax, double value)
+        {
+            // compute t (assumes current min and new min are 0)
+            double t = (1 / currentMax) * value;
+            return newMax * t;
         }
     }
 }
