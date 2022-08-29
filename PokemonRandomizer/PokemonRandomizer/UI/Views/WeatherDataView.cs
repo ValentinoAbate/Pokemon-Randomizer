@@ -23,8 +23,7 @@ namespace PokemonRandomizer.UI.Views
 
         public WeatherDataView(WeatherDataModel model)
         {
-            var stack = new StackPanel() { Orientation = Orientation.Vertical };
-
+            var stack = CreateMainStack();
             stack.Add(new Label() { Content = "Weather Randomization" });
             stack.Add(new Separator());
             var strategyDrop = stack.Add(new EnumComboBoxUI<WeatherOption>("Randomization Strategy", WeatherOptionDropdown, model.WeatherSetting));
@@ -36,8 +35,6 @@ namespace PokemonRandomizer.UI.Views
             settingsStack.Add(new BoundCheckBoxUI(model.KeepExistingWeather, "Keep Existing Weather", "Keeps weather for places that already have special weather (e.g. the desert will still have sandstorm weather)"));
             var banFlashingCb = settingsStack.Add(new BoundCheckBoxUI(model.BanFlashing, "Ban Flashing Weather", banFlashingTooltip));
             settingsStack.Add(banFlashingCb.BindVisibility(new Label() { Content = banFlashingWarning }));
-
-            Content = stack;
         }
 
         private List<WeightedSetUI<Weather>.MenuBoxItem> GetWeatherWeightDropdown() => new List<WeightedSetUI<Weather>.MenuBoxItem>
