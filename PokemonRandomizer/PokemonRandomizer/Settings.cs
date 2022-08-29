@@ -392,6 +392,7 @@ namespace PokemonRandomizer
         /// If this is true, only maps that started with clear weather will be random (the desert will still have sandstorm, etc)
         /// </summary>
         public abstract bool OnlyChangeClearWeather { get; }
+        public abstract bool BanFlashingWeather { get; }
         [System.Flags]
         public enum HailHackOption
         { 

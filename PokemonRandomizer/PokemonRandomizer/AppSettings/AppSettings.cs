@@ -353,6 +353,7 @@ namespace PokemonRandomizer.AppSettings
             }
         }
         public override bool OnlyChangeClearWeather => weatherData.KeepExistingWeather;
+        public override bool BanFlashingWeather => weatherData.BanFlashing;
         public override HailHackOption HailHackSetting
         {
             get

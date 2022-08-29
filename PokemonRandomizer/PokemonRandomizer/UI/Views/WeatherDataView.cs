@@ -11,6 +11,8 @@ namespace PokemonRandomizer.UI.Views
 
     public class WeatherDataView : DataView<WeatherDataModel>
     {
+        private const string banFlashingTooltip = "Will not choose weather that contains flashing (strong sunlight or lightning) as a random choice. " + banFlashingWarning;
+        private const string banFlashingWarning = "WARNING: \"Ban Flashing Weather\" only applies to randomly chosen weather, so any unrandomized weathers of these types will be unchanged";
         public CompositeCollection WeatherOptionDropdown => new CompositeCollection()
         {
             new ComboBoxItem() {Content="Unchanged"},
@@ -31,6 +33,8 @@ namespace PokemonRandomizer.UI.Views
             stack.Add(new RandomChanceUI("Apply to Gym Weather", model.RandomizeGymWeather, model.GymWeatherRandChance));
             stack.Add(new RandomChanceUI("Apply to Town Weather", model.RandomizeTownWeather, model.TownWeatherRandChance));
             stack.Add(new BoundCheckBoxUI(model.KeepExistingWeather, "Keep Existing Weather", "Keeps weather for places that already have special weather (e.g. the desert will still have sandstorm weather)"));
+            var banFlashingCb = stack.Add(new BoundCheckBoxUI(model.BanFlashing, "Ban Flashing Weather", banFlashingTooltip));
+            stack.Add(banFlashingCb.BindVisibility(new Label() { Content = banFlashingWarning }));
 
             Content = stack;
         }

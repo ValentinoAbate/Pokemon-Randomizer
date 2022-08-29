@@ -326,6 +326,7 @@ namespace PokemonRandomizer.AppSettings
         /// If this is true, only maps that started with clear weather will be random (the desert will still have sandstorm, etc)
         /// </summary>
         public override bool OnlyChangeClearWeather => true;
+        public override bool BanFlashingWeather => false;
         /// <summary>
         /// Controls which gen 3 snow weathers will affect battle
         /// </summary>

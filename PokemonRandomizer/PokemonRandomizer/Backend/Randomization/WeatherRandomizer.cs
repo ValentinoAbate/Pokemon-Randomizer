@@ -116,6 +116,15 @@ namespace PokemonRandomizer.Backend.Randomization
                 choices.RemoveIfContains(Weather.RainSometimes1);
                 choices.RemoveIfContains(Weather.RainSometimes2);
             }
+            if (settings.BanFlashingWeather)
+            {
+                choices.RemoveIfContains(Weather.RainThunderstorm);
+                choices.RemoveIfContains(Weather.RainHeavyThunderstrorm);
+                choices.RemoveIfContains(Weather.StrongSunlight);
+                choices.RemoveIfContains(Weather.Chaos);
+                choices.RemoveIfContains(Weather.RainSometimes1);
+                choices.RemoveIfContains(Weather.RainSometimes2);
+            }
             return choices;
         }
 

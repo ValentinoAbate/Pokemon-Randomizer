@@ -24,6 +24,7 @@ namespace PokemonRandomizer.UI.Models
         /// If this is true, only maps that started with clear weather will be random (the desert will still have sandstorm, etc)
         /// </summary>
         public Box<bool> KeepExistingWeather { get; set; } = new Box<bool>(true);
+        public Box<bool> BanFlashing { get; set; } = new Box<bool>(false);
 
         public WeightedSet<Map.Weather> CustomWeatherWeights { get; set; } = new WeightedSet<Map.Weather>
         {
