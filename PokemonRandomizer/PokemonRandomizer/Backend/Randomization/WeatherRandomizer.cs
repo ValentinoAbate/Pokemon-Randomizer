@@ -140,6 +140,10 @@ namespace PokemonRandomizer.Backend.Randomization
                     FindWeatherCommands(map, trigger.script, nonHeaderWeathers, headerWeather);
                 }
             }
+            // Only check map scripts if there are trigger events
+            // Otherwise, we pick up stuff like terra / marine cave
+            if (nonHeaderWeathers.Count <= 0)
+                return;
             foreach (var mapScript in map.scriptData.scripts)
             {
                 FindWeatherCommands(map, mapScript.script, nonHeaderWeathers, headerWeather);
