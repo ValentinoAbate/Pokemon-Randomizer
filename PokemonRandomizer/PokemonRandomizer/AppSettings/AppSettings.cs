@@ -339,10 +339,11 @@ namespace PokemonRandomizer.AppSettings
         {
             get
             {
-                var dict = new Dictionary<Map.Type, double>(3);
+                var dict = new Dictionary<Map.Type, double>(4);
                 if (weatherData.RandomizeRouteWeather)
                 {
                     dict.Add(Map.Type.Route, weatherData.RouteWeatherRandChance);
+                    dict.Add(Map.Type.OceanRoute, weatherData.RouteWeatherRandChance);
                 }
                 if (weatherData.RandomizeTownWeather)
                 {

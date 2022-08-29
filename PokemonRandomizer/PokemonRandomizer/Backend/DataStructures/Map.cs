@@ -9,7 +9,8 @@
             Route,
             Underground,
             Underwater,
-            /// 0x06 - 0x07: Unknown/unused,
+            OceanRoute,
+            /// 0x07: Unknown/unused,
             Inside = 8,
             SecretBase,
             /// 0x0A - 0xFF: Unknown/unused
@@ -125,7 +126,8 @@
         /// 0x03: Route,
         /// 0x04: Underground,
         /// 0x05: Underwater,
-        /// 0x06 - 0x07: Unknown/unused,
+        /// 0x06: Ocean Route
+        /// 0x07: Unknown/unused,
         /// 0x08: Inside,
         /// 0x09: Secret base,
         /// 0x0A - 0xFF: Unknown/unused
@@ -168,7 +170,7 @@
 
         public string Name { get; set; }
 
-        public bool IsOutdoors => mapType is Type.Route or Type.City or Type.Village;
+        public bool IsOutdoors => mapType is Type.Route or Type.OceanRoute or Type.City or Type.Village;
 
         public bool IsGym => battleField == 0x01;
 
