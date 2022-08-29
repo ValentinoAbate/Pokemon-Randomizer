@@ -80,7 +80,7 @@ namespace PokemonRandomizer.Backend.Randomization
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public T Choice<T>(IEnumerable<T> items)
         {
-            if (items.Count() <= 0)
+            if (!items.Any())
                 return default;
             return Choice(items.ToArray());
         }
@@ -136,6 +136,7 @@ namespace PokemonRandomizer.Backend.Randomization
         {
             return Choice(items.Items, items.Weights);
         }
+
         #endregion
 
         #region Gaussian Random Functions
