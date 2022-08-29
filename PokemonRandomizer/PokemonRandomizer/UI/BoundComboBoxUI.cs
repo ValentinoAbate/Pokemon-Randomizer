@@ -39,5 +39,19 @@ namespace PokemonRandomizer.UI
             element.SetVisibility(indices.Contains(ComboBox.SelectedIndex));
             return element;
         }
+
+        public T BindEnabled<T>(T element, int index) where T : UIElement
+        {
+            ComboBox.SelectionChanged += (_, _2) => element.IsEnabled = (ComboBox.SelectedIndex == index);
+            element.IsEnabled = (ComboBox.SelectedIndex == index);
+            return element;
+        }
+
+        public T BindEnabled<T>(T element, params int[] indices) where T : UIElement
+        {
+            ComboBox.SelectionChanged += (_, _2) => element.IsEnabled = indices.Contains(ComboBox.SelectedIndex);
+            element.IsEnabled = indices.Contains(ComboBox.SelectedIndex);
+            return element;
+        }
     }
 }

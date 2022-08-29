@@ -29,12 +29,13 @@ namespace PokemonRandomizer.UI.Views
             stack.Add(new Separator());
             var strategyDrop = stack.Add(new EnumComboBoxUI<WeatherOption>("Randomization Strategy", WeatherOptionDropdown, model.WeatherSetting));
             strategyDrop.BindVisibility(stack.Add(new WeightedSetUI<Weather>("Custom Weather Type", model.CustomWeatherWeights, GetWeatherWeightDropdown)), (int)WeatherOption.CustomWeighting);
-            stack.Add(new RandomChanceUI("Apply to Route Weather", model.RandomizeRouteWeather, model.RouteWeatherRandChance));
-            stack.Add(new RandomChanceUI("Apply to Gym Weather", model.RandomizeGymWeather, model.GymWeatherRandChance));
-            stack.Add(new RandomChanceUI("Apply to Town Weather", model.RandomizeTownWeather, model.TownWeatherRandChance));
-            stack.Add(new BoundCheckBoxUI(model.KeepExistingWeather, "Keep Existing Weather", "Keeps weather for places that already have special weather (e.g. the desert will still have sandstorm weather)"));
-            var banFlashingCb = stack.Add(new BoundCheckBoxUI(model.BanFlashing, "Ban Flashing Weather", banFlashingTooltip));
-            stack.Add(banFlashingCb.BindVisibility(new Label() { Content = banFlashingWarning }));
+            var settingsStack = stack.Add(strategyDrop.BindEnabled(CreateStack(), (int)WeatherOption.CompletelyRandom, (int)WeatherOption.InBattleWeather, (int)WeatherOption.CustomWeighting));
+            settingsStack.Add(new RandomChanceUI("Apply to Route Weather", model.RandomizeRouteWeather, model.RouteWeatherRandChance));
+            settingsStack.Add(new RandomChanceUI("Apply to Gym Weather", model.RandomizeGymWeather, model.GymWeatherRandChance));
+            settingsStack.Add(new RandomChanceUI("Apply to Town Weather", model.RandomizeTownWeather, model.TownWeatherRandChance));
+            settingsStack.Add(new BoundCheckBoxUI(model.KeepExistingWeather, "Keep Existing Weather", "Keeps weather for places that already have special weather (e.g. the desert will still have sandstorm weather)"));
+            var banFlashingCb = settingsStack.Add(new BoundCheckBoxUI(model.BanFlashing, "Ban Flashing Weather", banFlashingTooltip));
+            settingsStack.Add(banFlashingCb.BindVisibility(new Label() { Content = banFlashingWarning }));
 
             Content = stack;
         }
