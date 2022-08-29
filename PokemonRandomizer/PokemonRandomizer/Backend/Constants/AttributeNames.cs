@@ -14,5 +14,8 @@
         // Pokemon Attributes
         public const string evolutionsPerPokemon = "evolutionsPerPokemon";
         public const string eggMovePokemonSigniture = "pokemonSigniture";
+        // Map attribures
+        public const string banks = "banks";
+        public const string maps = "maps";
     }
 }

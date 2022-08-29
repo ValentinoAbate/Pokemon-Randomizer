@@ -174,6 +174,8 @@
 
         public bool HasClearWeather => IsWeatherClear(weather);
 
+        public bool IsNonHeaderWeatherSeparateRoute { get; set; } = false;
+
         public static bool IsWeatherClear(Weather weather) => weather is Weather.Clear or Weather.Cloudy or Weather.House;
 
         public void SetOriginalValues()

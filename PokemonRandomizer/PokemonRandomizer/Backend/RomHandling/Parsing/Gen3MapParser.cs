@@ -4,6 +4,8 @@ using PokemonRandomizer.Backend.Utilities;
 using PokemonRandomizer.Backend.Constants;
 using System;
 using PokemonRandomizer.Backend.Utilities.Debug;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace PokemonRandomizer.Backend.RomHandling.Parsing
 {
@@ -26,11 +28,25 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
                 return Array.Empty<Map[]>();
             Map[][] mapBanks = new Map[info.Num(ElementNames.mapBankPointers)][];
             int[] bankLengths = info.IntArrayAttr(ElementNames.maps, "bankLengths");
+            var mapMetadata = new MapMetadata();
+            if (info.HasElementWithAttr(ElementNames.nonHeaderWeatherIsAltRoute, AttributeNames.banks))
+            {
+                mapMetadata.altWeatherRouteBanks = info.IntArrayAttr(ElementNames.nonHeaderWeatherIsAltRoute, AttributeNames.banks);
+                if(info.HasElementWithAttr(ElementNames.nonHeaderWeatherIsAltRoute, AttributeNames.maps))
+                {
+                    mapMetadata.altWeatherRouteMaps = info.IntArrayAttr(ElementNames.nonHeaderWeatherIsAltRoute, AttributeNames.maps);
+                }
+            }
             // Construct map data structures
             for (int i = 0; i < mapBanks.Length; ++i)
             {
                 int bankPtr = rom.ReadPointer(bankPtrOffset + i * Rom.pointerSize);
                 mapBanks[i] = ReadMapBank(rom, metadata, bankPtr, bankLengths[i], labelOffset);
+                for(int mapInd = 0; mapInd < mapBanks[i].Length; ++mapInd)
+                {
+                    var map = mapBanks[i][mapInd];
+                    map.IsNonHeaderWeatherSeparateRoute = mapMetadata.IsAltWeatherRoute(i, mapInd);
+                }
             }
             return mapBanks;
         }
@@ -321,6 +337,18 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
             }
             rom.LoadOffset();
             return data;
+        }
+
+        private class MapMetadata
+        {
+            public int[] altWeatherRouteBanks { get; set; } = null;
+            public int[] altWeatherRouteMaps { get; set; } = null;
+
+            public bool HasAltWeatherRoutes => altWeatherRouteBanks != null && altWeatherRouteMaps != null;
+            public bool IsAltWeatherRoute(int bank, int map)
+            {
+                return HasAltWeatherRoutes && altWeatherRouteBanks.Contains(bank) && altWeatherRouteMaps.Contains(map);
+            }
         }
     }
 }

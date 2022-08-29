@@ -107,6 +107,7 @@
     <mapLabels pointerPrefix="0xC078288030BC01BC00470000"/>
 	<mapBankPointers num="34"/>
     <firstRoute bank ="0" map="16"/>
+	<nonHeaderWeatherIsAltRoute banks="[0]" maps="[26]"/>
   </rseConstants>
   
   <!-- Emerald Rom Info -->
