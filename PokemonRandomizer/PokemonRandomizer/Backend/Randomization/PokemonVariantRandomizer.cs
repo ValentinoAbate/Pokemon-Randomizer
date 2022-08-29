@@ -1246,7 +1246,7 @@ namespace PokemonRandomizer.Backend.Randomization
             { Pokemon.SWAMPERT, new PaletteData(Range(11, 13), Range(5, 8), PalRange(3, 4,8, 10, 14))},
             { Pokemon.POOCHYENA, new PaletteData(PalRange(1, 5, 6, 7, 8, 9), PalRange(3, 12, 13))},
             { Pokemon.MIGHTYENA, new PaletteData(Range(3, 9), Range(11, 13))},
-            { Pokemon.ZIGZAGOON, new PaletteData(Range(1, 4), PalRange(5, 7, 8, 9, 13, 14))},
+            { Pokemon.ZIGZAGOON, new PaletteData(PalRange(1, 2, 3, 4, 6, 7, 14), PalRange(5, 8, 9, 13))},
             { Pokemon.LINOONE, new PaletteData(Range(1, 4), PalRange(5, 7, 8, 9, 10, 13, 14, 15))},
             { Pokemon.WURMPLE, new PaletteData(PalRange(1, 2, 5, 6, 7))},
             { Pokemon.SILCOON, new PaletteData(PalRange(1, 2, 3, 5, 6, 7, 8))},
