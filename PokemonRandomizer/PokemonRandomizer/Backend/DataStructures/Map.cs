@@ -176,11 +176,9 @@
 
         public static bool IsWeatherClear(Weather weather) => weather is Weather.Clear or Weather.Cloudy or Weather.House;
 
-        public Weather OriginalWeather { get; private set; }
-
         public void SetOriginalValues()
         {
-            OriginalWeather = weather;
+
         }
 
         public override string ToString()
