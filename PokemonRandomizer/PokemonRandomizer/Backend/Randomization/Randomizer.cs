@@ -197,7 +197,7 @@ namespace PokemonRandomizer.Backend.Randomization
                     moves.Remove(data.tutorMoves[i]);
             }
             // Log results
-            if(settings.MoveTutorRandChance > 0)
+            if(settings.MoveTutorRandChance > 0 && data.tutorMoves.Length > 0)
             {
                 data.RandomizationResults.Add("Move Tutors", data.tutorMoves.Select(EnumUtils.ToDisplayString).ToList());
             }
