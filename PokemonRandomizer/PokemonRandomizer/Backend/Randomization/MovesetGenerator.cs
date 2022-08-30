@@ -140,12 +140,12 @@ namespace PokemonRandomizer.Backend.Randomization
             CalculateMoveSynergy(m => m.effect == MoveEffect.Stockpile, m => m.effect is MoveEffect.SpitUp or MoveEffect.Swallow, preferSynergy);
             // Sun Move + Sun
             CalculateMoveSynergy(m => m.effect is MoveEffect.Solarbeam or MoveEffect.RecoverHpWeather2, m => m.effect == MoveEffect.WeatherSun, preferSynergy);
-            // Fire Move + Sun
-            CalculateMoveSynergy(m => m.type == PokemonType.FIR, m => m.effect == MoveEffect.WeatherSun, weakSynergy);
+            // Attacking Fire Move + Sun
+            CalculateMoveSynergy(m => !m.IsStatus && m.type == PokemonType.FIR, m => m.effect == MoveEffect.WeatherSun, weakSynergy);
             // Rain move + Rain
             CalculateMoveSynergy(m => m.effect == MoveEffect.Thunder, m => m.effect == MoveEffect.WeatherRain, preferSynergy);
-            // Water Move + Rain
-            CalculateMoveSynergy(m => m.type == PokemonType.WAT, m => m.effect == MoveEffect.WeatherRain, weakSynergy);
+            // Attacking Water Move + Rain
+            CalculateMoveSynergy(m => !m.IsStatus && m.type == PokemonType.WAT, m => m.effect == MoveEffect.WeatherRain, weakSynergy);
             // Weather Ball + Weather (Rain / Sun / Hail)
             CalculateMoveSynergy(m => m.effect == MoveEffect.WeatherBall, m => m.effect is MoveEffect.WeatherRain or MoveEffect.WeatherSun or MoveEffect.WeatherHail, needSynergy);
             // Weather Ball + Sandstorm
