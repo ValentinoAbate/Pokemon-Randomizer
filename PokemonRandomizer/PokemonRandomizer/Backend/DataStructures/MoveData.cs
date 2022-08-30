@@ -301,25 +301,13 @@ namespace PokemonRandomizer.Backend.DataStructures
         public bool AffectedByKingRock { get => flags[5]; }    // 5 - This move is affected by the effects of King's Rock. The flinch effect is considered an additional effect for the purposes of Shield Dust, but not Serene Grace
         public BitArray flags;
 
-        public bool AffectedByStab
-        {
-            get
-            {
-                return !IsStatus && !IsOneHitKO && !IsFlatDamage;
-            }
-        }
+        public bool AffectedByStab => !IsStatus && !IsOneHitKO && !IsFlatDamage;
+
         public bool IsOneHitKO => effect == MoveEffect.OneHitKill;
 
-        public bool IsFlatDamage => effect == MoveEffect.FlatDamageLevel || effect == MoveEffect.DamageFlat20 || effect == MoveEffect.FlatDamage40 || effect == MoveEffect.VaryingDamageLevel;
+        public bool IsFlatDamage => effect is MoveEffect.FlatDamageLevel or MoveEffect.DamageFlat20 or MoveEffect.FlatDamage40 or MoveEffect.VaryingDamageLevel;
 
-        public bool IsCounterAttack
-        {
-            get
-            {
-                return effect == MoveEffect.Counter || effect == MoveEffect.MirrorCoat || effect == MoveEffect.MirrorMove
-                    || effect == MoveEffect.Endeavor || effect == MoveEffect.Bide;
-            }
-        }
+        public bool IsCounterAttack => effect is MoveEffect.Counter or MoveEffect.MirrorCoat or MoveEffect.MirrorMove or MoveEffect.Endeavor or MoveEffect.Bide;
 
         public bool IsSelfdestruct => effect == MoveEffect.Selfdestruct;
 
