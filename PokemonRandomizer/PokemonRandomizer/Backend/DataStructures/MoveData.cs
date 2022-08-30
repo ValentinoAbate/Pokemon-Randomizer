@@ -311,6 +311,8 @@ namespace PokemonRandomizer.Backend.DataStructures
 
         public bool IsSelfdestruct => effect == MoveEffect.Selfdestruct;
 
+        public bool IsCallMove => effect is MoveEffect.Metronome or MoveEffect.NaturePower or MoveEffect.Assist;
+
         public int EffectivePower
         {
             get

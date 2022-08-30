@@ -39,6 +39,17 @@ namespace PokemonRandomizer.Backend.Randomization
 
         private static Move[] EmptyMoveset() => new Move[4] { Move.None, Move.None, Move.None, Move.None };
 
+        private float PowerFactorScale(Move m, bool isStab)
+        {
+            var data = dataT.GetMoveData(m);
+            float basePower = data.IsCallMove ? 25 : data.EffectivePower;
+            if (isStab)
+            {
+                basePower *= 1.5f;
+            }
+            return MathF.Pow(basePower, 3);
+        }
+
         private static float LevelWeightScale(int learnLevel)
         {
             return MathF.Pow(learnLevel, 2);
@@ -63,7 +74,7 @@ namespace PokemonRandomizer.Backend.Randomization
             var ret = EmptyMoveset();
             if (availableMoves.Count <= 0)
                 return ret;
-            float PowerWeightScale(Move e) => MathF.Pow(dataT.GetMoveData(e).EffectivePower * (IsStab(e) && dataT.GetMoveData(e).AffectedByStab ? 1.5f : 1), 3);
+            float PowerFactor(Move m) => PowerFactorScale(m, IsStab(m));
             float RedundantTypeFactor(Move m)
             {
                 var mType = dataT.GetMoveData(m).type;
@@ -78,29 +89,29 @@ namespace PokemonRandomizer.Backend.Randomization
 
             }
             float StabBonus(Move m) => IsStab(m) ? 2f : 1;
-            float LevelWeightScale(Move e) => MathF.Pow(availableMoves[e], 2);
-            float LevelWeightScaleSmall(Move e) => MathF.Pow(availableMoves[e], 1.5f);
-            float LevelWeightScaleLog(Move e) => MathF.Max(1, MathF.Log(availableMoves[e]));
+            float LevelFactor(Move e) => MathF.Pow(availableMoves[e], 2);
+            float LevelFactorSmall(Move e) => MathF.Pow(availableMoves[e], 1.5f);
+            float LevelFactorLog(Move e) => MathF.Max(1, MathF.Log(availableMoves[e]));
 
             // Choose first move - attempt to choose an attack move
-            if(ChooseMoveForIndex(ret, 0, GetAttackMoves(availableMoves), (m) => PowerWeightScale(m) * StabBonus(m) * LevelWeightScaleLog(m), ref availableMoves))
+            if(ChooseMoveForIndex(ret, 0, GetAttackMoves(availableMoves), (m) => PowerFactor(m) * StabBonus(m) * LevelFactorLog(m), ref availableMoves))
             {
                 return ret;
             }
 
             // Choose second move - attempt to choose another attack move
-            if (ChooseMoveForIndex(ret, 1, GetAttackMoves(availableMoves), (m) => PowerWeightScale(m) * StabBonus(m) * RedundantTypeFactor(m) * LevelWeightScaleLog(m), ref availableMoves))
+            if (ChooseMoveForIndex(ret, 1, GetAttackMoves(availableMoves), (m) => PowerFactor(m) * StabBonus(m) * RedundantTypeFactor(m) * LevelFactorLog(m), ref availableMoves))
             {
                 return ret;
             }
 
             // Choose third move - Attempt to choose a status move
-            if(ChooseMoveForIndex(ret, 2, GetStatusMoves(availableMoves), LevelWeightScaleSmall, ref availableMoves))
+            if(ChooseMoveForIndex(ret, 2, GetStatusMoves(availableMoves), LevelFactorSmall, ref availableMoves))
             {
                 return ret;
             }
 
-            var fourthMoveChoice = new WeightedSet<Move>(availableMoves.Keys, LevelWeightScale);
+            var fourthMoveChoice = new WeightedSet<Move>(availableMoves.Keys, LevelFactor);
             var currentMoves = ret.Where(m => m != Move.None).Select(dataT.GetMoveData);
             var metrics = new List<Func<Move, float>>();
 
@@ -140,7 +151,7 @@ namespace PokemonRandomizer.Backend.Randomization
             // Weather Ball + Sandstorm
             CalculateMoveSynergy(m => m.effect == MoveEffect.WeatherBall, m => m.effect == MoveEffect.WeatherSandstorm, weakSynergy);
             // Choose fourth move
-            ret[3] = rand.Choice(new WeightedSet<Move>(availableMoves.Keys, m => LevelWeightScale(m) * Math.Max(1, metrics.Sum((metric) => metric(m)))));
+            ret[3] = rand.Choice(new WeightedSet<Move>(availableMoves.Keys, m => LevelFactor(m) * Math.Max(1, metrics.Sum((metric) => metric(m)))));
 
             return ret;
         }
@@ -298,7 +309,13 @@ namespace PokemonRandomizer.Backend.Randomization
 
         private IEnumerable<Move> GetAttackMoves(Dictionary<Move, int> moves)
         {
-            return moves.Keys.Where(m => !dataT.GetMoveData(m).IsStatus);
+            return moves.Keys.Where(CountsAsAttackingMove);
+        }
+
+        private bool CountsAsAttackingMove(Move m)
+        {
+            var data = dataT.GetMoveData(m);
+            return !data.IsStatus || data.IsCallMove;
         }
 
         private IEnumerable<Move> GetStatusMoves(Dictionary<Move, int> moves)
