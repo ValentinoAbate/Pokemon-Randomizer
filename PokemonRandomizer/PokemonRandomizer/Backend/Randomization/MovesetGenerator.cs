@@ -60,6 +60,11 @@ namespace PokemonRandomizer.Backend.Randomization
             return MathF.Pow(learnLevel, 1.5f);
         }
 
+        private static bool IsAttackMoveOfType(MoveData m, PokemonType t)
+        {
+            return !m.IsStatus && m.IsType(t);
+        }
+
         public Move[] SmartMoveSet(PokemonBaseStats pokemon, int level)
         {
             if(pokemon.species is Pokemon.SHUCKLE or Pokemon.CHANSEY or Pokemon.BLISSEY or Pokemon.HOPPIP or Pokemon.SKIPLOOM or Pokemon.JUMPLUFF
@@ -141,15 +146,23 @@ namespace PokemonRandomizer.Backend.Randomization
             // Sun Move + Sun
             CalculateMoveSynergy(m => m.effect is MoveEffect.Solarbeam or MoveEffect.RecoverHpWeather2, m => m.effect == MoveEffect.WeatherSun, preferSynergy);
             // Attacking Fire Move + Sun
-            CalculateMoveSynergy(m => !m.IsStatus && m.type == PokemonType.FIR, m => m.effect == MoveEffect.WeatherSun, weakSynergy);
+            CalculateMoveSynergy(m => IsAttackMoveOfType(m, PokemonType.FIR), m => m.effect == MoveEffect.WeatherSun, weakSynergy);
             // Rain move + Rain
             CalculateMoveSynergy(m => m.effect == MoveEffect.Thunder, m => m.effect == MoveEffect.WeatherRain, preferSynergy);
             // Attacking Water Move + Rain
-            CalculateMoveSynergy(m => !m.IsStatus && m.type == PokemonType.WAT, m => m.effect == MoveEffect.WeatherRain, weakSynergy);
+            CalculateMoveSynergy(m => IsAttackMoveOfType(m, PokemonType.WAT), m => m.effect == MoveEffect.WeatherRain, weakSynergy);
             // Weather Ball + Weather (Rain / Sun / Hail)
             CalculateMoveSynergy(m => m.effect == MoveEffect.WeatherBall, m => m.effect is MoveEffect.WeatherRain or MoveEffect.WeatherSun or MoveEffect.WeatherHail, needSynergy);
             // Weather Ball + Sandstorm
             CalculateMoveSynergy(m => m.effect == MoveEffect.WeatherBall, m => m.effect == MoveEffect.WeatherSandstorm, weakSynergy);
+            // Charge + Attacking Electric Move
+            CalculateMoveSynergy(m => m.effect == MoveEffect.Charge, m => IsAttackMoveOfType(m, PokemonType.ELE), weakSynergy);
+            // Endure + Endeavor
+            CalculateMoveSynergy(m => m.effect == MoveEffect.Endure, m => m.effect == MoveEffect.Endeavor, weakSynergy);
+            // Endure + Flailing Move
+            CalculateMoveSynergy(m => m.effect == MoveEffect.Endure, m => m.effect == MoveEffect.DamageMoreAtLowHP, weakSynergy);
+            // Flailing Move + Endure
+            CalculateMoveSynergy(m => m.effect == MoveEffect.DamageMoreAtLowHP, m => m.effect == MoveEffect.Endure, weakSynergy);
             // Choose fourth move
             ret[3] = rand.Choice(new WeightedSet<Move>(availableMoves.Keys, m => LevelFactor(m) * Math.Max(1, metrics.Sum((metric) => metric(m)))));
 
