@@ -118,37 +118,27 @@ namespace PokemonRandomizer.Backend.Randomization
             }
 
             // Nightmare or Dream Eater + Sleep move Synergy
-            CalculateMoveSynergy(m => m.effect == MoveEffect.DreamEater || m.effect == MoveEffect.StatusNightmare,
-                             m => m.effect == MoveEffect.StatusSleep, needSynergy);
+            CalculateMoveSynergy(m => m.effect is MoveEffect.DreamEater or MoveEffect.StatusNightmare, m => m.effect == MoveEffect.StatusSleep, needSynergy);
             // Snore or Sleep Talk + Rest Synergy
-            CalculateMoveSynergy(m => m.effect == MoveEffect.SleepTalk || m.effect == MoveEffect.DamageFailUnlessAsleepFlinchChance,
-                 m => m.effect == MoveEffect.Rest, needSynergy);
+            CalculateMoveSynergy(m => m.effect is MoveEffect.SleepTalk or MoveEffect.DamageFailUnlessAsleepFlinchChance, m => m.effect == MoveEffect.Rest, needSynergy);
             // Rollout or Ice Ball + Defense Curl Synergy
-            CalculateMoveSynergy(m => m.effect == MoveEffect.MultiTurnBuildup,
-                             m => m.effect == MoveEffect.DefPlus1AndPrepForRoll, preferSynergy);
+            CalculateMoveSynergy(m => m.effect == MoveEffect.MultiTurnBuildup, m => m.effect == MoveEffect.DefPlus1AndPrepForRoll, preferSynergy);
             // Spit Up or Swallow + Stockpile Synergy
-            CalculateMoveSynergy(m => m.effect == MoveEffect.SpitUp || m.effect == MoveEffect.Swallow,
-                             m => m.effect == MoveEffect.Stockpile, needSynergy);
+            CalculateMoveSynergy(m => m.effect is MoveEffect.SpitUp or MoveEffect.Swallow, m => m.effect == MoveEffect.Stockpile, needSynergy);
             // Stockpile + Spit Up or Swallow Synergy
-            CalculateMoveSynergy(m => m.effect == MoveEffect.Stockpile, 
-                m => m.effect == MoveEffect.SpitUp || m.effect == MoveEffect.Swallow, preferSynergy);
+            CalculateMoveSynergy(m => m.effect == MoveEffect.Stockpile, m => m.effect is MoveEffect.SpitUp or MoveEffect.Swallow, preferSynergy);
             // Sun Move + Sun
-            CalculateMoveSynergy(m => m.effect == MoveEffect.Solarbeam || m.effect == MoveEffect.RecoverHpWeather2,
-                             m => m.effect == MoveEffect.WeatherSun, preferSynergy);
+            CalculateMoveSynergy(m => m.effect is MoveEffect.Solarbeam or MoveEffect.RecoverHpWeather2, m => m.effect == MoveEffect.WeatherSun, preferSynergy);
             // Fire Move + Sun
             CalculateMoveSynergy(m => m.type == PokemonType.FIR, m => m.effect == MoveEffect.WeatherSun, weakSynergy);
             // Rain move + Rain
-            CalculateMoveSynergy(m => m.effect == MoveEffect.Thunder,
-                             m => m.effect == MoveEffect.WeatherRain, preferSynergy);
+            CalculateMoveSynergy(m => m.effect == MoveEffect.Thunder, m => m.effect == MoveEffect.WeatherRain, preferSynergy);
             // Water Move + Rain
             CalculateMoveSynergy(m => m.type == PokemonType.WAT, m => m.effect == MoveEffect.WeatherRain, weakSynergy);
             // Weather Ball + Weather (Rain / Sun / Hail)
-            CalculateMoveSynergy(m => m.effect == MoveEffect.WeatherBall,
-                                 m => m.effect == MoveEffect.WeatherRain || m.effect == MoveEffect.WeatherSun 
-                                     || m.effect == MoveEffect.WeatherHail, needSynergy);
+            CalculateMoveSynergy(m => m.effect == MoveEffect.WeatherBall, m => m.effect is MoveEffect.WeatherRain or MoveEffect.WeatherSun or MoveEffect.WeatherHail, needSynergy);
             // Weather Ball + Sandstorm
-            CalculateMoveSynergy(m => m.effect == MoveEffect.WeatherBall,
-                                  m => m.effect == MoveEffect.WeatherSandstorm, weakSynergy);
+            CalculateMoveSynergy(m => m.effect == MoveEffect.WeatherBall, m => m.effect == MoveEffect.WeatherSandstorm, weakSynergy);
             // Choose fourth move
             ret[3] = rand.Choice(new WeightedSet<Move>(availableMoves.Keys, m => LevelWeightScale(m) * Math.Max(1, metrics.Sum((metric) => metric(m)))));
 
