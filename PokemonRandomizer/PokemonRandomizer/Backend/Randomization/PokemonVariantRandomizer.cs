@@ -660,7 +660,9 @@ namespace PokemonRandomizer.Backend.Randomization
             Move.METRONOME,
             Move.SUPER_FANG,
             Move.SPIT_UP,
-            Move.TAIL_GLOW
+            Move.TAIL_GLOW,
+            Move.NATURE_POWER,
+            Move.HIDDEN_POWER,
         };
 
         // Pokemon that shouldn't recieve bonus moves, only replacement moves
