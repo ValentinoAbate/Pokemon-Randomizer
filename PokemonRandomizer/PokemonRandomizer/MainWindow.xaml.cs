@@ -249,12 +249,6 @@ namespace PokemonRandomizer
             // Read ROM data
             if (metadata.Gen == Generation.III)
             {
-#if !DEBUG
-                if(!(metadata.IsEmerald || (metadata.IsFireRed && metadata.Version == 0)))
-                {
-                    throw new Exception($"Unsupported Rom (Code {metadata.Code}{metadata.Version}). {checkAboutHelpMessage}");
-                }
-#endif
                 RomInfo = new XmlManager(PokemonRandomizer.Resources.RomInfo.RomInfo.Gen3RomInfo);
                 RomInfo.SetSearchRoot(metadata.Code + metadata.Version.ToString());
                 //Initalize Rom file wrapper
