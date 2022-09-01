@@ -31,7 +31,7 @@ namespace PokemonRandomizer
     /// </summary>
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
-        public const string version = "v1.0-beta.5";
+        public const string version = "v1.0-beta.6";
         #region XAML Properties for bindings
         private bool _isROMLoaded;
         public bool IsROMLoaded
