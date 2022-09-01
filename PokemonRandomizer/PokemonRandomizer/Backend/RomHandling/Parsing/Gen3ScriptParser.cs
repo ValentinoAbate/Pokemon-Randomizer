@@ -172,7 +172,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
                     // Add new give egg event
                     script.Add(new GiveEggCommand() { pokemon = (Pokemon)command.ArgData(0) });
                 }
-                else if (command.code == Gen3Command.pokemart || command.code == Gen3Command.pokemart2 || command.code == Gen3Command.pokemart3)
+                else if (command.code is Gen3Command.pokemart or Gen3Command.pokemart2 or Gen3Command.pokemart3)
                 {
                     // Add new poke mart event
                     script.Add(ParseShopCommand(rom, command));
