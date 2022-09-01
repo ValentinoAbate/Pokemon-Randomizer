@@ -67,11 +67,11 @@ namespace PokemonRandomizer.Backend.Randomization
 
         public Move[] SmartMoveSet(PokemonBaseStats pokemon, int level)
         {
-            if(pokemon.species is Pokemon.SHUCKLE or Pokemon.CHANSEY or Pokemon.BLISSEY or Pokemon.HOPPIP or Pokemon.SKIPLOOM or Pokemon.JUMPLUFF
-                or Pokemon.LILEEP or Pokemon.CRADILY)
-            {
-                return StatusTankMoveset(pokemon, level);
-            }
+            //if(pokemon.species is Pokemon.SHUCKLE or Pokemon.CHANSEY or Pokemon.BLISSEY or Pokemon.HOPPIP or Pokemon.SKIPLOOM or Pokemon.JUMPLUFF
+            //    or Pokemon.LILEEP or Pokemon.CRADILY)
+            //{
+            //    return StatusTankMoveset(pokemon, level);
+            //}
             bool IsStab(Move m) => pokemon.IsType(dataT.GetMoveData(m).type);
             // Initialize move choices
             var availableMoves = AvailableMoves(pokemon, level);
