@@ -408,5 +408,30 @@ namespace PokemonRandomizer.Backend.Randomization
                 }
             }
         }
+
+        private const float weakMod = 1.25f;
+        private const float strongMod = 2f;
+        private Func<Move, float> GetAbilityModifier(Ability ability)
+        {
+            Func<Move, float> AbilityMod(Predicate<MoveData> moveChoicePred, float intensity)
+            {
+                return m => moveChoicePred(dataT.GetMoveData(m)) ? intensity : 1;
+            }
+            switch (ability)
+            {
+                case Ability.Chlorophyll or Ability.Leaf_Guard or Ability.Solar_Power:
+                    return AbilityMod(m => m.effect is MoveEffect.WeatherSun, weakMod);
+                case Ability.Flower_Gift:
+                    return AbilityMod(m => m.effect is MoveEffect.WeatherSun, strongMod);
+                case Ability.Swift_Swim or Ability.Rain_Dish:
+                    return AbilityMod(m => m.effect is MoveEffect.WeatherRain, weakMod);
+                case Ability.Sand_Veil:
+                    return AbilityMod(m => m.effect is MoveEffect.WeatherSandstorm, weakMod);
+                case Ability.Ice_Body or Ability.Snow_Cloak:
+                    return AbilityMod(m => m.effect is MoveEffect.WeatherHail, weakMod);
+                default:
+                    return m => 1;
+            };
+        }
     }
 }
