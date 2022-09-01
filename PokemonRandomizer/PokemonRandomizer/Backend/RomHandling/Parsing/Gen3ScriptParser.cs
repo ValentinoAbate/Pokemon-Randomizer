@@ -185,6 +185,18 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
                 {
                     script.Add(new SetWeatherCommand() { Weather = (Map.Weather)command.ArgData(0) });
                 }
+                else if(command.code == Gen3Command.paymoney)
+                {
+                    script.Add(new PayMoneyCommand() { Amount = command.ArgData(0), Disable = command.ArgData(1) });
+                }
+                else if (command.code == Gen3Command.givemoney)
+                {
+                    script.Add(new GiveMoneyCommand() { Amount = command.ArgData(0), Disable = command.ArgData(1) });
+                }
+                else if (command.code == Gen3Command.checkmoney)
+                {
+                    script.Add(new CheckMoneyCommand() { Amount = command.ArgData(0), Disable = command.ArgData(1) });
+                }
                 else // Not a special code, just push the command
                 {
                     script.Add(command);

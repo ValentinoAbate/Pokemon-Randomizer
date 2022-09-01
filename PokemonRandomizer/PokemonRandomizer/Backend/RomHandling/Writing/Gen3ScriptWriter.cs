@@ -101,6 +101,15 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
                         rom.WriteByte(Gen3Command.setweather);
                         rom.WriteUInt16((int)setWeatherCommand.Weather);
                         break;
+                    case GiveMoneyCommand giveMoneyCommand:
+                        WriteMoneyCommand(rom, Gen3Command.givemoney, giveMoneyCommand);
+                        break;
+                    case PayMoneyCommand payMoneyCommand:
+                        WriteMoneyCommand(rom, Gen3Command.paymoney, payMoneyCommand);
+                        break;
+                    case CheckMoneyCommand checkMoneyCommand:
+                        WriteMoneyCommand(rom, Gen3Command.checkmoney, checkMoneyCommand);
+                        break;
                     case Gen3Command gen3Command:
                         if((i + 1) < script.Count && TryApplyEventPokemonFix(rom, gen3Command,script[i + 1], metadata))
                         {
@@ -294,6 +303,13 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
                 rom.WriteUInt16(command.Type == GivePokedexCommand.PokedexType.National ? Gen3Command.specialGiveNationalDexEmerald : Gen3Command.specialGiveRegionalDexFrlg);
             }
 
+        }
+
+        private void WriteMoneyCommand(Rom rom, byte commandCode, MoneyCommand command)
+        {
+            rom.WriteByte(commandCode);
+            rom.WriteUInt32(command.Amount);
+            rom.WriteByte((byte)command.Disable);
         }
     }
 }
