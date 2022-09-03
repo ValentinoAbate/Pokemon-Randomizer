@@ -137,6 +137,8 @@ namespace PokemonRandomizer.Backend.Randomization
 
             // Get original TM palettes
             var tmTypePalettes = new Dictionary<PokemonType, int>();
+            Move[] originalTmMoves = new Move[data.TMMoves.Length];
+            Array.Copy(data.TMMoves, originalTmMoves, data.TMMoves.Length);
             int tmInd = 0;
             foreach (var item in data.ItemData)
             {
@@ -201,22 +203,30 @@ namespace PokemonRandomizer.Backend.Randomization
             {
                 data.RandomizationResults.Add("Move Tutors", data.tutorMoves.Select(EnumUtils.ToDisplayString).ToList());
             }
-            // Remap TM Pallets
-            tmInd = 0;
-            foreach (var item in data.ItemData)
+            // Remap TM Pallets and descriptions (if necessary)
+            if(settings.TMRandChance > 0)
             {
-                if (item.IsTM())
+                tmInd = 0;
+                foreach (var item in data.ItemData)
                 {
-                    var moveData = data.GetMoveData(data.TMMoves[tmInd++]);
-                    if (tmTypePalettes.TryGetValue(moveData.type, out int paletteOffset))
+                    if (item.IsTM())
                     {
-                        item.paletteOffset = paletteOffset;
+                        var originalMove = originalTmMoves[tmInd];
+                        var moveData = data.GetMoveData(data.TMMoves[tmInd++]);
+                        if (moveData.move == originalMove)
+                        {
+                            continue;
+                        }
+                        if (tmTypePalettes.TryGetValue(moveData.type, out int paletteOffset))
+                        {
+                            item.paletteOffset = paletteOffset;
+                        }
+                        item.Description = moveData.Description;
+                        item.ReformatDescription = true;
                     }
-                    item.Description = moveData.Description;
-                    item.ReformatDescription = true;
                 }
             }
-            
+
             #endregion
 
             #region Item Definitions
