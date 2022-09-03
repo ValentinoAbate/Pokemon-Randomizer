@@ -50,7 +50,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
 
             #region Base Stats
             // Read the pokemon base stats from the Rom and link dex orders
-            var pokemon = ReadPokemonBaseStats(rom, info, out byte[] skippedData);
+            var pokemon = ReadPokemonBaseStats(rom, info);
             // Find the offset of the eggMoves if we have the data
             int? eggMovesOffset = info.FindOffset(ElementNames.eggMoves, rom);
             if (eggMovesOffset.HasValue && eggMovesOffset.Value != Rom.nullPointer)
@@ -60,7 +60,6 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
             ReadNationalDexOrder(pokemon, rom, info);
             // Set the data on the RomData
             data.Pokemon = pokemon;
-            data.SkippedLearnSetData = skippedData;
             #endregion
 
             // Read Starters
@@ -165,9 +164,8 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
 
         #region Read Pokemon Base Stats
         // Read the Pokemon base stat definitions from the ROM
-        private List<PokemonBaseStats> ReadPokemonBaseStats(Rom rom, XmlManager info, out byte[] skippedData)
+        private List<PokemonBaseStats> ReadPokemonBaseStats(Rom rom, XmlManager info)
         {
-            skippedData = Array.Empty<byte>();
             int numPokemonBaseStats = info.Num(ElementNames.pokemonBaseStats);
             int skipNum = info.IntAttr(ElementNames.pokemonBaseStats, "skip");
             var pokemon = new List<PokemonBaseStats>(numPokemonBaseStats - skipNum);
@@ -202,10 +200,9 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
                 numTutorMoves = info.Num(ElementNames.tutorMoves);
             }
             // Setup moveset offset
-            int movesetOffset = info.FindOffset(ElementNames.movesets, rom);
-            if (movesetOffset == Rom.nullPointer)
+            int movesetTableOffset = info.FindOffset(ElementNames.movesets, rom);
+            if (movesetTableOffset == Rom.nullPointer)
                 return pokemon;
-            movesetOffset = rom.ReadPointer(movesetOffset);
             // Setup Name offset
             int namesOffset = info.FindOffset(ElementNames.pokemonNames, rom);
             int nameLength = 0;
@@ -225,16 +222,14 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
             {
                 if (i == skipAt) // potentially skip empty slots
                 {
-                    skippedData = rom.ReadBlock(movesetOffset, skipNum * 4);
                     i += skipNum;
-                    movesetOffset += skipNum * 4; // (don't know why this is 4, cuz move segments are variable lengths possibly terminators?)
                 }
                 // Create Pokemon
                 PokemonBaseStats pkmn = ReadBaseStatsSingle(rom, pkmnOffset + i * pkmnSize, InternalIndexToPokemon(i));
                 // Read name
                 pkmn.Name = namesOffset != Rom.nullPointer ? rom.ReadString(namesOffset + i * nameLength, nameLength) : pkmn.species.ToDisplayString();
                 // Read Learn Set
-                movesetOffset = ReadLearnSet(rom, movesetOffset, out pkmn.learnSet);
+                ReadLearnSet(rom, rom.ReadPointer(movesetTableOffset + (Rom.pointerSize * i)), out pkmn.learnSet);
                 // Read Tm/Hm/Mt compat
                 ReadTMHMCompat(rom, tmHmCompatOffset + i * tmHmSize, numTms, numHms, tmHmSize, out pkmn.TMCompat, out pkmn.HMCompat);
                 ReadTutorCompat(rom, tutorCompatOffset + i * tutorSize, numTutorMoves, tutorSize, out pkmn.moveTutorCompat);
