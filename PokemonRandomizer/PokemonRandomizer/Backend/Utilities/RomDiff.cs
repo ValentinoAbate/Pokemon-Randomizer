@@ -44,7 +44,7 @@ namespace PokemonRandomizer.Backend.Utilities
                 // Initialize list with proper capacity
                 var ret = new List<string>(blockDiffText.Count() + 1);
                 // Add diff data
-                ret.Add("Block Diffs:");
+                ret.Add($"Block Diffs ({BlockDiffs.Count}):");
                 ret.AddRange(blockDiffText);
                 return ret;
             }
