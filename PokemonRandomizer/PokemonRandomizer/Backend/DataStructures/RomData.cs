@@ -125,8 +125,6 @@ namespace PokemonRandomizer.Backend.DataStructures
 
         public int[] RivalRemap { get; set; }
 
-        public byte[] SkippedLearnSetData { get; set; }
-
         public List<Item> NewEvolutionStones { get; set; } = new List<Item>();
 
         public string PaletteOverrideKey { get; set; }

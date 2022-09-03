@@ -55,7 +55,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
             WriteMoveMappings(rom, info, ElementNames.tutorMoves, data.tutorMoves);
             // Write the move definitions
             WriteMoveData(data.MoveData, rom, info, ref repoints);
-            WritePokemonBaseStats(data, rom, info, ref repoints);
+            WritePokemonBaseStats(data, rom, info);
             WriteTypeDefinitions(data.TypeDefinitions, rom, info, ref repoints);
             WriteEncounters(data, rom, info);
             WriteTrainerBattles(data, rom, info, ref repoints);
@@ -412,7 +412,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
                 rom.WriteUInt32((int)t.pokemonWanted);
             }
         }
-        private void WritePokemonBaseStats(RomData romData, Rom rom, XmlManager info, ref RepointList repoints)
+        private void WritePokemonBaseStats(RomData romData, Rom rom, XmlManager info)
         {
             #region Setup Offsets
 
@@ -439,26 +439,16 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
                 tutorSize = info.Size(ElementNames.tutorCompat);
             }
             // Setup moveset offset
-            int originalMovesetOffset = info.FindOffset(ElementNames.movesets, rom);
-            if (originalMovesetOffset == Rom.nullPointer)
+            int movesetTableOffset = info.FindOffset(ElementNames.movesets, rom);
+            if (movesetTableOffset == Rom.nullPointer)
                 return;
-            originalMovesetOffset = rom.ReadPointer(originalMovesetOffset);
             // Setup palette offsets
             int pokemonPaletteSize = info.Size(ElementNames.pokemonPalettes);
             int normalPaletteOffset = info.FindOffset(ElementNames.pokemonPalettes, rom);
             int shinyPaletteOffset = info.FindOffset(ElementNames.pokemonPalettesShiny, rom);
 
             #endregion
-
-            int movesetIndex = 0;
             int skipNum = info.IntAttr(ElementNames.pokemonBaseStats, "skip");
-            // Create an empty ROM block to write the learnsetData to
-            Rom moveData = new Rom(romData.Pokemon.Sum((stats) => stats.learnSet.Count * 2 + 2) + skipNum * 4, rom.FreeSpaceByte);
-            // If any of the movesets have changed we will have to perform repoint operations
-            bool needToRelocateMoveData = romData.Pokemon.Any((stats) => stats.learnSet.Count != stats.learnSet.OriginalCount);
-            // Find a block to write to in so we can log repoints if we need to
-            int? newMoveDataOffset = needToRelocateMoveData ? rom.FindFreeSpaceOffset(moveData.Length) : null;
-            bool ableToRelocateMoveData = newMoveDataOffset != null;
             int skipAt = info.IntAttr(ElementNames.pokemonBaseStats, "skipAt");
             // Main writing loop
             for (int i = 1; i <= info.Num(ElementNames.pokemonBaseStats); i++)
@@ -466,44 +456,31 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
                 if (i == skipAt) // potentially skip empty slots
                 {
                     i += skipNum;
-                    moveData.WriteBlock(movesetIndex, romData.SkippedLearnSetData);
-                    movesetIndex += skipNum * 4; // (don't know why this is 4, cuz move segments are variable lengths possibly terminators?)
                 }
                 var stats = romData.GetBaseStats((Pokemon)i);
                 WriteBaseStatsSingle(stats, pkmnOffset + i * pkmnSize, rom);
-                // Log a repoint if necessary
-                if (needToRelocateMoveData)
+                int learnsetPointerOffset = movesetTableOffset + (i * Rom.pointerSize);
+                if (stats.learnSet.Count == stats.learnSet.OriginalCount)
                 {
-                    if (ableToRelocateMoveData)
-                    {
-                        repoints.Add(stats.learnSet.OriginalOffset, (int)newMoveDataOffset + movesetIndex);
-                        // Write moveset
-                        movesetIndex = WriteAttacks(moveData, stats.learnSet, movesetIndex);
-                    }
+                    WriteAttacks(rom, stats.learnSet, rom.ReadPointer(learnsetPointerOffset));
                 }
-                else
+                else // Relocate Moveset
                 {
-                    // Write moveset
-                    movesetIndex = WriteAttacks(moveData, stats.learnSet, movesetIndex);
+                    int? newLearnsetOffset = rom.FindFreeSpaceOffset((stats.learnSet.Count * 2) + 2);
+                    if (newLearnsetOffset.HasValue)
+                    {
+                        rom.WritePointer(learnsetPointerOffset, newLearnsetOffset.Value);
+                        WriteAttacks(rom, stats.learnSet, newLearnsetOffset.Value);
+                    }
+                    else
+                    {
+                        Logger.main.Error($"Failed to write learnset for {stats.Name} in free space. Learnset data for {stats.Name} will not be written");
+                    }
                 }
                 WriteTMHMCompat(stats, tmHmCompatOffset + i * tmHmSize, rom);
                 WriteTutorCompat(stats, tutorCompatOffset + i * tutorSize, rom);
                 WriteEvolutions(stats, evolutionOffset + i * evolutionSize, rom);
                 WritePokemonPalettes(stats, normalPaletteOffset + i * pokemonPaletteSize, shinyPaletteOffset + i * pokemonPaletteSize, rom);
-            }
-            // If we don't need to repoint move data, write it in it's original location
-            if (!needToRelocateMoveData)
-            {
-                rom.WriteBlock(originalMovesetOffset, moveData.File);
-            }
-            else if (ableToRelocateMoveData) // else move and log repoint
-            {
-                rom.WriteBlock((int)newMoveDataOffset, moveData.File);
-                repoints.Add(originalMovesetOffset, (int)newMoveDataOffset);
-            }
-            else
-            {
-                Logger.main.Error("Moveset data relocation is needed, but couldn't find enough Free Space to write Moveset data. Moveset data will not be written");
             }
         }
         private void WriteBaseStatsSingle(PokemonBaseStats pokemon, int offset, Rom rom)
@@ -536,23 +513,25 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
         }
 
         // Write the attacks starting at offset (returns the index after completion)
-        private int WriteAttacks(Rom rom, LearnSet moves, int offset)
+        private void WriteAttacks(Rom rom, LearnSet moves, int offset)
         {
+            rom.SaveAndSeekOffset(offset);
             foreach (var move in moves)
             {
                 // Write the first byte of the move
-                rom.WriteByte(offset, (byte)move.move);
+                rom.WriteByte((byte)move.move);
                 // if the move number is over 255, the last bit of the learn level byte is set to 1
                 if ((int)move.move > 255)
-                    rom.WriteByte(offset + 1, (byte)(move.learnLvl * 2 + 1));
+                {
+                    rom.WriteByte((byte)(move.learnLvl * 2 + 1));
+                }
                 else
-                    rom.WriteByte(offset + 1, (byte)(move.learnLvl * 2));
-                offset += 2;
+                {
+                    rom.WriteByte((byte)(move.learnLvl * 2));
+                }
             }
-            rom.WriteByte(offset, 0xff);
-            rom.WriteByte(offset + 1, 0xff);
-            offset += 2;    //pass final FFFF
-            return offset;
+            rom.WriteRepeating(0xff, 2); // Terminator (0xFFFF)
+            rom.LoadOffset();
         }
         private void WriteTMHMCompat(PokemonBaseStats pokemon, int offset, Rom rom)
         {
