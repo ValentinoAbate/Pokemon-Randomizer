@@ -41,6 +41,7 @@ namespace PokemonRandomizer.Backend.DataStructures
         public string Name { get; set;  }
         public Item Item { get; set; }
         public int Price { get; set; }
+        public int OriginalPrice { get; set; }
         // Hold effect data
         public byte holdEffect;
         public byte param;
@@ -103,12 +104,14 @@ namespace PokemonRandomizer.Backend.DataStructures
             other.spriteOffset = spriteOffset;
             other.paletteOffset = paletteOffset;
             other.OriginalDescription = OriginalDescription;
+            other.OriginalPrice = OriginalPrice;
             other.ItemCategories = ItemCategories;
         }
 
         public void SetOriginalValues()
         {
             OriginalDescription = Description;
+            OriginalPrice = Price;
         }
 
         // Later can add specific items that count as certain things for this ROM, etc

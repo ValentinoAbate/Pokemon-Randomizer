@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using PokemonRandomizer.Backend.DataStructures.Trainers;
+using System.Diagnostics.CodeAnalysis;
 
 namespace PokemonRandomizer.Backend.Randomization
 {
@@ -19,6 +20,7 @@ namespace PokemonRandomizer.Backend.Randomization
         private readonly IDataTranslator dataT;
         private readonly Dictionary<Item, List<ItemCommand>> itemMap = new(4);
         private readonly Dictionary<Pokemon, List<PokemonCommand>> staticPokemonMap = new(4);
+        private readonly Dictionary<int, List<MoneyCommand>> moneyCommandMap = new(4);
 
         public ScriptRandomizer(Random rand, PkmnRandomizer pokeRand, ItemRandomizer itemRand, IDataTranslator dataT, List<Action> delayedRandomizationCalls)
         {
@@ -32,16 +34,23 @@ namespace PokemonRandomizer.Backend.Randomization
         public void RandomizeScript(Script script, Settings settings, Args args)
         {
             itemMap.Clear();
+            moneyCommandMap.Clear();
             staticPokemonMap.Clear();
             RandomizeScript(script, settings, args, itemMap);
-            foreach(var kvp in itemMap)
+            foreach(var (item, commands) in itemMap)
             {
-                delayedRandomizationCalls.Add(() => RemapItems(kvp.Key, kvp.Value, settings, args));
+                List<MoneyCommand> relatedMoneyCommands = null;
+                var itemData = dataT.GetItemData(item);
+                if (moneyCommandMap.ContainsKey(itemData.OriginalPrice))
+                {
+                    relatedMoneyCommands = moneyCommandMap[itemData.OriginalPrice];
+                }
+                delayedRandomizationCalls.Add(() => RemapItems(item, commands, relatedMoneyCommands, settings, args));
             }
             RemapStaticPokemon(settings, args);
         }
 
-        private void RemapItems(Item oldItem, IEnumerable<ItemCommand> commands, Settings settings, Args args)
+        private void RemapItems(Item oldItem, IEnumerable<ItemCommand> commands, List<MoneyCommand> relatedMoneyCommands, Settings settings, Args args)
         {
             // No item sources, no need to randomize
             if (!commands.Any(i => i.IsItemSource))
@@ -54,6 +63,19 @@ namespace PokemonRandomizer.Backend.Randomization
             foreach(var command in commands)
             {
                 command.Item = newItem;
+            }
+            if(relatedMoneyCommands != null)
+            {
+                var newItemData = dataT.GetItemData(newItem);
+                int newPrice = newItemData.Price;
+                if (settings.DiscountSoldGiftItems)
+                {
+                    newPrice /= 2;
+                }
+                foreach (var command in relatedMoneyCommands)
+                {
+                    command.Amount = newPrice;
+                }
             }
         }
 
@@ -145,6 +167,9 @@ namespace PokemonRandomizer.Backend.Randomization
                             bool baby = settings.EnsureGiftEggsAreBabyPokemon && args.babySet.Count > 0;
                             giveEgg.pokemon = pokeRand.RandomPokemon(baby ? args.babySet : args.pokemonSet, giveEgg.pokemon, settings.GiftSpeciesSettings, 1);
                         }
+                        break;
+                    case MoneyCommand moneyCommand:
+                        moneyCommandMap.AddOrAppend(moneyCommand.Amount, moneyCommand);
                         break;
                     case ShopCommand shopCommand:
                         if (settings.AddCustomItemToPokemarts && settings.CustomMartItem != Item.None && shopCommand.shop.items.Any(i => i == Item.Potion || i.IsPokeBall()))

@@ -458,6 +458,7 @@ namespace PokemonRandomizer
         public abstract Item CustomMartItem { get; }
         public abstract bool OverrideCustomMartItemPrice { get; }
         public abstract int CustomMartItemPrice { get; }
+        public abstract bool DiscountSoldGiftItems { get; }
 
         public abstract double FieldItemRandChance { get; }
         public abstract ItemRandomizer.Settings FieldItemSettings { get; }
