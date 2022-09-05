@@ -1,6 +1,7 @@
 ﻿using PokemonRandomizer.Backend.Constants;
 using PokemonRandomizer.Backend.DataStructures;
 using PokemonRandomizer.Backend.DataStructures.DS;
+using PokemonRandomizer.Backend.DataStructures.Trainers;
 using PokemonRandomizer.Backend.EnumTypes;
 using PokemonRandomizer.Backend.RomHandling.IndexTranslators;
 using PokemonRandomizer.Backend.Utilities;
@@ -20,7 +21,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
             var dsFileSystem = new DSFileSystemData(rom);
             // Actually parse the ROM data
             RomData data = new RomData();
-            // TM, HM, and MT Moves
+            // TM, HM, an d MT Moves
             data.TMMoves = ReadTmMoves(rom, dsFileSystem, info, out data.HMMoves);
             data.tutorMoves = ReadMoveTutorMoves(rom, dsFileSystem, info);
             Logger.main.Info(string.Join(", ", data.tutorMoves));
@@ -42,10 +43,16 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
             // Move Tutor Compatibility
             ReadMoveTutorCompatibility(pokemon, rom, dsFileSystem, info, metadata);
             data.Pokemon = pokemon;
+
+            data.Trainers = ReadTrainers(rom, dsFileSystem, info, new List<string>());
             var infoGen = new InfoFileGenerator();
             foreach (var line in infoGen.GenerateInfoFile(data, metadata))
             {
                 Logger.main.Info(line);
+            }
+            for (int i = 0; i < data.Trainers.Count; i++)
+            {
+                Logger.main.Info($"Trainer {i}: {data.Trainers[i]}");
             }
 
 
@@ -265,6 +272,80 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
                 hmMoves[i] = InternalIndexToMove(arm9.ReadUInt16());
             }
             return tmMoves;
+        }
+
+        private List<BasicTrainer> ReadTrainers(Rom rom, DSFileSystemData dsFileSystem, XmlManager info, List<string> classNames)
+        {
+            // Get trainer battle data
+            if (!dsFileSystem.GetNarcFile(rom, info.Path(ElementNames.trainerBattles), out var trainerBattleNarc))
+            {
+                return new List<BasicTrainer>();
+            }
+            // Get trainer pokemon data
+            if (!dsFileSystem.GetNarcFile(rom, info.Path(ElementNames.GenIV.trainerPokemon), out var trainerPokemonNarc))
+            {
+                return new List<BasicTrainer>();
+            }
+            var ret = new List<BasicTrainer>(trainerBattleNarc.FileCount);
+            for (int trainerInd = 0; trainerInd < trainerBattleNarc.FileCount && trainerInd < trainerPokemonNarc.FileCount; ++trainerInd)
+            {
+                var trainer = new BasicTrainer();
+                if (!trainerBattleNarc.GetFile(trainerInd, out int trainerOffset, out _, out _))
+                {
+                    continue;
+                }
+                rom.Seek(trainerOffset);
+                trainer.ClassNames = classNames;
+                var dataType = (TrainerPokemon.DataType)rom.ReadByte();
+                trainer.trainerClass = rom.ReadByte();
+                int battleType2 = rom.ReadByte(); // what is this value?
+                int numPokemon = rom.ReadByte();
+                // Read trainer use items
+                for (int itemInd = 0; itemInd < 4; ++itemInd)
+                {
+                    trainer.useItems[itemInd] = InternalIndexToItem(rom.ReadUInt16());
+                }
+                // Read AI flags
+                trainer.AIFlags = new BitArray(new int[] { rom.ReadUInt32() });
+                if (rom.Peek() is not (0 or 2))
+                {
+                    Logger.main.Error($"Unknown trainer battle type detected in trainer {trainerInd}");
+                }
+                trainer.IsDoubleBattle = rom.ReadByte() == 2;
+
+                if (!trainerPokemonNarc.GetFile(trainerInd, out int pokemonOffset, out _, out _))
+                {
+                    continue;
+                }
+                #region Read pokemon from pokemonOffset
+                rom.Seek(pokemonOffset);
+                trainer.PokemonData = new Trainer.TrainerPokemonData(dataType, numPokemon);
+                // The pokemon data structures will be either 8 or 16 bytes depending on the dataType of the trainer
+                for (int pokemonInd = 0; pokemonInd < numPokemon; ++pokemonInd)
+                {
+                    var p = new TrainerPokemon();
+                    p.dataType = dataType;
+                    p.IVLevel = rom.ReadUInt16();
+                    p.level = rom.ReadUInt16();
+                    int pokemonData = rom.ReadUInt16();
+                    p.species = InternalIndexToPokemon(pokemonData & 0b0000_0011_1111_1111);
+                    // Alt forme = pokemonData & 0b1111_1000_0000_0000
+                    if (dataType is TrainerPokemon.DataType.HeldItem or TrainerPokemon.DataType.SpecialMovesAndHeldItem)
+                    {
+                        p.heldItem = InternalIndexToItem(rom.ReadUInt16());
+                    }
+                    if (dataType is TrainerPokemon.DataType.SpecialMoves or TrainerPokemon.DataType.SpecialMovesAndHeldItem)
+                    {
+                        for (int moveInd = 0; moveInd < TrainerPokemon.numMoves; ++moveInd)
+                            p.moves[moveInd] = InternalIndexToMove(rom.ReadUInt16());
+                    }
+                    int capsule = rom.ReadUInt16(); // Add via interface?
+                    trainer.PokemonData.Pokemon.Add(p);
+                }
+                #endregion
+                ret.Add(trainer);
+            }
+            return ret;
         }
     }
 }

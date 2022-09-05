@@ -65,7 +65,7 @@ namespace PokemonRandomizer.Backend.DataStructures.Trainers
 
         public override string ToString()
         {
-            return $"{Class} {Name} ({TrainerCategory})";
+            return $"{Class} {Name} ({TrainerCategory}) - {(Pokemon.Count > 0 ? PokemonData.ToString() : "None")}";
         }
 
         public class TrainerPokemonData : IRepointable
@@ -95,6 +95,11 @@ namespace PokemonRandomizer.Backend.DataStructures.Trainers
                 originalPokemonCount = numPokemon;
                 this.dataType = dataType;
                 originalDataType = dataType;
+            }
+
+            public override string ToString()
+            {
+                return string.Join(',', Pokemon.Select(p => p.ToString()));
             }
         }
     }
