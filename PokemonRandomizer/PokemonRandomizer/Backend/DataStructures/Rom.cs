@@ -194,6 +194,10 @@ namespace PokemonRandomizer.Backend.DataStructures
         /// </summary>
         public void RepointMany(List<(int originalPtr, int newPtr)> repoints)
         {
+            if(repoints.Count <= 0)
+            {
+                return;
+            }
             // A caching dictionary of pointer values to known locations
             var locations = new Dictionary<int, List<int>>();
             // Build caching dictionary
