@@ -250,8 +250,9 @@
 	<!-- Trainer Battle Definitions -->
 	<trainerBattles num="694" pointer="0x00D890"/>
 	<trainerClassNames num="58"/>
-	<nameTrainerTypeOverrides elementNames="[stevenOverride]"/>
+	<nameTrainerTypeOverrides elementNames="[stevenOverride,tateAndLizaOverride]"/>
 	<stevenOverride name="steven" types="[STL]"/>
+	<tateAndLizaOverride name="tate&amp;liza" types="[PSY]"/>
 
 	<!-- Map Data -->
 
