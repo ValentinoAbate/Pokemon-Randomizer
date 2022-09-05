@@ -58,7 +58,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
             WritePokemonBaseStats(data, rom, info);
             WriteTypeDefinitions(data.TypeDefinitions, rom, info, ref repoints);
             WriteEncounters(data, rom, info);
-            WriteTrainerBattles(data, rom, info, ref repoints);
+            WriteTrainerBattles(data, rom, info);
             WriteStevenAllyTrainerBattle(data, rom, info);
             mapWriter.WriteMapData(data, rom, info, metadata);
             WriteItemData(data.ItemData, rom, info);
@@ -695,7 +695,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
         /// <summary>
         /// Write the trainer battles to the output file. Doesn't write all data (currently unfinished)
         /// </summary>
-        private void WriteTrainerBattles(RomData romData, Rom rom, XmlManager info, ref RepointList repoints)
+        private void WriteTrainerBattles(RomData romData, Rom rom, XmlManager info)
         {
             // If fail, reading trainer battles is not supported for this ROM
             if (!info.FindAndSeekOffset(ElementNames.trainerBattles, rom))
@@ -712,7 +712,6 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
                         Logger.main.Error($"Trainer {trainer.Name} needs to have it's pokemon repointed, but there is not enough free space. This trainer will not have any data written");
                         return;
                     }
-                    repoints.Add((trainer.pokemonOffset, newPokemonOffset.Value));
                     trainer.pokemonOffset = newPokemonOffset.Value;
                 }
 
