@@ -109,15 +109,31 @@ FEATURES ///////////////////////////////////////////////////////////////////////
 	- Use cost as optional weighting
 - Multi-Rom Data aggregation
 	- For instance, use emerald as a base but pull additional classes and moveset updates from FireRed
-- Game corner prize randomization
+- Villainous team variant palettes
 - Egg move writing
 - Move description writing
 - Move tutor NPC text fix
-
-- Game corner randomization????
-	- High stakes roulette
-- Money Scaling
+- Store item limiter (ban potions, etc)
+- Money Scaling / Cost overhaul
+	- Percent based modifier
+	- Applys to trainer earnings
+	- Add cost to pokecenter
 - Min moves added randomization support
+- Game corner randomization
+	- High stakes roulette
+	- Game corner prize randomization
+- Battle frontier randomization
+	- Trainers
+	- Rental pokemon
+	- Rewards
+- Battle tent randomization
+	- Trainers
+	- Rental pokemon
+	- Rewards
+- Contest randomization
+	- Radnomize pokemon
+	- Contest moveset generator
+	- Parse / Write contest move data
 - UI:
 	- ROM / Randomizer info readout. Add to the randomizer tab and make the top part "settings"
 		- Name / Code of opened rom
@@ -138,16 +154,41 @@ GEN IV  ////////////////////////////////////////////////////////////////////////
 - Test if form specifier works in HGSS
 - Test gender and ability override in HGSS
 
-// TODO
+// TODO (Parity w/ Gen III)
 
 - Text parsing / decompression / decryption
 	- Trainer names
 	- Trainer class names
+- Wild encounters
+- Type definitions
+- Item data
+	- Mystery gift item markup
 - Trainer class data
+- Scripts
+	- Stores
+	- Give item
+	- Give pokemon
+	- Set weather
+- PC Potion
+- Berry Trees
+- Pokemon Names
+- Ally multibattles
+- Nat dex order
+- Maps
+- Pickup items
+- In game trades
+- Rival remap
+	- Support for third rival? Tommy + Dawn / Lucas
+- Pokemon palettes
+- Palette markup
 
 - General ROM writing
 	- NARC recompilation
 	- BLZ compression
+
+// New to Gen IV
+
+- Follower trainer randomization (Cheryl, etc.)
 
 CLEANUP /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
