@@ -43,7 +43,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
             // Move Tutor Compatibility
             ReadMoveTutorCompatibility(pokemon, rom, dsFileSystem, info, metadata);
             data.Pokemon = pokemon;
-
+            // Trainers
             data.Trainers = ReadTrainers(rom, dsFileSystem, info, metadata, new List<string>());
             var infoGen = new InfoFileGenerator();
             foreach (var line in infoGen.GenerateInfoFile(data, metadata))
