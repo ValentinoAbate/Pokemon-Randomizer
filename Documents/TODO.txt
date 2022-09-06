@@ -161,6 +161,7 @@ GEN IV  ////////////////////////////////////////////////////////////////////////
 	- Trainer class names
 - Wild encounters
 - Type definitions
+- Move data
 - Item data
 	- Mystery gift item markup
 - Trainer class data
