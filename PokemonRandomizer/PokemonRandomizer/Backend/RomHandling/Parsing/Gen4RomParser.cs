@@ -44,7 +44,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
             ReadMoveTutorCompatibility(pokemon, rom, dsFileSystem, info, metadata);
             data.Pokemon = pokemon;
 
-            data.Trainers = ReadTrainers(rom, dsFileSystem, info, new List<string>());
+            data.Trainers = ReadTrainers(rom, dsFileSystem, info, metadata, new List<string>());
             var infoGen = new InfoFileGenerator();
             foreach (var line in infoGen.GenerateInfoFile(data, metadata))
             {
@@ -274,7 +274,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
             return tmMoves;
         }
 
-        private List<BasicTrainer> ReadTrainers(Rom rom, DSFileSystemData dsFileSystem, XmlManager info, List<string> classNames)
+        private List<BasicTrainer> ReadTrainers(Rom rom, DSFileSystemData dsFileSystem, XmlManager info, RomMetadata metadata, List<string> classNames)
         {
             // Get trainer battle data
             if (!dsFileSystem.GetNarcFile(rom, info.Path(ElementNames.trainerBattles), out var trainerBattleNarc))
@@ -286,6 +286,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
             {
                 return new List<BasicTrainer>();
             }
+            bool isHGSS = metadata.IsHGSS;
             var ret = new List<BasicTrainer>(trainerBattleNarc.FileCount);
             for (int trainerInd = 0; trainerInd < trainerBattleNarc.FileCount && trainerInd < trainerPokemonNarc.FileCount; ++trainerInd)
             {
@@ -298,7 +299,11 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
                 trainer.ClassNames = classNames;
                 var dataType = (TrainerPokemon.DataType)rom.ReadByte();
                 trainer.trainerClass = rom.ReadByte();
-                int battleType2 = rom.ReadByte(); // what is this value?
+                int battleType2 = rom.ReadByte(); // what is this value? Seems to always be zero
+                if(battleType2 != 0)
+                {
+                    Logger.main.Error($"Unknown Battle Type 2 detected in trainer {trainerInd}");
+                }
                 int numPokemon = rom.ReadByte();
                 // Read trainer use items
                 for (int itemInd = 0; itemInd < 4; ++itemInd)
@@ -307,29 +312,49 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
                 }
                 // Read AI flags
                 trainer.AIFlags = new BitArray(new int[] { rom.ReadUInt32() });
-                if (rom.Peek() is not (0 or 2))
-                {
-                    Logger.main.Error($"Unknown trainer battle type detected in trainer {trainerInd}");
-                }
                 trainer.IsDoubleBattle = rom.ReadByte() == 2;
 
                 if (!trainerPokemonNarc.GetFile(trainerInd, out int pokemonOffset, out _, out _))
                 {
                     continue;
                 }
+
                 #region Read pokemon from pokemonOffset
                 rom.Seek(pokemonOffset);
                 trainer.PokemonData = new Trainer.TrainerPokemonData(dataType, numPokemon);
                 // The pokemon data structures will be either 8 or 16 bytes depending on the dataType of the trainer
                 for (int pokemonInd = 0; pokemonInd < numPokemon; ++pokemonInd)
                 {
-                    var p = new TrainerPokemon();
+                    TrainerPokemon p;
+                    IHasTrainerPokemonBallSeal ballSeal;
+
+                    // Level, IVLevel, and other data (based on Gen)
+                    if (isHGSS)
+                    {
+                        var hgssPokemon = new HGSSTrainerPokemon();
+                        hgssPokemon.IVLevel = rom.ReadByte();
+                        int overrideData = rom.ReadByte();
+                        hgssPokemon.GenderOverride = (IHasTrainerPokemonGenderOverride.Type)(overrideData & 0b0000_1111);
+                        hgssPokemon.AbilityOverride = (IHasTrainerPokemonAbilityOverride.Type)(overrideData >> 4);
+                        hgssPokemon.level = rom.ReadUInt16();
+                        hgssPokemon.species = InternalIndexToPokemon(rom.ReadUInt16());
+                        p = hgssPokemon;
+                        ballSeal = hgssPokemon;
+                    }
+                    else // DPPlt
+                    {
+                        var dpptPokemon = new DPPltTrainerPokemon();
+                        dpptPokemon.IVLevel = rom.ReadUInt16();
+                        dpptPokemon.level = rom.ReadUInt16();
+                        int pokemonData = rom.ReadUInt16();
+                        dpptPokemon.species = InternalIndexToPokemon(pokemonData & 0b0000_0011_1111_1111);
+                        dpptPokemon.Form = pokemonData >> 10;
+                        p = dpptPokemon;
+                        ballSeal = dpptPokemon;
+                    }
+
+                    // Held Items and special moves
                     p.dataType = dataType;
-                    p.IVLevel = rom.ReadUInt16();
-                    p.level = rom.ReadUInt16();
-                    int pokemonData = rom.ReadUInt16();
-                    p.species = InternalIndexToPokemon(pokemonData & 0b0000_0011_1111_1111);
-                    // Alt forme = pokemonData & 0b1111_1000_0000_0000
                     if (dataType is TrainerPokemon.DataType.HeldItem or TrainerPokemon.DataType.SpecialMovesAndHeldItem)
                     {
                         p.heldItem = InternalIndexToItem(rom.ReadUInt16());
@@ -339,10 +364,13 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
                         for (int moveInd = 0; moveInd < TrainerPokemon.numMoves; ++moveInd)
                             p.moves[moveInd] = InternalIndexToMove(rom.ReadUInt16());
                     }
-                    int capsule = rom.ReadUInt16(); // Add via interface?
+
+                    // Ball Seal
+                    ballSeal.BallSeal = rom.ReadUInt16(); // Add via interface?
                     trainer.PokemonData.Pokemon.Add(p);
                 }
                 #endregion
+
                 ret.Add(trainer);
             }
             return ret;

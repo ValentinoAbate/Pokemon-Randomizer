@@ -144,6 +144,9 @@ FEATURES ///////////////////////////////////////////////////////////////////////
 	- Evolution level calculation for new evo types that don't have an explicit level
 	- Catching tut potentially doesn't need to be a male pokemon
 	- May need to adapt wally-specific code to support gen IV rivals
+	- Test DPPlt form specifier
+	- Test if form specifier works in HGSS
+	- Test gender and ability override in HGSS
 
 CLEANUP /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
