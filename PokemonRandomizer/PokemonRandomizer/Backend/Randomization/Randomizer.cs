@@ -77,7 +77,7 @@ namespace PokemonRandomizer.Backend.Randomization
             {
                 foreach (var item in data.MysteryGiftEventItems)
                 {
-                    if (item.IsMysterGiftEventItem)
+                    if (item.IsMysteryGiftEventItem)
                     {
                         item.ItemCategories &= ~ItemData.Categories.KeyItem;
                         item.ItemCategories |= ItemData.Categories.Special;
