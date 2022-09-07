@@ -45,6 +45,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
             data.Pokemon = pokemon;
             // Trainers
             data.Trainers = ReadTrainers(rom, dsFileSystem, info, metadata, new List<string>());
+            data.ItemData = ReadItemData(rom, dsFileSystem, info, metadata, data.MysteryGiftEventItems);
             var infoGen = new InfoFileGenerator();
             foreach (var line in infoGen.GenerateInfoFile(data, metadata))
             {
@@ -55,8 +56,11 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
                 Logger.main.Info($"Trainer {i}: {data.Trainers[i]}");
             }
 
-
+#if DEBUG
+            return data;
+#else
             throw new NotImplementedException("Gen IV Rom parsing not supported");
+#endif
         }
 
         private List<PokemonBaseStats> ReadPokemonBaseStats(Rom rom, DSFileSystemData dsFileSystem, XmlManager info)
@@ -274,6 +278,10 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
             return tmMoves;
         }
 
+        private List<ItemData> ReadItemData(Rom rom, DSFileSystemData dsFileSytem, XmlManager info, RomMetadata metadata, List<ItemData> mysteryGiftEventItems)
+        {
+            return new List<ItemData>();
+        }
         private List<BasicTrainer> ReadTrainers(Rom rom, DSFileSystemData dsFileSystem, XmlManager info, RomMetadata metadata, List<string> classNames)
         {
             // Get trainer battle data
