@@ -810,7 +810,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
                     battleEffectOffset = rom.ReadPointer(),
                     extraData = rom.ReadUInt32(),
                 };
-                if(item.IsMysterGiftEventItem = IsMysteryGiftEventItem(item, metadata))
+                if(item.IsMysteryGiftEventItem = IsMysteryGiftEventItem(item, metadata))
                 {
                     mysteryGiftEventItems.Add(item);
                 }
