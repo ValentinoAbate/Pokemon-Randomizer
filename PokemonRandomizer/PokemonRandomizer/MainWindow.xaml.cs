@@ -255,9 +255,6 @@ namespace PokemonRandomizer
                 var freeSpaceByte = (byte)RomInfo.HexAttr("freeSpace", "byte");
                 var searchStartOffset = RomInfo.HexAttr("freeSpace", "startAddy");
                 Rom = new Rom(rawRom, freeSpaceByte, searchStartOffset);
-                // Parse the file
-                Parser = new Gen3RomParser();
-                RomData = Parser.Parse(Rom, metadata, RomInfo);
             }
 #if DEBUG
             else if (metadata.Gen == Generation.IV)
@@ -265,9 +262,6 @@ namespace PokemonRandomizer
                 RomInfo = new XmlManager(PokemonRandomizer.Resources.RomInfo.RomInfo.Gen4RomInfo);
                 RomInfo.SetSearchRoot(metadata.Code + metadata.Version.ToString());
                 Rom = new Rom(rawRom, 0x00, 0x00);
-                // Parse the file
-                Parser = new Gen4RomParser();
-                RomData = Parser.Parse(Rom, metadata, RomInfo);
             }
 #endif
             else
@@ -275,6 +269,9 @@ namespace PokemonRandomizer
                 throw new Exception($"Unsupported generation (Gen {metadata.Gen}). {checkAboutHelpMessage}");
             }
 
+            // Parse the file
+            Parser = GetRomParser(metadata.Gen);
+            RomData = Parser.Parse(Rom, metadata, RomInfo);
             // Cache metadata and last randomization 
             SetLastRandomizationInfo(RomData, metadata, false);
             Metadata = metadata;
@@ -292,12 +289,28 @@ namespace PokemonRandomizer
         private byte[] GetRandomizedRom(string seed)
         {
             var randomizedData = Randomize(seed);
-            if(Metadata.Gen == Generation.III)
+            var writer = GetRomWriter(Metadata.Gen);
+            return writer.Write(randomizedData, Rom, Metadata, RomInfo, AppSettings).File;
+        }
+
+        private RomParser GetRomParser(Generation gen)
+        {
+            return gen switch
             {
-                var writer = new Gen3RomWriter();
-                return writer.Write(randomizedData, Rom, Metadata, RomInfo, AppSettings).File;
-            }
-            throw new Exception($"Attempting to write randomized data to Rom of unsupported generation (Gen {Metadata.Gen})");
+                Generation.III => new Gen3RomParser(),
+                Generation.IV => new Gen4RomParser(),
+                _ => throw new NotImplementedException($"Unable to get Rom Parser for Gen {gen}"),
+            };
+        }
+
+        private RomWriter GetRomWriter(Generation gen)
+        {
+            return gen switch
+            {
+                Generation.III => new Gen3RomWriter(),
+                Generation.IV => new Gen4RomWriter(),
+                _ => throw new NotImplementedException($"Unable to get Rom Writer for Gen {gen}"),
+            };
         }
 
         #region INotifyPropertyChanged Implementation
@@ -483,33 +496,27 @@ namespace PokemonRandomizer
 
         private void SaveCleanROM(object sender, RoutedEventArgs e)
         {
-            if (Metadata.Gen == Generation.III)
-            {
-                var writer = new Gen3RomWriter();
-                WriteRom(() => writer.Write(RomData, Rom, Metadata, RomInfo, cleanSettings).File, "Saving Clean Rom...");
-            }
+            var writer = GetRomWriter(Metadata.Gen);
+            WriteRom(() => writer.Write(RomData, Rom, Metadata, RomInfo, cleanSettings).File, "Saving Clean Rom...");
         }
 
         private void SaveCleanROMAndDiff(object sender, RoutedEventArgs e)
         {
-            if (Metadata.Gen == Generation.III)
+            var writer = GetRomWriter(Metadata.Gen);
+            Rom rom2 = null;
+            byte[] WriteClean()
             {
-                var writer = new Gen3RomWriter();
-                Rom rom2 = null;
-                byte[] WriteClean()
-                {
-                    return (rom2 = writer.Write(RomData, Rom, Metadata, RomInfo, cleanSettings)).File;
-                }
-                void DiffCleanRomWithRom(bool success)
-                {
-                    if (!success || rom2 == null)
-                    {
-                        return;
-                    }
-                    DiffRoms(Rom, rom2);
-                }
-                WriteRom(WriteClean, "Saving Clean Rom...", DiffCleanRomWithRom);
+                return (rom2 = writer.Write(RomData, Rom, Metadata, RomInfo, cleanSettings)).File;
             }
+            void DiffCleanRomWithRom(bool success)
+            {
+                if (!success || rom2 == null)
+                {
+                    return;
+                }
+                DiffRoms(Rom, rom2);
+            }
+            WriteRom(WriteClean, "Saving Clean Rom...", DiffCleanRomWithRom);
         }
 
         private void DiffRoms(object sender, RoutedEventArgs e)
