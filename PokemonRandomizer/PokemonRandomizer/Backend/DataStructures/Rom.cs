@@ -546,23 +546,31 @@ namespace PokemonRandomizer.Backend.DataStructures
         private const string textVariableStr = "\\v";
         private const string textUnknownStr = "\\x";
         /// <summary>Read a string of specified length from the File.</summary>
-        public string ReadVariableLengthString(int maxLength = int.MaxValue)
+        public string ReadVariableLengthString()
         {
-            var str = ReadString(InternalOffset, maxLength);
+            var str = ReadVariableLengthString(InternalOffset);
             InternalOffset += str.Length;
             return str;
+        }
+        public string ReadVariableLengthString(int offset)
+        {
+            return ReadString(offset, int.MaxValue);
         }
 
         /// <summary>Read a string of specified length from the File.</summary>
         public string ReadFixedLengthString(int length)
         {
-            var str = ReadString(InternalOffset, length);
+            var str = ReadFixedLengthString(InternalOffset, length);
             InternalOffset += length;
             return str;
         }
+        public string ReadFixedLengthString(int offset, int length)
+        {
+            return ReadString(offset, length);
+        }
         /// <summary>Read a string of specified length from the File.
         /// Use with 2 args to read a fixed length string</summary>
-        public string ReadString(int offset, int maxLength = int.MaxValue)
+        private string ReadString(int offset, int maxLength = int.MaxValue)
         {
             string text = string.Empty;
             for (int i = 0; i < maxLength; i++)
