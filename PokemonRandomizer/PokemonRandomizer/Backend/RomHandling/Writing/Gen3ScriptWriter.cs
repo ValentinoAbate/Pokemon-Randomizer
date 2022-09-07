@@ -51,6 +51,9 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
                     case GivePokedexCommand givePokedex:
                         WriteGivePokedexCommand(rom, givePokedex, metadata);
                         break;
+                    case MessageBoxCommand messageBoxCommand:
+                        WriteMessageBoxCommand(rom, messageBoxCommand);
+                        break;
                     case GiveItemCommand giveItem:
                         rom.WriteByte(Gen3Command.copyvarifnotzero);
                         rom.WriteUInt16(Gen3Command.itemTypeVar);
@@ -288,6 +291,32 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
                 rom.WriteByte(command.Level);
                 rom.WriteUInt16((int)remapItem(command.HeldItem));
             }
+        }
+
+        private void WriteMessageBoxCommand(Rom rom, MessageBoxCommand command)
+        {
+            // Write first command - loadpointer 0x00 <textOffset>
+            rom.WriteByte(Gen3Command.loadpointer);
+            rom.WriteByte(0x00);
+            if(command.InputType == CommandInputType.Pointer)
+            {
+                if (command.Text.Length <= command.OriginalLength)
+                {
+                    rom.WritePointer(command.value);
+                    //rom.WriteVariableLengthString(command.value, command.Text);
+                }
+                else // Text was expanded
+                {
+                    rom.WritePointer(rom.WriteInFreeSpace(rom.TranslateString(command.Text, true)) ?? command.value);
+                }
+            }
+            else // just write the value
+            {
+                rom.WritePointer(command.value);
+            }
+            // Write second command
+            rom.WriteByte(Gen3Command.callstd);
+            rom.WriteByte((byte)command.specialCode);
         }
 
         private void WriteGivePokedexCommand(Rom rom, GivePokedexCommand command, RomMetadata metadata)

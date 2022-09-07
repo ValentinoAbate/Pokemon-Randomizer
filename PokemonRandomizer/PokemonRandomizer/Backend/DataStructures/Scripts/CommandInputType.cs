@@ -10,6 +10,7 @@ namespace PokemonRandomizer.Backend.DataStructures.Scripts
     {
         Normal, // Raw data
         Variable, // Data stored in the variable (int) Data
-        Unknown // Unknown
+        Unknown, // Unknown
+        Pointer, // Data stored at the location pointed to by the value
     }
 }
