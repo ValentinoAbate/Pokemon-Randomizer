@@ -54,6 +54,12 @@
 		<itemNames offset="392"/>
 		<itemDescriptions offset="391"/>
 	</CPUE0>
+	<CPUE1>
+		<!-- Metadata -->
+
+		<inheritFrom>CPUE0</inheritFrom>
+
+	</CPUE1>
 
 	<!-- Diamond / Pearl Constants -->
 
