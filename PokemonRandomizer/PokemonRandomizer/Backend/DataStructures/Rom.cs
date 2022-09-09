@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Globalization;
 
 namespace PokemonRandomizer.Backend.DataStructures
 {
@@ -609,19 +610,25 @@ namespace PokemonRandomizer.Backend.DataStructures
                 string currSym;
                 if(currChar == escapeChar)
                 {
-                    currSym = text.Substring(i++, 2);
+                    currSym = text.Substring(i, 2);           
                     if(currSym == textUnknownStr)
                     {
-                        bytes.Add(byte.Parse(text.Substring(i, 2)));
                         i += 2;
+                        bytes.Add(byte.Parse(text.Substring(i, 2), NumberStyles.HexNumber));
+                        i++;
                         continue;
                     }
                     else if(currSym == textVariableStr)
                     {
-                        bytes.Add(textVariableSym);
-                        bytes.Add(byte.Parse(text.Substring(i, 2)));
                         i += 2;
+                        bytes.Add(textVariableSym);
+                        bytes.Add(byte.Parse(text.Substring(i, 2), NumberStyles.HexNumber));
+                        i++;
                         continue;
+                    }
+                    else
+                    {
+                        i++;
                     }
                 }
                 else if(currChar == groupChar)
