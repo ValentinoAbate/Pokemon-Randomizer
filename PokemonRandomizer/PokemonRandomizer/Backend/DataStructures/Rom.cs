@@ -587,11 +587,11 @@ namespace PokemonRandomizer.Backend.DataStructures
                 else if (code == textVariableSym)
                 {
                     int nextChar = File[offset + ++i] & 0xFF;
-                    text += (textVariableStr + string.Format("%02X", nextChar));
+                    text += $"{textVariableStr}{nextChar:x2}";
                 }
                 else
                 {
-                    text += (textUnknownStr + string.Format("%02X", code));
+                    text += $"{textUnknownStr}{code:x2}";
                 }
             }
             return text;
