@@ -303,7 +303,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
                 if (command.Text.Length <= command.OriginalLength)
                 {
                     rom.WritePointer(command.value);
-                    //rom.WriteVariableLengthString(command.value, command.Text);
+                    rom.WriteVariableLengthString(command.value, command.Text);
                 }
                 else // Text was expanded
                 {
