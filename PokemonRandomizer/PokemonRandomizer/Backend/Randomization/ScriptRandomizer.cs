@@ -21,6 +21,7 @@ namespace PokemonRandomizer.Backend.Randomization
         private readonly Dictionary<Item, List<ItemCommand>> itemMap = new(4);
         private readonly Dictionary<Pokemon, List<PokemonCommand>> staticPokemonMap = new(4);
         private readonly Dictionary<int, List<MoneyCommand>> moneyCommandMap = new(4);
+        private readonly List<TextCommand> textCommands = new(10);
 
         public ScriptRandomizer(Random rand, PkmnRandomizer pokeRand, ItemRandomizer itemRand, IDataTranslator dataT, List<Action> delayedRandomizationCalls)
         {
@@ -36,21 +37,26 @@ namespace PokemonRandomizer.Backend.Randomization
             itemMap.Clear();
             moneyCommandMap.Clear();
             staticPokemonMap.Clear();
+            textCommands.Clear();
             RandomizeScript(script, settings, args, itemMap);
-            foreach(var (item, commands) in itemMap)
+            if(itemMap.Count > 0)
             {
-                List<MoneyCommand> relatedMoneyCommands = null;
-                var itemData = dataT.GetItemData(item);
-                if (moneyCommandMap.ContainsKey(itemData.OriginalPrice))
+                var textCommandsCache = new List<TextCommand>(textCommands);
+                foreach (var (item, commands) in itemMap)
                 {
-                    relatedMoneyCommands = moneyCommandMap[itemData.OriginalPrice];
+                    List<MoneyCommand> relatedMoneyCommands = null;
+                    var itemData = dataT.GetItemData(item);
+                    if (moneyCommandMap.ContainsKey(itemData.OriginalPrice))
+                    {
+                        relatedMoneyCommands = moneyCommandMap[itemData.OriginalPrice];
+                    }
+                    delayedRandomizationCalls.Add(() => RemapItems(item, itemData.OriginalPrice, commands, relatedMoneyCommands, textCommandsCache, settings, args));
                 }
-                delayedRandomizationCalls.Add(() => RemapItems(item, commands, relatedMoneyCommands, settings, args));
             }
             RemapStaticPokemon(settings, args);
         }
 
-        private void RemapItems(Item oldItem, IEnumerable<ItemCommand> commands, List<MoneyCommand> relatedMoneyCommands, Settings settings, Args args)
+        private void RemapItems(Item oldItem, int oldPrice, IEnumerable<ItemCommand> commands, List<MoneyCommand> relatedMoneyCommands, List<TextCommand> textCommands, Settings settings, Args args)
         {
             // No item sources, no need to randomize
             if (!commands.Any(i => i.IsItemSource))
@@ -60,13 +66,24 @@ namespace PokemonRandomizer.Backend.Randomization
                 return;
             // Remap item commands
             var newItem = itemRand.RandomItem(args.items, oldItem, settings.FieldItemSettings);
+            if (newItem == oldItem)
+                return;
             foreach(var command in commands)
             {
                 command.Item = newItem;
             }
+            string oldItemText = oldItem.ToDisplayString().ToUpper();
+            string newItemText = newItem.ToDisplayString().ToUpper();
+            foreach (var command in textCommands)
+            {
+                if (command.Text.Contains(oldItemText))
+                {
+                    command.Text = command.Text.Replace(oldItemText, newItemText);
+                }
+            }
             if(relatedMoneyCommands != null)
             {
-                var newItemData = dataT.GetItemData(newItem);
+                var newItemData = dataT.GetItemData(newItem);       
                 int newPrice = newItemData.Price;
                 if (settings.DiscountSoldGiftItems)
                 {
@@ -75,6 +92,13 @@ namespace PokemonRandomizer.Backend.Randomization
                 foreach (var command in relatedMoneyCommands)
                 {
                     command.Amount = newPrice;
+                }
+                foreach (var command in textCommands)
+                {
+                    if (command.Text.Contains(oldPrice.ToString()))
+                    {
+                        command.Text = command.Text.Replace(oldPrice.ToString(), newPrice.ToString());
+                    }
                 }
             }
         }
@@ -176,6 +200,9 @@ namespace PokemonRandomizer.Backend.Randomization
                         {
                             shopCommand.shop.items.Add(settings.CustomMartItem);
                         }
+                        break;
+                    case TextCommand textCommand:
+                        textCommands.Add(textCommand);
                         break;
                 }
             }
