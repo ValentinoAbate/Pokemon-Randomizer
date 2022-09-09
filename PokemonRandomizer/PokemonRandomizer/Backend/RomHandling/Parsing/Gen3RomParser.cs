@@ -240,44 +240,6 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
             return pokemon;
         }
 
-        private PokemonBaseStats ReadBaseStatsSingle(Rom rom, int offset, Pokemon species)
-        {
-            var pkmn = new PokemonBaseStats
-            {
-                // Set species
-                species = species
-            };
-            // Seek the offset of the pokemon base stats data structure
-            rom.Seek(offset);
-            // fill in stats (hp/at/df/sp/sa/sd)
-            pkmn.stats = rom.ReadBlock(6);
-            // fill in types
-            pkmn.types[0] = (PokemonType)rom.ReadByte();
-            pkmn.types[1] = (PokemonType)rom.ReadByte();
-            pkmn.catchRate = rom.ReadByte();
-            pkmn.baseExpYield = rom.ReadByte();
-            // fill in ev yields (stored in the first 12 bits of data[10-11])
-            pkmn.evYields = rom.ReadBits(12, 2);
-            pkmn.heldItems[0] = (Item)rom.ReadUInt16(); // (data[13] * 256 + data[12]);
-            pkmn.heldItems[1] = (Item)rom.ReadUInt16(); // (data[15] * 256 + data[14]);
-            pkmn.genderRatio = rom.ReadByte();
-            pkmn.eggCycles = rom.ReadByte();
-            pkmn.baseFriendship = rom.ReadByte();
-            pkmn.growthType = (ExpGrowthType)rom.ReadByte();
-            // fill in egg groups
-            pkmn.eggGroups[0] = (EggGroup)rom.ReadByte();
-            pkmn.eggGroups[1] = (EggGroup)rom.ReadByte();
-            // fill in abilities
-            pkmn.abilities[0] = (Ability)rom.ReadByte();
-            pkmn.abilities[1] = (Ability)rom.ReadByte();
-            pkmn.safariZoneRunRate = rom.ReadByte();
-            byte searchFlip = rom.ReadByte();
-            // read color
-            pkmn.searchColor = (SearchColor)((searchFlip & 0b1111_1110) >> 1);
-            // read flip
-            pkmn.flip = (searchFlip & 0b0000_0001) == 1;
-            return pkmn;
-        }
         // Read the TMcompat and HM compat BitArrays starting at given offset
         private void ReadTMHMCompat(Rom rom, int offset, int numTms, int numHms, int compatSize, out BitArray tmCompat, out BitArray hmCompat)
         {

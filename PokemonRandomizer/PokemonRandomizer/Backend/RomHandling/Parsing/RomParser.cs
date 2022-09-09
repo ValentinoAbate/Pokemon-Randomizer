@@ -12,6 +12,45 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
         private const int maxEggMoveLoops = 10000;
         public abstract RomData Parse(Rom rom, RomMetadata metadata, XmlManager info);
 
+        protected virtual PokemonBaseStats ReadBaseStatsSingle(Rom rom, int offset, Pokemon species)
+        {
+            var pkmn = new PokemonBaseStats
+            {
+                // Set species
+                species = species
+            };
+            // Seek the offset of the pokemon base stats data structure
+            rom.Seek(offset);
+            // fill in stats (hp/at/df/sp/sa/sd)
+            pkmn.stats = rom.ReadBlock(6);
+            // fill in types
+            pkmn.types[0] = (PokemonType)rom.ReadByte();
+            pkmn.types[1] = (PokemonType)rom.ReadByte();
+            pkmn.catchRate = rom.ReadByte();
+            pkmn.baseExpYield = rom.ReadByte();
+            // fill in ev yields (stored in the first 12 bits of data[10-11])
+            pkmn.evYields = rom.ReadBits(12, 2);
+            pkmn.heldItems[0] = InternalIndexToItem(rom.ReadUInt16());
+            pkmn.heldItems[1] = InternalIndexToItem(rom.ReadUInt16());
+            pkmn.genderRatio = rom.ReadByte();
+            pkmn.eggCycles = rom.ReadByte();
+            pkmn.baseFriendship = rom.ReadByte();
+            pkmn.growthType = (ExpGrowthType)rom.ReadByte();
+            // fill in egg groups
+            pkmn.eggGroups[0] = (EggGroup)rom.ReadByte();
+            pkmn.eggGroups[1] = (EggGroup)rom.ReadByte();
+            // fill in abilities
+            pkmn.abilities[0] = InternalIndexToAbility(rom.ReadByte());
+            pkmn.abilities[1] = InternalIndexToAbility(rom.ReadByte());
+            pkmn.safariZoneRunRate = rom.ReadByte();
+            byte searchFlip = rom.ReadByte();
+            // read color
+            pkmn.searchColor = (SearchColor)((searchFlip & 0b1111_1110) >> 1);
+            // read flip
+            pkmn.flip = (searchFlip & 0b0000_0001) == 1;
+            return pkmn;
+        }
+
         // Read the attacks starting at offset (returns the index after completion)
         protected void ReadLearnSet(Rom rom, int offset, out LearnSet moves)
         {
