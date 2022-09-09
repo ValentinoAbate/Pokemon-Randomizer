@@ -20,7 +20,6 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
     {
         protected override IIndexTranslator IndexTranslator => Gen3IndexTranslator.Main;
 
-        private readonly Dictionary<Item, Item> itemRemaps = new Dictionary<Item, Item>();
         private readonly HashSet<Item> failedItemRemaps = new HashSet<Item>();
         private readonly Gen3ScriptWriter scriptWriter;
         private readonly Gen3MapWriter mapWriter;
@@ -159,10 +158,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
             return rom;
         }
 
-        private Item RemapItem(Item item)
-        {
-            return itemRemaps.ContainsKey(item) ? itemRemaps[item] : item;
-        }
+
         private void CreateNewEvolutionStones(IEnumerable<Item> newEvolutionStones, List<ItemData> itemData, Rom rom, XmlManager info)
         {
             // Item remapping (for generating new evolution stones)
@@ -482,34 +478,6 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
                 WriteEvolutions(stats, evolutionOffset + i * evolutionSize, rom);
                 WritePokemonPalettes(stats, normalPaletteOffset + i * pokemonPaletteSize, shinyPaletteOffset + i * pokemonPaletteSize, rom);
             }
-        }
-        private void WriteBaseStatsSingle(PokemonBaseStats pokemon, int offset, Rom rom)
-        {
-            rom.SaveOffset();
-            rom.Seek(offset);
-            // fill in stats (hp/at/df/sp/sa/sd)
-            rom.WriteBlock(pokemon.stats);
-            // convert types to bytes and write
-            rom.WriteBlock(Array.ConvertAll(pokemon.types, (t) => (byte)t));
-            rom.WriteByte(pokemon.catchRate);
-            rom.WriteByte(pokemon.baseExpYield);
-            // Next two bytes bits 0-11 are ev Yields, in chunks of 2
-            rom.WriteBits(2, pokemon.evYields);
-            rom.WriteUInt16((int)RemapItem(pokemon.heldItems[0]));
-            rom.WriteUInt16((int)RemapItem(pokemon.heldItems[1]));
-            rom.WriteByte(pokemon.genderRatio);
-            rom.WriteByte(pokemon.eggCycles);
-            rom.WriteByte(pokemon.baseFriendship);
-            rom.WriteByte((byte)pokemon.growthType);
-            rom.WriteByte((byte)pokemon.eggGroups[0]);
-            rom.WriteByte((byte)pokemon.eggGroups[1]);
-            rom.WriteByte((byte)pokemon.abilities[0]);
-            rom.WriteByte((byte)pokemon.abilities[1]);
-            rom.WriteByte(pokemon.safariZoneRunRate);
-            rom.WriteByte((byte)(((byte)pokemon.searchColor << 1) + Convert.ToByte(pokemon.flip)));
-            // Padding
-            rom.SetBlock(2, 0x00);
-            rom.LoadOffset();
         }
 
         // Write the attacks starting at offset (returns the index after completion)
