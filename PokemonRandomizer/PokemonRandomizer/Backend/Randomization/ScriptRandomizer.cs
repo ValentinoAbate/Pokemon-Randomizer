@@ -76,10 +76,7 @@ namespace PokemonRandomizer.Backend.Randomization
             string newItemText = newItem.ToDisplayString().ToUpper();
             foreach (var command in textCommands)
             {
-                if (command.Text.Contains(oldItemText))
-                {
-                    command.Text = command.Text.Replace(oldItemText, newItemText);
-                }
+                command.Text = command.Text.Replace(oldItemText, newItemText);
             }
             if(relatedMoneyCommands != null)
             {
@@ -95,10 +92,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 }
                 foreach (var command in textCommands)
                 {
-                    if (command.Text.Contains(oldPrice.ToString()))
-                    {
-                        command.Text = command.Text.Replace(oldPrice.ToString(), newPrice.ToString());
-                    }
+                    command.Text = command.Text.Replace(oldPrice.ToString(), newPrice.ToString());
                 }
             }
         }
