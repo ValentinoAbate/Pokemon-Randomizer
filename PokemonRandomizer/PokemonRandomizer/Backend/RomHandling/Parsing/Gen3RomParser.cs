@@ -145,7 +145,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
             for (int i = 1; i <= moveCount; ++i)
             {
                 var move = moveData[i];
-                move.Description = rom.ReadString(rom.ReadPointer());
+                move.Description = rom.ReadVariableLengthString(rom.ReadPointer());
                 move.OrigininalDescriptionLength = move.Description.Length;
             }
             return moveData;
@@ -227,7 +227,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
                 // Create Pokemon
                 PokemonBaseStats pkmn = ReadBaseStatsSingle(rom, pkmnOffset + i * pkmnSize, InternalIndexToPokemon(i));
                 // Read name
-                pkmn.Name = namesOffset != Rom.nullPointer ? rom.ReadString(namesOffset + i * nameLength, nameLength) : pkmn.species.ToDisplayString();
+                pkmn.Name = namesOffset != Rom.nullPointer ? rom.ReadFixedLengthString(namesOffset + i * nameLength, nameLength) : pkmn.species.ToDisplayString();
                 // Read Learn Set
                 ReadLearnSet(rom, rom.ReadPointer(movesetTableOffset + (Rom.pointerSize * i)), out pkmn.learnSet);
                 // Read Tm/Hm/Mt compat
@@ -814,7 +814,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
                 {
                     mysteryGiftEventItems.Add(item);
                 }
-                item.Description = rom.ReadString(item.descriptionOffset);
+                item.Description = rom.ReadVariableLengthString(item.descriptionOffset);
                 item.SetCategoryFlags();
                 item.SetOriginalValues();
                 itemData.Add(item);

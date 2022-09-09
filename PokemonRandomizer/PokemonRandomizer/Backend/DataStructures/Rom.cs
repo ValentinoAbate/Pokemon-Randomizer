@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Globalization;
 
 namespace PokemonRandomizer.Backend.DataStructures
 {
@@ -546,23 +547,31 @@ namespace PokemonRandomizer.Backend.DataStructures
         private const string textVariableStr = "\\v";
         private const string textUnknownStr = "\\x";
         /// <summary>Read a string of specified length from the File.</summary>
-        public string ReadVariableLengthString(int maxLength = int.MaxValue)
+        public string ReadVariableLengthString()
         {
-            var str = ReadString(InternalOffset, maxLength);
+            var str = ReadVariableLengthString(InternalOffset);
             InternalOffset += str.Length;
             return str;
+        }
+        public string ReadVariableLengthString(int offset)
+        {
+            return ReadString(offset, int.MaxValue);
         }
 
         /// <summary>Read a string of specified length from the File.</summary>
         public string ReadFixedLengthString(int length)
         {
-            var str = ReadString(InternalOffset, length);
+            var str = ReadFixedLengthString(InternalOffset, length);
             InternalOffset += length;
             return str;
         }
+        public string ReadFixedLengthString(int offset, int length)
+        {
+            return ReadString(offset, length);
+        }
         /// <summary>Read a string of specified length from the File.
         /// Use with 2 args to read a fixed length string</summary>
-        public string ReadString(int offset, int maxLength = int.MaxValue)
+        private string ReadString(int offset, int maxLength = int.MaxValue)
         {
             string text = string.Empty;
             for (int i = 0; i < maxLength; i++)
@@ -579,11 +588,11 @@ namespace PokemonRandomizer.Backend.DataStructures
                 else if (code == textVariableSym)
                 {
                     int nextChar = File[offset + ++i] & 0xFF;
-                    text += (textVariableStr + string.Format("%02X", nextChar));
+                    text += $"{textVariableStr}{nextChar:x2}";
                 }
                 else
                 {
-                    text += (textUnknownStr + string.Format("%02X", code));
+                    text += $"{textUnknownStr}{code:x2}";
                 }
             }
             return text;
@@ -601,19 +610,25 @@ namespace PokemonRandomizer.Backend.DataStructures
                 string currSym;
                 if(currChar == escapeChar)
                 {
-                    currSym = text.Substring(i++, 2);
+                    currSym = text.Substring(i, 2);           
                     if(currSym == textUnknownStr)
                     {
-                        bytes.Add(byte.Parse(text.Substring(i, 2)));
                         i += 2;
+                        bytes.Add(byte.Parse(text.Substring(i, 2), NumberStyles.HexNumber));
+                        i++;
                         continue;
                     }
                     else if(currSym == textVariableStr)
                     {
-                        bytes.Add(textVariableSym);
-                        bytes.Add(byte.Parse(text.Substring(i, 2)));
                         i += 2;
+                        bytes.Add(textVariableSym);
+                        bytes.Add(byte.Parse(text.Substring(i, 2), NumberStyles.HexNumber));
+                        i++;
                         continue;
+                    }
+                    else
+                    {
+                        i++;
                     }
                 }
                 else if(currChar == groupChar)

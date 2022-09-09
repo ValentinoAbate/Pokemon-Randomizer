@@ -108,6 +108,18 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
                         script.Add(command);
                     }
                 }
+                else if (command.code == Gen3Command.loadpointer)
+                {
+                    // Check for message box multi-command
+                    if (TryParseMessageBoxMultiCommand(rom, metadata, command, out MessageBoxCommand messageBoxCommand))
+                    {
+                        script.Add(messageBoxCommand);
+                    }
+                    else
+                    {
+                        script.Add(command);
+                    }
+                }
                 else if (command.code == Gen3Command.copyvarifnotzero)
                 {
                     // Check for give item multi-command
@@ -286,12 +298,49 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
             return true;
         }
 
+        private bool TryParseMessageBoxMultiCommand(Rom rom, RomMetadata metadata, Gen3Command command1, out MessageBoxCommand messageBoxCommand)
+        {
+            messageBoxCommand = null;
+            if(command1.ArgData(0) != 0)
+            {
+                return false;
+            }
+            rom.SaveOffset();
+            var command2 = ReadCommand(rom, metadata, out _);
+            if (command2.code != Gen3Command.callstd || !CallStd.IsMsgBox((byte)command2.ArgData(0), metadata))
+            {
+                rom.LoadOffset();
+                return false;
+            }
+            messageBoxCommand = new MessageBoxCommand
+            {
+                value = command1.ArgData(1),
+                specialCode = command2.ArgData(0),
+            };
+            MarkCommandInputType(messageBoxCommand, messageBoxCommand.value);
+            if(messageBoxCommand.InputType == CommandInputType.Pointer)
+            {
+                messageBoxCommand.Text = rom.ReadVariableLengthString(messageBoxCommand.value);
+            }
+            messageBoxCommand.SetOriginalValues();
+            rom.DumpOffset();
+            return true;
+        }
+
         private void MarkCommandInputType(IHasCommandInputType command, int input)
         {
             // Mark command type
             if (input > 10000)
             {
-                command.InputType = input > 32768 ? CommandInputType.Variable : CommandInputType.Unknown;
+                if(input > 32768)
+                {
+                    command.InputType = input > 50000 ? CommandInputType.Pointer : CommandInputType.Variable;
+                }
+                else
+                {
+                    command.InputType = CommandInputType.Unknown;
+                }
+                
             }
             else
             {

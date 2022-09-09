@@ -25,7 +25,7 @@ IDEAS //////////////////////////////////////////////////////////////////////////
 	- Champion randomization (the champion could be Brendan/May, wally, or any other reoccuring / special trainer in the game or that is added)
 	- Extra reoccuring trainers (you might encounter youngster joey multiple times throughout the game, etc)
 	- Ambushes (Events that trigger when you reach certain places like rival battle)
-		- Could be more rival / wally battles, or an extra reocurring trainer	
+		- Could be more rival / wally battles, or an extra reocurring trainer
 	- Add more Wally Battles
 	- Randomize Rival Battle Locations
 	- (Em/Ru/Sap - Add a final rival battle before victory road or something)
@@ -74,8 +74,6 @@ IDEAS //////////////////////////////////////////////////////////////////////////
 	- Typing
 		- Disallow all future original types from being new added types
 		- Maybe: prevent single type pokemon that evolve into dual-typed pokemon from becoming dual-typed? (or maybe as an option at least)
-- Special Pokemon Randomization
-	- Setting for legenary pokemon to always be legendary pokemon (when relevant)
 - 365 Mode
 	- Ensures all pokemon are obtainable in the game
 	- Hardcore:
@@ -92,6 +90,8 @@ IDEAS //////////////////////////////////////////////////////////////////////////
 	- Fire Red: Starter Text replacement
 	- Fire Red: Catching tut writing (very low priority, may never add) (maybe add a skip)
 	- RSE berry giver randomization (may be possible with script writing) // May already be done, needs verification
+- Multi-Rom Data aggregation
+	- For instance, use emerald as a base but pull additional classes and moveset updates from FireRed
 
 FEATURES ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -102,17 +102,15 @@ FEATURES ///////////////////////////////////////////////////////////////////////
 	- stores
 	- vending machines
 	- statics / gift items (partially complete)
+		- shard trader (RSE)
 	- held items
 		- wild
 		- starter
 		- gift
 	- Use cost as optional weighting
-- Multi-Rom Data aggregation
-	- For instance, use emerald as a base but pull additional classes and moveset updates from FireRed
 - Villainous team variant palettes
 - Egg move writing
 - Move description writing
-- Move tutor NPC text fix
 - Store item limiter (ban potions, etc)
 - Money Scaling / Cost overhaul
 	- Percent based modifier
@@ -134,6 +132,20 @@ FEATURES ///////////////////////////////////////////////////////////////////////
 	- Radnomize pokemon
 	- Contest moveset generator
 	- Parse / Write contest move data
+- Text fixes
+	- Gift item randomization:
+		+ Remap item names when randomizing items
+		+ Remap price texts
+		- Fix for "a AWAKENING" grammar issue
+		- Fix pluralization grammar issue
+		- Fix item description incongruity (see silk scarf gift)
+			- How to detect description?
+			- For TMs, do something like TMX contains MOVE, which does MOVE DESCRIPTION
+			- For items, do something like ITEM does ITEM DESCRIPTION
+		- Check line lengths and reformat appropriately after replacing text
+		- Parse multichoice menu text
+	- Move tutor text:
+		- Replace with move and move description
 - UI:
 	- ROM / Randomizer info readout. Add to the randomizer tab and make the top part "settings"
 		- Name / Code of opened rom
@@ -211,6 +223,8 @@ FIXES //////////////////////////////////////////////////////////////////////////
 - Potentially: write catching tut on emerald has some differences from clean ROMs (see diff9)
 - Fix professor Oak's aides for National Dex mode:
 	- https://www.reddit.com/r/PokemonROMhacks/comments/ew7bl3/fire_red_prof_oak_aides_check_national_dex/
+- Fix text translation to byte[] for text with text variables
+	- Enable message box writing after this
 
 DUMB IDEA CORNER ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

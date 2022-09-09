@@ -1,4 +1,6 @@
-﻿namespace PokemonRandomizer.Backend.Scripting.GenIII
+﻿using PokemonRandomizer.Backend.DataStructures;
+
+namespace PokemonRandomizer.Backend.Scripting.GenIII
 {
     // Call Std description: https://www.pokecommunity.com/showthread.php?t=201077
     // Scripting doc: https://sphericalice.com/romhacking/documents/script/#appendix-std
@@ -18,5 +20,13 @@
         public const byte putItemAwayFRLG = 0x08;
         public const byte recieveItemFRLG = 0x09;
         public const byte unknown28 = 0x28;
+
+        public static bool IsMsgBox(byte code, RomMetadata metadata)
+        {
+            if (code >= messageBoxNpc && code <= messageBoxAutoclose)
+                return true;
+            return (code is messageBoxGetPointsEm or messageBoxPokenavEm) && metadata.IsEmerald;
+               
+        }
     }
 }
