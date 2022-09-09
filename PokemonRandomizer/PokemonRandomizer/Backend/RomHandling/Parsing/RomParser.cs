@@ -28,7 +28,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
                 int lvl = next >> 1;
                 // if the move number is over 255, the last bit of the learn level byte is set to 1
                 Move move = InternalIndexToMove((next % 2) * 256 + curr);
-                moves.Add(move, lvl);
+                moves.Add(move, lvl, true);
                 curr = rom.ReadByte();
                 next = rom.ReadByte();
             }

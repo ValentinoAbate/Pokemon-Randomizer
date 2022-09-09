@@ -36,15 +36,27 @@ namespace PokemonRandomizer.Backend
             return lookup;
         }
 
-        public void Add(Move mv, int learnLvl)
+        public void Add(Move mv, int learnLvl, bool unsafeAdd = false)
         {
-            Add(new Entry(mv, learnLvl));
+            Add(new Entry(mv, learnLvl), unsafeAdd);
         }
 
-        public void Add(Entry item)
+        public void Add(Entry item, bool unsafeAdd = false)
         {
+            if(items.Count <= 0 || unsafeAdd)
+            {
+                items.Add(item);
+                return;
+            }
+            for (int i = 0; i < items.Count; i++)
+            {
+                if(items[i].learnLvl > item.learnLvl)
+                {
+                    items.Insert(i, item);
+                    return;
+                }
+            }
             items.Add(item);
-            items.Sort();
         }
 
         public void RemoveWhere(Predicate<Entry> pred)
