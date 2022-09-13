@@ -584,7 +584,17 @@ namespace PokemonRandomizer
 
         private void QuickRandomize(object sender, RoutedEventArgs e)
         {
-            void QuickRand() => Randomize(debugSeed);
+            QuickRandomize(debugSeed);
+        }
+
+        private void QuickRandomizeNoSeed(object sender, RoutedEventArgs e)
+        {
+            QuickRandomize(string.Empty);
+        }
+
+        private void QuickRandomize(string seed)
+        {
+            void QuickRand() => Randomize(seed);
             void Error(Exception e)
             {
                 LogException($"Quick Randomization Error: ", e);
