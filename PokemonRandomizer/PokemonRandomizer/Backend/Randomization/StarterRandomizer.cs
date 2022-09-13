@@ -112,13 +112,20 @@ namespace PokemonRandomizer.Backend.Randomization
                         break;
                     ++numLostMoves;
                 }
+                int setIndex = 0;
                 // Hoist inaccessible moves up to starterLevel + 1 if necessary
                 for (int i = 0; i < numLostMoves; ++i)
                 {
-                    var entry = learnSet[0];
+                    var entry = learnSet[setIndex];
+                    // Just leave splash at lvl 1
+                    if(entry.move == Move.SPLASH)
+                    {
+                        ++setIndex;
+                        continue;
+                    }
                     entry.learnLvl = starterLevel + 1;
                     // Remove the move and add it back to make sure it is at the right place
-                    learnSet.RemoveAt(0);
+                    learnSet.RemoveAt(setIndex);
                     learnSet.Add(entry);
                 }
             }
