@@ -17,6 +17,9 @@ namespace PokemonRandomizer.UI.Views
             new ComboBoxItem() {Content="Custom", ToolTip="Set 1 or more custom starters"},
         };
         private const string strongTriTooltip = "Only generate type triangles where each pokemon is super effective against AND resistant to the next (as opposed to just super effective against)";
+        private const string safeMovesetsTooltip = "Ensure that starters will have attacking move(s) at level 5 that can hit all pokemon in the game" +
+            "\nAny starter whose moveset is unsafe will be given Foresight or Odor Sleuth, and Tackle if necessary" +
+            "\nAny moves that would be skipped over at level 5 due to added moves will instead be learned at level 6";
         public StartersDataView(StartersDataModel model, string[] pokemonNames, List<Pokemon> pokemon)
         {
             // Create stack and add content
@@ -41,7 +44,7 @@ namespace PokemonRandomizer.UI.Views
 
             // Additional Settings
             stack.Add(new BoundCheckBoxUI(model.BanLegendaries, "Ban Legendaries"));
-            stack.Add(new BoundCheckBoxUI(model.SafeStarterMovesets, "Safe Starter Movesets"));
+            stack.Add(new BoundCheckBoxUI(model.SafeStarterMovesets, "Safe Starter Movesets", safeMovesetsTooltip));
         }
     }
 }
