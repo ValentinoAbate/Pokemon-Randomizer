@@ -131,15 +131,16 @@ namespace PokemonRandomizer.Backend.Randomization
             }
         }
 
-        private bool HasFullCoverage(Queue<Move> moves, IDataTranslator dataT, out bool hasFightingOrNormalMove)
+        private bool HasFullCoverage(Queue<Move> moves, RomData data, out bool hasFightingOrNormalMove)
         {
             hasFightingOrNormalMove = false;
             bool isFightingOrNormalMoveFirst = false;
             bool alreadyHasForesight = false;
+            var attackingTypes = new List<PokemonType>(4);
             while(moves.Count > 0)
             {
                 var move = moves.Dequeue();
-                var moveData = dataT.GetMoveData(move);
+                var moveData = data.GetMoveData(move);
                 if (moveData.IsStatus)
                 {
                     if(moveData.effect is MoveData.MoveEffect.Foresight)
@@ -148,35 +149,58 @@ namespace PokemonRandomizer.Backend.Randomization
                     }
                     continue;
                 }
-                // GHO -> NRM is immune
-                // PSY -> DRK is immune
-                // PSN -> STL is immune
-                // GRD -> FLY is immune (+ Levitate)
-                // ELE -> GRD is immune (+ Volt Absorb)
-                // FIR -> Flash Fire
-                // WAT -> Water Absorb + Dry Skin
-                // Note Gen VI : DRG will have an immunity due to fairy existing
-                // Note Gen II Note Gen I: FIR and WAT have no immunities because abilities don't exist
-                // Note Gen I : PSN and PSY have no immunities because dark and steel don't exist
-                if (moveData.type is PokemonType.GHO or PokemonType.PSY or PokemonType.PSN or PokemonType.GRD or PokemonType.ELE or PokemonType.FIR or PokemonType.WAT)
+                // Full coverage by this move alone
+                if (HasNoImmunities(moveData.type))
                 {
-                    continue;
+                    return true;
                 }
                 // Note Gen I : foresight doesn't exist
-                if(moveData.type is PokemonType.NRM or PokemonType.FTG)
+                if (moveData.type is PokemonType.NRM or PokemonType.FTG)
                 {
                     hasFightingOrNormalMove = true;
                     isFightingOrNormalMoveFirst = moves.Count >= (TrainerPokemon.numMoves - 1);
-                    continue;
                 }
-                return true;
+                if (!attackingTypes.Contains(moveData.type))
+                {
+                    attackingTypes.Add(moveData.type);
+                }
             }
-            // If they already have a fighting or normal move and foresight, that is considered full immunity
+            // If they already have a fighting or normal move and foresight, that is considered full coverage
             if (hasFightingOrNormalMove && alreadyHasForesight)
+                return true;
+            // If there are no pokemon that are immune to all attacking types availible, that is considered full coverage  
+            if (!data.Pokemon.Any(p => attackingTypes.All(t => IsImmune(p, t))))
                 return true;
             // Fighting / Normal move would get removed from starting set when foresight gets added, so it's irrelevant
             hasFightingOrNormalMove &= !isFightingOrNormalMoveFirst;
             return false;
+        }
+
+        private bool HasNoImmunities(PokemonType type)
+        {
+            // Note Gen VI : DRG will have an immunity due to fairy existing
+            // Note Gen V : Sap sipper will create a grass immunity
+            // Note Gen III : soundproof????
+            // Note Gen II Note Gen I: FIR and WAT have no immunities because abilities don't exist
+            // Note Gen I : PSN and PSY have no immunities because dark and steel don't exist
+            return type is PokemonType.FLY or PokemonType.RCK or PokemonType.BUG or PokemonType.STL or PokemonType.GRS or PokemonType.ICE or PokemonType.DRG or PokemonType.DRK or PokemonType.FAI;
+        }
+
+        private bool IsImmune(PokemonBaseStats stats, PokemonType type)
+        {
+            return type switch
+            {
+                PokemonType.NRM or PokemonType.FTG => stats.IsType(PokemonType.GHO),
+                PokemonType.PSN => stats.IsType(PokemonType.STL),
+                PokemonType.GRD => stats.IsType(PokemonType.FLY) || stats.HasAbility(Ability.Levitate),
+                PokemonType.GHO => stats.IsType(PokemonType.NRM),
+                PokemonType.FIR => stats.HasAbility(Ability.Flash_Fire),
+                PokemonType.WAT => stats.HasAbility(Ability.Water_Absorb) || stats.HasAbility(Ability.Dry_Skin) || stats.HasAbility(Ability.Storm_Drain),
+                PokemonType.ELE => stats.IsType(PokemonType.GRD) || stats.HasAbility(Ability.Volt_Absorb) || stats.HasAbility(Ability.Motor_Drive), // Note Gen V : lightningrod can also cause immunity
+                PokemonType.PSY => stats.IsType(PokemonType.DRK),
+                PokemonType.DRG => stats.IsType(PokemonType.FAI),
+                _ => false
+            };
         }
     }
 }
