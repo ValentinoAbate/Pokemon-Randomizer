@@ -62,7 +62,7 @@ namespace PokemonRandomizer.Backend.Randomization
                     }
                 }
             }
-            data.Starters = data.Pokemon.Where(d => d.IsBasicOrEvolvesFromBaby).Select(d => d.species).ToList();
+            // data.Starters = data.Pokemon.Where(d => d.IsBasicOrEvolvesFromBaby).Select(d => d.species).ToList();
             // Make sure all starters have attack moves
             if (settings.SafeStarterMovesets)
             {
@@ -72,7 +72,7 @@ namespace PokemonRandomizer.Backend.Randomization
 
         private void ApplySafeStarterLearnsets(RomData data)
         {
-            var moves = new Queue<Move>(4);
+            var moves = new Queue<Move>(TrainerPokemon.numMoves);
             foreach (var pkmn in data.Starters)
             {
                 moves.Clear();
@@ -95,10 +95,32 @@ namespace PokemonRandomizer.Backend.Randomization
                 }
                 // No coverage, apply fixes
                 var lookup = learnSet.GetMovesLookup();
+                // Add odor sleuth / foresight
                 learnSet.Add(lookup.Contains(Move.ODOR_SLEUTH) ? Move.ODOR_SLEUTH : Move.FORESIGHT, starterLevel);
-                if (hasFightingOrNormalMove)
-                    continue;
-                learnSet.Add(Move.TACKLE, starterLevel);
+                // Add tackle if a normal move is needed
+                if (!hasFightingOrNormalMove)
+                {
+                    learnSet.Add(Move.TACKLE, starterLevel);
+                }
+                // Hoist up moves if neccessary
+                int numLostMoves = -TrainerPokemon.numMoves;
+                // Find number of inaccessible moves
+                for (int i = 0; i < learnSet.Count; ++i)
+                {
+                    var entry = learnSet[i];
+                    if (entry.learnLvl > starterLevel)
+                        break;
+                    ++numLostMoves;
+                }
+                // Hoist inaccessible moves up to starterLevel + 1 if necessary
+                for (int i = 0; i < numLostMoves; ++i)
+                {
+                    var entry = learnSet[0];
+                    entry.learnLvl = starterLevel + 1;
+                    // Remove the move and add it back to make sure it is at the right place
+                    learnSet.RemoveAt(0);
+                    learnSet.Add(entry);
+                }
             }
         }
 

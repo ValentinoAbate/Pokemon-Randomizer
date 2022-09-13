@@ -59,6 +59,11 @@ namespace PokemonRandomizer.Backend
             items.Add(item);
         }
 
+        public void RemoveAt(int i)
+        {
+            items.RemoveAt(i);
+        }
+
         public void RemoveWhere(Predicate<Entry> pred)
         {
             items.RemoveAll(pred);
