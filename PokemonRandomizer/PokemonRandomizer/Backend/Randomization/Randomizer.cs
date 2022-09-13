@@ -444,7 +444,7 @@ namespace PokemonRandomizer.Backend.Randomization
             #endregion
 
             #region In-Game Trades
-            foreach(var trade in data.Trades)
+            foreach (var trade in data.Trades)
             {
                 if (rand.RollSuccess(settings.TradePokemonGiveRandChance))
                 {
