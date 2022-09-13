@@ -19,10 +19,19 @@ namespace PokemonRandomizer.Backend.Randomization
         }
         public void Randomize(RomData data, IEnumerable<Pokemon> pokemonSet, Settings settings)
         {
-            if (settings.StarterSetting == Settings.StarterPokemonOption.Unchanged)
+            if (settings.StarterSetting != Settings.StarterPokemonOption.Unchanged)
             {
-                return;
+                ChooseStarters(data, pokemonSet, settings);
             }
+            // Make sure all starters have attack moves
+            if (settings.SafeStarterMovesets)
+            {
+                ApplySafeStarterLearnsets(data);
+            }
+        }
+
+        private void ChooseStarters(RomData data, IEnumerable<Pokemon> pokemonSet, Settings settings) 
+        {
             var starterSettings = settings.StarterPokemonSettings;
             if (settings.StarterSetting == Settings.StarterPokemonOption.Random)
             {
@@ -61,12 +70,6 @@ namespace PokemonRandomizer.Backend.Randomization
                         data.Starters[i] = starter;
                     }
                 }
-            }
-            // data.Starters = data.Pokemon.Where(d => d.IsBasicOrEvolvesFromBaby).Select(d => d.species).ToList();
-            // Make sure all starters have attack moves
-            if (settings.SafeStarterMovesets)
-            {
-                ApplySafeStarterLearnsets(data);
             }
         }
 

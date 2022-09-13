@@ -440,10 +440,7 @@ namespace PokemonRandomizer.Backend.Randomization
             #endregion
 
             #region Starters
-            if (settings.StarterSetting != Settings.StarterPokemonOption.Unchanged)
-            {
-                starterRandomizer.Randomize(data, pokemonSet, settings);
-            }
+            starterRandomizer.Randomize(data, pokemonSet, settings);
             #endregion
 
             #region In-Game Trades
