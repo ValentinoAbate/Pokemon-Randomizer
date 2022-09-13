@@ -20,11 +20,12 @@ namespace PokemonRandomizer.UI.Views
         private const string safeMovesetsTooltip = "Ensure that starters will have attacking move(s) at level 5 that can hit all pokemon in the game" +
             "\nAny starter whose moveset is unsafe will be given Foresight or Odor Sleuth, and Tackle if necessary" +
             "\nAny moves that would be skipped over at level 5 due to added moves will instead be learned at level 6";
+        private const string banLegendariesTooltip = "Ban legendaries from being chosen as random starters. Legendaries specifically selected as Custom starters will not be affected";
         public StartersDataView(StartersDataModel model, string[] pokemonNames, List<Pokemon> pokemon)
         {
             // Create stack and add content
             var stack = CreateMainStack();
-            stack.Header("Starter Randomization");
+            stack.Header("Randomization");
 
             // Randomization Strategy CB
             var optionCb = stack.Add(new EnumComboBoxUI<StarterPokemonOption>("Randomization Strategy", StarterOptionDropdown, model.StarterSetting));
@@ -43,7 +44,8 @@ namespace PokemonRandomizer.UI.Views
             optionCb.BindVisibility(customStarterStack, (int)StarterPokemonOption.Custom);
 
             // Additional Settings
-            stack.Add(new BoundCheckBoxUI(model.BanLegendaries, "Ban Legendaries"));
+            stack.Add(optionCb.BindEnabled(new BoundCheckBoxUI(model.BanLegendaries, "Ban Legendaries", banLegendariesTooltip), (int)StarterPokemonOption.Random, (int)StarterPokemonOption.RandomTypeTriangle, (int)StarterPokemonOption.Custom));
+            stack.Header("Safety Checks");
             stack.Add(new BoundCheckBoxUI(model.SafeStarterMovesets, "Safe Starter Movesets", safeMovesetsTooltip));
         }
     }
