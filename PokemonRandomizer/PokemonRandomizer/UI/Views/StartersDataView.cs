@@ -39,7 +39,7 @@ namespace PokemonRandomizer.UI.Views
             {
                 return new BoundComboBoxUI("", pokemonOptions, pokemon.IndexOf(model.CustomStarters[index]), i => model.CustomStarters[index] = pokemon[i]);
             }
-            var customStarterStack = stack.Add(new StackPanel() { Orientation = Orientation.Horizontal });
+            var customStarterStack = stack.Add(CreateHorizontalStack());
             customStarterStack.Add(new Label() { Content = "Custom Starters:" }, CustomStarterCB(0), CustomStarterCB(1), CustomStarterCB(2));
             optionCb.BindVisibility(customStarterStack, (int)StarterPokemonOption.Custom);
 
