@@ -55,7 +55,8 @@ namespace PokemonRandomizer.Backend.Randomization
             trainerRand = new TrainerRandomizer(rand, pokeRand, evoUtils, data, settings);
             compatRand = new MoveCompatibilityRandomizer(rand, data);
             bonusMoveGenerator = new BonusMoveGenerator(rand, data, settings);
-            variantRand = new PokemonVariantRandomizer(rand, data, settings, bonusMoveGenerator, data.PaletteOverrideKey);
+            var paletteModifier = new VariantPaletteModifier();
+            variantRand = new PokemonVariantRandomizer(rand, data, settings, bonusMoveGenerator, data.PaletteOverrideKey, paletteModifier);
             weatherRand = new WeatherRandomizer(rand);
             delayedRandomizationCalls = new List<Action>();
             scriptRand = new ScriptRandomizer(rand, pokeRand, itemRand, data, delayedRandomizationCalls);
