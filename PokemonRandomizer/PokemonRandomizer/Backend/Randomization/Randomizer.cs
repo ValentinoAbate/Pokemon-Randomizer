@@ -60,7 +60,7 @@ namespace PokemonRandomizer.Backend.Randomization
             weatherRand = new WeatherRandomizer(rand);
             delayedRandomizationCalls = new List<Action>();
             scriptRand = new ScriptRandomizer(rand, pokeRand, itemRand, data, delayedRandomizationCalls);
-            trainerOrgRand = new TrainerOrganizationRandomizer(rand);
+            trainerOrgRand = new TrainerOrganizationRandomizer(rand, paletteModifier);
             starterRandomizer = new StarterRandomizer(pokeRand);
         }
         // Apply mutations based on program settings.

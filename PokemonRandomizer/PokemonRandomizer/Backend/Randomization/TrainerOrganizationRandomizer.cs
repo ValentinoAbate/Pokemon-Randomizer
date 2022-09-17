@@ -12,9 +12,11 @@ namespace PokemonRandomizer.Backend.Randomization
     public class TrainerOrganizationRandomizer
     {
         private readonly Random rand;
-        public TrainerOrganizationRandomizer(Random rand)
+        private readonly VariantPaletteModifier paletteModifier;
+        public TrainerOrganizationRandomizer(Random rand, VariantPaletteModifier paletteModifier)
         {
             this.rand = rand;
+            this.paletteModifier = paletteModifier;
         }
 
         private bool IsRandom(Settings.TrainerOrgTypeTheme theme) => theme == Settings.TrainerOrgTypeTheme.Random;
@@ -114,6 +116,10 @@ namespace PokemonRandomizer.Backend.Randomization
                     var teamTypes = theme.Types.Concat(theme.SecondaryTypes).ToArray();
                     var newType = ChooseType(teamTypes, typeSet, allTypes, true);
                     theme.SetTypes(new PokemonType[] { newType }, theme.SecondaryTypes, theme.PrimaryTypeChance);
+                    foreach (var (palette, paletteData) in team.Palettes)
+                    {
+                        paletteModifier.ModifyPalette(palette, paletteData, new PokemonType[] { newType });
+                    }
                     team.Randomized = true;
                 }
             }
@@ -128,6 +134,10 @@ namespace PokemonRandomizer.Backend.Randomization
                     var newPrimaryType = ChooseType(teamTypes, typeSet, allTypes, true);
                     var newSecondaryType = ChooseType(teamTypes, typeSet, allTypes, true);
                     theme.SetTypes(new PokemonType[] { newPrimaryType }, new PokemonType[] { newSecondaryType }, theme.PrimaryTypeChance);
+                    foreach(var (palette, paletteData) in team.Palettes)
+                    {
+                        paletteModifier.ModifyPalette(palette, paletteData, new PokemonType[] { newPrimaryType, newSecondaryType });
+                    }
                     team.Randomized = true;
                 }
             }

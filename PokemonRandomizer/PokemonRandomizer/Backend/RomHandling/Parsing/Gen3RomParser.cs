@@ -12,6 +12,7 @@ using static PokemonRandomizer.Backend.DataStructures.MoveData;
 using PokemonRandomizer.Backend.Constants;
 using PokemonRandomizer.Backend.RomHandling.IndexTranslators;
 using PokemonRandomizer.Backend.DataStructures.Trainers;
+using static PokemonRandomizer.Backend.Randomization.VariantPaletteModifier;
 
 namespace PokemonRandomizer.Backend.RomHandling.Parsing
 {
@@ -564,6 +565,20 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
 
         private const string wallyName = "wally";
 
+        private static readonly Dictionary<string, PaletteData> villaneousTeamPaletteData = new()
+        {
+            { "aquaGruntMasc", new PaletteData(Range(5, 8)) },
+            { "aquaGruntFem", new PaletteData(Range(5, 8)) },
+            { "aquaAdminMatt", new PaletteData(Range(5, 8)) },
+            { "aquaAdminShelley", new PaletteData(Range(5, 8)) },
+            { "betaArchie", new PaletteData(Range(5, 8)) },
+            { "archie", new PaletteData(PalRange(5, 6, 7, 8, 11), null, PalRange(10, 12, 13)) },
+            { "magmaGruntMasc", new PaletteData(PalRange(4, 10, 12, 13)) },
+            { "magmaGruntFem", new PaletteData(PalRange(4, 10, 12, 13)) },
+            { "maxie", new PaletteData(PalRange(4, 10, 12, 13)) },
+            { "magmaAdminTabitha", new PaletteData(PalRange(4, 10, 12, 13)) },
+            { "magmaAdminCourtney", new PaletteData(PalRange(4, 10, 12, 13)) },
+        };
         /// <summary>
         /// Read all the preset trainer data from the info file into the ROM data, and find normal grunt, ace, and reocurring trainers
         /// </summary>
@@ -589,6 +604,19 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
                 if (adminNames.Length > 0)
                 {
                     teamData.AdminNames.AddRange(adminNames);
+                }
+                var spriteNums = info.IntArrayAttr(name, "sprites");
+                var spriteKeys = info.ArrayAttr(name, "spriteKeys");
+                for(int i = 0; i < spriteNums.Length && i < spriteKeys.Length; i++)
+                {
+                    var palKey = spriteKeys[i];
+                    if (!villaneousTeamPaletteData.ContainsKey(palKey))
+                    {
+                        continue;
+                    }
+                    var palette = data.TrainerSprites[spriteNums[i]].FrontPalette;
+                    var palData = villaneousTeamPaletteData[palKey];
+                    teamData.TeamData.Palettes.Add((palette, palData));
                 }
                 teamData.TeamData.InitializeThemeData(info.TypeArrayAttr(name, "primaryTypes"), info.TypeArrayAttr(name, "secondaryTypes"));
                 allTeams.Add(teamData);

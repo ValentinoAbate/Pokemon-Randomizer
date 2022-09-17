@@ -201,6 +201,9 @@
 
     <specialBosses names="[Steven]"/>
 	<stevenAllyBattle offset="0x5dd6d0"/>
+	<teamAqua sprites="[1,6,10,12,13]" spriteKeys="[aquaGruntMasc,aquaGruntFem,aquaAdminMatt,aquaAdminShelley,archie]"/>
+	<teamMagma sprites="[8,26,69,76]" spriteKeys="[magmaGruntMasc,magmaGrunFem,magmaAdminTabitha,maxie]"/>
+    
 
     <!-- Map Data -->
 
@@ -258,6 +261,8 @@
 	<tateAndLizaOverride name="tate&amp;liza" types="[PSY]"/>
 	<trainerSprites pointer="0x031B9C" num="83"/>
 	<trainerPalettesFront pointer="0x031B98" size="8"/>
+	<teamAqua sprites="[9,18,67,68,69,70]" spriteKeys="[aquaGruntMasc,aquaGruntFem,aquaAdminMatt,aquaAdminShelley,betaArchie,archie]"/>
+	<teamMagma sprites="[22,23,30,51,52]" spriteKeys="[magmaGruntMasc,magmaGrunFem,maxie,magmaAdminTabitha,magmaAdminCourtney]"/>
 
 	<!-- Map Data -->
 
