@@ -58,6 +58,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
             WritePokemonBaseStats(data, rom, info);
             WriteTypeDefinitions(data.TypeDefinitions, rom, info, ref repoints);
             WriteEncounters(data, rom, info);
+            WriteTrainerSprites(data, rom, info);
             WriteTrainerBattles(data, rom, info);
             WriteStevenAllyTrainerBattle(data, rom, info);
             mapWriter.WriteMapData(data, rom, info, metadata);
@@ -692,6 +693,19 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
                 rom.WriteUInt16((int)encounter.pokemon);
             }
         }
+
+        private void WriteTrainerSprites(RomData romData, Rom rom, XmlManager info)
+        {
+            // Write front palettes
+            if (!info.FindAndSeekOffset(ElementNames.trainerPalettesFront, rom))
+                return;
+            foreach(var sprite in romData.TrainerSprites)
+            {
+                paletteWriter.WriteCompressed(rom.ReadPointer(), sprite.FrontPalette, rom);
+                rom.Skip(4);
+            }
+        }
+
         /// <summary>
         /// Write the trainer battles to the output file. Doesn't write all data (currently unfinished)
         /// </summary>
