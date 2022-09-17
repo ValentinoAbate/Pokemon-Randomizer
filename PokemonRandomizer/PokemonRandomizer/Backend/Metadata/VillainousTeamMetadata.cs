@@ -53,7 +53,7 @@ namespace PokemonRandomizer.Backend.Metadata
             }
             if(TeamGrunts.Count > 0)
             {
-                return $"{TeamGrunts[0].Class.ToUpper()} ({ThemeData})";
+                return $"{TeamGrunts[0].ClassName.ToUpper()} ({ThemeData})";
             }
             return $"{TeamLeaders[0].Name}'s Team ({ThemeData})";
         }
