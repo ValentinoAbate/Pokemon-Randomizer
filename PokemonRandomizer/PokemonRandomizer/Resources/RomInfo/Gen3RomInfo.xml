@@ -194,6 +194,8 @@
 
     <trainerBattles num="854" pointer="0x03587C" offset="0x310030"/>
     <trainerClassNames num="66" pointer="0x0183B4" offset="0x30FCD4"/>
+	<trainerSprites pointer="0x05DF78" num="93"/>
+	<trainerPalettesFront pointer="0x05B784" size="8"/>
     
     <!-- Special Trainer Battles -->
 
@@ -248,11 +250,14 @@
     <trades num="3"/>
 
 	<!-- Trainer Battle Definitions -->
+	  
 	<trainerBattles num="694" pointer="0x00D890"/>
 	<trainerClassNames num="58"/>
 	<nameTrainerTypeOverrides elementNames="[stevenOverride,tateAndLizaOverride]"/>
 	<stevenOverride name="steven" types="[STL]"/>
 	<tateAndLizaOverride name="tate&amp;liza" types="[PSY]"/>
+	<trainerSprites pointer="0x031B9C" num="83"/>
+	<trainerPalettesFront pointer="0x031B98" size="8"/>
 
 	<!-- Map Data -->
 
@@ -473,6 +478,7 @@
     <trades num="9"/>
 
 	<trainerClassNames num="107" length="13"/>
+    <trainerSprites num="148"/>
 
     <!-- Map Data -->
 
@@ -550,6 +556,8 @@
     <!-- offset from thethethethe's forum post: http://pokemonhackersonline.com/showthread.php?t=2586. Pointer from HMA info files-->
     <trainerBattles num="743" pointer="0x00FC00" offset="0x23EAC8"/>
     <trainerClassNames pointer="0x0D80A0" offset="0x23E558"/>
+	<trainerSprites pointer="0x034750" num="8"/>
+	<trainerPalettesFront pointer="0x03473C"/>
 
 	<!-- Map Data -->  
 	  
@@ -647,8 +655,11 @@
 	<pcPotion pointer="0x0EB6BC" offset="0x402290"/>
 
 	<!-- Trainer Battle Definitions -->
+	  
 	<trainerBattles num="743" pointer="0x00FC14"/>
 	<trainerClassNames pointer="0x0D80B4"/>
+	<trainerSprites pointer="0x034750"/>
+    <trainerPalettesFront pointer="0x034760" size="8"/>
 
 	<!-- Map Data -->
 

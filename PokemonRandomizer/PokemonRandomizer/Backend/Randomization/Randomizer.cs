@@ -647,7 +647,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 if (settings.ApplyTheming(trainer))
                 {
                     // If there is a special override for the trainer's class, use it
-                    string trainerClass = trainer.Class.ToLower();
+                    string trainerClass = trainer.ClassName.ToLower();
                     if (data.TrainerClassTypeOverrides.ContainsKey(trainerClass))
                     {
                         var overrideTypes = data.TrainerClassTypeOverrides[trainerClass];

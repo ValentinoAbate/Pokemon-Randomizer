@@ -36,6 +36,8 @@
         public const string stoneEffect = "stoneEffect";
         public const string trainerBattles = "trainerBattles";
         public const string trainerClassNames = "trainerClassNames";
+        public const string trainerSprites = "trainerSprites";
+        public const string trainerPalettesFront = "trainerPalettesFront";
         public const string trades = "trades";
         public const string setBerryTreeScript = "setBerryTreeScript";
         public const string typeEffectiveness = "typeEffectiveness";

@@ -17,13 +17,10 @@ namespace PokemonRandomizer.Backend.DataStructures.Trainers
 
     public class BasicTrainer : Trainer, IHasTrainerAI
     {
-        // The all of the class names (mostly for debugging)
-        public IReadOnlyList<string> ClassNames { get; set; }
-        public override string Class => ClassNames != null && trainerClass < ClassNames.Count ? ClassNames[trainerClass] : nullName;
-
-
+        public override TrainerClass Class { get; set; }
         public Gender gender;
         public byte musicIndex;
+        public TrainerSprite Sprite { get; set; }
         public byte spriteIndex;
         public override string Name { get; set; }
         public Item[] useItems = new Item[4];

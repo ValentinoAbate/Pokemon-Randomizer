@@ -41,7 +41,8 @@ namespace PokemonRandomizer.Backend.DataStructures.Trainers
         public TrainerThemeData ThemeData { get; set; }
 
         public int offset;
-        public abstract string Class { get; }
+        public string ClassName => Class?.Name ?? nullName;
+        public abstract TrainerClass Class { get; set; }
         public int trainerClass;
         public abstract string Name { get; set; }
         public abstract bool IsDoubleBattle { get; set; }
