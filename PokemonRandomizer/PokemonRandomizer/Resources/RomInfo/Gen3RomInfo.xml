@@ -556,7 +556,7 @@
     <!-- offset from thethethethe's forum post: http://pokemonhackersonline.com/showthread.php?t=2586. Pointer from HMA info files-->
     <trainerBattles num="743" pointer="0x00FC00" offset="0x23EAC8"/>
     <trainerClassNames pointer="0x0D80A0" offset="0x23E558"/>
-	<trainerSprites pointer="0x034750" num="8"/>
+	<trainerSprites pointer="0x034750"/>
 	<trainerPalettesFront pointer="0x03473C"/>
 
 	<!-- Map Data -->  
