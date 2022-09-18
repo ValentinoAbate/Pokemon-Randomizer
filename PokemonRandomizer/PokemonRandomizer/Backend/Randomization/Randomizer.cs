@@ -29,6 +29,7 @@ namespace PokemonRandomizer.Backend.Randomization
         private readonly List<Action> delayedRandomizationCalls;
         private readonly ScriptRandomizer scriptRand;
         private readonly TrainerOrganizationRandomizer trainerOrgRand;
+        private readonly StarterRandomizer starterRandomizer;
 
         /// <summary>
         /// Create a new randomizer with given data and settings
@@ -54,11 +55,13 @@ namespace PokemonRandomizer.Backend.Randomization
             trainerRand = new TrainerRandomizer(rand, pokeRand, evoUtils, data, settings);
             compatRand = new MoveCompatibilityRandomizer(rand, data);
             bonusMoveGenerator = new BonusMoveGenerator(rand, data, settings);
-            variantRand = new PokemonVariantRandomizer(rand, data, settings, bonusMoveGenerator, data.PaletteOverrideKey);
+            var paletteModifier = new VariantPaletteModifier();
+            variantRand = new PokemonVariantRandomizer(rand, data, settings, bonusMoveGenerator, data.PaletteOverrideKey, paletteModifier);
             weatherRand = new WeatherRandomizer(rand);
             delayedRandomizationCalls = new List<Action>();
             scriptRand = new ScriptRandomizer(rand, pokeRand, itemRand, data, delayedRandomizationCalls);
-            trainerOrgRand = new TrainerOrganizationRandomizer(rand);
+            trainerOrgRand = new TrainerOrganizationRandomizer(rand, paletteModifier);
+            starterRandomizer = new StarterRandomizer(pokeRand);
         }
         // Apply mutations based on program settings.
         public RomData Randomize()
@@ -438,64 +441,11 @@ namespace PokemonRandomizer.Backend.Randomization
             #endregion
 
             #region Starters
-            if (settings.StarterSetting != Settings.StarterPokemonOption.Unchanged)
-            {
-                var starterSettings = settings.StarterPokemonSettings;
-                if(settings.StarterSetting == Settings.StarterPokemonOption.Random)
-                {
-                    for(int i = 0; i < data.Starters.Count; ++i)
-                    {
-                        data.Starters[i] = pokeRand.RandomPokemon(pokemonSet, data.Starters[i], starterSettings, 5);
-                    }
-                }
-                else if (settings.StarterSetting == Settings.StarterPokemonOption.RandomTypeTriangle)
-                {
-                    var triangle = pokeRand.RandomTypeTriangle(pokemonSet, data.Starters, data.TypeDefinitions, starterSettings, settings.StrongStarterTypeTriangle);
-                    if (triangle != null)
-                    {
-                        data.Starters = triangle;
-                    }
-                    else // Fall back on completely random
-                    {
-                        for (int i = 0; i < data.Starters.Count; ++i)
-                        {
-                            data.Starters[i] = pokeRand.RandomPokemon(pokemonSet, data.Starters[i], starterSettings, 5);
-                        }
-                    }
-                }
-                else if(settings.StarterSetting == Settings.StarterPokemonOption.Custom)
-                {
-                    int numStarters = Math.Min(data.Starters.Count, settings.CustomStarters.Length);
-                    for (int i = 0; i < numStarters; i++)
-                    {
-                        Pokemon starter = settings.CustomStarters[i];
-                        if(starter == Pokemon.None)
-                        {
-                            data.Starters[i] = pokeRand.RandomPokemon(pokemonSet, data.Starters[i], starterSettings, 5);
-                        }
-                        else
-                        {
-                            data.Starters[i] = starter;
-                        }
-                    }
-                }
-                // Make sure all starters have attack moves
-                if(settings.SafeStarterMovesets)
-                {
-                    // Hacky tackle fix
-                    foreach (var pkmn in data.Starters)
-                    {
-                        var learnSet = data.GetBaseStats(pkmn).learnSet;
-                        if (learnSet[0].move != Move.TACKLE)
-                            learnSet.Add(Move.TACKLE, 1);
-                    }
-
-                }
-            }
+            starterRandomizer.Randomize(data, pokemonSet, settings);
             #endregion
 
             #region In-Game Trades
-            foreach(var trade in data.Trades)
+            foreach (var trade in data.Trades)
             {
                 if (rand.RollSuccess(settings.TradePokemonGiveRandChance))
                 {
@@ -697,7 +647,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 if (settings.ApplyTheming(trainer))
                 {
                     // If there is a special override for the trainer's class, use it
-                    string trainerClass = trainer.Class.ToLower();
+                    string trainerClass = trainer.ClassName.ToLower();
                     if (data.TrainerClassTypeOverrides.ContainsKey(trainerClass))
                     {
                         var overrideTypes = data.TrainerClassTypeOverrides[trainerClass];

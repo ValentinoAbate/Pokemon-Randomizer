@@ -119,11 +119,11 @@ namespace PokemonRandomizer.Backend.DataStructures
 
             foreach(var trainer in data.Trainers)
             {
-                if (!TrainerClassTypeOccurence.ContainsKey(trainer.Class))
+                if (!TrainerClassTypeOccurence.ContainsKey(trainer.ClassName))
                 {
-                    TrainerClassTypeOccurence.Add(trainer.Class, new WeightedSet<PokemonType>(16));
+                    TrainerClassTypeOccurence.Add(trainer.ClassName, new WeightedSet<PokemonType>(16));
                 }
-                var set = TrainerClassTypeOccurence[trainer.Class];
+                var set = TrainerClassTypeOccurence[trainer.ClassName];
                 foreach(var pokemon in trainer.Pokemon)
                 {
                     var pData = data.GetBaseStats(pokemon.species);

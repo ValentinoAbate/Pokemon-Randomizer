@@ -31,7 +31,14 @@ namespace PokemonRandomizer
     /// </summary>
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
-        public const string version = "v1.0-beta.6";
+        private const string baseVersion = "v1.0-beta.6";
+        private const string debugVersion = "-debug";
+#if !DEBUG
+        public const string version = baseVersion;
+#else
+        public const string version = baseVersion + debugVersion;
+#endif
+
         #region XAML Properties for bindings
         private bool _isROMLoaded;
         public bool IsROMLoaded
@@ -591,7 +598,17 @@ namespace PokemonRandomizer
 
         private void QuickRandomize(object sender, RoutedEventArgs e)
         {
-            void QuickRand() => Randomize(debugSeed);
+            QuickRandomize(debugSeed);
+        }
+
+        private void QuickRandomizeNoSeed(object sender, RoutedEventArgs e)
+        {
+            QuickRandomize(string.Empty);
+        }
+
+        private void QuickRandomize(string seed)
+        {
+            void QuickRand() => Randomize(seed);
             void Error(Exception e)
             {
                 LogException($"Quick Randomization Error: ", e);

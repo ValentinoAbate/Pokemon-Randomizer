@@ -15,6 +15,7 @@ namespace PokemonRandomizer.Backend.Metadata
         public List<Trainer> TeamAdmins { get; } = new();
         public List<Trainer> TeamGrunts { get; } = new();
         public TrainerThemeData ThemeData { get; set; }
+        public List<(Palette pal, Randomization.VariantPaletteModifier.PaletteData palData)> Palettes { get; } = new();
 
         public bool Randomized { get; set; } = false;
 
@@ -53,7 +54,7 @@ namespace PokemonRandomizer.Backend.Metadata
             }
             if(TeamGrunts.Count > 0)
             {
-                return $"{TeamGrunts[0].Class.ToUpper()} ({ThemeData})";
+                return $"{TeamGrunts[0].ClassName.ToUpper()} ({ThemeData})";
             }
             return $"{TeamLeaders[0].Name}'s Team ({ThemeData})";
         }

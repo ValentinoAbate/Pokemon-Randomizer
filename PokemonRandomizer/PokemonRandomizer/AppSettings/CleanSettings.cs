@@ -12,6 +12,8 @@ namespace PokemonRandomizer.AppSettings
 
         public override HailHackOption HailHackSetting => HailHackOption.None;
 
+        public override bool SafeStarterMovesets => false;
+
         #region Misc
 
         // Gen II-IV Hacks and Tweaks

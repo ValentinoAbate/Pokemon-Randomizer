@@ -194,11 +194,16 @@
 
     <trainerBattles num="854" pointer="0x03587C" offset="0x310030"/>
     <trainerClassNames num="66" pointer="0x0183B4" offset="0x30FCD4"/>
+	<trainerSprites pointer="0x05DF78" num="93"/>
+	<trainerPalettesFront pointer="0x05B784" size="8"/>
     
     <!-- Special Trainer Battles -->
 
     <specialBosses names="[Steven]"/>
 	<stevenAllyBattle offset="0x5dd6d0"/>
+	<teamAqua sprites="[1,6,10,12,13]" spriteKeys="[aquaGruntMasc,aquaGruntFem,aquaAdminMatt,aquaAdminShelley,archie]"/>
+	<teamMagma sprites="[8,26,69,76]" spriteKeys="[magmaGruntMasc,magmaGrunFem,magmaAdminTabitha,maxie]"/>
+    
 
     <!-- Map Data -->
 
@@ -248,11 +253,16 @@
     <trades num="3"/>
 
 	<!-- Trainer Battle Definitions -->
+	  
 	<trainerBattles num="694" pointer="0x00D890"/>
 	<trainerClassNames num="58"/>
 	<nameTrainerTypeOverrides elementNames="[stevenOverride,tateAndLizaOverride]"/>
 	<stevenOverride name="steven" types="[STL]"/>
 	<tateAndLizaOverride name="tate&amp;liza" types="[PSY]"/>
+	<trainerSprites pointer="0x031B9C" num="83"/>
+	<trainerPalettesFront pointer="0x031B98" size="8"/>
+	<teamAqua sprites="[9,18,67,68,69,70]" spriteKeys="[aquaGruntMasc,aquaGruntFem,aquaAdminMatt,aquaAdminShelley,betaArchie,archie]"/>
+	<teamMagma sprites="[22,23,30,51,52]" spriteKeys="[magmaGruntMasc,magmaGrunFem,maxie,magmaAdminTabitha,magmaAdminCourtney]"/>
 
 	<!-- Map Data -->
 
@@ -473,6 +483,7 @@
     <trades num="9"/>
 
 	<trainerClassNames num="107" length="13"/>
+    <trainerSprites num="148"/>
 
     <!-- Map Data -->
 
@@ -550,6 +561,8 @@
     <!-- offset from thethethethe's forum post: http://pokemonhackersonline.com/showthread.php?t=2586. Pointer from HMA info files-->
     <trainerBattles num="743" pointer="0x00FC00" offset="0x23EAC8"/>
     <trainerClassNames pointer="0x0D80A0" offset="0x23E558"/>
+	<trainerSprites pointer="0x034750"/>
+	<trainerPalettesFront pointer="0x03473C"/>
 
 	<!-- Map Data -->  
 	  
@@ -647,8 +660,11 @@
 	<pcPotion pointer="0x0EB6BC" offset="0x402290"/>
 
 	<!-- Trainer Battle Definitions -->
+	  
 	<trainerBattles num="743" pointer="0x00FC14"/>
 	<trainerClassNames pointer="0x0D80B4"/>
+	<trainerSprites pointer="0x034750"/>
+    <trainerPalettesFront pointer="0x034760" size="8"/>
 
 	<!-- Map Data -->
 

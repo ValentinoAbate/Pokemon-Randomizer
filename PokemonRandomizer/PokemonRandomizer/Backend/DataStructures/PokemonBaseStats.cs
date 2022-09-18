@@ -184,6 +184,11 @@ namespace PokemonRandomizer.Backend.DataStructures
             OriginalTypes = new PokemonType[] { PrimaryType, SecondaryType };
         }
 
+        public bool HasAbility(Ability a)
+        {
+            return abilities[0] == a || abilities[1] == a;
+        }
+
         public bool IsType(PokemonType type)
         {
             return PrimaryType == type || SecondaryType == type;

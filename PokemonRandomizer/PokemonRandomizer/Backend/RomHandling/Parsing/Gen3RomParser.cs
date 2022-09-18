@@ -12,6 +12,7 @@ using static PokemonRandomizer.Backend.DataStructures.MoveData;
 using PokemonRandomizer.Backend.Constants;
 using PokemonRandomizer.Backend.RomHandling.IndexTranslators;
 using PokemonRandomizer.Backend.DataStructures.Trainers;
+using static PokemonRandomizer.Backend.Randomization.VariantPaletteModifier;
 
 namespace PokemonRandomizer.Backend.RomHandling.Parsing
 {
@@ -76,8 +77,9 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
                 data.PcStartItem = (Item)rom.ReadUInt16(pcPotionOffset);
             }
             // Trainers and associated data
-            data.ClassNames = ReadTrainerClassNames(rom, info);
-            data.Trainers = ReadTrainers(rom, info, data.ClassNames);
+            data.TrainerClasses = ReadTrainerClasses(rom, info);
+            data.TrainerSprites = ReadTrainerSprites(rom, info);
+            data.Trainers = ReadTrainers(rom, info, data.TrainerClasses, data.TrainerSprites);
             ReadStevenAllyTrainerBattle(rom, data, info);
             SetTrainerCategoryData(data, info);
             SetTrainerThemeOverrides(data, info);
@@ -341,22 +343,44 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
             return trades;
         }
 
-        // Read the Trainer Class names
-        private List<string> ReadTrainerClassNames(Rom rom, XmlManager info)
+        private List<TrainerClass> ReadTrainerClasses(Rom rom, XmlManager info)
         {
             if (!info.FindAndSeekOffset(ElementNames.trainerClassNames, rom))
-                return new List<string>();
+                return new List<TrainerClass>();
             int numClasses = info.Num(ElementNames.trainerClassNames);
             int nameLength = info.Length(ElementNames.trainerClassNames);
-            var classNames = new List<string>(numClasses);
+            var classes = new List<TrainerClass>(numClasses);
             for (int i = 0; i < numClasses; ++i)
             {
-                classNames.Add(rom.ReadFixedLengthString(nameLength));
+                var trainerClass = new TrainerClass()
+                {
+                    ClassNum = i,
+                    Name = rom.ReadFixedLengthString(nameLength)
+                };
+                classes.Add(trainerClass);
             }
-            return classNames;
+            return classes;
         }
+
+        private List<TrainerSprite> ReadTrainerSprites(Rom rom, XmlManager info)
+        {
+            // Read front palettes
+            if (!info.FindAndSeekOffset(ElementNames.trainerPalettesFront, rom))
+                return new List<TrainerSprite>();
+            int numSprites = info.Num(ElementNames.trainerSprites);
+            var sprites = new List<TrainerSprite>(numSprites);
+            for (int i = 0; i < numSprites; ++i)
+            {
+                sprites.Add(new TrainerSprite { 
+                    FrontPalette = paletteParser.ParseCompressed(rom.ReadPointer(), rom),
+                });
+                rom.Skip(4); // uint16 palette index and uint16 unused
+            }
+            return sprites;
+        }
+
         // Readainers
-        private List<BasicTrainer> ReadTrainers(Rom rom, XmlManager info, List<string> classNames)
+        private List<BasicTrainer> ReadTrainers(Rom rom, XmlManager info, List<TrainerClass> trainerClasses, List<TrainerSprite> trainerSprites)
         {
             // If fail, reading trainer battles is not supported for this ROM
             if (!info.FindAndSeekOffset(ElementNames.trainerBattles, rom))
@@ -366,15 +390,16 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
             for (int trainerInd = 0; trainerInd < numTrainers; ++trainerInd)
             {
                 var trainer = new BasicTrainer();
-                trainer.ClassNames = classNames;
                 var dataType = (TrainerPokemon.DataType)rom.ReadByte();
                 trainer.trainerClass = rom.ReadByte();
+                trainer.Class = trainerClasses[trainer.trainerClass];
                 // Read Gender (byte 2 bit 0)
                 trainer.gender = (Gender)((rom.Peek() & 0x80) >> 7);
                 // Read music track index (byte 2 bits 1-7)
                 trainer.musicIndex = (byte)(rom.ReadByte() & 0x7F);
                 // Read sprite index (byte 3)
                 trainer.spriteIndex = rom.ReadByte();
+                trainer.Sprite = trainerSprites[trainer.spriteIndex];
                 // Read name (I think bytes 4 - 15?)
                 trainer.Name = rom.ReadFixedLengthString(Trainer.nameLength);
                 // Read items (bytes 16-23)
@@ -478,7 +503,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
 
             public bool TryProcessMember(Trainer trainer)
             {
-                string className = trainer.Class.ToLower();
+                string className = trainer.ClassName.ToLower();
                 if (className == GruntClassName)
                 {
                     TeamData.TeamGrunts.Add(trainer);
@@ -502,6 +527,20 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
 
         private const string wallyName = "wally";
 
+        private static readonly Dictionary<string, PaletteData> villaneousTeamPaletteData = new()
+        {
+            { "aquaGruntMasc", new PaletteData(Range(5, 8)) },
+            { "aquaGruntFem", new PaletteData(Range(5, 8)) },
+            { "aquaAdminMatt", new PaletteData(Range(5, 8)) },
+            { "aquaAdminShelley", new PaletteData(Range(5, 8)) },
+            { "betaArchie", new PaletteData(Range(5, 8)) },
+            { "archie", new PaletteData(PalRange(5, 6, 7, 8, 11), null, PalRange(10, 12, 13)) },
+            { "magmaGruntMasc", new PaletteData(PalRange(4, 10, 12, 13)) },
+            { "magmaGruntFem", new PaletteData(PalRange(4, 10, 12, 13)) },
+            { "maxie", new PaletteData(PalRange(4, 10, 12, 13)) },
+            { "magmaAdminTabitha", new PaletteData(PalRange(4, 10, 12, 13)) },
+            { "magmaAdminCourtney", new PaletteData(PalRange(4, 10, 12, 13)) },
+        };
         /// <summary>
         /// Read all the preset trainer data from the info file into the ROM data, and find normal grunt, ace, and reocurring trainers
         /// </summary>
@@ -528,6 +567,19 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
                 {
                     teamData.AdminNames.AddRange(adminNames);
                 }
+                var spriteNums = info.IntArrayAttr(name, "sprites");
+                var spriteKeys = info.ArrayAttr(name, "spriteKeys");
+                for(int i = 0; i < spriteNums.Length && i < spriteKeys.Length; i++)
+                {
+                    var palKey = spriteKeys[i];
+                    if (!villaneousTeamPaletteData.ContainsKey(palKey))
+                    {
+                        continue;
+                    }
+                    var palette = data.TrainerSprites[spriteNums[i]].FrontPalette;
+                    var palData = villaneousTeamPaletteData[palKey];
+                    teamData.TeamData.Palettes.Add((palette, palData));
+                }
                 teamData.TeamData.InitializeThemeData(info.TypeArrayAttr(name, "primaryTypes"), info.TypeArrayAttr(name, "secondaryTypes"));
                 allTeams.Add(teamData);
             }
@@ -546,7 +598,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
             {
                 if (trainer.Invalid)
                     continue;
-                string trainerClass = trainer.Class.ToLower();
+                string trainerClass = trainer.ClassName.ToLower();
                 string name = trainer.Name.ToLower();
                 if (name == wallyName)
                 {
