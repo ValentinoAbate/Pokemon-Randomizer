@@ -121,7 +121,7 @@ namespace PokemonRandomizer.Backend.DataStructures
             DamageHighPriority,
             DamageThreeConsecutiveHits,
             DamageStealHeldItem,
-            StatusCantEscape,
+            Trap,
             StatusNightmare,
             EvadePlus1AndVulnerable,
             Curse,
