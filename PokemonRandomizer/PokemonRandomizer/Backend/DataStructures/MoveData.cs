@@ -144,7 +144,7 @@ namespace PokemonRandomizer.Backend.DataStructures
             BatonPass,
             Pursuit,
             ClearField,
-            DamageFlat20,
+            FlatDamage20,
             RecoverHpWeather1 = 132,
             RecoverHpWeather2,
             RecoverHpWeather3,
@@ -305,7 +305,7 @@ namespace PokemonRandomizer.Backend.DataStructures
 
         public bool IsOneHitKO => effect == MoveEffect.OneHitKill;
 
-        public bool IsFlatDamage => effect is MoveEffect.FlatDamageLevel or MoveEffect.DamageFlat20 or MoveEffect.FlatDamage40 or MoveEffect.VaryingDamageLevel;
+        public bool IsFlatDamage => effect is MoveEffect.FlatDamageLevel or MoveEffect.FlatDamage20 or MoveEffect.FlatDamage40 or MoveEffect.VaryingDamageLevel;
 
         public bool IsCounterAttack => effect is MoveEffect.Counter or MoveEffect.MirrorCoat or MoveEffect.MirrorMove or MoveEffect.Endeavor or MoveEffect.Bide;
 
@@ -337,7 +337,7 @@ namespace PokemonRandomizer.Backend.DataStructures
                         return (int)Math.Floor(power * 0.75);
                     case MoveEffect.DamageWeightBased:
                         return 40;
-                    case MoveEffect.DamageFlat20:
+                    case MoveEffect.FlatDamage20:
                         return 50;
                     case MoveEffect.FlatDamage40:
                         return 70;
