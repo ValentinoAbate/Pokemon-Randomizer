@@ -75,6 +75,10 @@ namespace PokemonRandomizer.Backend.Randomization
             {
                 return LowAttackMoveSet(pokemon, level);
             }
+            else if (pokemon.species is Pokemon.WYNAUT or Pokemon.WOBBUFFET)
+            {
+                return CounterAttackMoveSet(pokemon, level);
+            }
             bool IsStab(Move m) => pokemon.IsType(dataT.GetMoveData(m).type);
             // Initialize move choices
             var availableMoves = AvailableMoves(pokemon, level);
@@ -249,6 +253,41 @@ namespace PokemonRandomizer.Backend.Randomization
                 }
             }
             // Todo: apply synergy
+            if (ChooseMoveForIndex(ret, 3, preferredMoves, ref availableMoves))
+            {
+                return ret;
+            }
+            return ret;
+        }
+
+        public Move[] CounterAttackMoveSet(PokemonBaseStats pokemon, int level)
+        {
+            // Initialize move choices
+            var availableMoves = AvailableMoves(pokemon, level);
+            // Initialize returns
+            var ret = EmptyMoveset();
+            if (availableMoves.Count <= 0)
+                return ret;
+
+            var preferredMoves = new WeightedSet<Move>(availableMoves.Count);
+            preferredMoves.AddRange(availableMoves.Keys.Where(m => dataT.GetMoveData(m).IsCounterAttack || dataT.GetMoveData(m).effect is MoveEffect.DestinyBond));
+            preferredMoves.Multiply(m => LevelWeightScaleSmall(availableMoves[m]));
+            // Todo: prefer STAB
+            if (ChooseMoveForIndex(ret, 0, preferredMoves, ref availableMoves))
+            {
+                return ret;
+            }
+            preferredMoves.RemoveIfContains(ret[0]);
+            if (ChooseMoveForIndex(ret, 1, preferredMoves, ref availableMoves))
+            {
+                return ret;
+            }
+            preferredMoves.RemoveIfContains(ret[1]);
+            if (ChooseMoveForIndex(ret, 2, preferredMoves, ref availableMoves))
+            {
+                return ret;
+            }
+            preferredMoves.RemoveIfContains(ret[2]);
             if (ChooseMoveForIndex(ret, 3, preferredMoves, ref availableMoves))
             {
                 return ret;
