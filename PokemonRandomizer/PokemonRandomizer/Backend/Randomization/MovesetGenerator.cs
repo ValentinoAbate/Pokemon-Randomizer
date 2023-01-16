@@ -134,7 +134,7 @@ namespace PokemonRandomizer.Backend.Randomization
             }
 
             // Nightmare or Dream Eater + Sleep move Synergy
-            CalculateMoveSynergy(m => m.effect is MoveEffect.DreamEater or MoveEffect.StatusNightmare, m => m.effect == MoveEffect.StatusSleep, needSynergy);
+            CalculateMoveSynergy(m => m.effect is MoveEffect.DreamEater or MoveEffect.StatusNightmare, m => m.effect is MoveEffect.StatusSleep or MoveEffect.Yawn, needSynergy);
             // Snore or Sleep Talk + Rest Synergy
             CalculateMoveSynergy(m => m.effect is MoveEffect.SleepTalk or MoveEffect.DamageFailUnlessAsleepFlinchChance, m => m.effect == MoveEffect.Rest, needSynergy);
             // Rollout or Ice Ball + Defense Curl Synergy
