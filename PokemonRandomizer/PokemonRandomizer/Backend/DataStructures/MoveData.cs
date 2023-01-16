@@ -95,7 +95,7 @@ namespace PokemonRandomizer.Backend.DataStructures
             DamageConfuseChance,
             DamageTwoHitPoisonChance,
             DamagePriorityLastAlwaysHit,
-            Substitue,
+            Substitute,
             DamageTiredAfterUse,
             Rage,
             Mimic,
