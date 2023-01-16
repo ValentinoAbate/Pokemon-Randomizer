@@ -313,6 +313,10 @@ namespace PokemonRandomizer.Backend.DataStructures
 
         public bool IsCallMove => effect is MoveEffect.Metronome or MoveEffect.NaturePower or MoveEffect.Assist;
 
+        public bool IsSleepStatusMove => effect is MoveEffect.StatusSleep or MoveEffect.Yawn;
+
+        public bool IsTrappingMove => effect is MoveEffect.Trap or MoveEffect.DoTTrap;
+
         public int EffectivePower
         {
             get
