@@ -144,7 +144,7 @@ namespace PokemonRandomizer.Backend.Randomization
             // Stockpile + Spit Up or Swallow Synergy
             CalculateMoveSynergy(m => m.effect == MoveEffect.Stockpile, m => m.effect is MoveEffect.SpitUp or MoveEffect.Swallow, preferSynergy);
             // Sun Move + Sun
-            CalculateMoveSynergy(m => m.effect is MoveEffect.Solarbeam or MoveEffect.RecoverHpWeather2, m => m.effect == MoveEffect.WeatherSun, preferSynergy);
+            CalculateMoveSynergy(m => m.effect is MoveEffect.Solarbeam or MoveEffect.RecoverHpWeather1 or MoveEffect.RecoverHpWeather2 or MoveEffect.RecoverHpWeather3, m => m.effect == MoveEffect.WeatherSun, preferSynergy);
             // Attacking Fire Move + Sun
             CalculateMoveSynergy(m => IsAttackMoveOfType(m, PokemonType.FIR), m => m.effect == MoveEffect.WeatherSun, weakSynergy);
             // Rain move + Rain
