@@ -83,23 +83,34 @@ namespace PokemonRandomizer.Backend.Randomization
             }
             else if (pokemon.species is Pokemon.SMEARGLE)
             {
+                int sketches = 0;
+                foreach(var entry in pokemon.learnSet)
+                {
+                    if(entry.learnLvl > level)
+                    {
+                        break;
+                    }
+                    if(entry.move == Move.SKETCH)
+                    {
+                        ++sketches;
+                    }
+                }
                 double smeargleSetChance = rand.RandomDouble();
-                // TODO: limit smeargle's number of moves depending on the number of times it could have learned sketch
                 if (smeargleSetChance < 0.01)
                 {
-                    return CounterAttackMoveSet(pokemon, level);
+                    return CounterAttackMoveSet(pokemon, level, sketches);
                 }
                 else if(smeargleSetChance < 0.02)
                 {
-                    return AttackingMoveset(pokemon, level);
+                    return AttackingMoveset(pokemon, level, sketches);
                 }
                 else if(smeargleSetChance < 0.07)
                 {
-                    return LowAttackMoveSet(pokemon, level);
+                    return LowAttackMoveSet(pokemon, level, sketches);
                 }
                 else
                 {
-                    return RandomMoveSet(pokemon, level);
+                    return RandomMoveSet(pokemon, level, sketches);
                 }
             }
             else 
@@ -108,7 +119,7 @@ namespace PokemonRandomizer.Backend.Randomization
             }
         }
 
-        public Move[] AttackingMoveset(PokemonBaseStats pokemon, int level)
+        public Move[] AttackingMoveset(PokemonBaseStats pokemon, int level, int maxMoves = 4)
         {
             bool IsStab(Move m) => pokemon.IsType(dataT.GetMoveData(m).type);
             // Initialize move choices
@@ -137,19 +148,19 @@ namespace PokemonRandomizer.Backend.Randomization
             float LevelFactorLog(Move e) => MathF.Max(1, MathF.Log(availableMoves[e]));
 
             // Choose first move - attempt to choose an attack move
-            if (ChooseMoveForIndex(ret, 0, GetAttackMoves(availableMoves), (m) => PowerFactor(m) * StabBonus(m) * LevelFactorLog(m), ref availableMoves))
+            if (ChooseMoveForIndex(ret, 0, GetAttackMoves(availableMoves), (m) => PowerFactor(m) * StabBonus(m) * LevelFactorLog(m), ref availableMoves) || maxMoves <= 1)
             {
                 return ret;
             }
 
             // Choose second move - attempt to choose another attack move
-            if (ChooseMoveForIndex(ret, 1, GetAttackMoves(availableMoves), (m) => PowerFactor(m) * StabBonus(m) * RedundantTypeFactor(m) * LevelFactorLog(m), ref availableMoves))
+            if (ChooseMoveForIndex(ret, 1, GetAttackMoves(availableMoves), (m) => PowerFactor(m) * StabBonus(m) * RedundantTypeFactor(m) * LevelFactorLog(m), ref availableMoves) || maxMoves <= 2)
             {
                 return ret;
             }
 
             // Choose third move - Attempt to choose a status move
-            if (ChooseMoveForIndex(ret, 2, GetStatusMoves(availableMoves), LevelFactorSmall, ref availableMoves))
+            if (ChooseMoveForIndex(ret, 2, GetStatusMoves(availableMoves), LevelFactorSmall, ref availableMoves) || maxMoves <= 3)
             {
                 return ret;
             }
@@ -222,7 +233,7 @@ namespace PokemonRandomizer.Backend.Randomization
             CalculateMoveSynergy(m => m.IsVeryLowAccuracy, m => m.effect is MoveEffect.NextMoveAlwaysHits, preferSynergy);
             return metrics;
         }
-        public Move[] LowAttackMoveSet(PokemonBaseStats pokemon, int level)
+        public Move[] LowAttackMoveSet(PokemonBaseStats pokemon, int level, int maxMoves = 4)
         {
             // Initialize move choices
             var availableMoves = AvailableMoves(pokemon, level);
@@ -236,7 +247,7 @@ namespace PokemonRandomizer.Backend.Randomization
             // Choose first move - attempt to choose a damaging status move or DOT move. Favor same type
             var preferredMoves = new WeightedSet<Move>(availableMoves.Count);
             preferredMoves.AddRange(availableMovesKeys, m => LowAttackMoveWeight(pokemon, dataT.GetMoveData(m), availableMoves.Count));
-            if (ChooseMoveForIndex(ret, 0, preferredMoves, ref availableMoves))
+            if (ChooseMoveForIndex(ret, 0, preferredMoves, ref availableMoves) || maxMoves <= 1)
             {
                 return ret;
             }
@@ -258,7 +269,7 @@ namespace PokemonRandomizer.Backend.Randomization
             }
 
             // Choose move
-            if (ChooseMoveForIndex(ret, 1, preferredMoves, ref availableMoves))
+            if (ChooseMoveForIndex(ret, 1, preferredMoves, ref availableMoves) || maxMoves <= 2)
             {
                 return ret;
             }
@@ -268,7 +279,7 @@ namespace PokemonRandomizer.Backend.Randomization
             preferredMoves.Clear();
             preferredMoves.AddRange(GetStatusMoves(availableMoves));
             preferredMoves.Multiply(m => LevelWeightScaleSmall(availableMoves[m]));
-            if (ChooseMoveForIndex(ret, 2, preferredMoves, ref availableMoves))
+            if (ChooseMoveForIndex(ret, 2, preferredMoves, ref availableMoves) || maxMoves <= 3)
             {
                 return ret;
             }
@@ -298,14 +309,11 @@ namespace PokemonRandomizer.Backend.Randomization
                     preferredMoves.Multiply(m => LevelWeightScale(availableMoves[m]));
                 }
             }
-            if (ChooseMoveForIndex(ret, 3, preferredMoves, ref availableMoves))
-            {
-                return ret;
-            }
+            ChooseMoveForIndex(ret, 3, preferredMoves, ref availableMoves);
             return ret;
         }
 
-        public Move[] CounterAttackMoveSet(PokemonBaseStats pokemon, int level)
+        public Move[] CounterAttackMoveSet(PokemonBaseStats pokemon, int level, int maxMoves = 4)
         {
             // Initialize move choices
             var availableMoves = AvailableMoves(pokemon, level);
@@ -318,17 +326,17 @@ namespace PokemonRandomizer.Backend.Randomization
             preferredMoves.AddRange(availableMoves.Keys.Where(m => dataT.GetMoveData(m).IsCounterAttack || dataT.GetMoveData(m).effect is MoveEffect.DestinyBond));
             preferredMoves.Multiply(m => LevelWeightScaleSmall(availableMoves[m]));
             // Todo: prefer STAB
-            if (ChooseMoveForIndex(ret, 0, preferredMoves, ref availableMoves))
+            if (ChooseMoveForIndex(ret, 0, preferredMoves, ref availableMoves) || maxMoves <= 1)
             {
                 return ret;
             }
             preferredMoves.RemoveIfContains(ret[0]);
-            if (ChooseMoveForIndex(ret, 1, preferredMoves, ref availableMoves))
+            if (ChooseMoveForIndex(ret, 1, preferredMoves, ref availableMoves) || maxMoves <= 2)
             {
                 return ret;
             }
             preferredMoves.RemoveIfContains(ret[1]);
-            if (ChooseMoveForIndex(ret, 2, preferredMoves, ref availableMoves))
+            if (ChooseMoveForIndex(ret, 2, preferredMoves, ref availableMoves) || maxMoves <= 3)
             {
                 return ret;
             }
@@ -338,7 +346,7 @@ namespace PokemonRandomizer.Backend.Randomization
             return ret;
         }
 
-        public Move[] RandomMoveSet(PokemonBaseStats pokemon, int level)
+        public Move[] RandomMoveSet(PokemonBaseStats pokemon, int level, int maxMoves = 4)
         {
             // Initialize move choices
             var availableMoves = AvailableMoves(pokemon, level);
@@ -348,18 +356,19 @@ namespace PokemonRandomizer.Backend.Randomization
                 return ret;
 
             var preferredMoves = new WeightedSet<Move>(availableMoves.Keys);
-            for(int i = 0; i < 3; ++i)
+            int moveIndex = 0;
+            for(; moveIndex < (maxMoves - 1); ++moveIndex)
             {
-                if (ChooseMoveForIndex(ret, i, preferredMoves, ref availableMoves))
+                if (ChooseMoveForIndex(ret, moveIndex, preferredMoves, ref availableMoves))
                 {
                     return ret;
                 }
-                preferredMoves.RemoveIfContains(ret[i]);
+                preferredMoves.RemoveIfContains(ret[moveIndex]);
             }
             var metrics = CalculateMoveSynergyMetrics(ret);
             preferredMoves.Multiply(m => MoveSynergyFactor(metrics, m));
             // Choose final move
-            ChooseMoveForIndex(ret, 3, preferredMoves, ref availableMoves);
+            ChooseMoveForIndex(ret, moveIndex, preferredMoves, ref availableMoves);
             return ret;
         }
 
@@ -708,6 +717,10 @@ namespace PokemonRandomizer.Backend.Randomization
                 foreach(var move in allValidMoves)
                 {
                     moves.Add(move, 1);
+                }
+                if (moves.ContainsKey(Move.SKETCH))
+                {
+                    moves.Remove(Move.SKETCH);
                 }
                 return moves;
             }
