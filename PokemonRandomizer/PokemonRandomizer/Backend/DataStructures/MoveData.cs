@@ -317,6 +317,8 @@ namespace PokemonRandomizer.Backend.DataStructures
 
         public bool IsTrappingMove => effect is MoveEffect.Trap or MoveEffect.DoTTrap;
 
+        public bool IsVeryLowAccuracy => accuracy > 0 && accuracy <= 50; // 0 accuracy moves always hit
+
         public int EffectivePower
         {
             get
