@@ -10,7 +10,7 @@ namespace PokemonRandomizer.Backend.Randomization
     {
         public IEnumerable<T> Items { get => items.Keys; }
         public IEnumerable<float> Weights { get => items.Values; }
-        public float Count { get => items.Count; }
+        public int Count { get => items.Count; }
         public Dictionary<T, float> Percentages
         {
             get
@@ -76,6 +76,10 @@ namespace PokemonRandomizer.Backend.Randomization
         }
         public void Add(T item, float weight = 1)
         {
+            if (!float.IsFinite(weight))
+            {
+                return;
+            }
             if (items.ContainsKey(item))
             {
                 if (items[item] + weight < 0)
