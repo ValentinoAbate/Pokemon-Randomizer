@@ -666,6 +666,7 @@ namespace PokemonRandomizer.Backend.Randomization
             Move.TAIL_GLOW,
             Move.NATURE_POWER,
             Move.HIDDEN_POWER,
+            Move.WEATHER_BALL,
         };
 
         // Pokemon that shouldn't recieve bonus moves, only replacement moves
