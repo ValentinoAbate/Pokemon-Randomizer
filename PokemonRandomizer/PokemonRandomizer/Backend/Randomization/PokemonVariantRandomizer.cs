@@ -1339,7 +1339,7 @@ namespace PokemonRandomizer.Backend.Randomization
             { Pokemon.ARON, new PaletteData(Range(6, 10), PalRange(14))},
             { Pokemon.LAIRON, new PaletteData(Range(6, 10), PalRange(14))},
             { Pokemon.AGGRON, new PaletteData(Range(6, 10), PalRange(14))},
-            { Pokemon.CASTFORM, new PaletteData(PalRange(1, 2, 3, 4, 12))},
+            { Pokemon.CASTFORM, new PaletteData(PalRange(1, 2, 3, 4, 12))}, // 16-31 is Sun form, 32 - 47 is Rain form, 48 - 63 is snow form (located below). 6-7 visor.
             { Pokemon.VOLBEAT, new PaletteData(Range(5, 8), Range(12, 14), Range(9, 11))},
             { Pokemon.ILLUMISE, new PaletteData(Range(5, 8), Range(12, 14), Range(9, 11))},
             { Pokemon.LILEEP, new PaletteData(Range(2, 5), PalRange(1, 6, 7, 8))}, // 9-11 eyes
@@ -1368,6 +1368,11 @@ namespace PokemonRandomizer.Backend.Randomization
             { Pokemon.CHIMECHO, new PaletteData(PalRange(3, 4, 5, 10), PalRange(2, 11, 12, 13))},
         };
 
+        // Castform is all in one big palette. 0-15 is normal form (located above) 16-31 is Sun form, 32 - 47 is Rain form, and 48 - 63 is snow form.
+        private static readonly PaletteData castFormSunPalData = new PaletteData(PalRange(17, 18, 19, 20, 24, 25, 26)); // 22-23 visor.
+        private static readonly PaletteData castFormRainPalData = new PaletteData(PalRange(33, 34, 35, 36, 40, 41, 42, 47)); // 38-39 visor. 42 - 47 secondary primary?
+        private static readonly PaletteData castFormSnowPalData = new PaletteData(PalRange(49, 56, 57, 59, 60)); // 50, 51, 54, 55, 58, 61 secondary primary?
+
         private PaletteData GetPaletteData(Pokemon pokemon)
         {
             if (variantPaletteDataOverrides.ContainsKey(paletteKey))
@@ -1385,10 +1390,25 @@ namespace PokemonRandomizer.Backend.Randomization
         {
             if (data.TransformationType == TypeTransformation.None)
                 return;
-            // If we don't have specific palette data or type color data to support this pokemon / type combo, return
-            // Perhaps I should add a fallback for pokemon I haven't done specific work for
             var paletteData = GetPaletteData(pokemon.species);
             paletteModifier.ModifyPalette(pokemon.palette, paletteData, data.VariantTypes);
+            // Special castform handling.
+            if (pokemon.species == Pokemon.CASTFORM && data.VariantTypes.Length > 0)
+            {
+                var variantType = data.VariantTypes[0];
+                if(variantType is not PokemonType.FIR)
+                {
+                    paletteModifier.ModifyPalette(pokemon.palette, castFormSunPalData, data.VariantTypes);
+                }
+                if (variantType is not PokemonType.WAT)
+                {
+                    paletteModifier.ModifyPalette(pokemon.palette, castFormRainPalData, data.VariantTypes);
+                }
+                if (variantType is not PokemonType.ICE)
+                {
+                    paletteModifier.ModifyPalette(pokemon.palette, castFormSnowPalData, data.VariantTypes);
+                }
+            }
         }
 
         #endregion
