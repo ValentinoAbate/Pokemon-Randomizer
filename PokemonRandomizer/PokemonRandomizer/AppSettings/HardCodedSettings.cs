@@ -419,6 +419,8 @@ namespace PokemonRandomizer.AppSettings
         // Randomizer Settings
         public override bool CountRelicanthAsFossil => true;
 
+        public override TypeChartRandomizer.Option TypeChartRandomizationSetting => TypeChartRandomizer.Option.Swap;
+
         #endregion
 
         #region Dream Team

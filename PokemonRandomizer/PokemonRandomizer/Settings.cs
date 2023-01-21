@@ -505,6 +505,8 @@ namespace PokemonRandomizer
         // Randomizer Settings
         public abstract bool CountRelicanthAsFossil { get; }
 
+        public abstract TypeChartRandomizer.Option TypeChartRandomizationSetting { get; }
+
         #endregion
 
         // This feature will generate 6 pokemon

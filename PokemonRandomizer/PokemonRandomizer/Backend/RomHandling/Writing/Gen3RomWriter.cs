@@ -604,18 +604,18 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
             }
             #region Convert TypeChart to byte[]
             var typeData = new List<byte>(typeDefinitions.Count * 3 + TypeEffectivenessChart.separatorSequence.Length + TypeEffectivenessChart.endSequence.Length);
-            foreach (var typePair in typeDefinitions.Keys)
+            foreach (var (typePair, effectiveness) in typeDefinitions.TypeRelations)
             {
                 typeData.Add((byte)typePair.attackingType);
                 typeData.Add((byte)typePair.defendingType);
-                typeData.Add((byte)typeDefinitions.GetEffectiveness(typePair));
+                typeData.Add((byte)effectiveness);
             }
             typeData.AddRange(TypeEffectivenessChart.separatorSequence);
-            foreach (var typePair in typeDefinitions.KeysIgnoreAfterForesight)
+            foreach (var (typePair, effectiveness) in typeDefinitions.IgnoreAfterForesight)
             {
                 typeData.Add((byte)typePair.attackingType);
                 typeData.Add((byte)typePair.defendingType);
-                typeData.Add((byte)typeDefinitions.GetEffectiveness(typePair));
+                typeData.Add((byte)effectiveness);
             }
             typeData.AddRange(TypeEffectivenessChart.endSequence);
             #endregion

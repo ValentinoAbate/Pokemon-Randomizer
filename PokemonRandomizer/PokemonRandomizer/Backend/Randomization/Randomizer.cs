@@ -30,6 +30,7 @@ namespace PokemonRandomizer.Backend.Randomization
         private readonly ScriptRandomizer scriptRand;
         private readonly TrainerOrganizationRandomizer trainerOrgRand;
         private readonly StarterRandomizer starterRandomizer;
+        private readonly TypeChartRandomizer typeChartRandomizer;
 
         /// <summary>
         /// Create a new randomizer with given data and settings
@@ -62,6 +63,7 @@ namespace PokemonRandomizer.Backend.Randomization
             scriptRand = new ScriptRandomizer(rand, pokeRand, itemRand, data, delayedRandomizationCalls);
             trainerOrgRand = new TrainerOrganizationRandomizer(rand, paletteModifier);
             starterRandomizer = new StarterRandomizer(pokeRand);
+            typeChartRandomizer = new TypeChartRandomizer();
         }
         // Apply mutations based on program settings.
         public RomData Randomize()
@@ -106,6 +108,8 @@ namespace PokemonRandomizer.Backend.Randomization
                         data.TypeDefinitions.Set(PokemonType.Unknown, type, te, type == PokemonType.GHO);
                 }
             }
+            // Modify type chart
+            typeChartRandomizer.RandomizeTypeChart(data.TypeDefinitions, settings.TypeChartRandomizationSetting, data.RandomizationResults);
             #endregion
 
             #region Move Definitions
