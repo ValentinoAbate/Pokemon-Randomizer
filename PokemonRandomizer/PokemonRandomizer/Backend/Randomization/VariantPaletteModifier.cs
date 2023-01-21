@@ -43,8 +43,7 @@ namespace PokemonRandomizer.Backend.Randomization
         {
             if (variantTypes.Length <= 0)
                 return;
-            // If we don't have specific palette data or type color data to support this pokemon / type combo, return
-            // Perhaps I should add a fallback for pokemon I haven't done specific work for
+            // No palette data: default to whole-sprite tint
             if (paletteData == null)
             {
                 ApplyColorChanges(palette, allIndices, typeColorData[variantTypes[0]]);
