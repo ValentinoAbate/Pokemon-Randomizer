@@ -487,6 +487,8 @@ namespace PokemonRandomizer.AppSettings
         // Randomizer Settings
         public override bool CountRelicanthAsFossil => miscData.CountRelicanthAsFossil;
 
+        public override TypeChartRandomizer.Option TypeChartRandomizationSetting => miscData.TypeChartSetting;
+
         #endregion
 
     }

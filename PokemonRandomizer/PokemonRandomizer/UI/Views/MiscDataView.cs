@@ -19,6 +19,14 @@ namespace PokemonRandomizer.UI.Views
             new ComboBoxItem() {Content="Start in PC", ToolTip="New save files will start with every relevant mystery gift event item in their PC. WARNING: this only works for new save files. Loading a save state of an old save file will bypass the script that sets the PC starting items" },
             new ComboBoxItem() {Content="Allow in Item Randomization", ToolTip="Mystery gift event items will be able to appear as randomized items even though they are key items. They will be considered to be part of the \"Special\" item category for the purposes of duplicate reduction and all other item randomization settings"},
         };
+
+        public CompositeCollection TypeChartOptionDropdown => new CompositeCollection()
+        {
+            new ComboBoxItem() {Content="None" },
+            new ComboBoxItem() {Content="Invert", ToolTip="Type effectiveness will be inverted (like in inverse battles). Any weakness will become a resistance, and any resistance or immunity will become a weakness" },
+            new ComboBoxItem() {Content="Swap", ToolTip="Type effectiveness will be swapped. For example, (DRG is weak to ICE) becomes (ICE is weak to DRG), (GHO is immune to FTG) becomes (FTG is immune to GHO), etc."},
+        };
+
         public MiscDataView(MiscDataModel model, RomMetadata metadata)
         {
             // Create stack and add content
@@ -30,6 +38,7 @@ namespace PokemonRandomizer.UI.Views
             stack.Add(new BoundCheckBoxUI(model.UpdateDOTMoves, "Update Wrap Moves", "Updates the moves Wrap, Bind, Fire Spin, Sand Tomb, Whirlpool, and Clamp to their Gen V power, accuracy, and PP"));
             var enableEventsCb = stack.Add(new BoundCheckBoxUI(model.EnableEvents, "Enable Mystery Gift Events", enableEventsTooltip));
             stack.Add(enableEventsCb.BindEnabled(new EnumComboBoxUI<Settings.MysteryGiftItemSetting>("Mystery Gift Event Item Acquisition", MysteryGiftEventItemDropdown, model.EventItemSetting)));
+            stack.Add(new EnumComboBoxUI<Backend.Randomization.TypeChartRandomizer.Option>("Type Effectiveness Modification", TypeChartOptionDropdown, model.TypeChartSetting));
 
             stack.Header("Randomizer Options");
             stack.Add(new BoundCheckBoxUI(model.CountRelicanthAsFossil, "Count Relicanth as a Fossil Pokemon"));
