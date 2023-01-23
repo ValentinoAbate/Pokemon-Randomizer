@@ -21,13 +21,11 @@ namespace PokemonRandomizer.Backend.Randomization
             {
                 InvertTypeChart(chart.TypeRelations);
                 InvertTypeChart(chart.IgnoreAfterForesight);
-                LogResults(chart, randomizationResults);
             }
             else if (option == Option.Swap)
             {
                 SwapTypeChart(chart.TypeRelations);
                 SwapTypeChart(chart.IgnoreAfterForesight);
-                LogResults(chart, randomizationResults);
             }
         }
 
@@ -62,23 +60,6 @@ namespace PokemonRandomizer.Backend.Randomization
                 TypeEffectiveness.SuperEffective => TypeEffectiveness.NotVeryEffective,
                 _ => TypeEffectiveness.Normal
             };
-        }
-
-        private void LogResults(TypeEffectivenessChart chart, Dictionary<string, List<string>> randomizationResults)
-        {
-            var normalResults = new List<string>(chart.TypeRelations.Count);
-            foreach(var (typePair, effectiveness) in chart.TypeRelations)
-            {
-                normalResults.Add($"{typePair.attackingType} -> {typePair.defendingType}: {effectiveness}");
-            }
-            randomizationResults.Add("Type Effectiveness", normalResults);
-
-            var foresightResults = new List<string>(chart.IgnoreAfterForesight.Count);
-            foreach (var (typePair, effectiveness) in chart.IgnoreAfterForesight)
-            {
-                foresightResults.Add($"{typePair.attackingType} -> {typePair.defendingType}: {effectiveness}");
-            }
-            randomizationResults.Add("Type Effectiveness (ignore after foresight)", foresightResults);
         }
     }
 }

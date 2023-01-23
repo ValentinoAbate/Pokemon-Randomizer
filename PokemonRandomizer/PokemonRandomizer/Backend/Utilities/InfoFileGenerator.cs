@@ -39,6 +39,8 @@ namespace PokemonRandomizer.Backend.Utilities
                 }
             }
 
+            GenerateTypeChart(data.TypeDefinitions, ref lines);
+
             GeneratePokemonInfo(data, ref lines);
 
             return lines.ToArray();
@@ -63,6 +65,67 @@ namespace PokemonRandomizer.Backend.Utilities
             lines.Add(string.Empty);
             lines.Add(text);
             lines.Add(subdivider);
+        }
+
+        private static void GenerateTypeChart(TypeEffectivenessChart chart, ref List<string> lines)
+        {
+            Header(ref lines, "Type Effectiveness Chart");
+
+
+            var types = EnumUtils.GetValues<PokemonType>().ToList();
+            types.Remove(PokemonType.FAI);
+            types.Remove(PokemonType.Unknown);
+
+
+            lines.Add(" DEF | ATK");
+            var builder = new StringBuilder((types.Count * 6) + 6);
+            // Divider
+            for(int i = 0; i <= types.Count; ++i)
+            {
+                builder.Append("------");
+            }
+            string divider = builder.ToString();
+            lines.Add(divider);
+            builder.Clear();
+
+            // Types header
+            builder.Append("     |");
+            foreach(var type in types)
+            {
+                builder.Append($" {type} |");
+            }
+            lines.Add(builder.ToString());
+            builder.Clear();
+
+            lines.Add(divider);
+
+            // Type chart
+            foreach (var defendingType in types)
+            {
+                builder.Append($" {defendingType} |");
+                foreach (var attackingType in types)
+                {
+                    var effectiveness = chart.GetEffectiveness(attackingType, defendingType);
+                    if(effectiveness == TypeEffectiveness.Normal)
+                    {
+                        builder.Append("     |");
+                    }
+                    else if(effectiveness == TypeEffectiveness.NoEffect)
+                    {
+                        builder.Append("  0  |");
+                    }
+                    else if(effectiveness == TypeEffectiveness.NotVeryEffective)
+                    {
+                        builder.Append(" 1/2 |");
+                    }
+                    else if (effectiveness == TypeEffectiveness.SuperEffective)
+                    {
+                        builder.Append("  2  |");
+                    }
+                }
+                lines.Add(builder.ToString());
+                builder.Clear();
+            }
         }
 
         private void GeneratePokemonInfo(RomData data, ref List<string> lines)
