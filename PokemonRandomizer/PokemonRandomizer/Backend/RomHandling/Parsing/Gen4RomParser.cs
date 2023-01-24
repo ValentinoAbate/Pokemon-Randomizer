@@ -20,6 +20,8 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
             var dsFileSystem = new DSFileSystemData(rom);
             // Actually parse the ROM data
             RomData data = new RomData();
+            // Type Definitions
+            DefineTypes(data);
             // TM, HM, and MT Moves
             data.TMMoves = ReadTmMoves(rom, dsFileSystem, info, out data.HMMoves);
             data.tutorMoves = ReadMoveTutorMoves(rom, dsFileSystem, info);
@@ -50,6 +52,14 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
 
 
             throw new NotImplementedException("Gen IV Rom parsing not supported");
+        }
+
+        private void DefineTypes(RomData data)
+        {
+            data.Types.Clear();
+            data.Types.AddRange(EnumUtils.GetValues<PokemonType>());
+            data.Types.Remove(PokemonType.FAI);
+            data.Types.Remove(PokemonType.Unknown);
         }
 
         private List<PokemonBaseStats> ReadPokemonBaseStats(Rom rom, DSFileSystemData dsFileSystem, XmlManager info)

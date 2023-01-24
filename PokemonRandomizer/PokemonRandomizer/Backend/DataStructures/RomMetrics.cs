@@ -72,8 +72,8 @@ namespace PokemonRandomizer.Backend.DataStructures
 
             #region Type Effectiveness Metrics
             TypeEffectivenessRatios = new WeightedSet<TypeEffectiveness>();
-            foreach (var atkType in EnumUtils.GetValues<PokemonType>())
-                foreach (var defType in EnumUtils.GetValues<PokemonType>())
+            foreach (var atkType in data.Types)
+                foreach (var defType in data.Types)
                     TypeEffectivenessRatios.Add(data.TypeDefinitions.GetEffectiveness(atkType, defType));
             #endregion
 

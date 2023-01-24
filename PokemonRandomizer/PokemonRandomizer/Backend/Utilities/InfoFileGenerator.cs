@@ -39,7 +39,7 @@ namespace PokemonRandomizer.Backend.Utilities
                 }
             }
 
-            GenerateTypeChart(data.TypeDefinitions, ref lines);
+            GenerateTypeChart(data.Types, data.TypeDefinitions, ref lines);
 
             GeneratePokemonInfo(data, ref lines);
 
@@ -67,15 +67,9 @@ namespace PokemonRandomizer.Backend.Utilities
             lines.Add(subdivider);
         }
 
-        private static void GenerateTypeChart(TypeEffectivenessChart chart, ref List<string> lines)
+        private static void GenerateTypeChart(List<PokemonType> types, TypeEffectivenessChart chart, ref List<string> lines)
         {
             Header(ref lines, "Type Effectiveness Chart");
-
-
-            var types = EnumUtils.GetValues<PokemonType>().ToList();
-            types.Remove(PokemonType.FAI);
-            types.Remove(PokemonType.Unknown);
-
 
             lines.Add(" DEF | ATK");
             var builder = new StringBuilder((types.Count * 6) + 6);

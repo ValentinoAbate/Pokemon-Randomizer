@@ -38,6 +38,9 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
             scriptParser.Clear();
             RomData data = new RomData();
 
+            // Type Definitions
+            DefineTypes(data);
+
             #region Move Mappings (TMs/HMs/Tutors)
             //Read the TM move mappings from the ROM
             data.TMMoves = ReadMoveMappings(ElementNames.tmMoves, rom, info);
@@ -102,6 +105,14 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
             Timer.main.Stop();
             Timer.main.Log("ROM Parsing");
             return data;
+        }
+
+        private void DefineTypes(RomData data)
+        {
+            data.Types.Clear();
+            data.Types.AddRange(EnumUtils.GetValues<PokemonType>());
+            data.Types.Remove(PokemonType.FAI);
+            data.Types.Remove(PokemonType.Unknown);
         }
 
         // Read national dex order

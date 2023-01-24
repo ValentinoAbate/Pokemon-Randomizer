@@ -75,7 +75,6 @@ namespace PokemonRandomizer.Backend.Randomization
             if (settings.CountRelicanthAsFossil && pokemonSet.Contains(Pokemon.RELICANTH))
                 fossilSet.Add(Pokemon.RELICANTH);
             var babySet = pokemonSet.Where(PokemonUtils.IsBaby).ToHashSet();
-            var types = DefinePokemonTypes();
             var items = data.GetAllValidItemData();
             // Apply Allow Mystery Gift Item in Randomization if necessary
             if(settings.MysteryGiftItemAcquisitionSetting == Settings.MysteryGiftItemSetting.AllowInRandomization)
@@ -95,8 +94,8 @@ namespace PokemonRandomizer.Backend.Randomization
             // Generate ??? type traits (INCOMPLETE)
             if (settings.ModifyUnknownType)
             {
-                types.Add(PokemonType.Unknown);
-                foreach (var type in types)
+                data.Types.Add(PokemonType.Unknown);
+                foreach (var type in data.Types)
                 {
                     // Type effectiveness of other type vs ???
                     var te = rand.Choice(data.Metrics.TypeEffectivenessRatios);
@@ -733,8 +732,8 @@ namespace PokemonRandomizer.Backend.Randomization
             {
                 var gymsSorted = new List<GymMetadata>(gymMetadataDict.Values);
                 gymsSorted.Sort((g1, g2) => Trainer.AverageLevelComparer(g1.Leaders[0], g2.Leaders[0]));
-                trainerOrgRand.RandomizeGymsAndEliteFour(gymsSorted, eliteFourMetadata, types, settings, data.RandomizationResults);
-                trainerOrgRand.RandomizeVillainousTeams(data.VillainousTeamMetadata, types, settings, data.RandomizationResults);
+                trainerOrgRand.RandomizeGymsAndEliteFour(gymsSorted, eliteFourMetadata, data.Types, settings, data.RandomizationResults);
+                trainerOrgRand.RandomizeVillainousTeams(data.VillainousTeamMetadata, data.Types, settings, data.RandomizationResults);
 
                 foreach (var kvp in gymMetadataDict)
                 {
@@ -938,14 +937,6 @@ namespace PokemonRandomizer.Backend.Randomization
                 pokemonSet.Remove(Pokemon.MANAPHY_EGG);
             }
             return pokemonSet;
-        }
-        /// <summary> Define and return the set of valid types (with applicable restrictions)</summary> 
-        private HashSet<PokemonType> DefinePokemonTypes()
-        {
-            HashSet<PokemonType> types = EnumUtils.GetValues<PokemonType>().ToHashSet();
-            types.Remove(PokemonType.FAI);
-            types.Remove(PokemonType.Unknown);
-            return types;
         }
 
         #endregion

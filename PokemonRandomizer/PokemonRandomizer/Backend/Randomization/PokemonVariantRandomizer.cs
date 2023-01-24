@@ -46,7 +46,7 @@ namespace PokemonRandomizer.Backend.Randomization
         private readonly Random rand;
         private readonly IDataTranslator dataT;
         private readonly BonusMoveGenerator bonusMoveGenerator;
-        private readonly List<PokemonType> types;
+        private readonly IReadOnlyList<PokemonType> types;
         private readonly string paletteKey;
         private readonly HashSet<Move> availableMoves;
         private readonly VariantPaletteModifier paletteModifier;
@@ -57,9 +57,7 @@ namespace PokemonRandomizer.Backend.Randomization
             this.bonusMoveGenerator = bonusMoveGenerator;
             this.paletteKey = paletteKey;
             this.paletteModifier = paletteModifier;
-            types = new List<PokemonType>(EnumUtils.GetValues<PokemonType>());
-            types.Remove(PokemonType.FAI);
-            types.Remove(PokemonType.Unknown);
+            types = data.Types;
             availableMoves = data.GetValidMoves(true, settings.BanSelfdestruct);
         }
 
