@@ -128,6 +128,64 @@ namespace PokemonRandomizer.Backend.DataStructures
         {
             return IgnoreAfterForesight.ContainsKey(new TypePair(atType, dfType));
         }
+        // Returns true if the given single type has no weaknesses
+        // Assumes that there are no contradictory entries
+        public bool HasNoWeaknesses(PokemonType singleType)
+        {
+            foreach(var (typePair, effectiveness) in TypeRelations)
+            {
+                if (typePair.defendingType == singleType && effectiveness == TypeEffectiveness.SuperEffective)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        public bool HasNoWeaknesses(PokemonType primaryType, PokemonType secondaryType)
+        {
+            if(primaryType == secondaryType)
+            {
+                return HasNoWeaknesses(primaryType);
+            }
+            var weaknesses = new HashSet<PokemonType>(20);
+            var resists = new HashSet<PokemonType>(20);
+            foreach(var (typePair, effectiveness) in TypeRelations)
+            {
+                if (typePair.defendingType != primaryType && typePair.defendingType != secondaryType)
+                {
+                    continue;
+                }
+                if (effectiveness == TypeEffectiveness.SuperEffective)
+                {
+                    if (!weaknesses.Contains(typePair.attackingType))
+                    {
+                        weaknesses.Add(typePair.attackingType);
+                    }
+                }
+                else if(effectiveness is TypeEffectiveness.NotVeryEffective or TypeEffectiveness.NoEffect)
+                {
+                    if (!resists.Contains(typePair.attackingType))
+                    {
+                        resists.Add(typePair.attackingType);
+                    }
+                }
+            }
+            // If there are more weaknesses than resistances, it is impossible for all type combinations to be covered
+            if(weaknesses.Count > resists.Count)
+            {
+                return false;
+            }
+            foreach(var weakness in weaknesses)
+            {
+                if (!resists.Contains(weakness))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
         // A class for storing a pairing of two types. Is hashable
         public class TypePair : IEquatable<TypePair>
         {

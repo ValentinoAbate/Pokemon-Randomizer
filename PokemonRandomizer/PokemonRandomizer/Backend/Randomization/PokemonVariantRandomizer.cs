@@ -49,6 +49,7 @@ namespace PokemonRandomizer.Backend.Randomization
         private readonly IReadOnlyList<PokemonType> types;
         private readonly string paletteKey;
         private readonly HashSet<Move> availableMoves;
+        private readonly TypeEffectivenessChart typeChart;
         private readonly VariantPaletteModifier paletteModifier;
         public PokemonVariantRandomizer(Random rand, RomData data, PokemonRandomizer.Settings settings, BonusMoveGenerator bonusMoveGenerator, string paletteKey, VariantPaletteModifier paletteModifier)
         {
@@ -58,6 +59,7 @@ namespace PokemonRandomizer.Backend.Randomization
             this.paletteKey = paletteKey;
             this.paletteModifier = paletteModifier;
             types = data.Types;
+            typeChart = data.TypeDefinitions;
             availableMoves = data.GetValidMoves(true, settings.BanSelfdestruct);
         }
 
@@ -382,7 +384,7 @@ namespace PokemonRandomizer.Backend.Randomization
             // Apply wonder guard fix if necessary and return
             if (settings.SafeWonderGuard)
             {
-                WonderGuardFix(pokemon);
+                WonderGuardFix(evolvedPokemon);
             }
             if (evolvedPokemon.PrimaryType == evolvedPokemon.OriginalPrimaryType && evolvedPokemon.SecondaryType == evolvedPokemon.OriginalSecondaryType)
             {
@@ -394,13 +396,67 @@ namespace PokemonRandomizer.Backend.Randomization
 
         private void WonderGuardFix(PokemonBaseStats pokemon)
         {
-            if (!pokemon.abilities.Contains(Ability.Wonder_Guard))
+            // If the pokemon doesn't have wonder guard, return
+            if (!pokemon.HasAbility(Ability.Wonder_Guard))
                 return;
-            if (pokemon.IsType(PokemonType.DRK) && pokemon.IsType(PokemonType.GHO))
+            pokemon.SetSingleType(PokemonType.NRM);
+            // If the pokemon has weaknesses, return
+            if (!typeChart.HasNoWeaknesses(pokemon.PrimaryType, pokemon.SecondaryType))
+                return;
+            // If single typed, try to create a dual type mon with the single type that has weaknesses
+            if (pokemon.IsSingleTyped)
             {
-                Logger.main.Info($"{pokemon.Name} is DRK/GHO and has Wonder Guard. Correcting type to GHO or DRK");
-                pokemon.SetSingleType(rand.RandomBool() ? PokemonType.DRK : PokemonType.GHO);
+                if(TryGetNoWeaknessSecondaryType(pokemon.PrimaryType, out var secondaryType))
+                {
+                    pokemon.SecondaryType = secondaryType;
+                }
             }
+            else if (pokemon.IsDualTyped)
+            {
+                if (!typeChart.HasNoWeaknesses(pokemon.PrimaryType))
+                {
+                    if (!typeChart.HasNoWeaknesses(pokemon.SecondaryType))
+                    {
+                        pokemon.SetSingleType(rand.RandomBool() ? pokemon.PrimaryType : pokemon.SecondaryType);
+                    }
+                    else
+                    {
+                        pokemon.SetSingleType(pokemon.PrimaryType);
+                    }
+                }
+                else if (!typeChart.HasNoWeaknesses(pokemon.SecondaryType))
+                {
+                    pokemon.SetSingleType(pokemon.SecondaryType);
+                }
+                else if (TryGetNoWeaknessSecondaryType(pokemon.PrimaryType, out var secondaryType))
+                {
+                    pokemon.SecondaryType = secondaryType;
+                }
+            }
+            Logger.main.Info($"{pokemon.Name} had no weaknesses and has Wonder Guard. Correcting type to {pokemon.PrimaryType}/{pokemon.SecondaryType}");
+        }
+
+        private bool TryGetNoWeaknessSecondaryType(PokemonType primaryType, out PokemonType secondaryType)
+        {
+            var typePool = new List<PokemonType>(types.Count);
+            foreach(var type in types)
+            {
+                if(type != primaryType)
+                {
+                    typePool.Add(type);
+                }
+            }
+            while(typePool.Count > 0)
+            {
+                secondaryType = rand.Choice(typePool);
+                if(!typeChart.HasNoWeaknesses(primaryType, secondaryType))
+                {
+                    return true;
+                }
+                typePool.Remove(secondaryType);
+            }
+            secondaryType = primaryType;
+            return false;
         }
 
         #region Type Choice Helper Methods
