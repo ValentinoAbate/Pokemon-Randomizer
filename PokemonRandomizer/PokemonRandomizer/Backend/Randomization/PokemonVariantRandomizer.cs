@@ -399,7 +399,6 @@ namespace PokemonRandomizer.Backend.Randomization
             // If the pokemon doesn't have wonder guard, return
             if (!pokemon.HasAbility(Ability.Wonder_Guard))
                 return;
-            pokemon.SetSingleType(PokemonType.NRM);
             // If the pokemon has weaknesses, return
             if (!typeChart.HasNoWeaknesses(pokemon.PrimaryType, pokemon.SecondaryType))
                 return;
