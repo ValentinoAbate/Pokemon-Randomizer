@@ -21,6 +21,7 @@ namespace PokemonRandomizer.Backend.DataStructures
 
     public class TypeEffectivenessChart
     {
+        public const int maxTypes = 20; // Upper bound for number of types. Arbitrary number greater than vanilla types
         // The byte sequence that marks the end of the data structure
         public static readonly byte[] endSequence = { 0xFF, 0xFF, 0x00 };
         // The byte sequence that marks the end of the non-ignoreAfterForesight relations
@@ -148,13 +149,13 @@ namespace PokemonRandomizer.Backend.DataStructures
             {
                 return HasNoWeaknesses(primaryType);
             }
-            var weaknesses = new HashSet<PokemonType>(20);
-            var resists = new HashSet<PokemonType>(20);
-            foreach(var (typePair, effectiveness) in TypeRelations)
+            var weaknesses = new HashSet<PokemonType>(maxTypes);
+            var resists = new HashSet<PokemonType>(maxTypes);
+            void ProcessTypeRelation(TypePair typePair, TypeEffectiveness effectiveness)
             {
                 if (typePair.defendingType != primaryType && typePair.defendingType != secondaryType)
                 {
-                    continue;
+                    return;
                 }
                 if (effectiveness == TypeEffectiveness.SuperEffective)
                 {
@@ -163,7 +164,7 @@ namespace PokemonRandomizer.Backend.DataStructures
                         weaknesses.Add(typePair.attackingType);
                     }
                 }
-                else if(effectiveness is TypeEffectiveness.NotVeryEffective or TypeEffectiveness.NoEffect)
+                else if (effectiveness is TypeEffectiveness.NotVeryEffective or TypeEffectiveness.NoEffect)
                 {
                     if (!resists.Contains(typePair.attackingType))
                     {
@@ -171,8 +172,18 @@ namespace PokemonRandomizer.Backend.DataStructures
                     }
                 }
             }
+            // Process Normal Type Relations
+            foreach(var (typePair, effectiveness) in TypeRelations)
+            {
+                ProcessTypeRelation(typePair, effectiveness);
+            }
+            // Process Ignore After Foresight Type Relations
+            foreach (var (typePair, effectiveness) in IgnoreAfterForesight)
+            {
+                ProcessTypeRelation(typePair, effectiveness);
+            }
             // If there are more weaknesses than resistances, it is impossible for all type combinations to be covered
-            if(weaknesses.Count > resists.Count)
+            if (weaknesses.Count > resists.Count)
             {
                 return false;
             }
