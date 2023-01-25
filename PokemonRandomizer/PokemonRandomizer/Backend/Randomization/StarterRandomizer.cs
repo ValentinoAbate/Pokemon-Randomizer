@@ -1,6 +1,7 @@
 ﻿using PokemonRandomizer.Backend.DataStructures;
 using PokemonRandomizer.Backend.DataStructures.Trainers;
 using PokemonRandomizer.Backend.EnumTypes;
+using PokemonRandomizer.Backend.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,6 +23,7 @@ namespace PokemonRandomizer.Backend.Randomization
             if (settings.StarterSetting != Settings.StarterPokemonOption.Unchanged)
             {
                 ChooseStarters(data, pokemonSet, settings);
+                data.RandomizationResults.Add("Starters", data.Starters.Select(p => p.ToDisplayString()).ToList());
             }
             // Make sure all starters have attack moves
             if (settings.SafeStarterMovesets)
