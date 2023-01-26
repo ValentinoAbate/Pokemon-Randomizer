@@ -61,6 +61,7 @@
         public const string runIndoors = "runIndoors";
         public const string textSpeed = "textSpeed";
         public const string firstEncounter = "firstRoute";
+        public const string forecastRoutine = "forecastFormChangeRoutine";
 
         public abstract class GenIII
         {

@@ -136,6 +136,11 @@ namespace PokemonRandomizer.Backend.Randomization
 
         private TypeTransformation ChooseType(PokemonBaseStats pokemon, Settings settings)
         {
+            if(pokemon.species is Pokemon.CASTFORM)
+            {
+                pokemon.SecondaryType = RandomSecondaryType(types);
+                return TypeTransformation.GainSecondaryType;
+            }
             TypeTransformation transformationType;
             if (pokemon.IsSingleTyped)
             {
@@ -1449,7 +1454,7 @@ namespace PokemonRandomizer.Backend.Randomization
             if (pokemon.species == Pokemon.CASTFORM && data.VariantTypes.Length > 0)
             {
                 var variantType = data.VariantTypes[0];
-                if(variantType is not PokemonType.FIR)
+                if (variantType is not PokemonType.FIR)
                 {
                     paletteModifier.ModifyPalette(pokemon.palette, castFormSunPalData, data.VariantTypes);
                 }

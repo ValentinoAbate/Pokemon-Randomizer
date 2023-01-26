@@ -152,6 +152,11 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
             {
                 ApplyDeoxysMewObeyFix(rom, info);
             }
+            // Apply forecast hack if necessary
+            if (data.GetBaseStats(Pokemon.CASTFORM).IsVariant)
+            {
+                ApplyDualTypeForecastHack(rom, info);
+            }
 
             // Perform all of the repoint operations
             rom.RepointMany(repoints);
@@ -296,6 +301,32 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
             }
             int glitchPokemonCheck = ((Gen3Opcodes.cmpRegister | Gen3Opcodes.reg0) << 8) | (0x00);
             rom.WriteUInt16(glitchPokemonCheck);
+        }
+
+        private void ApplyDualTypeForecastHack(Rom rom, XmlManager info)
+        {
+            int forecastFormChangeOffset = info.FindOffset(ElementNames.forecastRoutine, rom);
+            // See forecast form change routine
+            if (forecastFormChangeOffset == Rom.nullPointer)
+            {
+                Logger.main.Unsupported(ElementNames.forecastRoutine);
+                return;
+            }
+            // Prevent the initial type change from setting the secondary type
+            rom.WriteByte(forecastFormChangeOffset + 104, 0x15);
+            // Prevent the normal type change from setting the secondary type
+            rom.WriteByte(forecastFormChangeOffset + 210, 0x1A);
+            // Prevent the sun type change from setting the secondary type
+            rom.WriteByte(forecastFormChangeOffset + 254, 0x10);
+            // Prevent the rain type change from setting the secondary type
+            rom.WriteByte(forecastFormChangeOffset + 298, 0x10);
+            // Prevent the hail type change from setting the secondary type
+            rom.WriteByte(forecastFormChangeOffset + 342, 0x10);
+
+            // Set all secondary type checks to check for normal (essentially null them out)
+            rom.WriteByte(forecastFormChangeOffset + 246, 0x00); // sun
+            rom.WriteByte(forecastFormChangeOffset + 290, 0x00); // rain
+            rom.WriteByte(forecastFormChangeOffset + 334, 0x00); // snow
         }
 
         private void WriteMoveData(List<MoveData> data, Rom rom, XmlManager info, ref RepointList repoints)
@@ -588,7 +619,25 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
         private void WritePokemonPalettes(PokemonBaseStats pokemon, int normalOffeset, int shinyOffset, Rom rom)
         {
             rom.SaveAndSeekOffset(normalOffeset);
-            paletteWriter.WriteCompressed(rom.ReadPointer(), pokemon.palette, rom);
+            // Later do for any palette that would exeed the max size after compression
+            if(pokemon.species == Pokemon.CASTFORM && pokemon.IsVariant)
+            {
+                int newCastformPalOffset = rom.FindFreeSpaceOffset(156) ?? Rom.nullPointer;
+                if(newCastformPalOffset != Rom.nullPointer)
+                {
+                    paletteWriter.WriteCompressed(newCastformPalOffset, pokemon.palette, rom);
+                    rom.WritePointer(newCastformPalOffset);
+                }
+                else
+                {
+                    Logger.main.Error("Failed to repoint castform palette (not enough free space), castform palette will not be written");
+                    rom.Skip(4);
+                }
+            }
+            else
+            {
+                paletteWriter.WriteCompressed(rom.ReadPointer(), pokemon.palette, rom);
+            }
             rom.WriteUInt16(pokemon.paletteIndex);
             rom.Seek(shinyOffset);
             paletteWriter.WriteCompressed(rom.ReadPointer(), pokemon.shinyPalette, rom);
