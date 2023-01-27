@@ -728,7 +728,7 @@ namespace PokemonRandomizer.Backend.Randomization
         };
 
         // Pokemon that shouldn't recieve bonus moves, only replacement moves
-        private static readonly HashSet<Pokemon> specialLearnsetPokemon = new HashSet<Pokemon>()
+        private static readonly HashSet<Pokemon> limitedLearnsetPokemon = new HashSet<Pokemon>()
         {
             Pokemon.CATERPIE,
             Pokemon.WURMPLE,
@@ -777,7 +777,44 @@ namespace PokemonRandomizer.Backend.Randomization
             return learnSet.Where(entry => dataT.GetMoveData(entry.move).IsType(type)).ToArray();
         }
 
-        private void ModifyLearnsetSpecial(PokemonBaseStats pokemon, Settings settings, VariantData data)
+        private void SpecialCastformMoves(PokemonBaseStats pokemon, VariantData data)
+        {
+            if (data.GainedTypes.Contains(PokemonType.RCK) || data.GainedTypes.Contains(PokemonType.GRD) || data.GainedTypes.Contains(PokemonType.STL))
+            {
+                var lookup = pokemon.learnSet.GetMovesLookup();
+                if (!lookup.Contains(Move.SANDSTORM))
+                {
+                    pokemon.learnSet.Add(Move.SANDSTORM, 20);
+                }
+            }
+            if (data.GainedTypes.Contains(PokemonType.GRS))
+            {
+                var lookup = pokemon.learnSet.GetMovesLookup();
+                if (!lookup.Contains(Move.SOLARBEAM))
+                {
+                    bonusMoveGenerator.AddBonusMove(pokemon, Move.SOLARBEAM);
+                }
+            }
+            if (data.GainedTypes.Contains(PokemonType.ELE))
+            {
+                var lookup = pokemon.learnSet.GetMovesLookup();
+                if (!lookup.Contains(Move.THUNDER))
+                {
+                    bonusMoveGenerator.AddBonusMove(pokemon, Move.THUNDER);
+                }
+            }
+            if (data.GainedTypes.Contains(PokemonType.ICE))
+            {
+                var lookup = pokemon.learnSet.GetMovesLookup();
+                if (!lookup.Contains(Move.BLIZZARD))
+                {
+                    bonusMoveGenerator.AddBonusMove(pokemon, Move.BLIZZARD);
+                }
+            }
+            // Hurricane (where supported)
+        }
+
+        private void ModifyLearnsetLimited(PokemonBaseStats pokemon, Settings settings, VariantData data)
         {
             // Apply standard replacements
             var availableAddMoves = GetAvailibleAddMoves(pokemon.learnSet);
@@ -800,9 +837,9 @@ namespace PokemonRandomizer.Backend.Randomization
 
         private void ModifyLearnset(PokemonBaseStats pokemon, Settings settings, VariantData data)
         {
-            if (specialLearnsetPokemon.Contains(pokemon.species))
+            if (limitedLearnsetPokemon.Contains(pokemon.species))
             {
-                ModifyLearnsetSpecial(pokemon, settings, data);
+                ModifyLearnsetLimited(pokemon, settings, data);
                 return;
             }
             // Apply carried over data from evolutionary line
@@ -865,6 +902,10 @@ namespace PokemonRandomizer.Backend.Randomization
                 {
                     AddMove(pokemon, 0, 0, 1, 99, data, ref availibleTypeMoves);
                 }
+            }
+            if(pokemon.species is Pokemon.CASTFORM)
+            {
+                SpecialCastformMoves(pokemon, data);
             }
         }
 

@@ -126,5 +126,14 @@ namespace PokemonRandomizer.Backend.Randomization
             Logger.main.Error($"No metric data, can't generate a learn level for move. Returning {learnLevelGenerationFailure}");
             return learnLevelGenerationFailure;
         }
+
+        public void AddBonusMove(PokemonBaseStats pokemon, Move m)
+        {
+            int learnLevel = GenerateLearnLevel(m);
+            if (learnLevel != learnLevelGenerationFailure)
+            {
+                pokemon.learnSet.Add(m, learnLevel);
+            }
+        }
     }
 }
