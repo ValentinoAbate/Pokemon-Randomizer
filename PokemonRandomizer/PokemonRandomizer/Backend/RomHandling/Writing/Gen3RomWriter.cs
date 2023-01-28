@@ -132,7 +132,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
             }
             if (settings.WeatherSetting != Settings.WeatherOption.Unchanged && metadata.IsFireRed && metadata.Version == 0)
             {
-                ApplySunHack(rom);
+                ApplySunHack(rom, info);
             }
             // Apply evolve without national dex hack if supported
             if (settings.EvolveWithoutNationalDex && metadata.IsFireRedOrLeafGreen)
@@ -279,16 +279,16 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
             }
         }
 
-        private void ApplySunHack(Rom rom)
+        private void ApplySunHack(Rom rom, XmlManager info)
         {
             // Fixes sun overworld weather (only works for Fire Red v1.0 rn)
             int routineOffset = rom.WriteInFreeSpace(Resources.Patches.Patches.SunfixFRv1) ?? Rom.nullPointer;
             if(routineOffset != Rom.nullPointer)
             {
-                rom.Seek(0x07A2AA);
+                rom.Seek(info.HexAttr(ElementNames.GenIII.sunHack, "routineOffset"));
                 rom.WriteBlock(new byte[] { 0x01, 0x48, 0x00, 0x47, 0xC0, 0x46 });
                 rom.WritePointer(routineOffset + 1);
-                rom.Seek(0x07AC2A);
+                rom.Seek(info.HexAttr(ElementNames.GenIII.sunHack, "secondOffset"));
                 rom.WriteBlock(new byte[] { 0x20, 0x22, 0x02, 0x70 });
             }
             else
