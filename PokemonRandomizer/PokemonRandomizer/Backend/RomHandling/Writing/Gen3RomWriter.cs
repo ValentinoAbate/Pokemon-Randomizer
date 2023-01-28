@@ -130,6 +130,10 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
             {
                 ApplyHailHack(settings.HailHackSetting, rom, info);
             }
+            if (settings.WeatherSetting != Settings.WeatherOption.Unchanged && metadata.IsFireRed && metadata.Version == 0)
+            {
+                ApplySunHack(rom);
+            }
             // Apply evolve without national dex hack if supported
             if (settings.EvolveWithoutNationalDex && metadata.IsFireRedOrLeafGreen)
             {
@@ -272,6 +276,24 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
             else
             {
                 Logger.main.Error("Failed to write hail hack routine in free space. Hail hack will not be applied");
+            }
+        }
+
+        private void ApplySunHack(Rom rom)
+        {
+            // Fixes sun overworld weather (only works for Fire Red v1.0 rn)
+            int routineOffset = rom.WriteInFreeSpace(Resources.Patches.Patches.SunfixFRv1) ?? Rom.nullPointer;
+            if(routineOffset != Rom.nullPointer)
+            {
+                rom.Seek(0x07A2AA);
+                rom.WriteBlock(new byte[] { 0x01, 0x48, 0x00, 0x47, 0xC0, 0x46 });
+                rom.WritePointer(routineOffset + 1);
+                rom.Seek(0x07AC2A);
+                rom.WriteBlock(new byte[] { 0x20, 0x22, 0x02, 0x70 });
+            }
+            else
+            {
+                Logger.main.Error("Failed to write sun fix routine in free space. Sunny overworld weather will cause black screens after battle");
             }
         }
 
