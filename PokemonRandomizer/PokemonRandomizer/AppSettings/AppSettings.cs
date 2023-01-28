@@ -374,6 +374,11 @@ namespace PokemonRandomizer.AppSettings
             get
             {
                 var weights = base.WeatherWeights;
+                if (Metadata.IsFireRedOrLeafGreen)
+                {
+                    // Causes black screen after battle and doesn't actually do anything in the overworld
+                    weights.RemoveIfContains(Map.Weather.StrongSunlight);
+                }
                 if (!Metadata.IsEmerald)
                 {
                     weights.RemoveIfContains(Map.Weather.Chaos);
