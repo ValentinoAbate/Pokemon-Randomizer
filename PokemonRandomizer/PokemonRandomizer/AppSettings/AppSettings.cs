@@ -374,6 +374,11 @@ namespace PokemonRandomizer.AppSettings
             get
             {
                 var weights = base.WeatherWeights;
+                if (Metadata.IsFireRedOrLeafGreen)
+                {
+                    weights.RemoveIfContains(Map.Weather.RainSometimes1);
+                    weights.RemoveIfContains(Map.Weather.RainSometimes2);
+                }
                 if (!Metadata.IsEmerald)
                 {
                     weights.RemoveIfContains(Map.Weather.Chaos);
