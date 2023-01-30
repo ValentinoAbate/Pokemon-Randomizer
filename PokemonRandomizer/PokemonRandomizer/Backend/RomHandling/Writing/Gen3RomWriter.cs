@@ -130,9 +130,10 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
             {
                 ApplyHailHack(settings.HailHackSetting, rom, info);
             }
-            if (settings.WeatherSetting != Settings.WeatherOption.Unchanged && metadata.IsFireRed && metadata.Version == 0)
+            // Apply sun weather fix for FRLG
+            if (settings.WeatherSetting != Settings.WeatherOption.Unchanged && metadata.IsFireRedOrLeafGreen)
             {
-                ApplySunHack(rom, info);
+                ApplySunHack(rom, info, metadata);
             }
             // Apply evolve without national dex hack if supported
             if (settings.EvolveWithoutNationalDex && metadata.IsFireRedOrLeafGreen)
@@ -237,7 +238,8 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
                 return;
             }
             // Hail Weather Hack. Makes the weather types "steady snow" and "three snowflakes" cause hail in battle
-            // Hack routine for FR 1.0 and Emerald compiled from bluRose's ASM routine. Thanks blueRose (https://www.pokecommunity.com/member.php?u=471720)!
+            // Hack routine for FR 1.0 and Emerald compiled from bluRose's ASM routine. Thanks blueRose (https://www.pokecommunity.com/member.php?u=471720)!\
+            // Hack routine for other versions (R/S and FRLG 1.1 modified from the original routine by me)
             // Emerald offsets from Panda Face (https://www.pokecommunity.com/member.php?u=660920)
             // Three snow flake spawning issue fix from ShinyDragonHunter (https://www.pokecommunity.com/member.php?u=241758)
             // Thread with all relevant posts: https://www.pokecommunity.com/showthread.php?t=351387&page=2
@@ -279,10 +281,27 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
             }
         }
 
-        private void ApplySunHack(Rom rom, XmlManager info)
+        private void ApplySunHack(Rom rom, XmlManager info, RomMetadata metadata)
         {
-            // Fixes sun overworld weather (only works for Fire Red v1.0 rn)
-            int routineOffset = rom.WriteInFreeSpace(Resources.Patches.Patches.SunfixFRv1) ?? Rom.nullPointer;
+            // binary for sunfixFR1 compiled from MrPkmn's sun fix asm. Thanks MrPkmn!
+            // post: (https://www.pokecommunity.com/showpost.php?p=8823257&postcount=5)
+            // profile: (https://www.pokecommunity.com/member.php?u=86277)
+            // sun fixes for other versions (LG 1.0 and FRLG 1.1 were compiled from asm written by me, modified from the original by MrPkmn)
+            byte[] asm;
+            if (metadata.IsFireRed)
+            {
+                asm = metadata.Version == 0 ? Resources.Patches.Patches.sunfixFR1 : Resources.Patches.Patches.sunfixFR1_1;
+            }
+            else if (metadata.IsLeafGreen)
+            {
+                asm = metadata.Version == 0 ? Resources.Patches.Patches.sunfixLG1 : Resources.Patches.Patches.sunfixLG1_1;
+            }
+            else
+            {
+                Logger.main.Error("Attempting Sun Fix on a non-FRLG rom. this should not happen");
+                return;
+            }
+            int routineOffset = rom.WriteInFreeSpace(asm) ?? Rom.nullPointer;
             if(routineOffset != Rom.nullPointer)
             {
                 rom.Seek(info.HexAttr(ElementNames.GenIII.sunHack, "routineOffset"));

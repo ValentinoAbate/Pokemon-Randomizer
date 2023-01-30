@@ -130,4 +130,13 @@
   <data name="sunfixFR1" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>sunfixfr1.bin;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="sunfixFR1-1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>sunfixfr1-1.bin;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="sunfixLG1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>sunfixlg1.bin;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="sunfixLG1-1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>sunfixlg1-1.bin;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
 </root>
