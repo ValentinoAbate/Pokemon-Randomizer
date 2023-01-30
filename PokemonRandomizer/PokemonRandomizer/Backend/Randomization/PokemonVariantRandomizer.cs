@@ -837,6 +837,10 @@ namespace PokemonRandomizer.Backend.Randomization
 
         private void ModifyLearnset(PokemonBaseStats pokemon, Settings settings, VariantData data)
         {
+            if (pokemon.species is Pokemon.SMEARGLE)
+            {
+                return;
+            }
             if (limitedLearnsetPokemon.Contains(pokemon.species))
             {
                 ModifyLearnsetLimited(pokemon, settings, data);
