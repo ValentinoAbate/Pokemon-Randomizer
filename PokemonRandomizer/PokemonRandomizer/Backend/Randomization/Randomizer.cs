@@ -31,14 +31,16 @@ namespace PokemonRandomizer.Backend.Randomization
         private readonly TrainerOrganizationRandomizer trainerOrgRand;
         private readonly StarterRandomizer starterRandomizer;
         private readonly TypeChartRandomizer typeChartRandomizer;
+        private readonly RomMetadata metadata;
 
         /// <summary>
         /// Create a new randomizer with given data and settings
         /// Input data will be mutated by randomizer calls
         /// </summary>
-        public Randomizer(RomData data, Settings settings, string seed)
+        public Randomizer(RomData data, RomMetadata metadata, Settings settings, string seed)
         {
             this.data = data;
+            this.metadata = metadata;
             this.settings = settings;
             // Initialize random generator
             rand = !string.IsNullOrEmpty(seed) ? new Random(seed) : new Random();
@@ -353,7 +355,7 @@ namespace PokemonRandomizer.Backend.Randomization
                                 pokemon.evolvesTo[index].IntParameter = evo.IntParameter;
                             }
                         }
-                        else if (evo.Type == EvolutionType.Friendship)
+                        else if (evo.Type == EvolutionType.Friendship && !metadata.IsFireRedOrLeafGreen)
                         {
                             evo.Type = rand.RandomBool() ? EvolutionType.FriendshipDay : EvolutionType.FriendshipNight;
                             int index = FirstEmptyEvo(pokemon.evolvesTo);

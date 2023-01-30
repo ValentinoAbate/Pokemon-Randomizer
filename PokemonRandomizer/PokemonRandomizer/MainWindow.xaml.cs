@@ -290,7 +290,7 @@ namespace PokemonRandomizer
         private RomData Randomize(string seed)
         {
             var copyData = Parser.Parse(Rom, Metadata, RomInfo);
-            var randomzier = new Backend.Randomization.Randomizer(copyData, AppSettings, seed);
+            var randomzier = new Backend.Randomization.Randomizer(copyData, Metadata, AppSettings, seed);
             var randomizedData = randomzier.Randomize();
             SetLastRandomizationInfo(randomizedData, Metadata, true);
             return randomizedData;
