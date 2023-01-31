@@ -94,12 +94,12 @@ namespace PokemonRandomizer.Backend.Randomization
                     moves.Enqueue(entry.move);
                 }
                 // Check coverage
-                if (HasFullCoverage(moves, data, typeChartSetting, out bool hasForesightCoverageMove, out bool hasForesight))
+                if (HasFullCoverage(moves, data, typeChartSetting, out bool hasForesightCoverageMove, out bool hasForesight, out bool perfectWithTackle))
                 {
                     continue;
                 }
                 // No coverage, apply fixes
-                if (typeChartSetting == TypeChartRandomizer.Option.Invert)
+                if (typeChartSetting == TypeChartRandomizer.Option.Invert || perfectWithTackle)
                 {
                     // There are no type immunities in inverted type charts, just add tackle
                     learnSet.Add(Move.TACKLE, starterLevel);
@@ -148,11 +148,12 @@ namespace PokemonRandomizer.Backend.Randomization
             }
         }
 
-        private bool HasFullCoverage(Queue<Move> moves, RomData data, TypeChartRandomizer.Option typeChartSetting, out bool hasForesightCoverageMove, out bool alreadyHasForesight)
+        private bool HasFullCoverage(Queue<Move> moves, RomData data, TypeChartRandomizer.Option typeChartSetting, out bool hasForesightCoverageMove, out bool alreadyHasForesight, out bool perfectWithTackle)
         {
             hasForesightCoverageMove = false;
             bool isForesightCoverageMoveFirst = false;
             alreadyHasForesight = false; // TODO: scrappy exception
+            perfectWithTackle = false;
             var attackingTypes = new List<PokemonType>(4);
             while(moves.Count > 0)
             {
@@ -188,6 +189,15 @@ namespace PokemonRandomizer.Backend.Randomization
             // If there are no pokemon that are immune to all attacking types availible, that is considered full coverage  
             if (!data.Pokemon.Any(p => attackingTypes.All(t => data.TypeDefinitions.IsImmune(p, t))))
                 return true;
+            if (!attackingTypes.Contains(PokemonType.NRM))
+            {
+                if (attackingTypes.Count == 4)
+                {
+                    attackingTypes.RemoveAt(0);
+                }
+                attackingTypes.Add(PokemonType.NRM);
+                perfectWithTackle = !data.Pokemon.Any(p => attackingTypes.All(t => data.TypeDefinitions.IsImmune(p, t)));
+            }
             // Foresight coverage move move would get removed from starting set when foresight gets added, so it's irrelevant
             hasForesightCoverageMove &= !isForesightCoverageMoveFirst;
             return false;
