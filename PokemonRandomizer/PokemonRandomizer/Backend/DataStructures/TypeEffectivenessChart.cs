@@ -140,6 +140,13 @@ namespace PokemonRandomizer.Backend.DataStructures
                     return false;
                 }
             }
+            foreach (var (typePair, effectiveness) in IgnoreAfterForesight)
+            {
+                if (typePair.defendingType == singleType && effectiveness == TypeEffectiveness.SuperEffective)
+                {
+                    return false;
+                }
+            }
             return true;
         }
 
