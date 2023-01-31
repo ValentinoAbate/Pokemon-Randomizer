@@ -26,6 +26,26 @@ namespace PokemonRandomizer.Backend.DataStructures
         public static readonly byte[] endSequence = { 0xFF, 0xFF, 0x00 };
         // The byte sequence that marks the end of the non-ignoreAfterForesight relations
         public static readonly byte[] separatorSequence = { 0xFE, 0xFE, 0x00 };
+        public static bool HasAbilityImmunity(PokemonType type)
+        {
+            // ELE: Volt absorb, Motor Drive, lightningrod (gen V+)
+            // WAT: Water absorb, dry skin, storm drain (gen V+)
+            // FIR: Flash fire
+            // GRD: Levitate
+            // GRS: Sap Sipper (gen V+)
+            return type is PokemonType.ELE or PokemonType.WAT or PokemonType.FIR or PokemonType.GRD;
+        }
+        public static bool HasAbilityImmunity(PokemonBaseStats defender, PokemonType atkType)
+        {
+            return atkType switch
+            {
+                PokemonType.GRD => defender.HasAbility(Ability.Levitate),
+                PokemonType.FIR => defender.HasAbility(Ability.Flash_Fire),
+                PokemonType.WAT => defender.HasAbility(Ability.Water_Absorb) || defender.HasAbility(Ability.Dry_Skin), // Note gen V +storm drain
+                PokemonType.ELE => defender.HasAbility(Ability.Volt_Absorb) || defender.HasAbility(Ability.Motor_Drive), // Note Gen V : lightningrod can also cause immunity
+                _ => false
+            };
+        }
         // The current amount of typerelations
         public int Count { get => TypeRelations.Count + IgnoreAfterForesight.Count; }
         // The amount of relations when read from the ROM (set manually)
@@ -202,6 +222,38 @@ namespace PokemonRandomizer.Backend.DataStructures
                 }
             }
             return true;
+        }
+
+        public bool HasPerfectCoverage(PokemonType atkType)
+        {
+            // TODO: mold breaker exception
+            if (HasAbilityImmunity(atkType))
+                return false;
+            foreach (var (typePair, effectiveness) in TypeRelations)
+            {
+                if (typePair.attackingType == atkType && effectiveness == TypeEffectiveness.NoEffect)
+                {
+                    return false;
+                }
+            }
+            // TODO: scappy exception
+            foreach (var (typePair, effectiveness) in IgnoreAfterForesight)
+            {
+                if (typePair.attackingType == atkType && effectiveness == TypeEffectiveness.NoEffect)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        public bool IsImmune(PokemonBaseStats defender, PokemonType atkType)
+        {
+            if (HasAbilityImmunity(defender, atkType))
+                return true;
+            if (GetEffectiveness(atkType, defender.PrimaryType) == TypeEffectiveness.NoEffect)
+                return true;
+            return defender.IsDualTyped && GetEffectiveness(atkType, defender.SecondaryType) == TypeEffectiveness.NoEffect;
         }
 
         // A class for storing a pairing of two types. Is hashable

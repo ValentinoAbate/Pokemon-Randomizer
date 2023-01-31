@@ -28,7 +28,7 @@ namespace PokemonRandomizer.Backend.Randomization
             // Make sure all starters have attack moves
             if (settings.SafeStarterMovesets)
             {
-                ApplySafeStarterLearnsets(data);
+                ApplySafeStarterLearnsets(data, settings.TypeChartRandomizationSetting);
             }
         }
 
@@ -75,7 +75,7 @@ namespace PokemonRandomizer.Backend.Randomization
             }
         }
 
-        private void ApplySafeStarterLearnsets(RomData data)
+        private void ApplySafeStarterLearnsets(RomData data, TypeChartRandomizer.Option typeChartSetting)
         {
             var moves = new Queue<Move>(TrainerPokemon.numMoves);
             foreach (var pkmn in data.Starters)
@@ -94,18 +94,30 @@ namespace PokemonRandomizer.Backend.Randomization
                     moves.Enqueue(entry.move);
                 }
                 // Check coverage
-                if (HasFullCoverage(moves, data, out bool hasFightingOrNormalMove))
+                if (HasFullCoverage(moves, data, typeChartSetting, out bool hasForesightCoverageMove, out bool hasForesight))
                 {
                     continue;
                 }
                 // No coverage, apply fixes
-                var lookup = learnSet.GetMovesLookup();
-                // Add odor sleuth / foresight
-                learnSet.Add(lookup.Contains(Move.ODOR_SLEUTH) ? Move.ODOR_SLEUTH : Move.FORESIGHT, starterLevel);
-                // Add tackle if a normal move is needed
-                if (!hasFightingOrNormalMove)
+                if (typeChartSetting == TypeChartRandomizer.Option.Invert)
                 {
+                    // There are no type immunities in inverted type charts, just add tackle
                     learnSet.Add(Move.TACKLE, starterLevel);
+                }
+                else
+                {
+                    var lookup = learnSet.GetMovesLookup();
+                    if (!hasForesight)
+                    {
+                        // Add odor sleuth / foresight
+                        learnSet.Add(lookup.Contains(Move.ODOR_SLEUTH) ? Move.ODOR_SLEUTH : Move.FORESIGHT, starterLevel);
+                    }
+                    // Add tackle if a normal move is needed
+                    if (!hasForesightCoverageMove)
+                    {
+                        var coverageMove = typeChartSetting == TypeChartRandomizer.Option.Swap ? Move.ASTONISH : Move.TACKLE;
+                        learnSet.Add(coverageMove, starterLevel);
+                    }
                 }
                 // Hoist up moves if neccessary
                 int numLostMoves = -TrainerPokemon.numMoves;
@@ -136,11 +148,11 @@ namespace PokemonRandomizer.Backend.Randomization
             }
         }
 
-        private bool HasFullCoverage(Queue<Move> moves, RomData data, out bool hasFightingOrNormalMove)
+        private bool HasFullCoverage(Queue<Move> moves, RomData data, TypeChartRandomizer.Option typeChartSetting, out bool hasForesightCoverageMove, out bool alreadyHasForesight)
         {
-            hasFightingOrNormalMove = false;
-            bool isFightingOrNormalMoveFirst = false;
-            bool alreadyHasForesight = false;
+            hasForesightCoverageMove = false;
+            bool isForesightCoverageMoveFirst = false;
+            alreadyHasForesight = false; // TODO: scrappy exception
             var attackingTypes = new List<PokemonType>(4);
             while(moves.Count > 0)
             {
@@ -155,57 +167,43 @@ namespace PokemonRandomizer.Backend.Randomization
                     continue;
                 }
                 // Full coverage by this move alone
-                if (HasNoImmunities(moveData.type))
+                if (data.TypeDefinitions.HasPerfectCoverage(moveData.type))
                 {
                     return true;
                 }
                 // Note Gen I : foresight doesn't exist
-                if (moveData.type is PokemonType.NRM or PokemonType.FTG)
+                if (IsForesightCoverageMove(moveData.type, typeChartSetting))
                 {
-                    hasFightingOrNormalMove = true;
-                    isFightingOrNormalMoveFirst = moves.Count >= (TrainerPokemon.numMoves - 1);
+                    hasForesightCoverageMove = true;
+                    isForesightCoverageMoveFirst = moves.Count >= (TrainerPokemon.numMoves - 1);
                 }
                 if (!attackingTypes.Contains(moveData.type))
                 {
                     attackingTypes.Add(moveData.type);
                 }
             }
-            // If they already have a fighting or normal move and foresight, that is considered full coverage
-            if (hasFightingOrNormalMove && alreadyHasForesight)
+            // If they already have a foresight coverage move and foresight, that is considered full coverage
+            if (hasForesightCoverageMove && alreadyHasForesight)
                 return true;
             // If there are no pokemon that are immune to all attacking types availible, that is considered full coverage  
-            if (!data.Pokemon.Any(p => attackingTypes.All(t => IsImmune(p, t))))
+            if (!data.Pokemon.Any(p => attackingTypes.All(t => data.TypeDefinitions.IsImmune(p, t))))
                 return true;
-            // Fighting / Normal move would get removed from starting set when foresight gets added, so it's irrelevant
-            hasFightingOrNormalMove &= !isFightingOrNormalMoveFirst;
+            // Foresight coverage move move would get removed from starting set when foresight gets added, so it's irrelevant
+            hasForesightCoverageMove &= !isForesightCoverageMoveFirst;
             return false;
         }
 
-        private bool HasNoImmunities(PokemonType type)
+        private bool IsForesightCoverageMove(PokemonType type, TypeChartRandomizer.Option typeChartSetting)
         {
-            // Note Gen VI : DRG will have an immunity due to fairy existing
-            // Note Gen V : Sap sipper will create a grass immunity
-            // Note Gen III : soundproof????
-            // Note Gen II Note Gen I: FIR and WAT have no immunities because abilities don't exist
-            // Note Gen I : PSN and PSY have no immunities because dark and steel don't exist
-            return type is PokemonType.FLY or PokemonType.RCK or PokemonType.BUG or PokemonType.STL or PokemonType.GRS or PokemonType.ICE or PokemonType.DRG or PokemonType.DRK or PokemonType.FAI;
-        }
-
-        private bool IsImmune(PokemonBaseStats stats, PokemonType type)
-        {
-            return type switch
+            if(typeChartSetting == TypeChartRandomizer.Option.None)
             {
-                PokemonType.NRM or PokemonType.FTG => stats.IsType(PokemonType.GHO),
-                PokemonType.PSN => stats.IsType(PokemonType.STL),
-                PokemonType.GRD => stats.IsType(PokemonType.FLY) || stats.HasAbility(Ability.Levitate),
-                PokemonType.GHO => stats.IsType(PokemonType.NRM),
-                PokemonType.FIR => stats.HasAbility(Ability.Flash_Fire),
-                PokemonType.WAT => stats.HasAbility(Ability.Water_Absorb) || stats.HasAbility(Ability.Dry_Skin) || stats.HasAbility(Ability.Storm_Drain),
-                PokemonType.ELE => stats.IsType(PokemonType.GRD) || stats.HasAbility(Ability.Volt_Absorb) || stats.HasAbility(Ability.Motor_Drive), // Note Gen V : lightningrod can also cause immunity
-                PokemonType.PSY => stats.IsType(PokemonType.DRK),
-                PokemonType.DRG => stats.IsType(PokemonType.FAI),
-                _ => false
-            };
+                return type is PokemonType.NRM or PokemonType.FTG;
+            }
+            if(typeChartSetting == TypeChartRandomizer.Option.Swap)
+            {
+                return type is PokemonType.GHO;
+            }
+            return false;
         }
     }
 }

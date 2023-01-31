@@ -18,7 +18,7 @@ namespace PokemonRandomizer.UI.Views
         };
         private const string strongTriTooltip = "Only generate type triangles where each pokemon is super effective against AND resistant to the next (as opposed to just super effective against)";
         private const string safeMovesetsTooltip = "Ensure that starters will have attacking move(s) at level 5 that can hit all pokemon in the game" +
-            "\nAny starter whose moveset is unsafe will be given Foresight or Odor Sleuth, and Tackle if necessary" +
+            "\nAny starter whose moveset is unsafe will be given Foresight or Odor Sleuth, and Tackle / Astonish if necessary" +
             "\nAny moves that would be skipped over at level 5 due to added moves will instead be learned at level 6";
         private const string banLegendariesTooltip = "Ban legendaries from being chosen as random starters. Legendaries specifically selected as Custom starters will not be affected";
         public StartersDataView(StartersDataModel model, string[] pokemonNames, List<Pokemon> pokemon)
