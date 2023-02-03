@@ -107,6 +107,8 @@ namespace PokemonRandomizer.Backend.Randomization
                 return true;
             if (moveData.IsType(pokemon))
                 return true;
+            if (pokemon.species is Pokemon.CASTFORM && CastformCompat(moveData))
+                return true;
             if (pokemon.eggMoves.Contains(move))
                 return true;
             if (pokemon.originalUnlearnableTmHmMtMoves.Contains(move))
@@ -114,6 +116,13 @@ namespace PokemonRandomizer.Backend.Randomization
             if (moveData.IsType(PokemonType.NRM))
                 return rand.RollSuccess(data.intelligentNormalRandChance);
             return rand.RollSuccess(data.intelligentRandChance);
+        }
+
+        // Allow castform access to all fire / water / ice / electric moves
+        // Maybe require moves to be special
+        private bool CastformCompat(MoveData moveData)
+        {
+            return !moveData.IsStatus && (moveData.IsType(PokemonType.FIR) || moveData.IsType(PokemonType.WAT) || moveData.IsType(PokemonType.ICE) || moveData.IsType(PokemonType.ELE));
         }
 
         public class Data
