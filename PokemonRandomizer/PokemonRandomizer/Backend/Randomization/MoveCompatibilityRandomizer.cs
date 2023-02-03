@@ -64,7 +64,7 @@ namespace PokemonRandomizer.Backend.Randomization
                     var moveData = dataT.GetMoveData(moveList[i]);
                     foreach (var type in variantTypes)
                     {
-                        if (moveData.IsType(type))
+                        if (moveData.IsType(type) || SpecialHMCompat(moveData.move, type))
                         {
                             compat[i] = true;
                         }
@@ -123,6 +123,27 @@ namespace PokemonRandomizer.Backend.Randomization
         private bool CastformCompat(MoveData moveData)
         {
             return !moveData.IsStatus && (moveData.IsType(PokemonType.FIR) || moveData.IsType(PokemonType.WAT) || moveData.IsType(PokemonType.ICE) || moveData.IsType(PokemonType.ELE));
+        }
+
+        // Special variant HM compatibility for off-type attacking moves (can't be handled by type overrides)
+        private bool SpecialHMCompat(Move move, PokemonType type)
+        {
+            if(move is Move.STRENGTH)
+            {
+                // Fighting types always get access to strength
+                return type is PokemonType.FTG;
+            }
+            if(move is Move.CUT)
+            {
+                // Bug types always get cut
+                return type is PokemonType.BUG;
+            }
+            if(move is Move.ROCK_CLIMB)
+            {
+                // Rock and fighting types always get rock climb
+                return type is PokemonType.RCK or PokemonType.FTG;
+            }
+            return false;
         }
 
         public class Data
