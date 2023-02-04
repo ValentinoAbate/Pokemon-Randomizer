@@ -11,7 +11,7 @@ namespace PokemonRandomizer.UI.Models
         public Box<bool> FixImpossibleEvos { get; set; } = new Box<bool>(true);
         public Box<double> ImpossibleEvoLevelStandardDev { get; set; } = new Box<double>(1);
         public Box<bool> ConsiderEvolveByBeautyImpossible { get; set; } = new Box<bool>(true);
-        public Box<TradeItemPokemonOption> TradeItemEvoSetting { get; set; } = new Box<TradeItemPokemonOption>(TradeItemPokemonOption.LevelUp);
+        public Box<TradeItemPokemonOption> TradeItemEvoSetting { get; set; } = new Box<TradeItemPokemonOption>(TradeItemPokemonOption.UseItem);
         public Box<bool> DunsparsePlague { get; set; } = new Box<bool>();
         public Box<double> DunsparsePlaugeChance { get; set; } = new Box<double>(0.1);
 

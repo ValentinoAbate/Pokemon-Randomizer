@@ -11,6 +11,13 @@ namespace PokemonRandomizer.UI.Views
     using CatchRateOption = Settings.CatchRateOption;
     public class PokemonTraitsDataView : DataView<PokemonTraitsModel>
     {
+        private const string fixImpossibleEvosTooltip = "Ensure all pokemon can evolve to all of their evolutions. See info file for detailed evolution info after randomization"+
+            "\nAffected evolution types: " +
+            "\nTrade -> Level Up or Trade" +
+            "\nTrade w/ Item -> Varies (See \"Trade item evolution type\" setting)" +
+            "\nBeauty -> Level Up or Beauty (Optional)" +
+            "\nFriendship (Day) -> Sun Stone (FRLG Only)" +
+            "\nFriendship (Night) -> Moon Stone (FRLG Only)";
 
         public PokemonTraitsDataView(PokemonTraitsModel model)
         {
@@ -21,7 +28,7 @@ namespace PokemonRandomizer.UI.Views
             tabs.Add(CreateExpYieldTab(model));
         }
 
-        private CompositeCollection CompatOptionDropdown => new CompositeCollection()
+        private CompositeCollection TradeItemOptionDropdown => new CompositeCollection()
         {
             new ComboBoxItem() { Content="Level Up", ToolTip = "Pokemon that normally evolve by trading with an item will evolve by level-up. Slowpoke and Clamperl will evolve with wurmple logic" },
             new ComboBoxItem() { Content="Use Item", ToolTip = "Pokemon that normally evolve by trading with an item will evolve when that item is used on them"},
@@ -31,10 +38,10 @@ namespace PokemonRandomizer.UI.Views
         {
             var stack = CreateStack();
             stack.Header(UISkin.Current.HacksAndTweaksHeader);
-            var impossibleCb = stack.Add(new BoundCheckBoxUI(model.FixImpossibleEvos, "Fix Trade Evolutions"));
-            impossibleCb.BindVisibility(stack.Add(new EnumComboBoxUI<TradeItemPokemonOption>("Trade item evolution type", CompatOptionDropdown, model.TradeItemEvoSetting)));
-            stack.Add(new BoundCheckBoxUI(model.ConsiderEvolveByBeautyImpossible, "Fix Beauty-Based Evolutions"));
-            stack.Add(new BoundSliderUI("Fixed evolution level variance", model.ImpossibleEvoLevelStandardDev, false, 0.01, 0, 3));
+            var impossibleCb = stack.Add(new BoundCheckBoxUI(model.FixImpossibleEvos, "Fix Impossible Evolutions", fixImpossibleEvosTooltip));
+            impossibleCb.BindEnabled(stack.Add(new EnumComboBoxUI<TradeItemPokemonOption>("Trade item evolution type", TradeItemOptionDropdown, model.TradeItemEvoSetting)));
+            impossibleCb.BindEnabled(stack.Add(new BoundCheckBoxUI(model.ConsiderEvolveByBeautyImpossible, "Fix Beauty-Based Evolutions")));
+            impossibleCb.BindEnabled(stack.Add(new BoundSliderUI("Fixed evolution level variance", model.ImpossibleEvoLevelStandardDev, false, 0.01, 0, 3)));
             stack.Add(new RandomChanceUI("Dunsparse Plague", model.DunsparsePlague, model.DunsparsePlaugeChance));
             return CreateTabItem("Evolution", stack);
         }

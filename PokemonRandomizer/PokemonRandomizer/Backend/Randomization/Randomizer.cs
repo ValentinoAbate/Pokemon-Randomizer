@@ -324,6 +324,22 @@ namespace PokemonRandomizer.Backend.Randomization
                         {
                             MakeEvolutionByLevelUp(evo);
                         }
+                        else if (evo.Type == EvolutionType.FriendshipDay)
+                        {
+                            if (metadata.IsFireRedOrLeafGreen)
+                            {
+                                evo.Type = EvolutionType.UseItem;
+                                evo.ItemParamater = Item.Sun_Stone;
+                            }
+                        }
+                        else if (evo.Type == EvolutionType.FriendshipNight)
+                        {
+                            if (metadata.IsFireRedOrLeafGreen)
+                            {
+                                evo.Type = EvolutionType.UseItem;
+                                evo.ItemParamater = Item.Moon_Stone;
+                            }
+                        }
                     }
                 }
                 foreach (var evo in pokemon.evolvesTo)
