@@ -27,18 +27,15 @@ namespace PokemonRandomizer.UI.Views
 
         public TmHmTutorDataView(TmHmTutorModel model)
         {
-            var stack = new StackPanel() { Orientation = Orientation.Vertical };
-            Content = stack;
-            stack.Add(new Label() { Content = "Randomization" });
-            stack.Add(new Separator());
+            var stack = CreateMainStack();
+            stack.Header("Randomization");
             stack.Add(new RandomChanceUI("Random TM Moves", model.RandomizeTMs, model.TMRandChance));
             stack.Add(new RandomChanceUI("Random Tutor Moves", model.RandomizeMoveTutors, model.MoveTutorRandChance));
             stack.Add(new BoundCheckBoxUI(model.NoHmMovesInTMsAndTutors, "Prevent HM moves in TMs and Tutors"));
             stack.Add(new BoundCheckBoxUI(model.NoDuplicateTMsAndTutors, "Prevent duplicate moves in TMs and Tutors"));
             stack.Add(new BoundCheckBoxUI(model.KeepImportantTmsAndTutors, "Keep important TMs and Tutors", "Ensures that important TMs and Tutors won't be randomized (Secret Power + Dig in RSE)"));
             stack.Add(new Separator());
-            stack.Add(new Label() { Content = "Compatibility" });
-            stack.Add(new Separator());
+            stack.Header("Compatibility");
             var compatDropdown = stack.Add(new EnumComboBoxUI<CompatOption>("Compatibility Strategy", CompatOptionDropdown, model.MoveCompatOption));
             stack.Add(compatDropdown.BindVisibility(new BoundSliderUI("Random Compatibility Chance", model.RandomCompatTrueChance), (int)CompatOption.Random, (int)CompatOption.RandomKeepNumber));
             stack.Add(compatDropdown.BindVisibility(new BoundSliderUI("Intelligent Compatibiliy Random Chance (NORMAL Moves)", model.IntelligentCompatNormalRandChance, true, 0.01, 0, 0.5) { ToolTip = intelligentRandomNormalTooltip}, (int)CompatOption.Intelligent));
