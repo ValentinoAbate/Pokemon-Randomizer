@@ -183,11 +183,12 @@ namespace PokemonRandomizer.AppSettings
 
         #endregion
 
-        #region Catch Rates
+        #region Catch / Hatch Rates
 
         public override CatchRateOption CatchRateSetting => pokemonData.CatchRateSetting;
         public override bool KeepLegendaryCatchRates => pokemonData.KeepLegendaryCatchRates;
         public override byte CatchRateConstant => DoubleToByteInverse(pokemonData.CatchRateConstantDifficulty);
+        public override bool FastHatching => pokemonData.FastHatching;
 
         #endregion
 

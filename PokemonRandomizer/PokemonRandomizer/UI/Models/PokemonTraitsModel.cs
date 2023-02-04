@@ -19,6 +19,9 @@ namespace PokemonRandomizer.UI.Models
         public Box<CatchRateOption> CatchRateSetting { get; set; } = new Box<CatchRateOption>(CatchRateOption.Unchanged);
         public Box<bool> KeepLegendaryCatchRates { get; set; } = new Box<bool>(true);
         public Box<double> CatchRateConstantDifficulty { get; set; } = new Box<double>(0.5);
+
+        // Hatch rate parameters
+        public Box<bool> FastHatching { get; set; } = new(false);
         
         // Yield parameters
         public Box<double> BaseExpYieldMultiplier { get; set; } = new Box<double>(1);

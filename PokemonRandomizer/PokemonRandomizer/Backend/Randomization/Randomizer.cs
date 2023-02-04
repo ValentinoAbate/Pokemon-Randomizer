@@ -441,9 +441,16 @@ namespace PokemonRandomizer.Backend.Randomization
                 }
                 #endregion
 
+                #region Hatch Rates
+                if (settings.FastHatching) 
+                {
+                    pokemon.eggCycles = 0;
+                }
+                #endregion
+
                 #region Exp / EV Yields
 
-                if(settings.BaseExpYieldMultiplier != 1)
+                if (settings.BaseExpYieldMultiplier != 1)
                 {
                     pokemon.baseExpYield = (byte)Math.Max(byte.MinValue, Math.Min(byte.MaxValue, Math.Floor(pokemon.baseExpYield * settings.BaseExpYieldMultiplier)));
                 }

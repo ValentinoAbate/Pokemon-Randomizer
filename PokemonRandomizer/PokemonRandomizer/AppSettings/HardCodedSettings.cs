@@ -120,6 +120,8 @@ namespace PokemonRandomizer.AppSettings
             { CatchRateOption.IntelligentHard, 45},
         };
 
+        public override bool FastHatching => false;
+
         #endregion
 
         #region Exp / EV Yields

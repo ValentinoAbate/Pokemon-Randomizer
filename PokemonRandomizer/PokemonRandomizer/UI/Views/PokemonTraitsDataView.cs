@@ -67,7 +67,9 @@ namespace PokemonRandomizer.UI.Views
             var optionCb = stack.Add(new EnumComboBoxUI<CatchRateOption>("Randomization Strategy", CatchRateOptionDropdown, model.CatchRateSetting));
             optionCb.BindVisibility(stack.Add(new BoundSliderUI("Constant Difficulty", model.CatchRateConstantDifficulty, false)), (int)CatchRateOption.Constant);
             stack.Add(new BoundCheckBoxUI(model.KeepLegendaryCatchRates, "Keep Legendary Catch Rates"));
-            return CreateTabItem("Catch Rate", stack);
+            stack.Header("Egg Hatch Rate Modifications");
+            stack.Add(new BoundCheckBoxUI(model.FastHatching, "Fast Egg Hatching", "All pokemon eggs hatch in the minimum possible egg cycles"));
+            return CreateTabItem("Catch / Hatch Rate", stack);
         }
 
         private TabItem CreateExpYieldTab(PokemonTraitsModel model)

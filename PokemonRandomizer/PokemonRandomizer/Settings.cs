@@ -81,7 +81,7 @@ namespace PokemonRandomizer
 
         #endregion
 
-        #region Catch Rates
+        #region Catch / Hatch Rates
 
         public enum CatchRateOption
         {
@@ -98,6 +98,7 @@ namespace PokemonRandomizer
         public abstract byte CatchRateConstant { get; }
         public abstract byte IntelligentCatchRateBasicThreshold { get; }
         public abstract byte IntelligentCatchRateEvolvedThreshold { get; }
+        public abstract bool FastHatching { get; }
 
         #endregion
 
