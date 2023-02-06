@@ -12,8 +12,9 @@ namespace PokemonRandomizer.UI
         public BoundCheckBoxUI(Box<bool> box, string label, string tooltip, UIElement enableOnChecked = null) : this(box, b => box.Value = b, label, tooltip, enableOnChecked) { }
         public BoundCheckBoxUI(bool isChecked, Action<bool> onEnabledChange, UIElement enableOnChecked = null) : base()
         {
-            Margin = new Thickness(5, 2, 2, 2);
+            Margin = new Thickness(5, 0, 0, 0);
             IsChecked = isChecked;
+            VerticalContentAlignment = VerticalAlignment.Center;
             if(enableOnChecked != null)
             {
                 enableOnChecked.IsEnabled = isChecked;
@@ -36,7 +37,7 @@ namespace PokemonRandomizer.UI
 
         public BoundCheckBoxUI(bool isChecked, Action<bool> onEnabledChange, string label, UIElement enableOnChecked = null) : this(isChecked, onEnabledChange, enableOnChecked)
         {
-            Content = label;
+            Content = new Label() { Content = label, Margin = new Thickness(-5, 0, 0, 0), VerticalContentAlignment = VerticalAlignment.Center };
         }
 
         public BoundCheckBoxUI(bool isChecked, Action<bool> onEnabledChange, string label, string tooltip, UIElement enableOnChecked = null) : this(isChecked, onEnabledChange, label, enableOnChecked)
