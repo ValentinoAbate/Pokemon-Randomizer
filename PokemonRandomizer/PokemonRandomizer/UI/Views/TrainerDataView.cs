@@ -47,6 +47,9 @@ namespace PokemonRandomizer.UI.Views
         private const string ignoreRestrictionsTooltip = "The chance that all restrictions (Evolution Restrictions, Legendary Ban, Type Theming, etc.) will be ignored for any given pokemon";
         private const string minibossTooltip = "Minibosses include Ace/CoolTrainers, Team Admins, and Rivals";
         private const string bossTooltip = "Bosses include Team Leaders, Gym Leaders, the Elite Four, Champions, and Special bosses like Steven (Emerald) and Red (GS/HGSS)";
+        private const string alwaysGenMovesetsTooltip = "Specifically chooses movesets for all trainer pokemon instead of using the default move generation" +
+            "\nThe moves chosen are based on the moves the pokemon or a pre-evolution can know at the level it appears at (no TMs, etc.)" +
+            "\nThis setting can help pokemon that evolve from stones have usable movesets, and makes movesets less predictable";
 
         public TrainerDataView(TrainerDataModel model)
         {
@@ -76,7 +79,7 @@ namespace PokemonRandomizer.UI.Views
             bonusPokemonStack.Add(new BoundCheckBoxUI(model.BonusPokemon, "Normal Trainers") { VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(0,2,2,2) });
             bonusPokemonStack.Add(new BoundCheckBoxUI(model.BonusPokemonMiniboss, "Minibosses") { ToolTip = minibossTooltip, VerticalAlignment = VerticalAlignment.Center });
             bonusPokemonStack.Add(new BoundCheckBoxUI(model.BonusPokemonBoss, "Bosses") { ToolTip = bossTooltip, VerticalAlignment = VerticalAlignment.Center });
-            pokemonStack.Add(new BoundCheckBoxUI(model.ForceCustomMoves, "Always Generate Movesets") { ToolTip = "Specifically chooses movesets for all trainer pokemon instead of using the default move generation. The moves chosen are based on the moves the pokemon or a pre-evolution can know at the level it appears at (no TMs, etc.). This setting can help pokemon that evolve from stones have usable movesets, and makes movesets less predictable" });
+            pokemonStack.Add(new BoundCheckBoxUI(model.ForceCustomMoves, "Always Generate Movesets") { ToolTip = alwaysGenMovesetsTooltip });
             pokemonStack.Add(new EnumComboBoxUI<PokemonPcgStrategy>("Recurring Trainer Pokemon Randomization Strategy", PokemonStrategyDropdown, model.PokemonStrategy));
             // Battle Type Randomization
             stack.Header("Battle Type");
