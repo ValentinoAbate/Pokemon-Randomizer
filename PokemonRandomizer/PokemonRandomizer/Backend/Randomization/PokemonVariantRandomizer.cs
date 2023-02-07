@@ -837,7 +837,7 @@ namespace PokemonRandomizer.Backend.Randomization
 
         private void ModifyLearnset(PokemonBaseStats pokemon, Settings settings, VariantData data)
         {
-            if (pokemon.species is Pokemon.SMEARGLE)
+            if (pokemon.species is Pokemon.SMEARGLE or Pokemon.DITTO)
             {
                 return;
             }
