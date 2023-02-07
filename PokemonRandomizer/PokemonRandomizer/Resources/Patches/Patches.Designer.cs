@@ -63,7 +63,12 @@ namespace PokemonRandomizer.Resources.Patches {
         /// <summary>
         ///   Looks up a localized string similar to All credit for PhysSpecSplitEM 1.4 and PhysSpecSplitFR 1.6 goes to DoesntKnowHowToPlay
         ///post: https://www.pokecommunity.com/showpost.php?p=7465618&amp;postcount=163
-        ///profile: https://www.pokecommunity.com/member.php?u=300067.
+        ///profile: https://www.pokecommunity.com/member.php?u=300067
+        ///
+        ///binary for sunfixFR1 compiled from MrPkmn&apos;s sun fix asm
+        ///post: (https://www.pokecommunity.com/showpost.php?p=8823257&amp;postcount=5)
+        ///profile: (https://www.pokecommunity.com/member.php?u=86277)
+        ///sun fixes for other versions (LG 1.0 and FRLG 1.1 were compiled from asm written by me, modified [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string Credits {
             get {
