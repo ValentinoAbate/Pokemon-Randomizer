@@ -15,17 +15,22 @@ namespace PokemonRandomizer.UI.Views
         private const string randomTypeThemeTooltip = "Choose a random type theme";
         private static CompositeCollection TypeThemeDropdown => new CompositeCollection()
         {
-            new ComboBoxItem() { Content="Default", ToolTip="Use the same setting as the \"Intelligent Type Theming\" setting in the Trainers tab" },
             new ComboBoxItem() { Content="Off" },
-            new ComboBoxItem() { Content="Intelligent", ToolTip = intelligentTypeThemeTooltip },
-            new ComboBoxItem() { Content="Random", ToolTip = randomTypeThemeTooltip },
+            new ComboBoxItem() { Content="On (Intelligent)", ToolTip = intelligentTypeThemeTooltip },
+            new ComboBoxItem() { Content="On (Random)", ToolTip = randomTypeThemeTooltip },
+        };
+        private static List<TrainerOrgTypeTheme> TypeThemeOptions => new List<TrainerOrgTypeTheme>()
+        {
+            TrainerOrgTypeTheme.Off,
+            TrainerOrgTypeTheme.On,
+            TrainerOrgTypeTheme.Random
         };
         private static CompositeCollection ChampionTypeThemeDropdown => new CompositeCollection()
         {
             new ComboBoxItem() { Content="Same as Elite Four", ToolTip="Use the same setting as the Elite Four" },
             new ComboBoxItem() { Content="Off" },
-            new ComboBoxItem() { Content="Intelligent", ToolTip = intelligentTypeThemeTooltip },
-            new ComboBoxItem() { Content="Random", ToolTip = randomTypeThemeTooltip },
+            new ComboBoxItem() { Content="On (Intelligent)", ToolTip = intelligentTypeThemeTooltip },
+            new ComboBoxItem() { Content="On (Random)", ToolTip = randomTypeThemeTooltip },
         };
 
         private static CompositeCollection DuplicatePreventionDropdown => new CompositeCollection()
@@ -50,8 +55,8 @@ namespace PokemonRandomizer.UI.Views
             stack.Header("Trainer Organization Theming");
             stack.Description("These settings control how type theming is applied to different trainer organizations such as Gyms, the Elite Four, and Villainous Teams like Team Rocket!", "These settings only apply if the \"Randomize Pokemon\" setting in the \"Trainers\" tab is enabled.");
             stack.Header("Gyms and Elite Four");
-            stack.Add(new EnumComboBoxUI<TrainerOrgTypeTheme>("Gym Type Theming", TypeThemeDropdown, model.GymTypeTheming));
-            stack.Add(new EnumComboBoxUI<TrainerOrgTypeTheme>("Elite Four Type Theming", TypeThemeDropdown, model.EliteFourTheming));
+            stack.Add(new EnumComboBoxUI<TrainerOrgTypeTheme>("Gym Type Theming", TypeThemeDropdown, model.GymTypeTheming, TypeThemeOptions));
+            stack.Add(new EnumComboBoxUI<TrainerOrgTypeTheme>("Elite Four Type Theming", TypeThemeDropdown, model.EliteFourTheming, TypeThemeOptions));
             if (metadata.IsFireRedOrLeafGreen)
             {
                 stack.Add(new Label() { Content = "Note: Champion type theming is disabled in FRLG because the champion is a Rival" });
@@ -62,7 +67,7 @@ namespace PokemonRandomizer.UI.Views
             }
             stack.Add(new EnumComboBoxUI<GymEliteFourPreventDupesSetting>("Gym and Elite Four Duplicate Theme Prevention", DuplicatePreventionDropdown, model.GymAndEliteDupePrevention));
             stack.Header("Villainous Teams");
-            stack.Add(new EnumComboBoxUI<TrainerOrgTypeTheme>("Type Theming", TypeThemeDropdown, model.TeamTypeTheming));
+            stack.Add(new EnumComboBoxUI<TrainerOrgTypeTheme>("Type Theming", TypeThemeDropdown, model.TeamTypeTheming, TypeThemeOptions));
             stack.Add(new BoundCheckBoxUI(model.GruntTheming, "Apply Team Theme To Grunts") { ToolTip = gruntThemeTooltip });
             stack.Add(new BoundCheckBoxUI(model.KeepTeamSubtypes, "Keep Team Subtypes") { ToolTip = teamSubtypesTooltip });
             stack.Add(new EnumComboBoxUI<Trainer.Category>("Priority Theme Category", ThemePriorityDropdown, model.PriorityCategory, new List<Trainer.Category>() { Trainer.Category.GymLeader, Trainer.Category.TeamLeader } ));
