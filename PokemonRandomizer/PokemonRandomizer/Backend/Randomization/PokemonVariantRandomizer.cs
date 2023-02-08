@@ -784,7 +784,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 var lookup = pokemon.learnSet.GetMovesLookup();
                 if (!lookup.Contains(Move.SANDSTORM))
                 {
-                    pokemon.learnSet.Add(Move.SANDSTORM, 20);
+                    AddBonusMove(pokemon, Move.SANDSTORM, 20, data);
                 }
             }
             if (data.GainedTypes.Contains(PokemonType.GRS))
@@ -792,7 +792,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 var lookup = pokemon.learnSet.GetMovesLookup();
                 if (!lookup.Contains(Move.SOLARBEAM))
                 {
-                    bonusMoveGenerator.AddBonusMove(pokemon, Move.SOLARBEAM);
+                    AddBonusMove(pokemon, Move.SOLARBEAM, data);
                 }
             }
             if (data.GainedTypes.Contains(PokemonType.ELE))
@@ -800,7 +800,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 var lookup = pokemon.learnSet.GetMovesLookup();
                 if (!lookup.Contains(Move.THUNDER))
                 {
-                    bonusMoveGenerator.AddBonusMove(pokemon, Move.THUNDER);
+                    AddBonusMove(pokemon, Move.THUNDER, data);
                 }
             }
             if (data.GainedTypes.Contains(PokemonType.ICE))
@@ -808,7 +808,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 var lookup = pokemon.learnSet.GetMovesLookup();
                 if (!lookup.Contains(Move.BLIZZARD))
                 {
-                    bonusMoveGenerator.AddBonusMove(pokemon, Move.BLIZZARD);
+                    AddBonusMove(pokemon, Move.BLIZZARD, data);
                 }
             }
             // Hurricane (where supported)
