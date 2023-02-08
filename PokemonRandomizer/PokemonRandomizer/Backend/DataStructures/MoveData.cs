@@ -307,7 +307,7 @@ namespace PokemonRandomizer.Backend.DataStructures
 
         public bool IsFlatDamage => effect is MoveEffect.FlatDamageLevel or MoveEffect.FlatDamage20 or MoveEffect.FlatDamage40 or MoveEffect.VaryingDamageLevel;
 
-        public bool IsCounterAttack => effect is MoveEffect.Counter or MoveEffect.MirrorCoat or MoveEffect.MirrorMove or MoveEffect.Endeavor or MoveEffect.Bide;
+        public bool IsCounterAttack => effect is MoveEffect.Counter or MoveEffect.MirrorCoat or MoveEffect.MirrorMove or MoveEffect.Endeavor or MoveEffect.Bide; // Gen IV, add metal burst
 
         public bool IsSelfdestruct => effect == MoveEffect.Selfdestruct;
 

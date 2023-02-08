@@ -835,10 +835,62 @@ namespace PokemonRandomizer.Backend.Randomization
             }
         }
 
+        private void ModifyLearnsetWobbufett(PokemonBaseStats pokemon, Settings settings, VariantData data)
+        {
+            var lookup = pokemon.learnSet.GetMovesLookup();
+            var moveData = availableMoves.Select(m => dataT.GetMoveData(m)).ToList();
+            // Find all counter moves
+            var counterMoves = moveData.Where(data => data.IsCounterAttack).ToHashSet();
+            counterMoves.RemoveWhere(m => lookup.Contains(m.move));
+            // Find all status move
+            var statusMoves = moveData.Where(data => data.IsStatus).ToList();
+            statusMoves.RemoveAll(m => lookup.Contains(m.move) || counterMoves.Contains(m));
+            // Add moves
+            foreach (var type in data.VariantTypes)
+            {
+                var counterMovesOfType = counterMoves.Where(m => m.IsType(type));
+                // Add all counterattacking moves of variant type
+                foreach (var move in counterMovesOfType)
+                {
+                    AddBonusMove(pokemon, move.move, data);
+                }
+                // Add a status move of type
+                var statusMovesOfType = statusMoves.Where(m => m.IsType(type));
+                if (!statusMovesOfType.Any())
+                {
+                    continue;
+                }
+                int learnLevel = rand.RandomInt(5, 21);
+                var statusMove = rand.Choice(statusMovesOfType).move;
+                AddBonusMove(pokemon, statusMove, learnLevel, data);
+            }
+        }
+
+        private void AddBonusMove(PokemonBaseStats pokemon, Move move, VariantData data)
+        {
+            var bonusMove = bonusMoveGenerator.AddBonusMove(pokemon, move);
+            if(bonusMove != null)
+            {
+                data.BonusMoves.Add(bonusMove);
+            }
+        }
+
+        private void AddBonusMove(PokemonBaseStats pokemon, Move move, int level, VariantData data)
+        {
+            var bonusMove = new LearnSet.Entry(move, level);
+            pokemon.learnSet.Add(bonusMove);
+            data.BonusMoves.Add(bonusMove);
+        }
+
         private void ModifyLearnset(PokemonBaseStats pokemon, Settings settings, VariantData data)
         {
             if (pokemon.species is Pokemon.SMEARGLE or Pokemon.DITTO)
             {
+                return;
+            }
+            if (pokemon.species is Pokemon.WYNAUT || (pokemon.species is Pokemon.WOBBUFFET && pokemon.IsBasic))
+            {
+                ModifyLearnsetWobbufett(pokemon, settings, data);
                 return;
             }
             if (limitedLearnsetPokemon.Contains(pokemon.species))
@@ -867,6 +919,10 @@ namespace PokemonRandomizer.Backend.Randomization
                 if (!bonusMoveData.IsType(pokemon))
                     continue;
                 pokemon.learnSet.Add(bonusMove);
+            }
+            if(pokemon.species is Pokemon.WOBBUFFET)
+            {
+                return;
             }
             var availableAddMoves = GetAvailibleAddMoves(pokemon.learnSet);
             // Apply signiture move replacement

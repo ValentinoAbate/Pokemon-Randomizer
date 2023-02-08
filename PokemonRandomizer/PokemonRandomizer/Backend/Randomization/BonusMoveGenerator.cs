@@ -127,13 +127,16 @@ namespace PokemonRandomizer.Backend.Randomization
             return learnLevelGenerationFailure;
         }
 
-        public void AddBonusMove(PokemonBaseStats pokemon, Move m)
+        public LearnSet.Entry AddBonusMove(PokemonBaseStats pokemon, Move m)
         {
             int learnLevel = GenerateLearnLevel(m);
             if (learnLevel != learnLevelGenerationFailure)
             {
-                pokemon.learnSet.Add(m, learnLevel);
+                var entry = new LearnSet.Entry(m, learnLevel);
+                pokemon.learnSet.Add(entry);
+                return entry;
             }
+            return null;
         }
     }
 }
