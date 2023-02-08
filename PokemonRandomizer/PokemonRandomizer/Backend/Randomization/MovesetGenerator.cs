@@ -12,6 +12,7 @@ namespace PokemonRandomizer.Backend.Randomization
         private const float needSynergy = 12500;
         private const float preferSynergy = needSynergy / 2;
         private const float weakSynergy = needSynergy / 10;
+        private const int movesInMoveset = 4;
 
         private readonly IDataTranslator dataT;
         private readonly Random rand;
@@ -357,7 +358,7 @@ namespace PokemonRandomizer.Backend.Randomization
 
             var preferredMoves = new WeightedSet<Move>(availableMoves.Keys);
             int moveIndex = 0;
-            for(; moveIndex < (maxMoves - 1); ++moveIndex)
+            for(; moveIndex < movesInMoveset && moveIndex < (maxMoves - 1); ++moveIndex)
             {
                 if (ChooseMoveForIndex(ret, moveIndex, preferredMoves, ref availableMoves))
                 {
