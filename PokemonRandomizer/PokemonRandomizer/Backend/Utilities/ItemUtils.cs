@@ -701,5 +701,12 @@ namespace PokemonRandomizer.Backend.Utilities
         {
             return itemToGenIVInternal[item];
         }
+
+        public static bool IsQuantity(Item item)
+        {
+            return item is Item.Sacred_Ash or Item.Stardust or Item.Berry_Juice or Item.BrightPowder 
+                        or Item.Silverpowder or Item.Gold_Teeth or Item.Tea or Item.Honey or Item.Growth_Mulch
+                        or Item.Damp_Mulch or Item.Stable_Mulch or Item.Gooey_Mulch;
+        }
     }
 }

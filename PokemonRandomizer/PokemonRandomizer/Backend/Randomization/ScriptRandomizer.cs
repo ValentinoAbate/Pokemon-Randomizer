@@ -72,12 +72,17 @@ namespace PokemonRandomizer.Backend.Randomization
             {
                 command.Item = newItem;
             }
-            string oldItemText = oldItem.ToDisplayString().ToUpper();
-            string newItemText = newItem.ToDisplayString().ToUpper();
-            foreach (var command in textCommands)
-            {
-                command.Text = command.Text.Replace(oldItemText, newItemText);
-            }
+
+            // Disable general text replacement for now
+            //if(textCommands.Count > 0)
+            //{
+            //    string oldItemText = oldItem.ToDisplayString().ToUpper();
+            //    string newItemText = newItem.ToDisplayString().ToUpper();
+            //    foreach (var command in textCommands)
+            //    {
+            //        command.Text = command.Text.Replace(oldItemText, newItemText);
+            //    }
+            //}
             if(relatedMoneyCommands != null)
             {
                 var newItemData = dataT.GetItemData(newItem);       
@@ -90,9 +95,21 @@ namespace PokemonRandomizer.Backend.Randomization
                 {
                     command.Amount = newPrice;
                 }
-                foreach (var command in textCommands)
+                if(textCommands.Count > 0)
                 {
-                    command.Text = command.Text.Replace(oldPrice.ToString(), newPrice.ToString());
+                    string oldItemText = oldItem.ToDisplayString().ToUpper();
+                    string newItemText = newItem.ToDisplayString().ToUpper();
+                    bool isntQuantity = !ItemUtils.IsQuantity(newItem);
+                    foreach (var command in textCommands)
+                    {
+                        command.Text = command.Text.Replace(oldPrice.ToString(), newPrice.ToString());
+                        command.Text = command.Text.Replace(oldItemText, newItemText);
+                        if (isntQuantity)
+                        {
+                            command.Text = command.Text.Replace("buy some ", $"buy {GetArticle(newItemText)} ");
+                        }
+                        command.Text = command.Text.Replace("a bottle", "each");
+                    }
                 }
             }
         }
@@ -259,6 +276,24 @@ namespace PokemonRandomizer.Backend.Randomization
                 args.staticPokemonSet.Remove(newPokemon);
             }
             return newPokemon;
+        }
+
+        private static string GetArticle(string noun)
+        {
+            if(string.IsNullOrEmpty(noun))
+                return string.Empty;
+            if (char.ToUpper(noun[0]) is 'A' or 'E' or 'I' or 'O' or 'U')
+                return "an";
+            if (noun.Length >= 2)
+            {
+                if (noun[0] is 'H' && noun[1] is 'P')
+                    return "an";
+                if (noun[0] is 'X' && noun[1] is ' ')
+                    return "an";
+                if (noun[0] is 'S' && noun[1] is 'S')
+                    return "an";
+            }   
+            return "a";
         }
 
         public class Args
