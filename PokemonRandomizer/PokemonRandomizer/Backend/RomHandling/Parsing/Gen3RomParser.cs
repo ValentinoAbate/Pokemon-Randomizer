@@ -629,7 +629,8 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
                     var palData = villaneousTeamPaletteData[palKey];
                     teamData.TeamData.Palettes.Add((palette, palData));
                 }
-                teamData.TeamData.InitializeThemeData(info.TypeArrayAttr(name, "primaryTypes"), info.TypeArrayAttr(name, "secondaryTypes"));
+                teamData.TeamData.DefaultPrimaryTypes = info.TypeArrayAttr(name, "primaryTypes");
+                teamData.TeamData.DefaultSecondaryTypes = info.TypeArrayAttr(name, "secondaryTypes");
                 allTeams.Add(teamData);
             }
             // Get leader, elite four, and champion class names

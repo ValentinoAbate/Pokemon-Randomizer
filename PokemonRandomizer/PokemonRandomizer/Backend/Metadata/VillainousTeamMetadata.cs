@@ -17,18 +17,32 @@ namespace PokemonRandomizer.Backend.Metadata
         public TrainerThemeData ThemeData { get; set; }
         public List<(Palette pal, Randomization.VariantPaletteModifier.PaletteData palData)> Palettes { get; } = new();
 
+        public PokemonType[] DefaultPrimaryTypes { get; set; }
+        public PokemonType[] DefaultSecondaryTypes { get; set; }
+
         public bool Randomized { get; set; } = false;
 
-        public void InitializeThemeData(PokemonType[] PrimaryTypes, PokemonType[] SecondaryTypes)
+        public override void InitializeThemeData(IDataTranslator dataT, Settings settings)
         {
-            ThemeData = new TrainerThemeData();
-            ThemeData.SetTypes(PrimaryTypes, SecondaryTypes, SecondaryTypes.Length > 0 ? 0.70 : 0);
+            if(settings.TeamTypeTheming is Settings.TrainerOrgTypeTheme.Off)
+            {
+                ThemeData = new TrainerThemeData() { Theme = TrainerThemeData.TrainerTheme.Untyped };
+            }
+            else if(settings.TeamTypeTheming is Settings.TrainerOrgTypeTheme.On or Settings.TrainerOrgTypeTheme.Random)
+            {
+                ThemeData = new TrainerThemeData();
+                ThemeData.SetTypes(DefaultPrimaryTypes, DefaultSecondaryTypes, DefaultSecondaryTypes.Length > 0 ? 0.70 : 0);
+            }
+            else
+            {
+                ThemeData = null;
+            }
         }
 
         public override void ApplyTrainerThemeData(Settings settings)
         {
-            // Only actually apply theme data when randomized
-            if (!IsValid || !Randomized)
+            // Only actually apply theme data when randomized or off
+            if (!IsValid || ThemeData == null)
             {
                 return;
             }

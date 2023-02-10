@@ -12,6 +12,7 @@ namespace PokemonRandomizer.Backend.Metadata
     {
         public abstract bool IsValid { get; }
         public abstract void ApplyTrainerThemeData(Settings settings);
+        public abstract void InitializeThemeData(IDataTranslator dataT, Settings settings);
         protected void ApplyThemeDataToGroup(IEnumerable<Trainer> group, TrainerThemeData data)
         {
             foreach (var trainer in group)

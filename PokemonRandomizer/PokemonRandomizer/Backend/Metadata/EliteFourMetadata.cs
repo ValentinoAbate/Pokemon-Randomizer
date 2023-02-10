@@ -12,7 +12,7 @@ namespace PokemonRandomizer.Backend.Metadata
         public EliteFourMember Champion { get; } = new();
         public Dictionary<string, EliteFourMember> EliteFour { get; } = new(4);
 
-        public void InitializeThemeData(IDataTranslator dataT, Settings settings)
+        public override void InitializeThemeData(IDataTranslator dataT, Settings settings)
         {
             if (!IsValid)
             {

@@ -747,6 +747,10 @@ namespace PokemonRandomizer.Backend.Randomization
                 var gym = kvp.Value;
                 gym.InitializeThemeData(data, settings);
             }
+            foreach(var team in data.VillainousTeamMetadata)
+            {
+                team.InitializeThemeData(data, settings);
+            }
 
             #endregion
 

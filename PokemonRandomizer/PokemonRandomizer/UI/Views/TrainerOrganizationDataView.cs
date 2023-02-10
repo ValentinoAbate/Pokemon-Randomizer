@@ -32,6 +32,18 @@ namespace PokemonRandomizer.UI.Views
             new ComboBoxItem() { Content="On (Intelligent)", ToolTip = intelligentTypeThemeTooltip },
             new ComboBoxItem() { Content="On (Random)", ToolTip = randomTypeThemeTooltip },
         };
+        private static List<TrainerOrgTypeTheme> VillainousTypeThemeOptions => new List<TrainerOrgTypeTheme>()
+        {
+            TrainerOrgTypeTheme.Default,
+            TrainerOrgTypeTheme.Off,
+            TrainerOrgTypeTheme.Random
+        };
+        private static CompositeCollection VillainousTypeThemeDropdown => new CompositeCollection()
+        {
+            new ComboBoxItem() { Content="Same as Normal Trainers" },
+            new ComboBoxItem() { Content="Off" },
+            new ComboBoxItem() { Content="On (Random)", ToolTip = randomTypeThemeTooltip },
+        };
 
         private static CompositeCollection DuplicatePreventionDropdown => new CompositeCollection()
         {
@@ -67,7 +79,7 @@ namespace PokemonRandomizer.UI.Views
             }
             stack.Add(new EnumComboBoxUI<GymEliteFourPreventDupesSetting>("Gym and Elite Four Duplicate Theme Prevention", DuplicatePreventionDropdown, model.GymAndEliteDupePrevention));
             stack.Header("Villainous Teams");
-            stack.Add(new EnumComboBoxUI<TrainerOrgTypeTheme>("Type Theming", TypeThemeDropdown, model.TeamTypeTheming, TypeThemeOptions));
+            stack.Add(new EnumComboBoxUI<TrainerOrgTypeTheme>("Type Theming", VillainousTypeThemeDropdown, model.TeamTypeTheming, VillainousTypeThemeOptions));
             stack.Add(new BoundCheckBoxUI(model.GruntTheming, "Apply Team Theme To Grunts") { ToolTip = gruntThemeTooltip });
             stack.Add(new BoundCheckBoxUI(model.KeepTeamSubtypes, "Keep Team Subtypes") { ToolTip = teamSubtypesTooltip });
             stack.Add(new EnumComboBoxUI<Trainer.Category>("Priority Theme Category", ThemePriorityDropdown, model.PriorityCategory, new List<Trainer.Category>() { Trainer.Category.GymLeader, Trainer.Category.TeamLeader } ));
