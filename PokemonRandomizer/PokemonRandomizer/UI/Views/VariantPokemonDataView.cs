@@ -41,7 +41,7 @@ namespace PokemonRandomizer.UI.Views
             var stack = CreateStack();
             stack.Add(new BoundCheckBoxUI(model.AdjustAttackStats, "Rebalance Attacking Stats"));
             var bonusStatCb = stack.Add(new BoundCheckBoxUI(model.GiveBonusStats, "Bonus Stats"));
-            bonusStatCb.BindVisibility(stack.Add(new BoundSliderUI("Bonus Stat Amount Mean", model.BonusStatAmountMean, false, 0.5, 0, 50)));
+            bonusStatCb.BindVisibility(stack.Add(new BoundSliderUI("Bonus Stat Amount Average", model.BonusStatAmountMean, false, 0.5, 0, 50)));
             bonusStatCb.BindVisibility(stack.Add(new BoundSliderUI("Bonus Stat Amount Variance", model.BonusStatAmountStdDev, false, 0.5, 0, 25)));
             return CreateTabItem("Base Stat Options", stack);
         }
