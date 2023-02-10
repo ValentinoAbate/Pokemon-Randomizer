@@ -13,11 +13,12 @@ namespace PokemonRandomizer.UI.Views
     {
         private const string intelligentTypeThemeTooltip = "Use each trainer/organization's original type theme. See the tooltip of the \"Intelligent Type Theming\" setting in the Trainers tab for more details";
         private const string randomTypeThemeTooltip = "Choose a random type theme";
+        private const string untypedTypeThemeTooltip = "Force an untyped theme, resulting in pokemon choice being completely random";
         private static CompositeCollection TypeThemeDropdown => new CompositeCollection()
         {
-            new ComboBoxItem() { Content="Off" },
-            new ComboBoxItem() { Content="On (Intelligent)", ToolTip = intelligentTypeThemeTooltip },
-            new ComboBoxItem() { Content="On (Random)", ToolTip = randomTypeThemeTooltip },
+            new ComboBoxItem() { Content="Untyped", ToolTip = untypedTypeThemeTooltip },
+            new ComboBoxItem() { Content="Typed (Same as Base Game)", ToolTip = intelligentTypeThemeTooltip },
+            new ComboBoxItem() { Content="Typed (Random)", ToolTip = randomTypeThemeTooltip },
         };
         private static List<TrainerOrgTypeTheme> TypeThemeOptions => new List<TrainerOrgTypeTheme>()
         {
@@ -28,9 +29,9 @@ namespace PokemonRandomizer.UI.Views
         private static CompositeCollection ChampionTypeThemeDropdown => new CompositeCollection()
         {
             new ComboBoxItem() { Content="Same as Elite Four", ToolTip="Use the same setting as the Elite Four" },
-            new ComboBoxItem() { Content="Off" },
-            new ComboBoxItem() { Content="On (Intelligent)", ToolTip = intelligentTypeThemeTooltip },
-            new ComboBoxItem() { Content="On (Random)", ToolTip = randomTypeThemeTooltip },
+            new ComboBoxItem() { Content="Untyped", ToolTip = untypedTypeThemeTooltip },
+            new ComboBoxItem() { Content="Typed (Same as Base Game)", ToolTip = intelligentTypeThemeTooltip },
+            new ComboBoxItem() { Content="Typed (Random)", ToolTip = randomTypeThemeTooltip },
         };
         private static List<TrainerOrgTypeTheme> VillainousTypeThemeOptions => new List<TrainerOrgTypeTheme>()
         {
@@ -40,15 +41,15 @@ namespace PokemonRandomizer.UI.Views
         };
         private static CompositeCollection VillainousTypeThemeDropdown => new CompositeCollection()
         {
-            new ComboBoxItem() { Content="Same as Normal Trainers" },
-            new ComboBoxItem() { Content="Off" },
-            new ComboBoxItem() { Content="On (Random)", ToolTip = randomTypeThemeTooltip },
+            new ComboBoxItem() { Content="Same as Normal Trainers", ToolTip = "Treat villainous team members as normal trainers instead of an organization for the purposes of type theming\nSee the \"Intelligent Type Theming\" setting in the Trainers tab for more details" },
+            new ComboBoxItem() { Content="Untyped", ToolTip = untypedTypeThemeTooltip },
+            new ComboBoxItem() { Content="Typed (Random)", ToolTip = randomTypeThemeTooltip },
         };
 
         private static CompositeCollection DuplicatePreventionDropdown => new CompositeCollection()
         {
             new ComboBoxItem() { Content="None" },
-            new ComboBoxItem() { Content="Prevent Duplicates (Randomized Only)", ToolTip = "Prevent duplicate type themes within randomized gyms and elite four members.\nFor example, if gym type themes are unrandomized, elite four members will be allowed to be the same type as a gym, but not the same as each other" },
+            new ComboBoxItem() { Content="Prevent Duplicates (Randomized Only)", ToolTip = "Prevent duplicate type themes within randomized gyms and elite four members\nFor example, if gym type themes are unrandomized, elite four members will be allowed to be the same type as a gym, but not the same as each other" },
             new ComboBoxItem() { Content="Prevent Duplicates (Randomized and Unrandomized)", ToolTip =  "Prevent duplicate type themes within all gyms and elite four members (randomized or not).\nFor example, if gym type themes are unrandomized, elite four members will be not be allowed to be the same type as a gym or each other"},
         };
 
@@ -79,9 +80,9 @@ namespace PokemonRandomizer.UI.Views
             }
             stack.Add(new EnumComboBoxUI<GymEliteFourPreventDupesSetting>("Gym and Elite Four Duplicate Theme Prevention", DuplicatePreventionDropdown, model.GymAndEliteDupePrevention));
             stack.Header("Villainous Teams");
-            stack.Add(new EnumComboBoxUI<TrainerOrgTypeTheme>("Type Theming", VillainousTypeThemeDropdown, model.TeamTypeTheming, VillainousTypeThemeOptions));
-            stack.Add(new BoundCheckBoxUI(model.GruntTheming, "Apply Team Theme To Grunts") { ToolTip = gruntThemeTooltip });
-            stack.Add(new BoundCheckBoxUI(model.KeepTeamSubtypes, "Keep Team Subtypes") { ToolTip = teamSubtypesTooltip });
+            var villDrop = stack.Add(new EnumComboBoxUI<TrainerOrgTypeTheme>("Team Type Theming", VillainousTypeThemeDropdown, model.TeamTypeTheming, VillainousTypeThemeOptions));
+            villDrop.BindVisibility(stack.Add(new BoundCheckBoxUI(model.KeepTeamSubtypes, "Keep Team Subtypes") { ToolTip = teamSubtypesTooltip }), 2);
+            villDrop.BindVisibility(stack.Add(new BoundCheckBoxUI(model.GruntTheming, "Apply Team Theme To Grunts") { ToolTip = gruntThemeTooltip }), 1, 2);
             stack.Add(new EnumComboBoxUI<Trainer.Category>("Priority Theme Category", ThemePriorityDropdown, model.PriorityCategory, new List<Trainer.Category>() { Trainer.Category.GymLeader, Trainer.Category.TeamLeader } ));
             //stack.Header("Miscellaneous Organizations", "Miscellanous Organizations include: The Winstrates, Nugget Bridge, The Fighting Dojo, The Soda Pop House");
             //stack.Add(new EnumComboBoxUI<TrainerOrgTypeTheme>("Type Theming", TypeThemeDropdown, model.SmallOrgTypeTheming));
