@@ -48,14 +48,14 @@ namespace PokemonRandomizer.UI.Views
         {
             var stack = CreateStack();
             stack.Header(UISkin.Current.HacksAndTweaksHeader);
-            var impossibleCb = stack.Add(new BoundCheckBoxUI(model.FixImpossibleEvos, "Fix Impossible Evolutions", fixImpossibleEvosTooltip));
+            var impossibleCb = stack.Add(new BoundCheckBoxUI("Fix Impossible Evolutions", model.FixImpossibleEvos, fixImpossibleEvosTooltip));
             impossibleCb.BindEnabled(stack.Add(new EnumComboBoxUI<TradeItemPokemonOption>("Trade item evolution type", TradeItemOptionDropdown, model.TradeItemEvoSetting)));
-            impossibleCb.BindEnabled(stack.Add(new BoundCheckBoxUI(model.ConsiderEvolveByBeautyImpossible, "Fix Beauty-Based Evolutions")));
+            impossibleCb.BindEnabled(stack.Add(new BoundCheckBoxUI("Fix Beauty-Based Evolutions", model.ConsiderEvolveByBeautyImpossible)));
             impossibleCb.BindEnabled(stack.Add(new BoundSliderUI("Fixed evolution level variance", model.ImpossibleEvoLevelStandardDev, false, 0.01, 0, 3)));
             var plagueCB = stack.Add(new RandomChanceUI("Dunsparse Plague", model.DunsparsePlague, model.DunsparsePlaugeChance) { ToolTip = dunsparsePlagueTooltip});
             if (!metadata.IsFireRedOrLeafGreen)
             {
-                plagueCB.BindEnabled(stack.Add(new BoundCheckBoxUI(model.DunsparsePlagueFriendship, "Apply Dunsparse Plague to Friendship Evolutions", dunsparsePlagueFriendshipTooltip)));
+                plagueCB.BindEnabled(stack.Add(new BoundCheckBoxUI("Apply Dunsparse Plague to Friendship Evolutions", model.DunsparsePlagueFriendship, dunsparsePlagueFriendshipTooltip)));
             }
             return CreateTabItem("Evolution", stack);
         }
@@ -80,9 +80,9 @@ namespace PokemonRandomizer.UI.Views
             stack.Header("Catch Rate Randomization");
             var optionCb = stack.Add(new EnumComboBoxUI<CatchRateOption>("Randomization Strategy", CatchRateOptionDropdown, model.CatchRateSetting));
             optionCb.BindVisibility(stack.Add(new BoundSliderUI("Constant Difficulty", model.CatchRateConstantDifficulty, false)), (int)CatchRateOption.Constant);
-            stack.Add(new BoundCheckBoxUI(model.KeepLegendaryCatchRates, "Keep Legendary Catch Rates"));
+            stack.Add(new BoundCheckBoxUI("Keep Legendary Catch Rates", model.KeepLegendaryCatchRates));
             stack.Header("Egg Hatch Rate Modifications");
-            stack.Add(new BoundCheckBoxUI(model.FastHatching, "Fast Egg Hatching", "All pokemon eggs hatch in the minimum possible egg cycles"));
+            stack.Add(new BoundCheckBoxUI("Fast Egg Hatching", model.FastHatching, "All pokemon eggs hatch in the minimum possible egg cycles"));
             return CreateTabItem("Catch / Hatch Rate", stack);
         }
 
@@ -92,7 +92,7 @@ namespace PokemonRandomizer.UI.Views
             stack.Description("Modify the base EXP given by pokemon. Setting this to 0% will make every pokemon give only 1 EXP!");
             stack.Add(new BoundSliderUI("Base Exp Yield Modifier", model.BaseExpYieldMultiplier, true, 0.1, 0, 2));
             stack.Description("Set the base EVs for every pokemon to 0. This will disable EV gain through normal means!");
-            stack.Add(new BoundCheckBoxUI(model.ZeroBaseEVs, "Set Base EV Yield to 0"));
+            stack.Add(new BoundCheckBoxUI("Set Base EV Yield to 0", model.ZeroBaseEVs));
             return CreateTabItem("Exp / EV Yields", stack);
         }
 
@@ -114,12 +114,12 @@ namespace PokemonRandomizer.UI.Views
             bonusMovesStack.Add(new BoundSliderUI("Average number of moves to add", model.NumMovesMean, false, 0.5, 0, maxAddMoves));
             bonusMovesStack.Add(new BoundSliderUI("Number of moves variance", model.NumMovesStdDeviation, false, 0.5, 0, 5));
             //bonusMovesStack.Add(new BoundSliderUI("Minimum number of moves to add", model.NumMovesMin, false, 1, 0, 5));
-            bonusMovesStack.Add(new BoundCheckBoxUI(model.DisableAddingHmMoves, "Ban adding HM moves"));
+            bonusMovesStack.Add(new BoundCheckBoxUI("Ban adding HM moves", model.DisableAddingHmMoves));
             stack.Add(new RandomChanceUI("Bonus Moves", model.AddMoves, model.AddMovesChance, bonusMovesStack));
             stack.Add(bonusMovesStack);
             stack.Add(new Separator());
             stack.Header(UISkin.Current.HacksAndTweaksHeader);
-            stack.Add(new BoundCheckBoxUI(model.BanSelfdestruct, "Ban Selfdestruct", banSelfdestructTooltip));
+            stack.Add(new BoundCheckBoxUI("Ban Selfdestruct", model.BanSelfdestruct, banSelfdestructTooltip));
             return CreateTabItem("Learnsets", stack); ;
         }
     }

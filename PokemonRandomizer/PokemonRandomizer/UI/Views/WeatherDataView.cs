@@ -32,8 +32,8 @@ namespace PokemonRandomizer.UI.Views
             settingsStack.Add(new RandomChanceUI("Apply to Route Weather", model.RandomizeRouteWeather, model.RouteWeatherRandChance));
             settingsStack.Add(new RandomChanceUI("Apply to Gym Weather", model.RandomizeGymWeather, model.GymWeatherRandChance));
             settingsStack.Add(new RandomChanceUI("Apply to Town Weather", model.RandomizeTownWeather, model.TownWeatherRandChance));
-            settingsStack.Add(new BoundCheckBoxUI(model.KeepExistingWeather, "Keep Existing Weather", "Keeps weather for places that already have special weather (e.g. the desert will still have sandstorm weather)"));
-            var banFlashingCb = settingsStack.Add(new BoundCheckBoxUI(model.BanFlashing, "Ban Flashing Weather", banFlashingTooltip));
+            settingsStack.Add(new BoundCheckBoxUI("Keep Existing Weather", model.KeepExistingWeather, "Keeps weather for places that already have special weather (e.g. the desert will still have sandstorm weather)"));
+            var banFlashingCb = settingsStack.Add(new BoundCheckBoxUI("Ban Flashing Weather", model.BanFlashing, banFlashingTooltip));
             settingsStack.Add(banFlashingCb.BindVisibility(new Label() { Content = banFlashingWarning }));
         }
 

@@ -56,34 +56,34 @@ namespace PokemonRandomizer.UI.Views
             var stack = CreateMainStack();
             // Pokemon Randomization
             stack.Header("Trainer Pokemon");
-            var pokemonRand = stack.Add(new BoundCheckBoxUI(model.RandomizePokemon, "Randomize Pokemon"));
+            var pokemonRand = stack.Add(new BoundCheckBoxUI("Randomize Pokemon", model.RandomizePokemon));
             var pokemonStack = stack.Add(pokemonRand.BindEnabled(CreateStack()));
-            var typeBox = pokemonStack.Add(new BoundCheckBoxUI(model.TypeTheming, "Type Theming (Intelligent)") { ToolTip = typeThemingTooltip });
+            var typeBox = pokemonStack.Add(new BoundCheckBoxUI("Type Theming (Intelligent)", model.TypeTheming) { ToolTip = typeThemingTooltip });
             pokemonStack.Add(typeBox.BindEnabled(new EnumComboBoxUI<TrainerTypeDataSource>("Normal Trainer Type Data Source", MetricDataDropdown, model.TypeDataSource) { ToolTip = "The type data source intelligent type theming will use for trainers that don't have special logic" }));
             pokemonStack.Add(new EnumComboBoxUI<TrainerDataModel.DuplicateReductionOption>("Duplicate Pokemon Reduction", DuplicateReductionOptionDropdown, model.DuplicateReduction));
             var pokemonDetailsStack = pokemonStack.Add(CreateHorizontalStack());
-            pokemonDetailsStack.Add(new BoundCheckBoxUI(model.RestrictIllegalEvolutions, "Ban Illegal Evolutions"));
-            pokemonDetailsStack.Add(new BoundCheckBoxUI(model.ForceHighestLegalEvolution, "Force Highest Legal Evolution"));
+            pokemonDetailsStack.Add(new BoundCheckBoxUI("Ban Illegal Evolutions", model.RestrictIllegalEvolutions));
+            pokemonDetailsStack.Add(new BoundCheckBoxUI("Force Highest Legal Evolution", model.ForceHighestLegalEvolution));
 
             // Legendary banning
             var banLegendariesStack = pokemonStack.Add(CreateHorizontalStack());
             banLegendariesStack.Add(new Label() { Content = "Ban Legendaries For: " });
-            banLegendariesStack.Add(new BoundCheckBoxUI(model.BanLegendaries, "Normal Trainers") { VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(0, 2, 2, 2) });
-            banLegendariesStack.Add(new BoundCheckBoxUI(model.BanLegendariesMiniboss, "Minibosses") { ToolTip = minibossTooltip, VerticalAlignment = VerticalAlignment.Center });
-            banLegendariesStack.Add(new BoundCheckBoxUI(model.BanLegendariesBoss, "Bosses") { ToolTip = bossTooltip, VerticalAlignment = VerticalAlignment.Center });
+            banLegendariesStack.Add(new BoundCheckBoxUI("Normal Trainers", model.BanLegendaries) { VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(0, 2, 2, 2) });
+            banLegendariesStack.Add(new BoundCheckBoxUI("Minibosses", model.BanLegendariesMiniboss) { ToolTip = minibossTooltip, VerticalAlignment = VerticalAlignment.Center });
+            banLegendariesStack.Add(new BoundCheckBoxUI("Bosses", model.BanLegendariesBoss) { ToolTip = bossTooltip, VerticalAlignment = VerticalAlignment.Center });
             pokemonStack.Add(new BoundSliderUI("Ignore Restrictions Chance", model.PokemonNoise, true, 0.001, 0, 0.02) { ToolTip = ignoreRestrictionsTooltip });
             // Bonus pokemon
             var bonusPokemonStack = pokemonStack.Add(CreateHorizontalStack());
             bonusPokemonStack.Add(new BoundSliderUI("Bonus Pokemon", model.NumBonusPokemon, false, 1, 0, 6));
             bonusPokemonStack.Add(new Label() { Content = "Add Bonus Pokemon To: " });
-            bonusPokemonStack.Add(new BoundCheckBoxUI(model.BonusPokemon, "Normal Trainers") { VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(0,2,2,2) });
-            bonusPokemonStack.Add(new BoundCheckBoxUI(model.BonusPokemonMiniboss, "Minibosses") { ToolTip = minibossTooltip, VerticalAlignment = VerticalAlignment.Center });
-            bonusPokemonStack.Add(new BoundCheckBoxUI(model.BonusPokemonBoss, "Bosses") { ToolTip = bossTooltip, VerticalAlignment = VerticalAlignment.Center });
-            pokemonStack.Add(new BoundCheckBoxUI(model.ForceCustomMoves, "Always Generate Movesets") { ToolTip = alwaysGenMovesetsTooltip });
+            bonusPokemonStack.Add(new BoundCheckBoxUI("Normal Trainers", model.BonusPokemon) { VerticalAlignment = VerticalAlignment.Center, Margin = new Thickness(0,2,2,2) });
+            bonusPokemonStack.Add(new BoundCheckBoxUI("Minibosses", model.BonusPokemonMiniboss) { ToolTip = minibossTooltip, VerticalAlignment = VerticalAlignment.Center });
+            bonusPokemonStack.Add(new BoundCheckBoxUI("Bosses", model.BonusPokemonBoss) { ToolTip = bossTooltip, VerticalAlignment = VerticalAlignment.Center });
+            pokemonStack.Add(new BoundCheckBoxUI("Always Generate Movesets", model.ForceCustomMoves) { ToolTip = alwaysGenMovesetsTooltip });
             pokemonStack.Add(new EnumComboBoxUI<PokemonPcgStrategy>("Recurring Trainer Pokemon Randomization Strategy", PokemonStrategyDropdown, model.PokemonStrategy));
             // Battle Type Randomization
             stack.Header("Battle Type");
-            var battleTypeRand = stack.Add(new BoundCheckBoxUI(model.RandomizeBattleType, "Randomize Battle Type"));
+            var battleTypeRand = stack.Add(new BoundCheckBoxUI("Randomize Battle Type", model.RandomizeBattleType));
             var typeStack = stack.Add(battleTypeRand.BindEnabled(CreateStack()));
             typeStack.Add(new BoundSliderUI("Double Battle Chance", model.DoubleBattleChance) { ToolTip = "The chance that the battle type will be a double battle when randomized" });
             typeStack.Add(new EnumComboBoxUI<BattleTypePcgStrategy>("Recurring Trainer Battle Type Strategy", BattleTypeStrategyDropdown, model.BattleTypeStrategy));
@@ -91,7 +91,7 @@ namespace PokemonRandomizer.UI.Views
             stack.Header("Difficulty");
             stack.Add(new BoundSliderUI("Level Multiplier", model.LevelMult, true, 0.05, 0.5, 3));
             stack.Add(new BoundSliderUI("Minimum Trainer Pokemon IVs", model.MinIVs, false, 1, 0, 31) { ToolTip = "The minimum value for trainer pokemon IVs. Set to 31 for maximum difficulty!" });
-            stack.Add(new BoundCheckBoxUI(model.SmartAI, "Smart Trainer AI") { ToolTip = "Use smart(er) trainer AI for all trainers, even ones who wouldn't normally have it" });
+            stack.Add(new BoundCheckBoxUI("Smart Trainer AI", model.SmartAI) { ToolTip = "Use smart(er) trainer AI for all trainers, even ones who wouldn't normally have it" });
         }
     }
 }

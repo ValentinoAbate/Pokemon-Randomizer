@@ -76,13 +76,13 @@ namespace PokemonRandomizer.UI.Views
             useTotalBstCb.BindVisibility(genStack.Add(new BoundSliderUI("Base Stat Total Upper Limit", model.BstTotalUpperBound, false, 50, 1900, 4050)), (int)DreamTeamBstTotalOption.TotalMax);
             useTotalBstCb.BindVisibility(genStack.Add(new BoundSliderUI("Individual Base Stat Lower Limit", model.BstIndividualLowerBound, false, 10, 400, 600)), (int)DreamTeamBstTotalOption.IndividualMin);
             useTotalBstCb.BindVisibility(genStack.Add(new BoundSliderUI("Individual Base Stat Upper Limit", model.BstIndividualUpperBound, false, 10, 400, 600)), (int)DreamTeamBstTotalOption.IndividualMax);
-            var typeFilterCb = genStack.Add(new BoundCheckBoxUI(model.UseTypeFilter, "Type Limitiation"));
+            var typeFilterCb = genStack.Add(new BoundCheckBoxUI("Type Limitiation", model.UseTypeFilter));
             typeFilterCb.BindVisibility(genStack.Add(new BoundComboBoxUI("Allowed Type 1", GetTypeDropdown(), ReferenceDropdown.FindIndex(i => i.Item == model.AllowedType1.Value), i => model.AllowedType1.Value = ReferenceDropdown[i].Item)));
             typeFilterCb.BindVisibility(genStack.Add(new BoundComboBoxUI("Allowed Type 2", GetTypeDropdown(), ReferenceDropdown.FindIndex(i => i.Item == model.AllowedType2.Value), i => model.AllowedType2.Value = ReferenceDropdown[i].Item)));
             typeFilterCb.BindVisibility(genStack.Add(new BoundComboBoxUI("Allowed Type 3", GetTypeDropdown(), ReferenceDropdown.FindIndex(i => i.Item == model.AllowedType3.Value), i => model.AllowedType3.Value = ReferenceDropdown[i].Item)));
-            genStack.Add(new BoundCheckBoxUI(model.PrioritizeVariants, "Prioritize Variants") { ToolTip = "Choose Variant Pokemon first when possible"});
-            genStack.Add(new BoundCheckBoxUI(model.BanLegendaries, "Ban Legendaries"));
-            genStack.Add(new BoundCheckBoxUI(model.BanIllegalEvolutions, "Ban Illegal Evolutions"));
+            genStack.Add(new BoundCheckBoxUI("Prioritize Variants", model.PrioritizeVariants) { ToolTip = "Choose Variant Pokemon first when possible"});
+            genStack.Add(new BoundCheckBoxUI("Ban Legendaries", model.BanLegendaries));
+            genStack.Add(new BoundCheckBoxUI("Ban Illegal Evolutions", model.BanIllegalEvolutions));
             optionCb.BindVisibility(genStack, (int)DreamTeamSetting.Random);
         }
     }

@@ -83,7 +83,7 @@ namespace PokemonRandomizer.UI.Views
             stack.Header("Category Preservation");
             SetItemCategorySize(stack.Add(new BoundFlagsEnumListBoxUI<Categories>("Keep Category", model.KeepCategoryCategories, GetItemCategoryDropDown, CategoryOrEquals, keepSameCategoryTooltip)).ListBox);
             stack.Add(new BoundSliderUI("Keep Category Chance", model.SameCategoryChance));
-            stack.Add(new BoundCheckBoxUI(model.AllowBannedItemsWhenKeepingCategory, "Allow Banned Items When Keeping Category") { ToolTip="Allows Items in \"Keep Category\" categories to randomize to all Items in their own category, including Items in banned categories" });
+            stack.Add(new BoundCheckBoxUI("Allow Banned Items When Keeping Category", model.AllowBannedItemsWhenKeepingCategory) { ToolTip="Allows Items in \"Keep Category\" categories to randomize to all Items in their own category, including Items in banned categories" });
             return CreateTabItem("Item Category Settings", stack);
         }
 
@@ -114,14 +114,14 @@ namespace PokemonRandomizer.UI.Views
             var martItemOptions = metadata.IsFireRedOrLeafGreen ? allItems.Where(i => !ItemUtils.IsTM(i) && !ItemUtils.IsHM(i)).ToList() : allItems;
             var martItemDisplay = martItemOptions.Select(EnumUtils.ToDisplayString).ToList();
 
-            var customMartItemCb = stack.Add(new BoundCheckBoxUI(model.AddItemToPokemarts, "Add Custom Item To Poké Marts"));
+            var customMartItemCb = stack.Add(new BoundCheckBoxUI("Add Custom Item To Poké Marts", model.AddItemToPokemarts));
             var customMartItemStack = customMartItemCb.BindVisibility(stack.Add(CreateStack()));
             customMartItemStack.Add(new EnumComboBoxUI<Item>("Item to Add", martItemDisplay, model.CustomMartItem, martItemOptions));
             if (metadata.IsFireRedOrLeafGreen)
             {
                 customMartItemStack.Add(new Label() { Content = "NOTE: TMs and HMs cannot be added as custom shop items in FRLG, as shops with TMs or HMs that also have any other items crash the game" });
             }
-            var modifyMartItemPriceCb = customMartItemStack.Add(new BoundCheckBoxUI(model.OverrideCustomMartItemPrice, "Override Item Price"));
+            var modifyMartItemPriceCb = customMartItemStack.Add(new BoundCheckBoxUI("Override Item Price", model.OverrideCustomMartItemPrice));
             modifyMartItemPriceCb.BindVisibility(customMartItemStack.Add(new BoundSliderUI("Item Price", model.CustomMartItemPrice, false, 100, 100, 9800)));
 
             return CreateTabItem("Misc", stack);
@@ -145,7 +145,7 @@ namespace PokemonRandomizer.UI.Views
             var hiddenItemSettings = new ItemSettingsUI(model.HiddenItemSettings, false);
             hiddenItemStack.Add(new RandomChanceUI("Randomize Hidden Items", model.RandomizeHiddenItems, model.HiddenItemRandChance, hiddenItemSettings));
             hiddenItemStack.Add(hiddenItemSettings);
-            var separateHiddenItemsCb = new BoundCheckBoxUI(model.UseSeperateHiddenItemSettings, "Use Separate Settings for Hidden Items");
+            var separateHiddenItemsCb = new BoundCheckBoxUI("Use Separate Settings for Hidden Items", model.UseSeperateHiddenItemSettings);
             separateHiddenItemsCb.BindVisibility(hiddenItemStack);
             stack.Add(separateHiddenItemsCb, hiddenItemStack);
             return CreateTabItem("Field and Gift Items", stack);

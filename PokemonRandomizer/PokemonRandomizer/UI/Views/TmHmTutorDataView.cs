@@ -31,16 +31,16 @@ namespace PokemonRandomizer.UI.Views
             stack.Header("Randomization");
             stack.Add(new RandomChanceUI("Random TM Moves", model.RandomizeTMs, model.TMRandChance));
             stack.Add(new RandomChanceUI("Random Tutor Moves", model.RandomizeMoveTutors, model.MoveTutorRandChance));
-            stack.Add(new BoundCheckBoxUI(model.NoHmMovesInTMsAndTutors, "Prevent HM moves in TMs and Tutors"));
-            stack.Add(new BoundCheckBoxUI(model.NoDuplicateTMsAndTutors, "Prevent duplicate moves in TMs and Tutors"));
-            stack.Add(new BoundCheckBoxUI(model.KeepImportantTmsAndTutors, "Keep important TMs and Tutors", "Ensures that important TMs and Tutors won't be randomized (Secret Power + Dig in RSE)"));
+            stack.Add(new BoundCheckBoxUI("Prevent HM moves in TMs and Tutors", model.NoHmMovesInTMsAndTutors));
+            stack.Add(new BoundCheckBoxUI("Prevent duplicate moves in TMs and Tutors", model.NoDuplicateTMsAndTutors));
+            stack.Add(new BoundCheckBoxUI("Keep important TMs and Tutors", model.KeepImportantTmsAndTutors, "Ensures that important TMs and Tutors won't be randomized (Secret Power + Dig in RSE)"));
             stack.Add(new Separator());
             stack.Header("Compatibility");
             var compatDropdown = stack.Add(new EnumComboBoxUI<CompatOption>("Compatibility Strategy", CompatOptionDropdown, model.MoveCompatOption));
             stack.Add(compatDropdown.BindVisibility(new BoundSliderUI("Random Compatibility Chance", model.RandomCompatTrueChance), (int)CompatOption.Random, (int)CompatOption.RandomKeepNumber));
             stack.Add(compatDropdown.BindVisibility(new BoundSliderUI("Intelligent Compatibiliy Random Chance (NORMAL Moves)", model.IntelligentCompatNormalRandChance, true, 0.01, 0, 0.5) { ToolTip = intelligentRandomNormalTooltip}, (int)CompatOption.Intelligent));
             stack.Add(compatDropdown.BindVisibility(new BoundSliderUI("Intelligent Compatibiliy Random Chance (Other)", model.IntelligentCompatNoise, true, 0.01, 0, 0.33) { ToolTip = intelligentRandomTooltip }, (int)CompatOption.Intelligent));
-            stack.Add(new BoundCheckBoxUI(model.ForceFullHmCompat, "Force Full HM Compatibility", "Forces all pokemon to be compatible with all HMs, regardless of other compatibility settings"));
+            stack.Add(new BoundCheckBoxUI("Force Full HM Compatibility", model.ForceFullHmCompat, "Forces all pokemon to be compatible with all HMs, regardless of other compatibility settings"));
         }
     }
 }

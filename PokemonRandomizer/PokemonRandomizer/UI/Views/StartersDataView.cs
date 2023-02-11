@@ -30,7 +30,7 @@ namespace PokemonRandomizer.UI.Views
             // Randomization Strategy CB
             var optionCb = stack.Add(new EnumComboBoxUI<StarterPokemonOption>("Randomization Strategy", StarterOptionDropdown, model.StarterSetting));
             // Type Triangle UI
-            optionCb.BindVisibility(stack.Add(new BoundCheckBoxUI(model.StrongStarterTypeTriangle, "Force Strong Type Triangle", strongTriTooltip)), (int)StarterPokemonOption.RandomTypeTriangle);
+            optionCb.BindVisibility(stack.Add(new BoundCheckBoxUI("Force Strong Type Triangle", model.StrongStarterTypeTriangle, strongTriTooltip)), (int)StarterPokemonOption.RandomTypeTriangle);
 
             // Custom Starter UI
             var pokemonOptions = new List<string>(pokemonNames.Length + 1) { "Random" };
@@ -44,9 +44,9 @@ namespace PokemonRandomizer.UI.Views
             optionCb.BindVisibility(customStarterStack, (int)StarterPokemonOption.Custom);
 
             // Additional Settings
-            stack.Add(optionCb.BindEnabled(new BoundCheckBoxUI(model.BanLegendaries, "Ban Legendaries", banLegendariesTooltip), (int)StarterPokemonOption.Random, (int)StarterPokemonOption.RandomTypeTriangle, (int)StarterPokemonOption.Custom));
+            stack.Add(optionCb.BindEnabled(new BoundCheckBoxUI("Ban Legendaries", model.BanLegendaries, banLegendariesTooltip), (int)StarterPokemonOption.Random, (int)StarterPokemonOption.RandomTypeTriangle, (int)StarterPokemonOption.Custom));
             stack.Header("Safety Checks");
-            stack.Add(new BoundCheckBoxUI(model.SafeStarterMovesets, "Safe Starter Movesets", safeMovesetsTooltip));
+            stack.Add(new BoundCheckBoxUI("Safe Starter Movesets", model.SafeStarterMovesets, safeMovesetsTooltip));
         }
     }
 }

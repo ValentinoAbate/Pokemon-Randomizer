@@ -81,8 +81,8 @@ namespace PokemonRandomizer.UI.Views
             stack.Add(new EnumComboBoxUI<GymEliteFourPreventDupesSetting>("Gym and Elite Four Duplicate Theme Prevention", DuplicatePreventionDropdown, model.GymAndEliteDupePrevention));
             stack.Header("Villainous Teams");
             var villDrop = stack.Add(new EnumComboBoxUI<TrainerOrgTypeTheme>("Team Type Theming", VillainousTypeThemeDropdown, model.TeamTypeTheming, VillainousTypeThemeOptions));
-            villDrop.BindVisibility(stack.Add(new BoundCheckBoxUI(model.KeepTeamSubtypes, "Keep Team Subtypes") { ToolTip = teamSubtypesTooltip }), 2);
-            villDrop.BindVisibility(stack.Add(new BoundCheckBoxUI(model.GruntTheming, "Apply Team Theme To Grunts") { ToolTip = gruntThemeTooltip }), 1, 2);
+            villDrop.BindVisibility(stack.Add(new BoundCheckBoxUI("Keep Team Subtypes", model.KeepTeamSubtypes) { ToolTip = teamSubtypesTooltip }), 2);
+            villDrop.BindVisibility(stack.Add(new BoundCheckBoxUI("Apply Team Theme To Grunts", model.GruntTheming) { ToolTip = gruntThemeTooltip }), 1, 2);
             stack.Add(new EnumComboBoxUI<Trainer.Category>("Priority Theme Category", ThemePriorityDropdown, model.PriorityCategory, new List<Trainer.Category>() { Trainer.Category.GymLeader, Trainer.Category.TeamLeader } ));
             //stack.Header("Miscellaneous Organizations", "Miscellanous Organizations include: The Winstrates, Nugget Bridge, The Fighting Dojo, The Soda Pop House");
             //stack.Add(new EnumComboBoxUI<TrainerOrgTypeTheme>("Type Theming", TypeThemeDropdown, model.SmallOrgTypeTheming));
