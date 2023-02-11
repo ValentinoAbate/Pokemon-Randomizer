@@ -281,7 +281,7 @@ namespace PokemonRandomizer.Backend.Randomization
                     void MakeEvolutionByLevelUp(Evolution evo)
                     {
                         var evolveByLevelUp = pokemon.evolvesTo.FirstOrDefault(e => e.Type == EvolutionType.LevelUp);
-                        var newEvo = pokemon.evolvesTo.FirstOrDefault(e => !e.IsRealEvolution) ?? evo;
+                        var newEvo = pokemon.FirstEmptyEvolution ?? evo;
                         newEvo.Pokemon = evo.Pokemon;
                         if (evolveByLevelUp == null)
                         {
@@ -306,7 +306,7 @@ namespace PokemonRandomizer.Backend.Randomization
                         {
                             if (settings.TradeItemEvoSetting == Settings.TradeItemPokemonOption.UseItem)
                             {
-                                var newEvo = pokemon.evolvesTo.FirstOrDefault(e => !e.IsRealEvolution) ?? evo;
+                                var newEvo = pokemon.FirstEmptyEvolution ?? evo;
                                 newEvo.Pokemon = evo.Pokemon;
                                 newEvo.Type = EvolutionType.UseItem;
                                 newEvo.ItemParamater = evo.ItemParamater;
