@@ -7,6 +7,7 @@ using System.Windows.Data;
 namespace PokemonRandomizer.UI.Views
 {
     using Models;
+    using PokemonRandomizer.Backend.DataStructures;
     using static PokemonRandomizer.Settings;
     using CatchRateOption = Settings.CatchRateOption;
     public class PokemonTraitsDataView : DataView<PokemonTraitsModel>
@@ -18,11 +19,20 @@ namespace PokemonRandomizer.UI.Views
             "\nBeauty -> Level Up or Beauty (Optional)" +
             "\nFriendship (Day) -> Sun Stone (FRLG Only)" +
             "\nFriendship (Night) -> Moon Stone (FRLG Only)";
+        private const string dunsparsePlagueTooltip = "Add a chance that any given evolution line will be infected with the dunsparse plague" +
+            "\nAny pokemon who's evolution line is infected will have a 50% chance of evolving into DUNSPARSE when evolving by basic level up" +
+            "\nFor example, if the TREECKO evolution line is infected, 50% of TREECKO will evolve into GROVYLE, and the other 50% will evolve into DUNSPARSE" +
+            "\nIn this example, if a TREECKO successfully evolves into GROVYLE, the resulting GROVYLE will always evolve into SCEPTILE (as the original TREECKO was immune)" +
+            "\nThe dunsparse plague also affects NPC trainers who keep and evolve their party over the course of the game";
+        private const string dunsparsePlagueFriendshipTooltip = "If checked, pokemon whose evolution lines are infected by the plague may also evolve into DUNSPARSE when evolving by basic friendship, depending on the time of day" +
+            "\nPokemon that previously evolved properly by level up may still evolve into DUNSPARSE by friendship and vice-versa" +
+            "\nFor example, if the ZUBAT line is infected and a given ZUBAT successfully evolves into GOLBAT, that GOLBAT may still evolve into DUNSPARSE instead of CROBAT" +
+            "\nAdditionally, if the AZURILL line is infected and a given AZURILL successfully evolves into MARILL, that MARILL may still evolve into DUNSPARSE instead of AZUMARILL";
 
-        public PokemonTraitsDataView(PokemonTraitsModel model)
+        public PokemonTraitsDataView(PokemonTraitsModel model, RomMetadata metadata)
         {
             var tabs = CreateMainTabControl();
-            tabs.Add(CreateEvolutionTab(model));
+            tabs.Add(CreateEvolutionTab(model, metadata));
             tabs.Add(CreateLearnsetsTab(model));
             tabs.Add(CreateCatchRateTab(model));
             tabs.Add(CreateExpYieldTab(model));
@@ -34,7 +44,7 @@ namespace PokemonRandomizer.UI.Views
             new ComboBoxItem() { Content="Use Item", ToolTip = "Pokemon that normally evolve by trading with an item will evolve when that item is used on them"},
         };
 
-        private TabItem CreateEvolutionTab(PokemonTraitsModel model)
+        private TabItem CreateEvolutionTab(PokemonTraitsModel model, RomMetadata metadata)
         {
             var stack = CreateStack();
             stack.Header(UISkin.Current.HacksAndTweaksHeader);
@@ -42,7 +52,11 @@ namespace PokemonRandomizer.UI.Views
             impossibleCb.BindEnabled(stack.Add(new EnumComboBoxUI<TradeItemPokemonOption>("Trade item evolution type", TradeItemOptionDropdown, model.TradeItemEvoSetting)));
             impossibleCb.BindEnabled(stack.Add(new BoundCheckBoxUI(model.ConsiderEvolveByBeautyImpossible, "Fix Beauty-Based Evolutions")));
             impossibleCb.BindEnabled(stack.Add(new BoundSliderUI("Fixed evolution level variance", model.ImpossibleEvoLevelStandardDev, false, 0.01, 0, 3)));
-            stack.Add(new RandomChanceUI("Dunsparse Plague", model.DunsparsePlague, model.DunsparsePlaugeChance));
+            var plagueCB = stack.Add(new RandomChanceUI("Dunsparse Plague", model.DunsparsePlague, model.DunsparsePlaugeChance) { ToolTip = dunsparsePlagueTooltip});
+            if (!metadata.IsFireRedOrLeafGreen)
+            {
+                plagueCB.BindEnabled(stack.Add(new BoundCheckBoxUI(model.DunsparsePlagueFriendship, "Apply Dunsparse Plague to Friendship Evolutions", dunsparsePlagueFriendshipTooltip)));
+            }
             return CreateTabItem("Evolution", stack);
         }
 

@@ -13,6 +13,7 @@ namespace PokemonRandomizer.UI.Models
         public Box<bool> ConsiderEvolveByBeautyImpossible { get; set; } = new Box<bool>(true);
         public Box<TradeItemPokemonOption> TradeItemEvoSetting { get; set; } = new Box<TradeItemPokemonOption>(TradeItemPokemonOption.UseItem);
         public Box<bool> DunsparsePlague { get; set; } = new Box<bool>();
+        public Box<bool> DunsparsePlagueFriendship { get; set; } = new Box<bool>();
         public Box<double> DunsparsePlaugeChance { get; set; } = new Box<double>(0.1);
 
         // Catch rate parameters

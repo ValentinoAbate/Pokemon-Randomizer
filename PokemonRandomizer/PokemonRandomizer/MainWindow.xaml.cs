@@ -219,7 +219,7 @@ namespace PokemonRandomizer
         private void InitializeUI()
         {
             VariantPokemonView.Content = new VariantPokemonDataView(AppData.VariantPokemonData);
-            PokemonTraitsView.Content = new PokemonTraitsDataView(AppData.PokemonData);
+
             TmHmTutorView.Content = new TmHmTutorDataView(AppData.TmHmTutorData);
             WildPokemonView.Content = new WildEncounterDataView(AppData.WildEncounterData);
             TrainerView.Content = new TrainerDataView(AppData.TrainerData);
@@ -231,6 +231,7 @@ namespace PokemonRandomizer
             var pokemon = new List<Pokemon>(data.PokemonNationalDexOrder.Length + 1);
             pokemon.Add(Pokemon.None);
             pokemon.AddRange(data.PokemonNationalDexOrder.Select(p => p.species));
+            PokemonTraitsView.Content = new PokemonTraitsDataView(AppData.PokemonData, metadata);
             SpecialPokemonView.Content = new SpecialPokemonDataView(AppData.SpecialPokemonData, data.PokemonNames, pokemon);
             MiscView.Content = new MiscDataView(AppData.MiscData, metadata);
             TrainerOrgView.Content = new TrainerOrganizationDataView(AppData.TrainerOrgData, metadata);

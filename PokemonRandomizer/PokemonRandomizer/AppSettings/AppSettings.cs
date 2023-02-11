@@ -180,6 +180,7 @@ namespace PokemonRandomizer.AppSettings
         public override double ImpossibleEvoLevelStandardDev => pokemonData.ImpossibleEvoLevelStandardDev;
         public override TradeItemPokemonOption TradeItemEvoSetting => pokemonData.TradeItemEvoSetting;
         public override double DunsparsePlaugeChance => RandomChance(pokemonData.DunsparsePlague, pokemonData.DunsparsePlaugeChance);
+        public override bool ApplyDunsparsePlagueToFriendshipEvos => pokemonData.DunsparsePlagueFriendship;
 
         #endregion
 

@@ -80,6 +80,7 @@ namespace PokemonRandomizer.AppSettings
         public override double ImpossibleEvoLevelStandardDev => 1;
         public override TradeItemPokemonOption TradeItemEvoSetting => TradeItemPokemonOption.LevelUp;
         public override double DunsparsePlaugeChance => 0.25;
+        public override bool ApplyDunsparsePlagueToFriendshipEvos => true;
 
         #endregion
 

@@ -342,49 +342,6 @@ namespace PokemonRandomizer.Backend.Randomization
                         }
                     }
                 }
-                foreach (var evo in pokemon.evolvesTo)
-                {
-                    if (!evo.IsRealEvolution)
-                        continue;
-
-                    #region Dunsparse Plague
-                    if (rand.RollSuccess(settings.DunsparsePlaugeChance))
-                    {
-                        static int FirstEmptyEvo(Evolution[] evolutions)
-                        {
-                            for (int i = 0; i < evolutions.Length; i++)
-                            {
-                                if (!evolutions[i].IsRealEvolution)
-                                    return i;
-                            }
-                            return -1;
-                        }
-                        // Add the plague
-                        if (evo.Type == EvolutionType.LevelUp)
-                        {
-                            evo.Type = EvolutionType.LevelUpWithPersonality1;
-                            int index = FirstEmptyEvo(pokemon.evolvesTo);
-                            if (index >= 0)
-                            {
-                                pokemon.evolvesTo[index].Pokemon = Pokemon.DUNSPARCE;
-                                pokemon.evolvesTo[index].Type = EvolutionType.LevelUpWithPersonality2;
-                                pokemon.evolvesTo[index].IntParameter = evo.IntParameter;
-                            }
-                        }
-                        else if (evo.Type == EvolutionType.Friendship && !metadata.IsFireRedOrLeafGreen)
-                        {
-                            evo.Type = rand.RandomBool() ? EvolutionType.FriendshipDay : EvolutionType.FriendshipNight;
-                            int index = FirstEmptyEvo(pokemon.evolvesTo);
-                            if (index >= 0)
-                            {
-                                pokemon.evolvesTo[index].Pokemon = Pokemon.DUNSPARCE;
-                                pokemon.evolvesTo[index].Type = evo.Type == EvolutionType.FriendshipDay ? EvolutionType.FriendshipNight : EvolutionType.FriendshipDay;
-                                pokemon.evolvesTo[index].IntParameter = evo.IntParameter;
-                            }
-                        }
-                    }
-                    #endregion
-                }
                 #endregion
 
                 // Selfdestruct ban
@@ -464,6 +421,16 @@ namespace PokemonRandomizer.Backend.Randomization
                 }
 
                 #endregion
+            }
+
+            // Dunsparse Plague Pass
+            if(settings.DunsparsePlaugeChance > 0)
+            {
+                bool applyToFriendshipEvos = settings.ApplyDunsparsePlagueToFriendshipEvos && !metadata.IsFireRedOrLeafGreen;
+                foreach (var pokemon in data.Pokemon)
+                {
+                    ApplyDunsparsePlague(pokemon, applyToFriendshipEvos);
+                }
             }
 
             #endregion
@@ -1080,6 +1047,80 @@ namespace PokemonRandomizer.Backend.Randomization
                     {
                         berryTreeCommand.berry = rand.Choice(berries).Item;
                     }
+                }
+            }
+        }
+
+        private enum DunsparsePlagueFriendshipOption
+        {
+            None,
+            Allow,
+            Day,
+            Night,
+        }
+
+        private void ApplyDunsparsePlague(PokemonBaseStats pokemon, bool applyToFriendshipEvos)
+        {
+            // If this isn't the start to an evolution line or we fail the chance, return
+            if(!pokemon.IsBasic || !rand.RollSuccess(settings.DunsparsePlaugeChance))
+            {
+                return;
+            }
+            // Choose friendship option
+            bool useDay = applyToFriendshipEvos && rand.RandomBool();
+            ApplyDunsparsePlagueRecursive(pokemon, applyToFriendshipEvos, useDay);
+        }
+        private void ApplyDunsparsePlagueRecursive(PokemonBaseStats pokemon, bool applyToFriendshipEvos, bool useDay)
+        {
+            foreach (var evo in pokemon.evolvesTo)
+            {
+                if (!evo.IsRealEvolution || evo.Pokemon == Pokemon.DUNSPARCE)
+                    continue;
+                // Apply plague
+                ApplyDunsparsePlague(pokemon, evo, applyToFriendshipEvos, useDay);
+                // Propogate
+                ApplyDunsparsePlagueRecursive(data.GetBaseStats(evo.Pokemon), applyToFriendshipEvos, useDay);
+            }
+        }
+        private void ApplyDunsparsePlague(PokemonBaseStats pokemon, Evolution evo, bool applyToFriendshipEvos, bool useDay)
+        {
+            // Add the plague
+            if (evo.Type == EvolutionType.LevelUp)
+            {
+                var dunsparseEvo = pokemon.FirstEmptyEvolution;
+                if(dunsparseEvo != null)
+                {
+                    evo.Type = EvolutionType.LevelUpWithPersonality1;
+                    dunsparseEvo.Pokemon = Pokemon.DUNSPARCE;
+                    dunsparseEvo.Type = EvolutionType.LevelUpWithPersonality2;
+                    dunsparseEvo.IntParameter = evo.IntParameter;
+                }
+                else
+                {
+                    Logger.main.Error($"Failed to apply Dunsparse Plague to evolution: {evo}");
+                }
+            }
+            else if (evo.Type == EvolutionType.Friendship && applyToFriendshipEvos)
+            {
+                var dunsparseEvo = pokemon.FirstEmptyEvolution;
+                if (dunsparseEvo != null)
+                {
+                    dunsparseEvo.Pokemon = Pokemon.DUNSPARCE;
+                    dunsparseEvo.IntParameter = evo.IntParameter;
+                    if (useDay)
+                    {
+                        evo.Type = EvolutionType.FriendshipNight;
+                        dunsparseEvo.Type = EvolutionType.FriendshipDay;
+                    }
+                    else
+                    {
+                        evo.Type = EvolutionType.FriendshipDay;
+                        dunsparseEvo.Type = EvolutionType.FriendshipNight;
+                    }
+                }
+                else
+                {
+                    Logger.main.Error($"Failed to apply Dunsparse Plague to evolution: {evo}");
                 }
             }
         }
