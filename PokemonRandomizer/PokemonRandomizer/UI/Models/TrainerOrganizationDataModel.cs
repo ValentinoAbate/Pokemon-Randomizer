@@ -13,7 +13,7 @@ namespace PokemonRandomizer.UI.Models
         public Box<GymEliteFourPreventDupesSetting> GymAndEliteDupePrevention { get; set; } = new(GymEliteFourPreventDupesSetting.RandomizedOnly);
         public Box<TrainerOrgTypeTheme> TeamTypeTheming { get; set; } = new(TrainerOrgTypeTheme.Default);
         public Box<bool> GruntTheming { get; set; } = new Box<bool>(true);
-        public Box<bool> KeepTeamSubtypes { get; set; } = new Box<bool>(false);
+        public Box<double> TeamDualTypeChance { get; set; } = new();
         public Box<Trainer.Category> PriorityCategory { get; set; } = new(Trainer.Category.GymLeader);
         public Box<TrainerOrgTypeTheme> SmallOrgTypeTheming { get; set; } = new(TrainerOrgTypeTheme.On);
     }

@@ -193,7 +193,7 @@ namespace PokemonRandomizer.AppSettings
         public override GymEliteFourPreventDupesSetting GymEliteFourDupePrevention => GymEliteFourPreventDupesSetting.RandomizedOnly;
         public override TrainerOrgTypeTheme TeamTypeTheming => TrainerOrgTypeTheme.Default;
         public override bool GruntTheming => true;
-        public override bool KeepTeamSubtypes => true;
+        public override double TeamDualTypeChance => 1;
         public override Trainer.Category PriorityThemeCategory => Trainer.Category.GymLeader;
         public override TrainerOrgTypeTheme SmallOrgTypeTheming => TrainerOrgTypeTheme.Default;
 
