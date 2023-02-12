@@ -279,7 +279,7 @@ namespace PokemonRandomizer
         public abstract TrainerOrgTypeTheme TeamTypeTheming { get; }
         public abstract bool GruntTheming { get; }
         public abstract bool KeepTeamSubtypes { get; }
-        protected abstract Trainer.Category PriorityThemeCategory { get; }
+        public abstract Trainer.Category PriorityThemeCategory { get; }
         public abstract TrainerOrgTypeTheme SmallOrgTypeTheming { get; }
 
         // Misc

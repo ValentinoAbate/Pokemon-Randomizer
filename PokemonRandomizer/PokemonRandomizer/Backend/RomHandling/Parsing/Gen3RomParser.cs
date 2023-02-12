@@ -589,6 +589,9 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
             { "maxie", new PaletteData(PalRange(4, 10, 12, 13)) },
             { "magmaAdminTabitha", new PaletteData(PalRange(4, 10, 12, 13)) },
             { "magmaAdminCourtney", new PaletteData(PalRange(4, 10, 12, 13)) },
+            { "rocketGruntMasc", new PaletteData(PalRange(5, 6, 7, 12, 13, 14)) },
+            { "rocketGruntFem", new PaletteData(PalRange(5, 6, 7, 12, 13, 14)) },
+            { "giovanni", new PaletteData(Range(9, 12)) }, // maybe don't use
         };
         /// <summary>
         /// Read all the preset trainer data from the info file into the ROM data, and find normal grunt, ace, and reocurring trainers
@@ -627,7 +630,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
                     }
                     var palette = data.TrainerSprites[spriteNums[i]].FrontPalette;
                     var palData = villaneousTeamPaletteData[palKey];
-                    teamData.TeamData.Palettes.Add((palette, palData));
+                    teamData.TeamData.Palettes.Add((palette, palData, palKey == "giovanni"));
                 }
                 teamData.TeamData.DefaultPrimaryTypes = info.TypeArrayAttr(name, "primaryTypes");
                 teamData.TeamData.DefaultSecondaryTypes = info.TypeArrayAttr(name, "secondaryTypes");
