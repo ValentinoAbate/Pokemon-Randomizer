@@ -480,6 +480,7 @@ namespace PokemonRandomizer
 
         #region Misc
         public abstract bool UpgradeUnown { get; }
+        public abstract bool DistributeWeatherAbilities { get; }
 
         // Gen II-IV Hacks and Tweaks
         public abstract bool UpdateDOTMoves { get; }

@@ -13,6 +13,10 @@ namespace PokemonRandomizer.UI.Views
         private const string mewDeoxysObeyTooltip = "FRLG and Emerald have a special check that makes Mew and Deoxys that aren't recieved from events disobey in battle. This fix removes that mechanic";
         private const string enableEventsTooltip = "Allows mystery gift/event events like Southern Island and Birth Island to be accessed without using the the mystery gift/event systems. You will still need to obtain the relevant item and fulfill all other conditions to unlock the event";
         private const string upgradeUnownTooltip = "Give Unown access to every \"Power\" move available (Hidden Power, Nature Power, Secret Power, Cosmic Power, Ancientpower, Superpower, etc.)";
+        private const string addWeatherAbilitiesTooltup = "Distribute Drizzle and Drought to the pokemon that can have them as of Gen VII+" +
+            "\nPelliper gains Drizzle as a secondary ability, and Wingull gets Rain Dish as a secondary ability (so that you can tell what ability it will have when evolved)" +
+            "\nPolitoed gains Drizzle as a secondary ability, replacing Damp" +
+            "\nVulpix, Ninetales, and Torkoal all gain Drought as a secondary ability";
         public CompositeCollection MysteryGiftEventItemDropdown => new CompositeCollection()
         {
             new ComboBoxItem() {Content="None", ToolTip="Mystery gift event items such as the Eon Ticket will not be obtainable, except through normal means or another randomizer setting such as the \"Custom PC Potion\" or \"Custom Shop Item\" settings" },
@@ -37,6 +41,7 @@ namespace PokemonRandomizer.UI.Views
             stack.Add(new BoundCheckBoxUI("Run Indoors", model.RunIndoors));
             stack.Add(new BoundCheckBoxUI("Update Wrap Moves", model.UpdateDOTMoves, "Updates the moves Wrap, Bind, Fire Spin, Sand Tomb, Whirlpool, and Clamp to their Gen V power, accuracy, and PP"));
             stack.Add(new BoundCheckBoxUI("Upgrade Unown", model.UpgradeUnown, upgradeUnownTooltip));
+            stack.Add(new BoundCheckBoxUI("Distribute Weather Abilities", model.AddWeatherAbilities, addWeatherAbilitiesTooltup));
             var enableEventsCb = stack.Add(new BoundCheckBoxUI("Enable Mystery Gift Events", model.EnableEvents, enableEventsTooltip));
             stack.Add(enableEventsCb.BindEnabled(new EnumComboBoxUI<Settings.MysteryGiftItemSetting>("Mystery Gift Event Item Acquisition", MysteryGiftEventItemDropdown, model.EventItemSetting)));
             stack.Add(new EnumComboBoxUI<Backend.Randomization.TypeChartRandomizer.Option>("Type Effectiveness Modification", TypeChartOptionDropdown, model.TypeChartSetting));

@@ -5,6 +5,7 @@
     {
         public Box<bool> UpgradeUnown { get; set; } = new Box<bool>(false);
         public Box<bool> UpdateDOTMoves { get; set; } = new Box<bool>(false);
+        public Box<bool> AddWeatherAbilities { get; set; } = new Box<bool>(false);
         public Box<bool> RunIndoors { get; set; } = new Box<bool>(true);
         public Box<bool> EnableEvents { get; set; } = new Box<bool>(true);
         public Box<Settings.MysteryGiftItemSetting> EventItemSetting { get; set; } = new(Settings.MysteryGiftItemSetting.AllowInRandomization);

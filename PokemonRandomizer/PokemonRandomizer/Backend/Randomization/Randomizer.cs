@@ -254,6 +254,10 @@ namespace PokemonRandomizer.Backend.Randomization
             {
                 UpgradeUnown();
             }
+            if (settings.DistributeWeatherAbilities)
+            {
+                DistributeWeatherAbilities();
+            }
 
             // Evolution Line Pass
             foreach (PokemonBaseStats pokemon in data.Pokemon)
@@ -1159,6 +1163,16 @@ namespace PokemonRandomizer.Backend.Randomization
             {
                 unown.learnSet.Add(Move.SUPERPOWER, 34);
             }
+        }
+
+        private void DistributeWeatherAbilities()
+        {
+            data.GetBaseStats(Pokemon.WINGULL).abilities[1] = Ability.Rain_Dish;
+            data.GetBaseStats(Pokemon.PELIPPER).abilities[1] = Ability.Drizzle;
+            data.GetBaseStats(Pokemon.POLITOED).abilities[1] = Ability.Drizzle;
+            data.GetBaseStats(Pokemon.VULPIX).abilities[1] = Ability.Drought;
+            data.GetBaseStats(Pokemon.NINETALES).abilities[1] = Ability.Drought;
+            data.GetBaseStats(Pokemon.TORKOAL).abilities[1] = Ability.Drought;
         }
     }
 }
