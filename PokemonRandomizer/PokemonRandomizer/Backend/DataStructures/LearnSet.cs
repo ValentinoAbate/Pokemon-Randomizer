@@ -4,11 +4,13 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using PokemonRandomizer.Backend.EnumTypes;
 using PokemonRandomizer.Backend.Utilities;
+using PokemonRandomizer.Backend.Utilities.Debug;
 
 namespace PokemonRandomizer.Backend
 {
     public class LearnSet : IEnumerable<LearnSet.Entry>
     {
+        public const int MaxMoves = 25;
         /// <summary>
         /// The original number of moves in this moveset when read from the rom.
         /// If -1, this value was never set.
@@ -43,7 +45,11 @@ namespace PokemonRandomizer.Backend
 
         public void Add(Entry item, bool unsafeAdd = false)
         {
-            if(items.Count <= 0 || unsafeAdd)
+            if (items.Count >= MaxMoves)
+            {
+                return;
+            }
+            if (items.Count <= 0 || unsafeAdd)
             {
                 items.Add(item);
                 return;
