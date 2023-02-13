@@ -866,6 +866,17 @@ namespace PokemonRandomizer.Backend.Randomization
             }
         }
 
+        private void ModifyLearnsetUnown(PokemonBaseStats pokemon, Settings settings, VariantData data)
+        {
+            // Add one attacking move of each var type
+            var availableMoves = GetAvailibleAddMoves(pokemon.learnSet);
+            foreach (var type in data.VariantTypes)
+            {
+                var moves = GetAvailibleTypeMoves(availableMoves, type, pokemon.learnSet);
+                AddMove(pokemon, 1, 150, 10, 20, data, ref moves);
+            }
+        }
+
         private void AddBonusMove(PokemonBaseStats pokemon, Move move, VariantData data)
         {
             var bonusMove = bonusMoveGenerator.AddBonusMove(pokemon, move);
@@ -891,6 +902,11 @@ namespace PokemonRandomizer.Backend.Randomization
             if (pokemon.species is Pokemon.WYNAUT || (pokemon.species is Pokemon.WOBBUFFET && pokemon.IsBasic))
             {
                 ModifyLearnsetWobbufett(pokemon, settings, data);
+                return;
+            }
+            if (pokemon.species is Pokemon.UNOWN)
+            {
+                ModifyLearnsetUnown(pokemon, settings, data);
                 return;
             }
             if (limitedLearnsetPokemon.Contains(pokemon.species))
