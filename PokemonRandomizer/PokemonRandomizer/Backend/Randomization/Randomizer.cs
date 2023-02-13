@@ -249,6 +249,12 @@ namespace PokemonRandomizer.Backend.Randomization
 
             #region Pokemon Base Attributes
 
+            // Pokemon Tweaks
+            if (settings.UpgradeUnown)
+            {
+                UpgradeUnown();
+            }
+
             // Evolution Line Pass
             foreach (PokemonBaseStats pokemon in data.Pokemon)
             {
@@ -1122,6 +1128,36 @@ namespace PokemonRandomizer.Backend.Randomization
                 {
                     Logger.main.Error($"Failed to apply Dunsparse Plague to evolution: {evo}");
                 }
+            }
+        }
+
+        private void UpgradeUnown()
+        {
+            var allMoves = data.GetAllMoves();
+            var unown = data.GetBaseStats(Pokemon.UNOWN);
+            if (allMoves.Contains(Move.NATURE_POWER))
+            {
+                unown.learnSet.Add(Move.NATURE_POWER, 6);
+            }
+            if (allMoves.Contains(Move.SECRET_POWER))
+            {
+                unown.learnSet.Add(Move.SECRET_POWER, 12);
+            }
+            if (allMoves.Contains(Move.ANCIENTPOWER))
+            {
+                unown.learnSet.Add(Move.ANCIENTPOWER, 18);
+            }
+            if (allMoves.Contains(Move.COSMIC_POWER))
+            {
+                unown.learnSet.Add(Move.COSMIC_POWER, 24);
+            }
+            if (allMoves.Contains(Move.EARTH_POWER))
+            {
+                unown.learnSet.Add(Move.EARTH_POWER, 30);
+            }
+            if (allMoves.Contains(Move.SUPERPOWER))
+            {
+                unown.learnSet.Add(Move.SUPERPOWER, 34);
             }
         }
     }

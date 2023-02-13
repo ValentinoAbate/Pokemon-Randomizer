@@ -479,6 +479,7 @@ namespace PokemonRandomizer
         #endregion
 
         #region Misc
+        public abstract bool UpgradeUnown { get; }
 
         // Gen II-IV Hacks and Tweaks
         public abstract bool UpdateDOTMoves { get; }

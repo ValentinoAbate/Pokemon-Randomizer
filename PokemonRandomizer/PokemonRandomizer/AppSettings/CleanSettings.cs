@@ -17,6 +17,8 @@ namespace PokemonRandomizer.AppSettings
 
         #region Misc
 
+        public override bool UpgradeUnown => false;
+
         // Gen II-IV Hacks and Tweaks
         public override bool UpdateDOTMoves => false;
 
