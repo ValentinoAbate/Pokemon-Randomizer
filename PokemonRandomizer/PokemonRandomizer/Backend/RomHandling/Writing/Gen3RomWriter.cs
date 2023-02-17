@@ -94,9 +94,9 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
                     }
                     pcItemArray.WriteRepeating(0x00, 4);
                     int? newPCItemArrayOffset = rom.WriteInFreeSpace(pcItemArray.File);
-                    if(newPCItemArrayOffset.HasValue && newPCItemArrayOffset != Rom.nullPointer)
+                    if(newPCItemArrayOffset.HasValue && newPCItemArrayOffset != Rom.nullPointer && info.HasPointer(ElementNames.pcPotion))
                     {
-                        repoints.Add(pcPotionOffset, newPCItemArrayOffset.Value);
+                        rom.WritePointer(info.Pointer(ElementNames.pcPotion), newPCItemArrayOffset.Value);
                     }
                     else
                     {
