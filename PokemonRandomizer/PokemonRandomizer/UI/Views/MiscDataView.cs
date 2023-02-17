@@ -13,6 +13,8 @@ namespace PokemonRandomizer.UI.Views
         private const string mewDeoxysObeyTooltip = "FRLG and Emerald have a special check that makes Mew and Deoxys that aren't recieved from events disobey in battle. This fix removes that mechanic";
         private const string enableEventsTooltip = "Allows mystery gift/event events like Southern Island and Birth Island to be accessed without using the the mystery gift/event systems. You will still need to obtain the relevant item and fulfill all other conditions to unlock the event";
         private const string upgradeUnownTooltip = "Give Unown access to every \"Power\" move available (Hidden Power, Nature Power, Secret Power, Cosmic Power, Ancientpower, Superpower, etc.)";
+        private const string upgradeCastformTooltip = "Give Castform earlier access to Weather Ball, and give it access to Sandstorm, Thunder, Blizzard, and Solarbeam by level-up" +
+            "\nThis allows Castform to retain access to important weather-related moves even when TMs are randomized and use these moves in NPC movesets";
         private const string addWeatherAbilitiesTooltup = "Distribute Drizzle and Drought to the pokemon that can have them as of Gen VII+" +
             "\nPelliper gains Drizzle as a secondary ability, and Wingull gets Rain Dish as a secondary ability (so that you can tell what ability it will have when evolved)" +
             "\nPolitoed gains Drizzle as a secondary ability, replacing Damp" +
@@ -40,7 +42,9 @@ namespace PokemonRandomizer.UI.Views
             stack.Header(UISkin.Current.HacksAndTweaksHeader);
             stack.Add(new BoundCheckBoxUI("Run Indoors", model.RunIndoors));
             stack.Add(new BoundCheckBoxUI("Update Wrap Moves", model.UpdateDOTMoves, "Updates the moves Wrap, Bind, Fire Spin, Sand Tomb, Whirlpool, and Clamp to their Gen V power, accuracy, and PP"));
-            stack.Add(new BoundCheckBoxUI("Upgrade Unown", model.UpgradeUnown, upgradeUnownTooltip));
+            var pokemonTweakStack = stack.Add(CreateHorizontalStack());
+            pokemonTweakStack.Add(new BoundCheckBoxUI("Upgrade Unown", model.UpgradeUnown, upgradeUnownTooltip));
+            pokemonTweakStack.Add(new BoundCheckBoxUI("Upgrade Castform", model.UpgradeCastform, upgradeCastformTooltip));
             stack.Add(new BoundCheckBoxUI("Distribute Weather Abilities", model.AddWeatherAbilities, addWeatherAbilitiesTooltup));
             var enableEventsCb = stack.Add(new BoundCheckBoxUI("Enable Mystery Gift Events", model.EnableEvents, enableEventsTooltip));
             stack.Add(enableEventsCb.BindEnabled(new EnumComboBoxUI<Settings.MysteryGiftItemSetting>("Mystery Gift Event Item Acquisition", MysteryGiftEventItemDropdown, model.EventItemSetting)));

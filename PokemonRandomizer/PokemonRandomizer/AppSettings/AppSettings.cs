@@ -473,6 +473,7 @@ namespace PokemonRandomizer.AppSettings
         #region Misc
 
         public override bool UpgradeUnown => miscData.UpgradeUnown;
+        public override bool UpgradeCastform => miscData.UpgradeCastform;
         public override bool DistributeWeatherAbilities => miscData.AddWeatherAbilities;
 
         // Gen II-IV Hacks and Tweaks

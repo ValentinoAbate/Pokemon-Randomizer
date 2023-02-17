@@ -254,6 +254,10 @@ namespace PokemonRandomizer.Backend.Randomization
             {
                 UpgradeUnown();
             }
+            if (settings.UpgradeCastform)
+            {
+                UpgradeCastform();
+            }
             if (settings.DistributeWeatherAbilities)
             {
                 DistributeWeatherAbilities();
@@ -1163,6 +1167,17 @@ namespace PokemonRandomizer.Backend.Randomization
             {
                 unown.learnSet.Add(Move.SUPERPOWER, 34);
             }
+        }
+
+        private void UpgradeCastform()
+        {
+            var learnset = data.GetBaseStats(Pokemon.CASTFORM).learnSet;
+            learnset.Add(Move.WEATHER_BALL, 25);
+            learnset.Add(Move.SANDSTORM, 20);
+            learnset.Add(Move.THUNDER, 35);
+            learnset.Add(Move.SOLARBEAM, 35);
+            learnset.Add(Move.BLIZZARD, 35);
+            // Gen5+: hurricane
         }
 
         private void DistributeWeatherAbilities()
