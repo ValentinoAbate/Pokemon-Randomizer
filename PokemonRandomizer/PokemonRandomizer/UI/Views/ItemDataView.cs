@@ -19,11 +19,11 @@ namespace PokemonRandomizer.UI.Views
             var customItemOptions = metadata.IsFireRedOrLeafGreen ? allItems.Where(i => !ItemUtils.IsTM(i) && !ItemUtils.IsHM(i)).ToList() : allItems;
             var allItemsDisplay = allItems.Select(EnumUtils.ToDisplayString).ToList();
             var tabs = new TabControl();
-
-            tabs.Add(CreateItemRandomizerSettingsTab(model));
+  
             tabs.Add(CreateFieldItemsTab(model));
             //tabs.Items.Add(CreateShopsTab(model));
             tabs.Add(CreateMiscTab(model, allItemsDisplay, allItems, metadata));
+            tabs.Add(CreateItemRandomizerSettingsTab(model));
 
             Content = tabs;
         }
