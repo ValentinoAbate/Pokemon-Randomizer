@@ -11,7 +11,7 @@
             <RowDefinition Name="ContentRow" Height="*" ></RowDefinition>
             <RowDefinition Name="Controls" Height="Auto" ></RowDefinition>
         </Grid.RowDefinitions>
-        <StackPanel Grid.Row="0" Orientation="Vertical" Margin="5" >
+        <StackPanel Grid.Row="0" Orientation="Vertical" Margin="5">
             <TextBlock Name="MessageTb" Text="Enter a seed, or leave blank for a random seed" FontSize="12" TextWrapping="Wrap" Margin="5" TextAlignment="Center"/>
             <TextBox Name="InputTb" Margin="10"/>
         </StackPanel>

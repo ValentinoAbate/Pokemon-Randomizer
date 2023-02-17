@@ -811,7 +811,7 @@ namespace PokemonRandomizer
                 Owner = this
             };
             SetUIEnabled(false);
-            aboutWindow.ShowDialog();
+            aboutWindow.ShowDialogAndFocus();
             SetUIEnabled(true);
         }
 

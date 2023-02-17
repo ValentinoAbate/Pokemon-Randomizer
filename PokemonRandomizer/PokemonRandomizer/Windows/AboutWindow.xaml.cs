@@ -17,6 +17,15 @@ namespace PokemonRandomizer.Windows
             this.SourceInitialized += OnSourceInitialized;
         }
 
+        public bool? ShowDialogAndFocus()
+        {
+            if (!CloseButton.IsKeyboardFocused)
+            {
+                CloseButton.Focus();
+            }
+            return ShowDialog();
+        }
+
         private void CloseWindow(object sender, RoutedEventArgs e)
         {
             Close();

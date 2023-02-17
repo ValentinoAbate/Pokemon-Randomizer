@@ -52,6 +52,10 @@ namespace PokemonRandomizer.Windows
             AffirmativeButton.Content = affirmative;
             NegativeButton.Content = negative;
             Output = string.Empty;
+            if (!AffirmativeButton.IsKeyboardFocused)
+            {
+                AffirmativeButton.Focus();
+            }
             return ShowDialog();
         }
 
