@@ -427,6 +427,7 @@ namespace PokemonRandomizer.AppSettings
         }
         public override bool OverrideCustomMartItemPrice => itemData.OverrideCustomMartItemPrice;
         public override int CustomMartItemPrice => (int)itemData.CustomMartItemPrice;
+        public override bool DiscountSoldGiftItems => itemData.DiscountSoldItems;
 
         public override double FieldItemRandChance => RandomChance(itemData.RandomizeFieldItems, itemData.FieldItemRandChance);
         public override ItemRandomizer.Settings FieldItemSettings => itemData.FieldItemSettings;

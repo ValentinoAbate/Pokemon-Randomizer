@@ -91,6 +91,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 {
                     newPrice /= 2;
                 }
+                newPrice = Math.Max(newPrice, 100);
                 foreach (var command in relatedMoneyCommands)
                 {
                     command.Amount = newPrice;

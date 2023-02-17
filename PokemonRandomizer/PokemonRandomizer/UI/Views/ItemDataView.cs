@@ -70,6 +70,8 @@ namespace PokemonRandomizer.UI.Views
         private const string skipItemTooltip = "Items in skipped categories will not be randomized and left as they are in the base game";
         private const string reduceDuplicatesTooltip = "Items in the marked categories will be less likely to appear multiple times as random items. Skipped or otherwise unrandomized items will count towards duplicate reduction";
         private const string keepSameCategoryTooltip = "Items in the marked categories will only randomize to an item in the same category a certain percentage of the time. For example, if TMs are marked, all TMs can only randomize to other TMs";
+        private const string discountSoldItemsTooltip = "Randomized items sold outside of stores and vending machines (e.g. the Lava Cookie lady in RSE) will be sold at their sell price instead of their buy price (min $100)." +
+            "\nFor example, if the Lava Cookie lady is randomized to sell Protein, it will cost $4,900 instead of $9,800. This doesn't change the price it is bought or sold at in other stores";
 
         private TabItem CreateItemRandomizerSettingsTab(ItemDataModel model)
         {
@@ -123,6 +125,9 @@ namespace PokemonRandomizer.UI.Views
             }
             var modifyMartItemPriceCb = customMartItemStack.Add(new BoundCheckBoxUI("Override Item Price", model.OverrideCustomMartItemPrice));
             modifyMartItemPriceCb.BindVisibility(customMartItemStack.Add(new BoundSliderUI("Item Price", model.CustomMartItemPrice, false, 100, 100, 9800)));
+            
+            stack.Header("Special Sold Items");
+            stack.Add(new BoundCheckBoxUI("Discount Randomized Special Sold Items", model.DiscountSoldItems, discountSoldItemsTooltip));
 
             return CreateTabItem("Misc", stack);
         }
