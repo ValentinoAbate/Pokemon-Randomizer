@@ -20,6 +20,7 @@ namespace PokemonRandomizer
     using System.IO.Compression;
     using System.Text;
     using System.Windows.Controls;
+    using System.Windows.Input;
     using UI;
     using UI.Json;
     using UI.Models;
@@ -38,6 +39,15 @@ namespace PokemonRandomizer
 #else
         public const string version = baseVersion + debugVersion;
 #endif
+        public static RoutedCommand OpenSettingsCmd = new RoutedCommand();
+        public static RoutedCommand SaveSettingsCmd = new RoutedCommand();
+        public static RoutedCommand SaveInfoCmd = new RoutedCommand();
+        public static RoutedCommand SaveLogCmd = new RoutedCommand();
+        public static RoutedCommand ClearLogCmd = new RoutedCommand();
+        public static RoutedCommand QuickRandCmd = new RoutedCommand();
+        public static RoutedCommand QuickRandSeedlessCmd = new RoutedCommand();
+        public static RoutedCommand SaveCleanCmd = new RoutedCommand();
+        public static RoutedCommand SaveCleanAndDiffCmd = new RoutedCommand();
 
         #region XAML Properties for bindings
         private bool _isROMLoaded;
@@ -822,8 +832,16 @@ namespace PokemonRandomizer
             e.Handled = true;
         }
 
+        private void CanExecuteIfRomLoaded(object sender, System.Windows.Input.CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = IsROMLoaded;
+        }
+
+        private void CanExecuteIfLogNotEmpty(object sender, System.Windows.Input.CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = LogNotEmpty;
+        }
+
         #endregion
-
-
     }
 }
