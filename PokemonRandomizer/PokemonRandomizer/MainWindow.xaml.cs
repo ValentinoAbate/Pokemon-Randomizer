@@ -33,7 +33,7 @@ namespace PokemonRandomizer
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
         private const string versionPrefix = "v";
-        private const string versionNumber = "1.0-beta.6";
+        private const string versionNumber = "1.0-beta.7";
         private const string baseVersion = versionPrefix + versionNumber;
 #if !DEBUG
         public const string version = baseVersion;
