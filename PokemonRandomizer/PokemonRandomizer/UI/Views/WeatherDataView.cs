@@ -25,7 +25,7 @@ namespace PokemonRandomizer.UI.Views
         {
             var stack = CreateMainStack();
             stack.Add(new Label() { Content = "Weather Randomization" });
-            stack.Add(new Separator());
+            stack.Separator();
             var strategyDrop = stack.Add(new EnumComboBoxUI<WeatherOption>("Randomization Strategy", WeatherOptionDropdown, model.WeatherSetting));
             strategyDrop.BindVisibility(stack.Add(new WeightedSetUI<Weather>("Custom Weather Type", model.CustomWeatherWeights, GetWeatherWeightDropdown)), (int)WeatherOption.CustomWeighting);
             var settingsStack = stack.Add(strategyDrop.BindEnabled(CreateStack(), (int)WeatherOption.CompletelyRandom, (int)WeatherOption.InBattleWeather, (int)WeatherOption.CustomWeighting));

@@ -34,7 +34,7 @@ namespace PokemonRandomizer.UI.Views
             stack.Add(new BoundCheckBoxUI("Prevent HM moves in TMs and Tutors", model.NoHmMovesInTMsAndTutors));
             stack.Add(new BoundCheckBoxUI("Prevent duplicate moves in TMs and Tutors", model.NoDuplicateTMsAndTutors));
             stack.Add(new BoundCheckBoxUI("Keep important TMs and Tutors", model.KeepImportantTmsAndTutors, "Ensures that important TMs and Tutors won't be randomized (Secret Power + Dig in RSE)"));
-            stack.Add(new Separator());
+            stack.Separator();
             stack.Header("Compatibility");
             var compatDropdown = stack.Add(new EnumComboBoxUI<CompatOption>("Compatibility Strategy", CompatOptionDropdown, model.MoveCompatOption));
             stack.Add(compatDropdown.BindVisibility(new BoundSliderUI("Random Compatibility Chance", model.RandomCompatTrueChance), (int)CompatOption.Random, (int)CompatOption.RandomKeepNumber));

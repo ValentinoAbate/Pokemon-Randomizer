@@ -52,7 +52,7 @@ namespace PokemonRandomizer.UI
             }
             addButton.ContextMenu = contextMenu;
             mainStack.Add(controlStack);
-            mainStack.Add(new Separator());
+            mainStack.Separator();
             foreach(var item in set)
             {
                 Add(item.Key, item.Value);

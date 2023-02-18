@@ -117,7 +117,7 @@ namespace PokemonRandomizer.UI.Views
             bonusMovesStack.Add(new BoundCheckBoxUI("Ban adding HM moves", model.DisableAddingHmMoves));
             stack.Add(new RandomChanceUI("Bonus Moves", model.AddMoves, model.AddMovesChance, bonusMovesStack));
             stack.Add(bonusMovesStack);
-            stack.Add(new Separator());
+            stack.Separator();
             stack.Header(UISkin.Current.HacksAndTweaksHeader);
             stack.Add(new BoundCheckBoxUI("Ban Selfdestruct", model.BanSelfdestruct, banSelfdestructTooltip));
             return CreateTabItem("Learnsets", stack); ;
