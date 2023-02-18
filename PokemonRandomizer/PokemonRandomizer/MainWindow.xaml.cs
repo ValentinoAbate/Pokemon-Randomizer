@@ -32,12 +32,16 @@ namespace PokemonRandomizer
     /// </summary>
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
-        private const string baseVersion = "v1.0-beta.6";
-        private const string debugVersion = "-debug";
+        private const string versionPrefix = "v";
+        private const string versionNumber = "1.0-beta.6";
+        private const string baseVersion = versionPrefix + versionNumber;
 #if !DEBUG
         public const string version = baseVersion;
+        public const string displayVersion = "Version " + versionNumber;
 #else
-        public const string version = baseVersion + debugVersion;
+        private const string debugSuffix = "-debug";
+        public const string version = baseVersion + debugSuffix;
+        public const string displayVersion = "Version " + versionNumber + debugSuffix;
 #endif
         public static RoutedCommand OpenSettingsCmd = new RoutedCommand();
         public static RoutedCommand SaveSettingsCmd = new RoutedCommand();
