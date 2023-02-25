@@ -25,7 +25,7 @@ namespace PokemonRandomizer.Backend.Metadata
             }
         }
 
-        public void InitializeThemeData(IDataTranslator dataT, Settings s)
+        public override void InitializeThemeData(IDataTranslator dataT, Settings s)
         {
             if (!IsValid)
             {

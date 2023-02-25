@@ -20,6 +20,7 @@ namespace PokemonRandomizer
     using System.IO.Compression;
     using System.Text;
     using System.Windows.Controls;
+    using System.Windows.Input;
     using UI;
     using UI.Json;
     using UI.Models;
@@ -31,13 +32,26 @@ namespace PokemonRandomizer
     /// </summary>
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
-        private const string baseVersion = "v1.0-beta.6";
-        private const string debugVersion = "-debug";
+        private const string versionPrefix = "v";
+        private const string versionNumber = "1.0-beta.7";
+        private const string baseVersion = versionPrefix + versionNumber;
 #if !DEBUG
         public const string version = baseVersion;
+        public const string displayVersion = "Version " + versionNumber;
 #else
-        public const string version = baseVersion + debugVersion;
+        private const string debugSuffix = "-debug";
+        public const string version = baseVersion + debugSuffix;
+        public const string displayVersion = "Version " + versionNumber + debugSuffix;
 #endif
+        public static RoutedCommand OpenSettingsCmd = new RoutedCommand();
+        public static RoutedCommand SaveSettingsCmd = new RoutedCommand();
+        public static RoutedCommand SaveInfoCmd = new RoutedCommand();
+        public static RoutedCommand SaveLogCmd = new RoutedCommand();
+        public static RoutedCommand ClearLogCmd = new RoutedCommand();
+        public static RoutedCommand QuickRandCmd = new RoutedCommand();
+        public static RoutedCommand QuickRandSeedlessCmd = new RoutedCommand();
+        public static RoutedCommand SaveCleanCmd = new RoutedCommand();
+        public static RoutedCommand SaveCleanAndDiffCmd = new RoutedCommand();
 
         #region XAML Properties for bindings
         private bool _isROMLoaded;
@@ -219,7 +233,7 @@ namespace PokemonRandomizer
         private void InitializeUI()
         {
             VariantPokemonView.Content = new VariantPokemonDataView(AppData.VariantPokemonData);
-            PokemonTraitsView.Content = new PokemonTraitsDataView(AppData.PokemonData);
+
             TmHmTutorView.Content = new TmHmTutorDataView(AppData.TmHmTutorData);
             WildPokemonView.Content = new WildEncounterDataView(AppData.WildEncounterData);
             TrainerView.Content = new TrainerDataView(AppData.TrainerData);
@@ -231,6 +245,7 @@ namespace PokemonRandomizer
             var pokemon = new List<Pokemon>(data.PokemonNationalDexOrder.Length + 1);
             pokemon.Add(Pokemon.None);
             pokemon.AddRange(data.PokemonNationalDexOrder.Select(p => p.species));
+            PokemonTraitsView.Content = new PokemonTraitsDataView(AppData.PokemonData, metadata);
             SpecialPokemonView.Content = new SpecialPokemonDataView(AppData.SpecialPokemonData, data.PokemonNames, pokemon);
             MiscView.Content = new MiscDataView(AppData.MiscData, metadata);
             TrainerOrgView.Content = new TrainerOrganizationDataView(AppData.TrainerOrgData, metadata);
@@ -287,7 +302,7 @@ namespace PokemonRandomizer
         private RomData Randomize(string seed)
         {
             var copyData = Parser.Parse(Rom, Metadata, RomInfo);
-            var randomzier = new Backend.Randomization.Randomizer(copyData, AppSettings, seed);
+            var randomzier = new Backend.Randomization.Randomizer(copyData, Metadata, AppSettings, seed);
             var randomizedData = randomzier.Randomize();
             SetLastRandomizationInfo(randomizedData, Metadata, true);
             return randomizedData;
@@ -817,7 +832,7 @@ namespace PokemonRandomizer
                 Owner = this
             };
             SetUIEnabled(false);
-            aboutWindow.ShowDialog();
+            aboutWindow.ShowDialogAndFocus();
             SetUIEnabled(true);
         }
 
@@ -828,8 +843,16 @@ namespace PokemonRandomizer
             e.Handled = true;
         }
 
+        private void CanExecuteIfRomLoaded(object sender, System.Windows.Input.CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = IsROMLoaded;
+        }
+
+        private void CanExecuteIfLogNotEmpty(object sender, System.Windows.Input.CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = LogNotEmpty;
+        }
+
         #endregion
-
-
     }
 }

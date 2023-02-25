@@ -33,8 +33,8 @@ namespace PokemonRandomizer.UI.Views
             stack.Add(new RandomChanceUI("Randomize Gift Pokemon", model.RandomizeGiftPokemon, model.GiftPokemonRandChance))
                 .BindEnabled(stack.Add(new PokemonSettingsUI(model.GiftSpeciesSettings)));
             stack.Header("Restrictions");
-            stack.Add(new BoundCheckBoxUI(model.EnsureFossilRevivesAreFossilPokemon, "Ensure Fossil Revives are Fossil Pokemon"));
-            stack.Add(new BoundCheckBoxUI(model.EnsureGiftEggsAreBabyPokemon, "Ensure Gift Eggs are Baby Pokemon"));
+            stack.Add(new BoundCheckBoxUI("Ensure Fossil Revives are Fossil Pokemon", model.EnsureFossilRevivesAreFossilPokemon));
+            stack.Add(new BoundCheckBoxUI("Ensure Gift Eggs are Baby Pokemon", model.EnsureGiftEggsAreBabyPokemon));
             return CreateTabItem("Gift Pokemon", stack);
         }
 
@@ -53,8 +53,8 @@ namespace PokemonRandomizer.UI.Views
             var optionsStack = stack.Add(staticRand.BindEnabled(CreateStack()));
             optionsStack.Add(new PokemonSettingsUI(model.Settings));
             optionsStack.Add(new EnumComboBoxUI<Settings.LegendaryRandSetting>("Legendary Logic", StaticLegendaryOptionDropdown, model.LegendarySetting));
-            optionsStack.Add(new BoundCheckBoxUI(model.Remap, "Remap Static Enounters", "Randomizes all instances of a static wild pokemon to the same new pokemon"));
-            optionsStack.Add(new BoundCheckBoxUI(model.Remap, "Prevent Duplicates", "Prevents the same new pokemon being chosen twice during static wild pokemon randomization"));
+            optionsStack.Add(new BoundCheckBoxUI("Remap Static Enounters", model.Remap, "Randomizes all instances of a static wild pokemon to the same new pokemon"));
+            optionsStack.Add(new BoundCheckBoxUI("Prevent Duplicates", model.Remap, "Prevents the same new pokemon being chosen twice during static wild pokemon randomization"));
             return CreateTabItem("Static Wild Pokemon", stack);
         }
 
@@ -72,15 +72,15 @@ namespace PokemonRandomizer.UI.Views
             stack.Header("Required Pokemon");
             var giveRand = stack.Add(new RandomChanceUI("Randomize Pokemon Required by Trade", model.RandomizeTradeGive, model.TradePokemonGiveRandChance));
             var giveRandStack = stack.Add(giveRand.BindEnabled(CreateStack()));
-            giveRandStack.Add(new BoundCheckBoxUI(model.BanLegendariesGive, "Ban Legendaries"));
-            giveRandStack.Add(new BoundCheckBoxUI(model.TryMatchPowerGive, "Match Power") { ToolTip ="Make it more likely for the pokemon to randomize to one with a similar Base Stat Total, as in-game trades do not have a fixed level"});
+            giveRandStack.Add(new BoundCheckBoxUI("Ban Legendaries", model.BanLegendariesGive));
+            giveRandStack.Add(new BoundCheckBoxUI("Match Power", model.TryMatchPowerGive) { ToolTip ="Make it more likely for the pokemon to randomize to one with a similar Base Stat Total, as in-game trades do not have a fixed level"});
 
             // Recieved Pokemon
             stack.Header("Recieved Pokemon");
             var recieveRand = stack.Add(new RandomChanceUI("Randomize Pokemon Recieved from Trade", model.RandomizeTradeRecieve, model.TradePokemonRecievedRandChance));
             var recieveRandStack = stack.Add(recieveRand.BindEnabled(CreateStack()));
-            recieveRandStack.Add(new BoundCheckBoxUI(model.BanLegendariesRecieve, "Ban Legendaries"));
-            recieveRandStack.Add(new BoundCheckBoxUI(model.TryMatchPowerRecieve, "Match Power") { ToolTip = "Make it more likely for the pokemon to randomize to one with a similar Base Stat Total, as in-game trades do not have a fixed level" });
+            recieveRandStack.Add(new BoundCheckBoxUI("Ban Legendaries", model.BanLegendariesRecieve));
+            recieveRandStack.Add(new BoundCheckBoxUI("Match Power", model.TryMatchPowerRecieve) { ToolTip = "Make it more likely for the pokemon to randomize to one with a similar Base Stat Total, as in-game trades do not have a fixed level" });
 
             stack.Add(new EnumComboBoxUI<Settings.TradePokemonIVSetting>("Recieved Pokemon IVs", TradeIVDropdown, model.IVSetting));
             stack.Add(new RandomChanceUI("Randomize Held Items", model.RandomizeHeldItems, model.HeldItemRandChance))

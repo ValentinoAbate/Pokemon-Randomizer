@@ -80,6 +80,7 @@ namespace PokemonRandomizer.AppSettings
         public override double ImpossibleEvoLevelStandardDev => 1;
         public override TradeItemPokemonOption TradeItemEvoSetting => TradeItemPokemonOption.LevelUp;
         public override double DunsparsePlaugeChance => 0.25;
+        public override bool ApplyDunsparsePlagueToFriendshipEvos => true;
 
         #endregion
 
@@ -119,6 +120,8 @@ namespace PokemonRandomizer.AppSettings
             { CatchRateOption.IntelligentNormal, 70},
             { CatchRateOption.IntelligentHard, 45},
         };
+
+        public override bool FastHatching => false;
 
         #endregion
 
@@ -190,8 +193,8 @@ namespace PokemonRandomizer.AppSettings
         public override GymEliteFourPreventDupesSetting GymEliteFourDupePrevention => GymEliteFourPreventDupesSetting.RandomizedOnly;
         public override TrainerOrgTypeTheme TeamTypeTheming => TrainerOrgTypeTheme.Default;
         public override bool GruntTheming => true;
-        public override bool KeepTeamSubtypes => true;
-        protected override Trainer.Category PriorityThemeCategory => Trainer.Category.GymLeader;
+        public override double TeamDualTypeChance => 1;
+        public override Trainer.Category PriorityThemeCategory => Trainer.Category.GymLeader;
         public override TrainerOrgTypeTheme SmallOrgTypeTheming => TrainerOrgTypeTheme.Default;
 
         // Misc
@@ -397,6 +400,10 @@ namespace PokemonRandomizer.AppSettings
 
         #region Misc
 
+        public override bool UpgradeUnown => true;
+        public override bool UpgradeCastform => true;
+        public override bool DistributeWeatherAbilities => true;
+
         // Gen II-IV Hacks and Tweaks
         public override bool UpdateDOTMoves => true;
 
@@ -418,6 +425,8 @@ namespace PokemonRandomizer.AppSettings
 
         // Randomizer Settings
         public override bool CountRelicanthAsFossil => true;
+
+        public override TypeChartRandomizer.Option TypeChartRandomizationSetting => TypeChartRandomizer.Option.None;
 
         #endregion
 

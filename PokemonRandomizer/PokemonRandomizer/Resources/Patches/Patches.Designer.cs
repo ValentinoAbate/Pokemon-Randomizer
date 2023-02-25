@@ -19,7 +19,7 @@ namespace PokemonRandomizer.Resources.Patches {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Patches {
@@ -63,7 +63,12 @@ namespace PokemonRandomizer.Resources.Patches {
         /// <summary>
         ///   Looks up a localized string similar to All credit for PhysSpecSplitEM 1.4 and PhysSpecSplitFR 1.6 goes to DoesntKnowHowToPlay
         ///post: https://www.pokecommunity.com/showpost.php?p=7465618&amp;postcount=163
-        ///profile: https://www.pokecommunity.com/member.php?u=300067.
+        ///profile: https://www.pokecommunity.com/member.php?u=300067
+        ///
+        ///binary for sunfixFR1 compiled from MrPkmn&apos;s sun fix asm
+        ///post: (https://www.pokecommunity.com/showpost.php?p=8823257&amp;postcount=5)
+        ///profile: (https://www.pokecommunity.com/member.php?u=86277)
+        ///sun fixes for other versions (LG 1.0 and FRLG 1.1 were compiled from asm written by me, modified [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string Credits {
             get {
@@ -87,6 +92,46 @@ namespace PokemonRandomizer.Resources.Patches {
         internal static byte[] PhysSpecSplitFR1_6 {
             get {
                 object obj = ResourceManager.GetObject("PhysSpecSplitFR1_6", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] sunfixFR1 {
+            get {
+                object obj = ResourceManager.GetObject("sunfixFR1", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] sunfixFR1_1 {
+            get {
+                object obj = ResourceManager.GetObject("sunfixFR1-1", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] sunfixLG1 {
+            get {
+                object obj = ResourceManager.GetObject("sunfixLG1", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] sunfixLG1_1 {
+            get {
+                object obj = ResourceManager.GetObject("sunfixLG1-1", resourceCulture);
                 return ((byte[])(obj));
             }
         }

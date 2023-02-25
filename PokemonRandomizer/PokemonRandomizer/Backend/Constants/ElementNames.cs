@@ -61,12 +61,14 @@
         public const string runIndoors = "runIndoors";
         public const string textSpeed = "textSpeed";
         public const string firstEncounter = "firstRoute";
+        public const string forecastRoutine = "forecastFormChangeRoutine";
 
         public abstract class GenIII
         {
             public const string evolveWithoutNatDex = "evolveWithoutNationalDex";
             public const string stoneEvolveWithoutNatDex = "stoneEvolveWithoutNationalDex";
             public const string hailHack = "hailHack";
+            public const string sunHack = "sunHack";
             public const string deoxysMewObeyFix = "deoxysMewObeyFix";
             public const string stevenAllyBattle = "stevenAllyBattle";
         }

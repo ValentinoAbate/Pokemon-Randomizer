@@ -69,8 +69,6 @@ IDEAS //////////////////////////////////////////////////////////////////////////
 		- Heuristics can be on the same level
 	- Map categories can be for "Routes" (Maps with "Route" in the name) and named maps
 - Variant Randomization
-	- Palettes:
-		- Make the similar color / detection algo just fall back on the the simple color change for now, allow for a different fallback later
 	- Typing
 		- Disallow all future original types from being new added types
 		- Maybe: prevent single type pokemon that evolve into dual-typed pokemon from becoming dual-typed? (or maybe as an option at least)
@@ -211,9 +209,11 @@ CLEANUP ////////////////////////////////////////////////////////////////////////
 - Remove all unecessary manual pointer prefix searches and replace with find offset calls
 - Move encounter set reading code out of the encounter set classes to make the model gen-agnostic
 - Move Elt name constants into constants class(es)
-- Check to see if pkmn base stat offsets point to after the null pokemon
 - Make "Size" and other rom data shortcut methods safe to fail with warnings
 - Make variants support the ban selfdestruct setting
+- Remove all full repoints and replace with surgical repoints
+	- Move data expansion
+	- Type chart expansion
 
 FIXES ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -223,8 +223,6 @@ FIXES //////////////////////////////////////////////////////////////////////////
 - Potentially: write catching tut on emerald has some differences from clean ROMs (see diff9)
 - Fix professor Oak's aides for National Dex mode:
 	- https://www.reddit.com/r/PokemonROMhacks/comments/ew7bl3/fire_red_prof_oak_aides_check_national_dex/
-- Fix text translation to byte[] for text with text variables
-	- Enable message box writing after this
 
 DUMB IDEA CORNER ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

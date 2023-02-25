@@ -108,18 +108,16 @@ namespace PokemonRandomizer.Backend.Randomization
             if (!IsRandom(settings.TeamTypeTheming))
                 return;
             var typeSet = allTypes.ToHashSet();
-            if (settings.KeepTeamSubtypes)
+            if (rand.RollSuccess(settings.TeamDualTypeChance))
             {
-                foreach(var team in teams)
+                foreach (var team in teams)
                 {
                     var theme = team.ThemeData;
-                    var teamTypes = theme.Types.Concat(theme.SecondaryTypes).ToArray();
-                    var newType = ChooseType(teamTypes, typeSet, allTypes, true);
-                    theme.SetTypes(new PokemonType[] { newType }, theme.SecondaryTypes, theme.PrimaryTypeChance);
-                    foreach (var (palette, paletteData) in team.Palettes)
-                    {
-                        paletteModifier.ModifyPalette(palette, paletteData, new PokemonType[] { newType });
-                    }
+                    var teamTypes = new List<PokemonType>(theme.Types);
+                    var newPrimaryType = ChooseType(teamTypes, typeSet, allTypes, true);
+                    var newSecondaryType = ChooseType(teamTypes, typeSet, allTypes, true);
+                    theme.SetTypes(new PokemonType[] { newPrimaryType }, new PokemonType[] { newSecondaryType }, theme.PrimaryTypeChance);
+                    ModifyTeamPalettes(settings, team, newPrimaryType);
                     team.Randomized = true;
                 }
             }
@@ -128,20 +126,24 @@ namespace PokemonRandomizer.Backend.Randomization
                 foreach (var team in teams)
                 {
                     var theme = team.ThemeData;
-                    var teamTypes = new List<PokemonType>(theme.Types.Length + theme.SecondaryTypes.Length + 1);
-                    teamTypes.AddRange(theme.Types);
-                    teamTypes.AddRange(theme.SecondaryTypes);
-                    var newPrimaryType = ChooseType(teamTypes, typeSet, allTypes, true);
-                    var newSecondaryType = ChooseType(teamTypes, typeSet, allTypes, true);
-                    theme.SetTypes(new PokemonType[] { newPrimaryType }, new PokemonType[] { newSecondaryType }, theme.PrimaryTypeChance);
-                    foreach(var (palette, paletteData) in team.Palettes)
-                    {
-                        paletteModifier.ModifyPalette(palette, paletteData, new PokemonType[] { newPrimaryType, newSecondaryType });
-                    }
+                    var teamTypes = new List<PokemonType>(theme.Types);
+                    var newType = ChooseType(teamTypes, typeSet, allTypes, true);
+                    theme.SetTypes(new PokemonType[] { newType }, Array.Empty<PokemonType>(), 1);
+                    ModifyTeamPalettes(settings, team, newType);
                     team.Randomized = true;
                 }
             }
             randomizationResults.Add("Villainous Teams", teams.Select(t => t.ToString()).ToList());
+        }
+
+        private void ModifyTeamPalettes(Settings settings, VillainousTeamMetadata team, PokemonType type)
+        {
+            foreach (var (palette, paletteData, isGymLeader) in team.Palettes)
+            {
+                if (isGymLeader && settings.PriorityThemeCategory != Trainer.Category.TeamLeader)
+                    continue;
+                paletteModifier.ModifyPalette(palette, paletteData, new PokemonType[] { type });
+            }
         }
 
         private PokemonType ChooseType(IReadOnlyCollection<PokemonType> originals, HashSet<PokemonType> types, IEnumerable<PokemonType> all, bool preventDupes)

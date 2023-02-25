@@ -25,6 +25,7 @@ namespace PokemonRandomizer.Backend.DataStructures
         public bool IsBasic => evolvesFrom.Count == 0;
         public bool IsBaby => species.IsBaby();
         public bool EvolvesFromBaby => evolvesFrom.FirstOrDefault(e => e.Pokemon.IsBaby()) != null;
+        public Evolution FirstEmptyEvolution => evolvesTo.FirstOrDefault(e => !e.IsRealEvolution);
 
         #endregion
 

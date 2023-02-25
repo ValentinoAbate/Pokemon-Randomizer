@@ -46,9 +46,10 @@ namespace PokemonRandomizer.Backend.Randomization
         private readonly Random rand;
         private readonly IDataTranslator dataT;
         private readonly BonusMoveGenerator bonusMoveGenerator;
-        private readonly List<PokemonType> types;
+        private readonly IReadOnlyList<PokemonType> types;
         private readonly string paletteKey;
         private readonly HashSet<Move> availableMoves;
+        private readonly TypeEffectivenessChart typeChart;
         private readonly VariantPaletteModifier paletteModifier;
         public PokemonVariantRandomizer(Random rand, RomData data, PokemonRandomizer.Settings settings, BonusMoveGenerator bonusMoveGenerator, string paletteKey, VariantPaletteModifier paletteModifier)
         {
@@ -57,9 +58,8 @@ namespace PokemonRandomizer.Backend.Randomization
             this.bonusMoveGenerator = bonusMoveGenerator;
             this.paletteKey = paletteKey;
             this.paletteModifier = paletteModifier;
-            types = new List<PokemonType>(EnumUtils.GetValues<PokemonType>());
-            types.Remove(PokemonType.FAI);
-            types.Remove(PokemonType.Unknown);
+            types = data.Types;
+            typeChart = data.TypeDefinitions;
             availableMoves = data.GetValidMoves(true, settings.BanSelfdestruct);
         }
 
@@ -136,6 +136,11 @@ namespace PokemonRandomizer.Backend.Randomization
 
         private TypeTransformation ChooseType(PokemonBaseStats pokemon, Settings settings)
         {
+            if(pokemon.species is Pokemon.CASTFORM)
+            {
+                pokemon.SecondaryType = RandomSecondaryType(types);
+                return TypeTransformation.GainSecondaryType;
+            }
             TypeTransformation transformationType;
             if (pokemon.IsSingleTyped)
             {
@@ -384,7 +389,7 @@ namespace PokemonRandomizer.Backend.Randomization
             // Apply wonder guard fix if necessary and return
             if (settings.SafeWonderGuard)
             {
-                WonderGuardFix(pokemon);
+                WonderGuardFix(evolvedPokemon);
             }
             if (evolvedPokemon.PrimaryType == evolvedPokemon.OriginalPrimaryType && evolvedPokemon.SecondaryType == evolvedPokemon.OriginalSecondaryType)
             {
@@ -396,13 +401,66 @@ namespace PokemonRandomizer.Backend.Randomization
 
         private void WonderGuardFix(PokemonBaseStats pokemon)
         {
-            if (!pokemon.abilities.Contains(Ability.Wonder_Guard))
+            // If the pokemon doesn't have wonder guard, return
+            if (!pokemon.HasAbility(Ability.Wonder_Guard))
                 return;
-            if (pokemon.IsType(PokemonType.DRK) && pokemon.IsType(PokemonType.GHO))
+            // If the pokemon has weaknesses, return
+            if (!typeChart.HasNoWeaknesses(pokemon.PrimaryType, pokemon.SecondaryType))
+                return;
+            // If single typed, try to create a dual type mon with the single type that has weaknesses
+            if (pokemon.IsSingleTyped)
             {
-                Logger.main.Info($"{pokemon.Name} is DRK/GHO and has Wonder Guard. Correcting type to GHO or DRK");
-                pokemon.SetSingleType(rand.RandomBool() ? PokemonType.DRK : PokemonType.GHO);
+                if(TryGetNoWeaknessSecondaryType(pokemon.PrimaryType, out var secondaryType))
+                {
+                    pokemon.SecondaryType = secondaryType;
+                }
             }
+            else if (pokemon.IsDualTyped)
+            {
+                if (!typeChart.HasNoWeaknesses(pokemon.PrimaryType))
+                {
+                    if (!typeChart.HasNoWeaknesses(pokemon.SecondaryType))
+                    {
+                        pokemon.SetSingleType(rand.RandomBool() ? pokemon.PrimaryType : pokemon.SecondaryType);
+                    }
+                    else
+                    {
+                        pokemon.SetSingleType(pokemon.PrimaryType);
+                    }
+                }
+                else if (!typeChart.HasNoWeaknesses(pokemon.SecondaryType))
+                {
+                    pokemon.SetSingleType(pokemon.SecondaryType);
+                }
+                else if (TryGetNoWeaknessSecondaryType(pokemon.PrimaryType, out var secondaryType))
+                {
+                    pokemon.SecondaryType = secondaryType;
+                }
+            }
+            Logger.main.Info($"{pokemon.Name} had no weaknesses and has Wonder Guard. Correcting type to {pokemon.PrimaryType}/{pokemon.SecondaryType}");
+        }
+
+        private bool TryGetNoWeaknessSecondaryType(PokemonType primaryType, out PokemonType secondaryType)
+        {
+            var typePool = new List<PokemonType>(types.Count);
+            foreach(var type in types)
+            {
+                if(type != primaryType)
+                {
+                    typePool.Add(type);
+                }
+            }
+            while(typePool.Count > 0)
+            {
+                secondaryType = rand.Choice(typePool);
+                if(!typeChart.HasNoWeaknesses(primaryType, secondaryType))
+                {
+                    return true;
+                }
+                typePool.Remove(secondaryType);
+            }
+            secondaryType = primaryType;
+            return false;
         }
 
         #region Type Choice Helper Methods
@@ -666,10 +724,11 @@ namespace PokemonRandomizer.Backend.Randomization
             Move.TAIL_GLOW,
             Move.NATURE_POWER,
             Move.HIDDEN_POWER,
+            Move.WEATHER_BALL,
         };
 
         // Pokemon that shouldn't recieve bonus moves, only replacement moves
-        private static readonly HashSet<Pokemon> specialLearnsetPokemon = new HashSet<Pokemon>()
+        private static readonly HashSet<Pokemon> limitedLearnsetPokemon = new HashSet<Pokemon>()
         {
             Pokemon.CATERPIE,
             Pokemon.WURMPLE,
@@ -718,7 +777,44 @@ namespace PokemonRandomizer.Backend.Randomization
             return learnSet.Where(entry => dataT.GetMoveData(entry.move).IsType(type)).ToArray();
         }
 
-        private void ModifyLearnsetSpecial(PokemonBaseStats pokemon, Settings settings, VariantData data)
+        private void SpecialCastformMoves(PokemonBaseStats pokemon, VariantData data)
+        {
+            if (data.GainedTypes.Contains(PokemonType.RCK) || data.GainedTypes.Contains(PokemonType.GRD) || data.GainedTypes.Contains(PokemonType.STL))
+            {
+                var lookup = pokemon.learnSet.GetMovesLookup();
+                if (!lookup.Contains(Move.SANDSTORM))
+                {
+                    AddBonusMove(pokemon, Move.SANDSTORM, 20, data);
+                }
+            }
+            if (data.GainedTypes.Contains(PokemonType.GRS))
+            {
+                var lookup = pokemon.learnSet.GetMovesLookup();
+                if (!lookup.Contains(Move.SOLARBEAM))
+                {
+                    AddBonusMove(pokemon, Move.SOLARBEAM, data);
+                }
+            }
+            if (data.GainedTypes.Contains(PokemonType.ELE))
+            {
+                var lookup = pokemon.learnSet.GetMovesLookup();
+                if (!lookup.Contains(Move.THUNDER))
+                {
+                    AddBonusMove(pokemon, Move.THUNDER, data);
+                }
+            }
+            if (data.GainedTypes.Contains(PokemonType.ICE))
+            {
+                var lookup = pokemon.learnSet.GetMovesLookup();
+                if (!lookup.Contains(Move.BLIZZARD))
+                {
+                    AddBonusMove(pokemon, Move.BLIZZARD, data);
+                }
+            }
+            // Hurricane (where supported)
+        }
+
+        private void ModifyLearnsetLimited(PokemonBaseStats pokemon, Settings settings, VariantData data)
         {
             // Apply standard replacements
             var availableAddMoves = GetAvailibleAddMoves(pokemon.learnSet);
@@ -739,11 +835,83 @@ namespace PokemonRandomizer.Backend.Randomization
             }
         }
 
+        private void ModifyLearnsetWobbufett(PokemonBaseStats pokemon, Settings settings, VariantData data)
+        {
+            var lookup = pokemon.learnSet.GetMovesLookup();
+            var moveData = availableMoves.Select(m => dataT.GetMoveData(m)).ToList();
+            // Find all counter moves
+            var counterMoves = moveData.Where(data => data.IsCounterAttack).ToHashSet();
+            counterMoves.RemoveWhere(m => lookup.Contains(m.move));
+            // Find all status move
+            var statusMoves = moveData.Where(data => data.IsStatus).ToList();
+            statusMoves.RemoveAll(m => lookup.Contains(m.move) || counterMoves.Contains(m));
+            // Add moves
+            foreach (var type in data.VariantTypes)
+            {
+                var counterMovesOfType = counterMoves.Where(m => m.IsType(type));
+                // Add all counterattacking moves of variant type
+                foreach (var move in counterMovesOfType)
+                {
+                    AddBonusMove(pokemon, move.move, data);
+                }
+                // Add a status move of type
+                var statusMovesOfType = statusMoves.Where(m => m.IsType(type));
+                if (!statusMovesOfType.Any())
+                {
+                    continue;
+                }
+                int learnLevel = rand.RandomInt(5, 21);
+                var statusMove = rand.Choice(statusMovesOfType).move;
+                AddBonusMove(pokemon, statusMove, learnLevel, data);
+            }
+        }
+
+        private void ModifyLearnsetUnown(PokemonBaseStats pokemon, Settings settings, VariantData data)
+        {
+            // Add one attacking move of each var type
+            var availableMoves = GetAvailibleAddMoves(pokemon.learnSet);
+            foreach (var type in data.VariantTypes)
+            {
+                var moves = GetAvailibleTypeMoves(availableMoves, type, pokemon.learnSet);
+                AddMove(pokemon, 1, 150, 10, 20, data, ref moves);
+            }
+        }
+
+        private void AddBonusMove(PokemonBaseStats pokemon, Move move, VariantData data)
+        {
+            var bonusMove = bonusMoveGenerator.AddBonusMove(pokemon, move);
+            if(bonusMove != null)
+            {
+                data.BonusMoves.Add(bonusMove);
+            }
+        }
+
+        private void AddBonusMove(PokemonBaseStats pokemon, Move move, int level, VariantData data)
+        {
+            var bonusMove = new LearnSet.Entry(move, level);
+            pokemon.learnSet.Add(bonusMove);
+            data.BonusMoves.Add(bonusMove);
+        }
+
         private void ModifyLearnset(PokemonBaseStats pokemon, Settings settings, VariantData data)
         {
-            if (specialLearnsetPokemon.Contains(pokemon.species))
+            if (pokemon.species is Pokemon.SMEARGLE or Pokemon.DITTO)
             {
-                ModifyLearnsetSpecial(pokemon, settings, data);
+                return;
+            }
+            if (pokemon.species is Pokemon.WYNAUT || (pokemon.species is Pokemon.WOBBUFFET && pokemon.IsBasic))
+            {
+                ModifyLearnsetWobbufett(pokemon, settings, data);
+                return;
+            }
+            if (pokemon.species is Pokemon.UNOWN)
+            {
+                ModifyLearnsetUnown(pokemon, settings, data);
+                return;
+            }
+            if (limitedLearnsetPokemon.Contains(pokemon.species))
+            {
+                ModifyLearnsetLimited(pokemon, settings, data);
                 return;
             }
             // Apply carried over data from evolutionary line
@@ -767,6 +935,10 @@ namespace PokemonRandomizer.Backend.Randomization
                 if (!bonusMoveData.IsType(pokemon))
                     continue;
                 pokemon.learnSet.Add(bonusMove);
+            }
+            if(pokemon.species is Pokemon.WOBBUFFET)
+            {
+                return;
             }
             var availableAddMoves = GetAvailibleAddMoves(pokemon.learnSet);
             // Apply signiture move replacement
@@ -806,6 +978,10 @@ namespace PokemonRandomizer.Backend.Randomization
                 {
                     AddMove(pokemon, 0, 0, 1, 99, data, ref availibleTypeMoves);
                 }
+            }
+            if(pokemon.species is Pokemon.CASTFORM)
+            {
+                SpecialCastformMoves(pokemon, data);
             }
         }
 
@@ -1338,7 +1514,7 @@ namespace PokemonRandomizer.Backend.Randomization
             { Pokemon.ARON, new PaletteData(Range(6, 10), PalRange(14))},
             { Pokemon.LAIRON, new PaletteData(Range(6, 10), PalRange(14))},
             { Pokemon.AGGRON, new PaletteData(Range(6, 10), PalRange(14))},
-            { Pokemon.CASTFORM, new PaletteData(PalRange(1, 2, 3, 4, 12))},
+            { Pokemon.CASTFORM, new PaletteData(PalRange(1, 2, 3, 4, 12))}, // 16-31 is Sun form, 32 - 47 is Rain form, 48 - 63 is snow form (located below). 6-7 visor.
             { Pokemon.VOLBEAT, new PaletteData(Range(5, 8), Range(12, 14), Range(9, 11))},
             { Pokemon.ILLUMISE, new PaletteData(Range(5, 8), Range(12, 14), Range(9, 11))},
             { Pokemon.LILEEP, new PaletteData(Range(2, 5), PalRange(1, 6, 7, 8))}, // 9-11 eyes
@@ -1367,6 +1543,11 @@ namespace PokemonRandomizer.Backend.Randomization
             { Pokemon.CHIMECHO, new PaletteData(PalRange(3, 4, 5, 10), PalRange(2, 11, 12, 13))},
         };
 
+        // Castform is all in one big palette. 0-15 is normal form (located above) 16-31 is Sun form, 32 - 47 is Rain form, and 48 - 63 is snow form.
+        private static readonly PaletteData castFormSunPalData = new PaletteData(PalRange(17, 18, 19, 20, 24, 25, 26)); // 22-23 visor.
+        private static readonly PaletteData castFormRainPalData = new PaletteData(PalRange(33, 34, 35, 36, 40, 41, 42, 47)); // 38-39 visor. 42 - 47 secondary primary?
+        private static readonly PaletteData castFormSnowPalData = new PaletteData(PalRange(49, 56, 57, 59, 60)); // 50, 51, 54, 55, 58, 61 secondary primary?
+
         private PaletteData GetPaletteData(Pokemon pokemon)
         {
             if (variantPaletteDataOverrides.ContainsKey(paletteKey))
@@ -1384,10 +1565,25 @@ namespace PokemonRandomizer.Backend.Randomization
         {
             if (data.TransformationType == TypeTransformation.None)
                 return;
-            // If we don't have specific palette data or type color data to support this pokemon / type combo, return
-            // Perhaps I should add a fallback for pokemon I haven't done specific work for
             var paletteData = GetPaletteData(pokemon.species);
             paletteModifier.ModifyPalette(pokemon.palette, paletteData, data.VariantTypes);
+            // Special castform handling.
+            if (pokemon.species == Pokemon.CASTFORM && data.VariantTypes.Length > 0)
+            {
+                var variantType = data.VariantTypes[0];
+                if (variantType is not PokemonType.FIR)
+                {
+                    paletteModifier.ModifyPalette(pokemon.palette, castFormSunPalData, data.VariantTypes);
+                }
+                if (variantType is not PokemonType.WAT)
+                {
+                    paletteModifier.ModifyPalette(pokemon.palette, castFormRainPalData, data.VariantTypes);
+                }
+                if (variantType is not PokemonType.ICE)
+                {
+                    paletteModifier.ModifyPalette(pokemon.palette, castFormSnowPalData, data.VariantTypes);
+                }
+            }
         }
 
         #endregion

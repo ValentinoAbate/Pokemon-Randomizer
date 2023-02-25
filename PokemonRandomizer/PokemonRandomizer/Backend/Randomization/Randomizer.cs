@@ -30,14 +30,17 @@ namespace PokemonRandomizer.Backend.Randomization
         private readonly ScriptRandomizer scriptRand;
         private readonly TrainerOrganizationRandomizer trainerOrgRand;
         private readonly StarterRandomizer starterRandomizer;
+        private readonly TypeChartRandomizer typeChartRandomizer;
+        private readonly RomMetadata metadata;
 
         /// <summary>
         /// Create a new randomizer with given data and settings
         /// Input data will be mutated by randomizer calls
         /// </summary>
-        public Randomizer(RomData data, Settings settings, string seed)
+        public Randomizer(RomData data, RomMetadata metadata, Settings settings, string seed)
         {
             this.data = data;
+            this.metadata = metadata;
             this.settings = settings;
             // Initialize random generator
             rand = !string.IsNullOrEmpty(seed) ? new Random(seed) : new Random();
@@ -62,6 +65,7 @@ namespace PokemonRandomizer.Backend.Randomization
             scriptRand = new ScriptRandomizer(rand, pokeRand, itemRand, data, delayedRandomizationCalls);
             trainerOrgRand = new TrainerOrganizationRandomizer(rand, paletteModifier);
             starterRandomizer = new StarterRandomizer(pokeRand);
+            typeChartRandomizer = new TypeChartRandomizer();
         }
         // Apply mutations based on program settings.
         public RomData Randomize()
@@ -73,7 +77,6 @@ namespace PokemonRandomizer.Backend.Randomization
             if (settings.CountRelicanthAsFossil && pokemonSet.Contains(Pokemon.RELICANTH))
                 fossilSet.Add(Pokemon.RELICANTH);
             var babySet = pokemonSet.Where(PokemonUtils.IsBaby).ToHashSet();
-            var types = DefinePokemonTypes();
             var items = data.GetAllValidItemData();
             // Apply Allow Mystery Gift Item in Randomization if necessary
             if(settings.MysteryGiftItemAcquisitionSetting == Settings.MysteryGiftItemSetting.AllowInRandomization)
@@ -93,8 +96,8 @@ namespace PokemonRandomizer.Backend.Randomization
             // Generate ??? type traits (INCOMPLETE)
             if (settings.ModifyUnknownType)
             {
-                types.Add(PokemonType.Unknown);
-                foreach (var type in types)
+                data.Types.Add(PokemonType.Unknown);
+                foreach (var type in data.Types)
                 {
                     // Type effectiveness of other type vs ???
                     var te = rand.Choice(data.Metrics.TypeEffectivenessRatios);
@@ -106,6 +109,8 @@ namespace PokemonRandomizer.Backend.Randomization
                         data.TypeDefinitions.Set(PokemonType.Unknown, type, te, type == PokemonType.GHO);
                 }
             }
+            // Modify type chart
+            typeChartRandomizer.RandomizeTypeChart(data.TypeDefinitions, settings.TypeChartRandomizationSetting, data.RandomizationResults);
             #endregion
 
             #region Move Definitions
@@ -244,6 +249,20 @@ namespace PokemonRandomizer.Backend.Randomization
 
             #region Pokemon Base Attributes
 
+            // Pokemon Tweaks
+            if (settings.UpgradeUnown)
+            {
+                UpgradeUnown();
+            }
+            if (settings.UpgradeCastform)
+            {
+                UpgradeCastform();
+            }
+            if (settings.DistributeWeatherAbilities)
+            {
+                DistributeWeatherAbilities();
+            }
+
             // Evolution Line Pass
             foreach (PokemonBaseStats pokemon in data.Pokemon)
             {
@@ -276,7 +295,7 @@ namespace PokemonRandomizer.Backend.Randomization
                     void MakeEvolutionByLevelUp(Evolution evo)
                     {
                         var evolveByLevelUp = pokemon.evolvesTo.FirstOrDefault(e => e.Type == EvolutionType.LevelUp);
-                        var newEvo = pokemon.evolvesTo.FirstOrDefault(e => !e.IsRealEvolution) ?? evo;
+                        var newEvo = pokemon.FirstEmptyEvolution ?? evo;
                         newEvo.Pokemon = evo.Pokemon;
                         if (evolveByLevelUp == null)
                         {
@@ -301,7 +320,7 @@ namespace PokemonRandomizer.Backend.Randomization
                         {
                             if (settings.TradeItemEvoSetting == Settings.TradeItemPokemonOption.UseItem)
                             {
-                                var newEvo = pokemon.evolvesTo.FirstOrDefault(e => !e.IsRealEvolution) ?? evo;
+                                var newEvo = pokemon.FirstEmptyEvolution ?? evo;
                                 newEvo.Pokemon = evo.Pokemon;
                                 newEvo.Type = EvolutionType.UseItem;
                                 newEvo.ItemParamater = evo.ItemParamater;
@@ -319,50 +338,23 @@ namespace PokemonRandomizer.Backend.Randomization
                         {
                             MakeEvolutionByLevelUp(evo);
                         }
-                    }
-                }
-                foreach (var evo in pokemon.evolvesTo)
-                {
-                    if (!evo.IsRealEvolution)
-                        continue;
-
-                    #region Dunsparse Plague
-                    if (rand.RollSuccess(settings.DunsparsePlaugeChance))
-                    {
-                        static int FirstEmptyEvo(Evolution[] evolutions)
+                        else if (evo.Type == EvolutionType.FriendshipDay)
                         {
-                            for (int i = 0; i < evolutions.Length; i++)
+                            if (metadata.IsFireRedOrLeafGreen)
                             {
-                                if (!evolutions[i].IsRealEvolution)
-                                    return i;
-                            }
-                            return -1;
-                        }
-                        // Add the plague
-                        if (evo.Type == EvolutionType.LevelUp)
-                        {
-                            evo.Type = EvolutionType.LevelUpWithPersonality1;
-                            int index = FirstEmptyEvo(pokemon.evolvesTo);
-                            if (index >= 0)
-                            {
-                                pokemon.evolvesTo[index].Pokemon = Pokemon.DUNSPARCE;
-                                pokemon.evolvesTo[index].Type = EvolutionType.LevelUpWithPersonality2;
-                                pokemon.evolvesTo[index].IntParameter = evo.IntParameter;
+                                evo.Type = EvolutionType.UseItem;
+                                evo.ItemParamater = Item.Sun_Stone;
                             }
                         }
-                        else if (evo.Type == EvolutionType.Friendship)
+                        else if (evo.Type == EvolutionType.FriendshipNight)
                         {
-                            evo.Type = rand.RandomBool() ? EvolutionType.FriendshipDay : EvolutionType.FriendshipNight;
-                            int index = FirstEmptyEvo(pokemon.evolvesTo);
-                            if (index >= 0)
+                            if (metadata.IsFireRedOrLeafGreen)
                             {
-                                pokemon.evolvesTo[index].Pokemon = Pokemon.DUNSPARCE;
-                                pokemon.evolvesTo[index].Type = evo.Type == EvolutionType.FriendshipDay ? EvolutionType.FriendshipNight : EvolutionType.FriendshipDay;
-                                pokemon.evolvesTo[index].IntParameter = evo.IntParameter;
+                                evo.Type = EvolutionType.UseItem;
+                                evo.ItemParamater = Item.Moon_Stone;
                             }
                         }
                     }
-                    #endregion
                 }
                 #endregion
 
@@ -420,9 +412,16 @@ namespace PokemonRandomizer.Backend.Randomization
                 }
                 #endregion
 
+                #region Hatch Rates
+                if (settings.FastHatching) 
+                {
+                    pokemon.eggCycles = 0;
+                }
+                #endregion
+
                 #region Exp / EV Yields
 
-                if(settings.BaseExpYieldMultiplier != 1)
+                if (settings.BaseExpYieldMultiplier != 1)
                 {
                     pokemon.baseExpYield = (byte)Math.Max(byte.MinValue, Math.Min(byte.MaxValue, Math.Floor(pokemon.baseExpYield * settings.BaseExpYieldMultiplier)));
                 }
@@ -436,6 +435,16 @@ namespace PokemonRandomizer.Backend.Randomization
                 }
 
                 #endregion
+            }
+
+            // Dunsparse Plague Pass
+            if(settings.DunsparsePlaugeChance > 0)
+            {
+                bool applyToFriendshipEvos = settings.ApplyDunsparsePlagueToFriendshipEvos && !metadata.IsFireRedOrLeafGreen;
+                foreach (var pokemon in data.Pokemon)
+                {
+                    ApplyDunsparsePlague(pokemon, applyToFriendshipEvos);
+                }
             }
 
             #endregion
@@ -719,6 +728,10 @@ namespace PokemonRandomizer.Backend.Randomization
                 var gym = kvp.Value;
                 gym.InitializeThemeData(data, settings);
             }
+            foreach(var team in data.VillainousTeamMetadata)
+            {
+                team.InitializeThemeData(data, settings);
+            }
 
             #endregion
 
@@ -729,8 +742,8 @@ namespace PokemonRandomizer.Backend.Randomization
             {
                 var gymsSorted = new List<GymMetadata>(gymMetadataDict.Values);
                 gymsSorted.Sort((g1, g2) => Trainer.AverageLevelComparer(g1.Leaders[0], g2.Leaders[0]));
-                trainerOrgRand.RandomizeGymsAndEliteFour(gymsSorted, eliteFourMetadata, types, settings, data.RandomizationResults);
-                trainerOrgRand.RandomizeVillainousTeams(data.VillainousTeamMetadata, types, settings, data.RandomizationResults);
+                trainerOrgRand.RandomizeGymsAndEliteFour(gymsSorted, eliteFourMetadata, data.Types, settings, data.RandomizationResults);
+                trainerOrgRand.RandomizeVillainousTeams(data.VillainousTeamMetadata, data.Types, settings, data.RandomizationResults);
 
                 foreach (var kvp in gymMetadataDict)
                 {
@@ -779,8 +792,13 @@ namespace PokemonRandomizer.Backend.Randomization
                     battles.RemoveAt(0);
                     // Randomize the first battle
                     trainerRand.Randomize(firstBattle, pokemonSet, trainerSettings, false);
-                    // Set the appropriate starter as the ace
-                    firstBattle.Pokemon[^1].species = data.Starters[originalStarters ? i : data.RivalRemap[i]];
+                    // Set the appropriate starter as the ace and regenerate moveset if necessary
+                    var firstBattleAce = firstBattle.Pokemon[^1];
+                    firstBattleAce.species = data.Starters[originalStarters ? i : data.RivalRemap[i]];
+                    if (trainerSettings.RandomizePokemon)
+                    {
+                        trainerRand.FinishPokemonRandomization(firstBattleAce);
+                    }
                     // Procedurally generate the rest of the battles
                     trainerRand.RandomizeReoccurring(firstBattle, battles, pokemonSet, trainerSettings);
                     if (settings.EasyFirstRivalBattle)
@@ -818,10 +836,15 @@ namespace PokemonRandomizer.Backend.Randomization
                 wallyBattles.Sort(Trainer.AverageLevelComparer);
                 var firstBattle = wallyBattles[0];
                 wallyBattles.RemoveAt(0);
-                // Set Wally's first pokemon to the catching tut pokemon
+                // Randomize the first battle
                 trainerRand.Randomize(firstBattle, pokemonSet, trainerSettings, false);
+                // Set Wally's ace pokemon to the catching tut pokemon and regenerate moveset if necessary
                 var firstBattleAce = firstBattle.Pokemon[^1];
                 firstBattleAce.species = evoUtils.MaxEvolution(data.CatchingTutPokemon, firstBattleAce.level, trainerSettings.RestrictIllegalEvolutions);
+                if (trainerSettings.RandomizePokemon || settings.RandomizeWallyAce)
+                {
+                    trainerRand.FinishPokemonRandomization(firstBattleAce);
+                }
                 // Procedurally generate the rest of Wally's battles
                 trainerRand.RandomizeReoccurring(firstBattle, wallyBattles, pokemonSet, trainerSettings);
             }
@@ -934,14 +957,6 @@ namespace PokemonRandomizer.Backend.Randomization
                 pokemonSet.Remove(Pokemon.MANAPHY_EGG);
             }
             return pokemonSet;
-        }
-        /// <summary> Define and return the set of valid types (with applicable restrictions)</summary> 
-        private HashSet<PokemonType> DefinePokemonTypes()
-        {
-            HashSet<PokemonType> types = EnumUtils.GetValues<PokemonType>().ToHashSet();
-            types.Remove(PokemonType.FAI);
-            types.Remove(PokemonType.Unknown);
-            return types;
         }
 
         #endregion
@@ -1058,6 +1073,131 @@ namespace PokemonRandomizer.Backend.Randomization
                     }
                 }
             }
+        }
+
+        private enum DunsparsePlagueFriendshipOption
+        {
+            None,
+            Allow,
+            Day,
+            Night,
+        }
+
+        private void ApplyDunsparsePlague(PokemonBaseStats pokemon, bool applyToFriendshipEvos)
+        {
+            // If this isn't the start to an evolution line or we fail the chance, return
+            if(!pokemon.IsBasic || !rand.RollSuccess(settings.DunsparsePlaugeChance))
+            {
+                return;
+            }
+            // Choose friendship option
+            bool useDay = applyToFriendshipEvos && rand.RandomBool();
+            ApplyDunsparsePlagueRecursive(pokemon, applyToFriendshipEvos, useDay);
+        }
+        private void ApplyDunsparsePlagueRecursive(PokemonBaseStats pokemon, bool applyToFriendshipEvos, bool useDay)
+        {
+            foreach (var evo in pokemon.evolvesTo)
+            {
+                if (!evo.IsRealEvolution || evo.Pokemon == Pokemon.DUNSPARCE)
+                    continue;
+                // Apply plague
+                ApplyDunsparsePlague(pokemon, evo, applyToFriendshipEvos, useDay);
+                // Propogate
+                ApplyDunsparsePlagueRecursive(data.GetBaseStats(evo.Pokemon), applyToFriendshipEvos, useDay);
+            }
+        }
+        private void ApplyDunsparsePlague(PokemonBaseStats pokemon, Evolution evo, bool applyToFriendshipEvos, bool useDay)
+        {
+            // Add the plague
+            if (evo.Type == EvolutionType.LevelUp)
+            {
+                var dunsparseEvo = pokemon.FirstEmptyEvolution;
+                if(dunsparseEvo != null)
+                {
+                    evo.Type = EvolutionType.LevelUpWithPersonality1;
+                    dunsparseEvo.Pokemon = Pokemon.DUNSPARCE;
+                    dunsparseEvo.Type = EvolutionType.LevelUpWithPersonality2;
+                    dunsparseEvo.IntParameter = evo.IntParameter;
+                }
+                else
+                {
+                    Logger.main.Error($"Failed to apply Dunsparse Plague to evolution: {evo}");
+                }
+            }
+            else if (evo.Type == EvolutionType.Friendship && applyToFriendshipEvos)
+            {
+                var dunsparseEvo = pokemon.FirstEmptyEvolution;
+                if (dunsparseEvo != null)
+                {
+                    dunsparseEvo.Pokemon = Pokemon.DUNSPARCE;
+                    dunsparseEvo.IntParameter = evo.IntParameter;
+                    if (useDay)
+                    {
+                        evo.Type = EvolutionType.FriendshipNight;
+                        dunsparseEvo.Type = EvolutionType.FriendshipDay;
+                    }
+                    else
+                    {
+                        evo.Type = EvolutionType.FriendshipDay;
+                        dunsparseEvo.Type = EvolutionType.FriendshipNight;
+                    }
+                }
+                else
+                {
+                    Logger.main.Error($"Failed to apply Dunsparse Plague to evolution: {evo}");
+                }
+            }
+        }
+
+        private void UpgradeUnown()
+        {
+            var allMoves = data.GetAllMoves();
+            var unown = data.GetBaseStats(Pokemon.UNOWN);
+            if (allMoves.Contains(Move.NATURE_POWER))
+            {
+                unown.learnSet.Add(Move.NATURE_POWER, 6);
+            }
+            if (allMoves.Contains(Move.SECRET_POWER))
+            {
+                unown.learnSet.Add(Move.SECRET_POWER, 12);
+            }
+            if (allMoves.Contains(Move.ANCIENTPOWER))
+            {
+                unown.learnSet.Add(Move.ANCIENTPOWER, 18);
+            }
+            if (allMoves.Contains(Move.COSMIC_POWER))
+            {
+                unown.learnSet.Add(Move.COSMIC_POWER, 24);
+            }
+            if (allMoves.Contains(Move.EARTH_POWER))
+            {
+                unown.learnSet.Add(Move.EARTH_POWER, 30);
+            }
+            if (allMoves.Contains(Move.SUPERPOWER))
+            {
+                unown.learnSet.Add(Move.SUPERPOWER, 34);
+            }
+        }
+
+        private void UpgradeCastform()
+        {
+            var learnset = data.GetBaseStats(Pokemon.CASTFORM).learnSet;
+            learnset.Add(Move.WEATHER_BALL, 25);
+            learnset.Add(Move.SANDSTORM, 20);
+            learnset.Add(Move.THUNDER, 35);
+            learnset.Add(Move.SOLARBEAM, 35);
+            learnset.Add(Move.BLIZZARD, 35);
+            // Gen5+: hurricane
+        }
+
+        private void DistributeWeatherAbilities()
+        {
+            data.GetBaseStats(Pokemon.WINGULL).abilities[1] = Ability.Rain_Dish;
+            data.GetBaseStats(Pokemon.PELIPPER).abilities[1] = Ability.Drizzle;
+            data.GetBaseStats(Pokemon.POLITOED).abilities[1] = Ability.Drizzle;
+            data.GetBaseStats(Pokemon.VULPIX).abilities[1] = Ability.Drought;
+            data.GetBaseStats(Pokemon.NINETALES).abilities[1] = Ability.Drought;
+            data.GetBaseStats(Pokemon.TORKOAL).abilities[1] = Ability.Drought;
         }
     }
 }

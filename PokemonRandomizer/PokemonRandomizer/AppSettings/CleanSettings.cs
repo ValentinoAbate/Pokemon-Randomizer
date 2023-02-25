@@ -11,10 +11,13 @@ namespace PokemonRandomizer.AppSettings
         public override bool WriteCatchingTutPokemon => false; // Method of writing works properly but causes known diffs
 
         public override HailHackOption HailHackSetting => HailHackOption.None;
+        public override WeatherOption WeatherSetting => WeatherOption.Unchanged;
 
         public override bool SafeStarterMovesets => false;
 
         #region Misc
+
+        public override bool UpgradeUnown => false;
 
         // Gen II-IV Hacks and Tweaks
         public override bool UpdateDOTMoves => false;

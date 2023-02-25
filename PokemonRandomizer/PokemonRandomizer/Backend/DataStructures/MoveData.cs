@@ -95,7 +95,7 @@ namespace PokemonRandomizer.Backend.DataStructures
             DamageConfuseChance,
             DamageTwoHitPoisonChance,
             DamagePriorityLastAlwaysHit,
-            Substitue,
+            Substitute,
             DamageTiredAfterUse,
             Rage,
             Mimic,
@@ -121,7 +121,7 @@ namespace PokemonRandomizer.Backend.DataStructures
             DamageHighPriority,
             DamageThreeConsecutiveHits,
             DamageStealHeldItem,
-            StatusCantEscape,
+            Trap,
             StatusNightmare,
             EvadePlus1AndVulnerable,
             Curse,
@@ -144,7 +144,7 @@ namespace PokemonRandomizer.Backend.DataStructures
             BatonPass,
             Pursuit,
             ClearField,
-            DamageFlat20,
+            FlatDamage20,
             RecoverHpWeather1 = 132,
             RecoverHpWeather2,
             RecoverHpWeather3,
@@ -305,13 +305,19 @@ namespace PokemonRandomizer.Backend.DataStructures
 
         public bool IsOneHitKO => effect == MoveEffect.OneHitKill;
 
-        public bool IsFlatDamage => effect is MoveEffect.FlatDamageLevel or MoveEffect.DamageFlat20 or MoveEffect.FlatDamage40 or MoveEffect.VaryingDamageLevel;
+        public bool IsFlatDamage => effect is MoveEffect.FlatDamageLevel or MoveEffect.FlatDamage20 or MoveEffect.FlatDamage40 or MoveEffect.VaryingDamageLevel;
 
-        public bool IsCounterAttack => effect is MoveEffect.Counter or MoveEffect.MirrorCoat or MoveEffect.MirrorMove or MoveEffect.Endeavor or MoveEffect.Bide;
+        public bool IsCounterAttack => effect is MoveEffect.Counter or MoveEffect.MirrorCoat or MoveEffect.MirrorMove or MoveEffect.Endeavor or MoveEffect.Bide; // Gen IV, add metal burst
 
         public bool IsSelfdestruct => effect == MoveEffect.Selfdestruct;
 
         public bool IsCallMove => effect is MoveEffect.Metronome or MoveEffect.NaturePower or MoveEffect.Assist;
+
+        public bool IsSleepStatusMove => effect is MoveEffect.StatusSleep or MoveEffect.Yawn;
+
+        public bool IsTrappingMove => effect is MoveEffect.Trap or MoveEffect.DoTTrap;
+
+        public bool IsVeryLowAccuracy => accuracy > 0 && accuracy <= 50; // 0 accuracy moves always hit
 
         public int EffectivePower
         {
@@ -337,7 +343,7 @@ namespace PokemonRandomizer.Backend.DataStructures
                         return (int)Math.Floor(power * 0.75);
                     case MoveEffect.DamageWeightBased:
                         return 40;
-                    case MoveEffect.DamageFlat20:
+                    case MoveEffect.FlatDamage20:
                         return 50;
                     case MoveEffect.FlatDamage40:
                         return 70;

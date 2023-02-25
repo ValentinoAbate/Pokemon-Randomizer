@@ -180,14 +180,16 @@ namespace PokemonRandomizer.AppSettings
         public override double ImpossibleEvoLevelStandardDev => pokemonData.ImpossibleEvoLevelStandardDev;
         public override TradeItemPokemonOption TradeItemEvoSetting => pokemonData.TradeItemEvoSetting;
         public override double DunsparsePlaugeChance => RandomChance(pokemonData.DunsparsePlague, pokemonData.DunsparsePlaugeChance);
+        public override bool ApplyDunsparsePlagueToFriendshipEvos => pokemonData.DunsparsePlagueFriendship;
 
         #endregion
 
-        #region Catch Rates
+        #region Catch / Hatch Rates
 
         public override CatchRateOption CatchRateSetting => pokemonData.CatchRateSetting;
         public override bool KeepLegendaryCatchRates => pokemonData.KeepLegendaryCatchRates;
         public override byte CatchRateConstant => DoubleToByteInverse(pokemonData.CatchRateConstantDifficulty);
+        public override bool FastHatching => pokemonData.FastHatching;
 
         #endregion
 
@@ -316,8 +318,8 @@ namespace PokemonRandomizer.AppSettings
         public override GymEliteFourPreventDupesSetting GymEliteFourDupePrevention => trainerOrgData.GymAndEliteDupePrevention;
         public override TrainerOrgTypeTheme TeamTypeTheming => trainerOrgData.TeamTypeTheming;
         public override bool GruntTheming => trainerOrgData.GruntTheming;
-        public override bool KeepTeamSubtypes => trainerOrgData.KeepTeamSubtypes;
-        protected override Trainer.Category PriorityThemeCategory => trainerOrgData.PriorityCategory;
+        public override double TeamDualTypeChance => trainerOrgData.TeamDualTypeChance;
+        public override Trainer.Category PriorityThemeCategory => trainerOrgData.PriorityCategory;
         public override TrainerOrgTypeTheme SmallOrgTypeTheming => trainerOrgData.SmallOrgTypeTheming;
 
         #endregion
@@ -374,6 +376,11 @@ namespace PokemonRandomizer.AppSettings
             get
             {
                 var weights = base.WeatherWeights;
+                if (Metadata.IsFireRedOrLeafGreen)
+                {
+                    weights.RemoveIfContains(Map.Weather.RainSometimes1);
+                    weights.RemoveIfContains(Map.Weather.RainSometimes2);
+                }
                 if (!Metadata.IsEmerald)
                 {
                     weights.RemoveIfContains(Map.Weather.Chaos);
@@ -420,6 +427,7 @@ namespace PokemonRandomizer.AppSettings
         }
         public override bool OverrideCustomMartItemPrice => itemData.OverrideCustomMartItemPrice;
         public override int CustomMartItemPrice => (int)itemData.CustomMartItemPrice;
+        public override bool DiscountSoldGiftItems => itemData.DiscountSoldItems;
 
         public override double FieldItemRandChance => RandomChance(itemData.RandomizeFieldItems, itemData.FieldItemRandChance);
         public override ItemRandomizer.Settings FieldItemSettings => itemData.FieldItemSettings;
@@ -465,6 +473,10 @@ namespace PokemonRandomizer.AppSettings
 
         #region Misc
 
+        public override bool UpgradeUnown => miscData.UpgradeUnown;
+        public override bool UpgradeCastform => miscData.UpgradeCastform;
+        public override bool DistributeWeatherAbilities => miscData.AddWeatherAbilities;
+
         // Gen II-IV Hacks and Tweaks
         public override bool UpdateDOTMoves => miscData.UpdateDOTMoves;
 
@@ -486,6 +498,8 @@ namespace PokemonRandomizer.AppSettings
 
         // Randomizer Settings
         public override bool CountRelicanthAsFossil => miscData.CountRelicanthAsFossil;
+
+        public override TypeChartRandomizer.Option TypeChartRandomizationSetting => miscData.TypeChartSetting;
 
         #endregion
 

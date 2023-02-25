@@ -21,26 +21,43 @@ namespace PokemonRandomizer.Backend.DataStructures
 
     public class TypeEffectivenessChart
     {
+        public const int maxTypes = 20; // Upper bound for number of types. Arbitrary number greater than vanilla types
         // The byte sequence that marks the end of the data structure
         public static readonly byte[] endSequence = { 0xFF, 0xFF, 0x00 };
         // The byte sequence that marks the end of the non-ignoreAfterForesight relations
         public static readonly byte[] separatorSequence = { 0xFE, 0xFE, 0x00 };
+        public static bool HasAbilityImmunity(PokemonType type)
+        {
+            // ELE: Volt absorb, Motor Drive, lightningrod (gen V+)
+            // WAT: Water absorb, dry skin, storm drain (gen V+)
+            // FIR: Flash fire
+            // GRD: Levitate
+            // GRS: Sap Sipper (gen V+)
+            return type is PokemonType.ELE or PokemonType.WAT or PokemonType.FIR or PokemonType.GRD;
+        }
+        public static bool HasAbilityImmunity(PokemonBaseStats defender, PokemonType atkType)
+        {
+            return atkType switch
+            {
+                PokemonType.GRD => defender.HasAbility(Ability.Levitate),
+                PokemonType.FIR => defender.HasAbility(Ability.Flash_Fire),
+                PokemonType.WAT => defender.HasAbility(Ability.Water_Absorb) || defender.HasAbility(Ability.Dry_Skin), // Note gen V +storm drain
+                PokemonType.ELE => defender.HasAbility(Ability.Volt_Absorb) || defender.HasAbility(Ability.Motor_Drive), // Note Gen V : lightningrod can also cause immunity
+                _ => false
+            };
+        }
         // The current amount of typerelations
-        public int Count { get => typeRelations.Count + ignoreAfterForesight.Count; }
+        public int Count { get => TypeRelations.Count + IgnoreAfterForesight.Count; }
         // The amount of relations when read from the ROM (set manually)
         public int InitCount { get; set; }
-        // A list of the type pairings (not including the ones ignored after foresight)
-        public List<TypePair> Keys { get => typeRelations.Keys.ToList(); }
-        // A list of the type pairings ignored after foresight
-        public List<TypePair> KeysIgnoreAfterForesight { get => ignoreAfterForesight.Keys.ToList(); }
         // All of the type relations except for those ignored after foresight is used
-        private readonly Dictionary<TypePair, TypeEffectiveness> typeRelations = new Dictionary<TypePair, TypeEffectiveness>();
+        public Dictionary<TypePair, TypeEffectiveness> TypeRelations { get; } = new Dictionary<TypePair, TypeEffectiveness>();
         // The type relations that are ignored after foresight is used
-        private readonly Dictionary<TypePair, TypeEffectiveness> ignoreAfterForesight = new Dictionary<TypePair, TypeEffectiveness>();
+        public Dictionary<TypePair, TypeEffectiveness> IgnoreAfterForesight { get; } = new Dictionary<TypePair, TypeEffectiveness>();
         // Helper method to make it easier to add to the list
         public void Add(PokemonType atType, PokemonType dfType, TypeEffectiveness e, bool ignoreAfterForesight = false)
         {
-            var dict = ignoreAfterForesight ? this.ignoreAfterForesight : typeRelations;
+            var dict = ignoreAfterForesight ? this.IgnoreAfterForesight : TypeRelations;
             var tPair = new TypePair(atType, dfType);
             if (dict.ContainsKey(tPair))
                 return;
@@ -50,25 +67,31 @@ namespace PokemonRandomizer.Backend.DataStructures
         // Set value of type relation (add if not present, else update)
         public void Set(PokemonType atType, PokemonType dfType, TypeEffectiveness e, bool ignoreAfterForesight = false)
         {
-            var dict = ignoreAfterForesight ? this.ignoreAfterForesight : typeRelations;
+            var dict = ignoreAfterForesight ? IgnoreAfterForesight : TypeRelations;
             var tPair = new TypePair(atType, dfType);
             if (dict.ContainsKey(tPair))
             {
                 if (e == TypeEffectiveness.Normal)
+                {
                     dict.Remove(tPair);
+                }
                 else
+                {
                     dict[tPair] = e;
+                }
             }
             else
+            {
                 dict.Add(tPair, e);
+            }
         }
         // Return the effectiveness of one type attacking another
         public TypeEffectiveness GetEffectiveness(TypePair tPair)
         {
-            if (typeRelations.ContainsKey(tPair))
-                return typeRelations[tPair];
-            if (ignoreAfterForesight.ContainsKey(tPair))
-                return ignoreAfterForesight[tPair];
+            if (TypeRelations.ContainsKey(tPair))
+                return TypeRelations[tPair];
+            if (IgnoreAfterForesight.ContainsKey(tPair))
+                return IgnoreAfterForesight[tPair];
             return TypeEffectiveness.Normal;
         }
         // Return the effectiveness of one type attacking another
@@ -119,13 +142,120 @@ namespace PokemonRandomizer.Backend.DataStructures
         public bool ContainsRelation(PokemonType atType, PokemonType dfType)
         {
             var tPair = new TypePair(atType, dfType);
-            return typeRelations.ContainsKey(tPair) || ignoreAfterForesight.ContainsKey(tPair);
+            return TypeRelations.ContainsKey(tPair) || IgnoreAfterForesight.ContainsKey(tPair);
         }
         // Returns true if the relation is ignored after FORESIGHT/ODEUR SLEUTH is used
         public bool IgnoredAfterForesight(PokemonType atType, PokemonType dfType)
         {
-            return ignoreAfterForesight.ContainsKey(new TypePair(atType, dfType));
+            return IgnoreAfterForesight.ContainsKey(new TypePair(atType, dfType));
         }
+        // Returns true if the given single type has no weaknesses
+        // Assumes that there are no contradictory entries
+        public bool HasNoWeaknesses(PokemonType singleType)
+        {
+            foreach(var (typePair, effectiveness) in TypeRelations)
+            {
+                if (typePair.defendingType == singleType && effectiveness == TypeEffectiveness.SuperEffective)
+                {
+                    return false;
+                }
+            }
+            foreach (var (typePair, effectiveness) in IgnoreAfterForesight)
+            {
+                if (typePair.defendingType == singleType && effectiveness == TypeEffectiveness.SuperEffective)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        public bool HasNoWeaknesses(PokemonType primaryType, PokemonType secondaryType)
+        {
+            if(primaryType == secondaryType)
+            {
+                return HasNoWeaknesses(primaryType);
+            }
+            var weaknesses = new HashSet<PokemonType>(maxTypes);
+            var resists = new HashSet<PokemonType>(maxTypes);
+            void ProcessTypeRelation(TypePair typePair, TypeEffectiveness effectiveness)
+            {
+                if (typePair.defendingType != primaryType && typePair.defendingType != secondaryType)
+                {
+                    return;
+                }
+                if (effectiveness == TypeEffectiveness.SuperEffective)
+                {
+                    if (!weaknesses.Contains(typePair.attackingType))
+                    {
+                        weaknesses.Add(typePair.attackingType);
+                    }
+                }
+                else if (effectiveness is TypeEffectiveness.NotVeryEffective or TypeEffectiveness.NoEffect)
+                {
+                    if (!resists.Contains(typePair.attackingType))
+                    {
+                        resists.Add(typePair.attackingType);
+                    }
+                }
+            }
+            // Process Normal Type Relations
+            foreach(var (typePair, effectiveness) in TypeRelations)
+            {
+                ProcessTypeRelation(typePair, effectiveness);
+            }
+            // Process Ignore After Foresight Type Relations
+            foreach (var (typePair, effectiveness) in IgnoreAfterForesight)
+            {
+                ProcessTypeRelation(typePair, effectiveness);
+            }
+            // If there are more weaknesses than resistances, it is impossible for all type combinations to be covered
+            if (weaknesses.Count > resists.Count)
+            {
+                return false;
+            }
+            foreach(var weakness in weaknesses)
+            {
+                if (!resists.Contains(weakness))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        public bool HasPerfectCoverage(PokemonType atkType)
+        {
+            // TODO: mold breaker exception
+            if (HasAbilityImmunity(atkType))
+                return false;
+            foreach (var (typePair, effectiveness) in TypeRelations)
+            {
+                if (typePair.attackingType == atkType && effectiveness == TypeEffectiveness.NoEffect)
+                {
+                    return false;
+                }
+            }
+            // TODO: scappy exception
+            foreach (var (typePair, effectiveness) in IgnoreAfterForesight)
+            {
+                if (typePair.attackingType == atkType && effectiveness == TypeEffectiveness.NoEffect)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        public bool IsImmune(PokemonBaseStats defender, PokemonType atkType)
+        {
+            if (HasAbilityImmunity(defender, atkType))
+                return true;
+            if (GetEffectiveness(atkType, defender.PrimaryType) == TypeEffectiveness.NoEffect)
+                return true;
+            return defender.IsDualTyped && GetEffectiveness(atkType, defender.SecondaryType) == TypeEffectiveness.NoEffect;
+        }
+
         // A class for storing a pairing of two types. Is hashable
         public class TypePair : IEquatable<TypePair>
         {

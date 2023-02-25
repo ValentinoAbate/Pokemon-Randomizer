@@ -93,9 +93,9 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
                     }
                     pcItemArray.WriteRepeating(0x00, 4);
                     int? newPCItemArrayOffset = rom.WriteInFreeSpace(pcItemArray.File);
-                    if(newPCItemArrayOffset.HasValue && newPCItemArrayOffset != Rom.nullPointer)
+                    if(newPCItemArrayOffset.HasValue && newPCItemArrayOffset != Rom.nullPointer && info.HasPointer(ElementNames.pcPotion))
                     {
-                        repoints.Add(pcPotionOffset, newPCItemArrayOffset.Value);
+                        rom.WritePointer(info.Pointer(ElementNames.pcPotion), newPCItemArrayOffset.Value);
                     }
                     else
                     {
@@ -129,6 +129,11 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
             {
                 ApplyHailHack(settings.HailHackSetting, rom, info);
             }
+            // Apply sun weather fix for FRLG
+            if (settings.WeatherSetting != Settings.WeatherOption.Unchanged && metadata.IsFireRedOrLeafGreen)
+            {
+                ApplySunHack(rom, info, metadata);
+            }
             // Apply evolve without national dex hack if supported
             if (settings.EvolveWithoutNationalDex && metadata.IsFireRedOrLeafGreen)
             {
@@ -150,6 +155,11 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
             if (settings.DeoxysMewObeyFix && (metadata.IsEmerald || metadata.IsFireRedOrLeafGreen))
             {
                 ApplyDeoxysMewObeyFix(rom, info);
+            }
+            // Apply forecast hack if necessary
+            if (data.GetBaseStats(Pokemon.CASTFORM).IsVariant)
+            {
+                ApplyDualTypeForecastHack(rom, info);
             }
 
             // Perform all of the repoint operations
@@ -224,7 +234,8 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
                 return;
             }
             // Hail Weather Hack. Makes the weather types "steady snow" and "three snowflakes" cause hail in battle
-            // Hack routine for FR 1.0 and Emerald compiled from bluRose's ASM routine. Thanks blueRose (https://www.pokecommunity.com/member.php?u=471720)!
+            // Hack routine for FR 1.0 and Emerald compiled from bluRose's ASM routine. Thanks blueRose (https://www.pokecommunity.com/member.php?u=471720)!\
+            // Hack routine for other versions (R/S and FRLG 1.1 modified from the original routine by me)
             // Emerald offsets from Panda Face (https://www.pokecommunity.com/member.php?u=660920)
             // Three snow flake spawning issue fix from ShinyDragonHunter (https://www.pokecommunity.com/member.php?u=241758)
             // Thread with all relevant posts: https://www.pokecommunity.com/showthread.php?t=351387&page=2
@@ -266,6 +277,41 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
             }
         }
 
+        private void ApplySunHack(Rom rom, XmlManager info, RomMetadata metadata)
+        {
+            // binary for sunfixFR1 compiled from MrPkmn's sun fix asm. Thanks MrPkmn!
+            // post: (https://www.pokecommunity.com/showpost.php?p=8823257&postcount=5)
+            // profile: (https://www.pokecommunity.com/member.php?u=86277)
+            // sun fixes for other versions (LG 1.0 and FRLG 1.1 were compiled from asm written by me, modified from the original by MrPkmn)
+            byte[] asm;
+            if (metadata.IsFireRed)
+            {
+                asm = metadata.Version == 0 ? Resources.Patches.Patches.sunfixFR1 : Resources.Patches.Patches.sunfixFR1_1;
+            }
+            else if (metadata.IsLeafGreen)
+            {
+                asm = metadata.Version == 0 ? Resources.Patches.Patches.sunfixLG1 : Resources.Patches.Patches.sunfixLG1_1;
+            }
+            else
+            {
+                Logger.main.Error("Attempting Sun Fix on a non-FRLG rom. this should not happen");
+                return;
+            }
+            int routineOffset = rom.WriteInFreeSpace(asm) ?? Rom.nullPointer;
+            if(routineOffset != Rom.nullPointer)
+            {
+                rom.Seek(info.HexAttr(ElementNames.GenIII.sunHack, "routineOffset"));
+                rom.WriteBlock(new byte[] { 0x01, 0x48, 0x00, 0x47, 0xC0, 0x46 });
+                rom.WritePointer(routineOffset + 1);
+                rom.Seek(info.HexAttr(ElementNames.GenIII.sunHack, "secondOffset"));
+                rom.WriteBlock(new byte[] { 0x20, 0x22, 0x02, 0x70 });
+            }
+            else
+            {
+                Logger.main.Error("Failed to write sun fix routine in free space. Sunny overworld weather will cause black screens after battle");
+            }
+        }
+
         private void ApplyDeoxysMewObeyFix(Rom rom, XmlManager info)
         {
             int deoxysCheckOffset = info.FindOffset(ElementNames.GenIII.deoxysMewObeyFix, rom);
@@ -292,6 +338,32 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
             }
             int glitchPokemonCheck = ((Gen3Opcodes.cmpRegister | Gen3Opcodes.reg0) << 8) | (0x00);
             rom.WriteUInt16(glitchPokemonCheck);
+        }
+
+        private void ApplyDualTypeForecastHack(Rom rom, XmlManager info)
+        {
+            int forecastFormChangeOffset = info.FindOffset(ElementNames.forecastRoutine, rom);
+            // See forecast form change routine
+            if (forecastFormChangeOffset == Rom.nullPointer)
+            {
+                Logger.main.Unsupported(ElementNames.forecastRoutine);
+                return;
+            }
+            // Prevent the initial type change from setting the secondary type
+            rom.WriteByte(forecastFormChangeOffset + 104, 0x15);
+            // Prevent the normal type change from setting the secondary type
+            rom.WriteByte(forecastFormChangeOffset + 210, 0x1A);
+            // Prevent the sun type change from setting the secondary type
+            rom.WriteByte(forecastFormChangeOffset + 254, 0x10);
+            // Prevent the rain type change from setting the secondary type
+            rom.WriteByte(forecastFormChangeOffset + 298, 0x10);
+            // Prevent the hail type change from setting the secondary type
+            rom.WriteByte(forecastFormChangeOffset + 342, 0x10);
+
+            // Set all secondary type checks to check for normal (essentially null them out)
+            rom.WriteByte(forecastFormChangeOffset + 246, 0x00); // sun
+            rom.WriteByte(forecastFormChangeOffset + 290, 0x00); // rain
+            rom.WriteByte(forecastFormChangeOffset + 334, 0x00); // snow
         }
 
         private void WriteMoveData(List<MoveData> data, Rom rom, XmlManager info, ref RepointList repoints)
@@ -556,7 +628,25 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
         private void WritePokemonPalettes(PokemonBaseStats pokemon, int normalOffeset, int shinyOffset, Rom rom)
         {
             rom.SaveAndSeekOffset(normalOffeset);
-            paletteWriter.WriteCompressed(rom.ReadPointer(), pokemon.palette, rom);
+            // Later do for any palette that would exeed the max size after compression
+            if(pokemon.species == Pokemon.CASTFORM && pokemon.IsVariant)
+            {
+                int newCastformPalOffset = rom.FindFreeSpaceOffset(156) ?? Rom.nullPointer;
+                if(newCastformPalOffset != Rom.nullPointer)
+                {
+                    paletteWriter.WriteCompressed(newCastformPalOffset, pokemon.palette, rom);
+                    rom.WritePointer(newCastformPalOffset);
+                }
+                else
+                {
+                    Logger.main.Error("Failed to repoint castform palette (not enough free space), castform palette will not be written");
+                    rom.Skip(4);
+                }
+            }
+            else
+            {
+                paletteWriter.WriteCompressed(rom.ReadPointer(), pokemon.palette, rom);
+            }
             rom.WriteUInt16(pokemon.paletteIndex);
             rom.Seek(shinyOffset);
             paletteWriter.WriteCompressed(rom.ReadPointer(), pokemon.shinyPalette, rom);
@@ -572,18 +662,18 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
             }
             #region Convert TypeChart to byte[]
             var typeData = new List<byte>(typeDefinitions.Count * 3 + TypeEffectivenessChart.separatorSequence.Length + TypeEffectivenessChart.endSequence.Length);
-            foreach (var typePair in typeDefinitions.Keys)
+            foreach (var (typePair, effectiveness) in typeDefinitions.TypeRelations)
             {
                 typeData.Add((byte)typePair.attackingType);
                 typeData.Add((byte)typePair.defendingType);
-                typeData.Add((byte)typeDefinitions.GetEffectiveness(typePair));
+                typeData.Add((byte)effectiveness);
             }
             typeData.AddRange(TypeEffectivenessChart.separatorSequence);
-            foreach (var typePair in typeDefinitions.KeysIgnoreAfterForesight)
+            foreach (var (typePair, effectiveness) in typeDefinitions.IgnoreAfterForesight)
             {
                 typeData.Add((byte)typePair.attackingType);
                 typeData.Add((byte)typePair.defendingType);
-                typeData.Add((byte)typeDefinitions.GetEffectiveness(typePair));
+                typeData.Add((byte)effectiveness);
             }
             typeData.AddRange(TypeEffectivenessChart.endSequence);
             #endregion

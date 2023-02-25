@@ -133,6 +133,8 @@ namespace PokemonRandomizer.Backend.DataStructures
         // Container for data to be written to the info file that cannot be inferred from the general rom data
         public Dictionary<string, List<string>> RandomizationResults { get; } = new Dictionary<string, List<string>>();
 
+        public List<PokemonType> Types { get; } = new(20);
+
         public PokemonBaseStats GetBaseStats(Pokemon p) => PokemonLookup[p];
         public MoveData GetMoveData(Move m) => MoveDataLookup[m];
         public ItemData GetItemData(Item i) => ItemDataLookup[i];

@@ -24,6 +24,7 @@ namespace PokemonRandomizer.UI.Models
         public Box<Item> CustomMartItem { get; set; } = new Box<Item>(Item.Rare_Candy);
         public Box<bool> OverrideCustomMartItemPrice { get; set; } = new Box<bool>(false);
         public Box<double> CustomMartItemPrice { get; set; } = new Box<double>(4800);
+        public Box<bool> DiscountSoldItems { get; set; } = new(true);
 
         public Box<bool> RandomizeFieldItems { get; set; } = new Box<bool>(false);
         public Box<double> FieldItemRandChance { get; set; } = new Box<double>(1);

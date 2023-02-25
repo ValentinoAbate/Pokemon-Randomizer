@@ -78,10 +78,11 @@ namespace PokemonRandomizer
         }
         public abstract TradeItemPokemonOption TradeItemEvoSetting { get; }
         public abstract double DunsparsePlaugeChance { get; }
+        public abstract bool ApplyDunsparsePlagueToFriendshipEvos { get; }
 
         #endregion
 
-        #region Catch Rates
+        #region Catch / Hatch Rates
 
         public enum CatchRateOption
         {
@@ -98,6 +99,7 @@ namespace PokemonRandomizer
         public abstract byte CatchRateConstant { get; }
         public abstract byte IntelligentCatchRateBasicThreshold { get; }
         public abstract byte IntelligentCatchRateEvolvedThreshold { get; }
+        public abstract bool FastHatching { get; }
 
         #endregion
 
@@ -276,8 +278,8 @@ namespace PokemonRandomizer
         public abstract GymEliteFourPreventDupesSetting GymEliteFourDupePrevention { get; }
         public abstract TrainerOrgTypeTheme TeamTypeTheming { get; }
         public abstract bool GruntTheming { get; }
-        public abstract bool KeepTeamSubtypes { get; }
-        protected abstract Trainer.Category PriorityThemeCategory { get; }
+        public abstract double TeamDualTypeChance { get; }
+        public abstract Trainer.Category PriorityThemeCategory { get; }
         public abstract TrainerOrgTypeTheme SmallOrgTypeTheming { get; }
 
         // Misc
@@ -477,6 +479,9 @@ namespace PokemonRandomizer
         #endregion
 
         #region Misc
+        public abstract bool UpgradeUnown { get; }
+        public abstract bool UpgradeCastform { get; }
+        public abstract bool DistributeWeatherAbilities { get; }
 
         // Gen II-IV Hacks and Tweaks
         public abstract bool UpdateDOTMoves { get; }
@@ -504,6 +509,8 @@ namespace PokemonRandomizer
 
         // Randomizer Settings
         public abstract bool CountRelicanthAsFossil { get; }
+
+        public abstract TypeChartRandomizer.Option TypeChartRandomizationSetting { get; }
 
         #endregion
 

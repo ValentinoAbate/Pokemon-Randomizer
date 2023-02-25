@@ -64,7 +64,7 @@ namespace PokemonRandomizer.Backend.Randomization
                     var moveData = dataT.GetMoveData(moveList[i]);
                     foreach (var type in variantTypes)
                     {
-                        if (moveData.IsType(type))
+                        if (moveData.IsType(type) || SpecialHMCompat(moveData.move, type))
                         {
                             compat[i] = true;
                         }
@@ -107,6 +107,8 @@ namespace PokemonRandomizer.Backend.Randomization
                 return true;
             if (moveData.IsType(pokemon))
                 return true;
+            if (pokemon.species is Pokemon.CASTFORM && CastformCompat(moveData))
+                return true;
             if (pokemon.eggMoves.Contains(move))
                 return true;
             if (pokemon.originalUnlearnableTmHmMtMoves.Contains(move))
@@ -114,6 +116,34 @@ namespace PokemonRandomizer.Backend.Randomization
             if (moveData.IsType(PokemonType.NRM))
                 return rand.RollSuccess(data.intelligentNormalRandChance);
             return rand.RollSuccess(data.intelligentRandChance);
+        }
+
+        // Allow castform access to all fire / water / ice / electric moves
+        // Maybe require moves to be special
+        private bool CastformCompat(MoveData moveData)
+        {
+            return !moveData.IsStatus && (moveData.IsType(PokemonType.FIR) || moveData.IsType(PokemonType.WAT) || moveData.IsType(PokemonType.ICE) || moveData.IsType(PokemonType.ELE));
+        }
+
+        // Special variant HM compatibility for off-type attacking moves (can't be handled by type overrides)
+        private bool SpecialHMCompat(Move move, PokemonType type)
+        {
+            if(move is Move.STRENGTH)
+            {
+                // Fighting types always get access to strength
+                return type is PokemonType.FTG;
+            }
+            if(move is Move.CUT)
+            {
+                // Bug types always get cut
+                return type is PokemonType.BUG;
+            }
+            if(move is Move.ROCK_CLIMB)
+            {
+                // Rock and fighting types always get rock climb
+                return type is PokemonType.RCK or PokemonType.FTG;
+            }
+            return false;
         }
 
         public class Data

@@ -6,6 +6,8 @@ namespace PokemonRandomizer.UI
 {
     public static class UIExtensions
     {
+        private static Separator StdSeparator => new Separator() { Height = 1, UseLayoutRounding=true };
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T Add<T>(this Panel p, T element) where T : UIElement
         {
@@ -21,11 +23,11 @@ namespace PokemonRandomizer.UI
         }
         public static void Header(this Panel p, string content)
         {
-            p.Add(new Label { Content = content }, new Separator());
+            p.Add(new Label { Content = content }, StdSeparator);
         }
         public static void Header(this Panel p, string content, string tooltip)
         {
-            p.Add(new Label { Content = content, ToolTip = tooltip }, new Separator());
+            p.Add(new Label { Content = content, ToolTip = tooltip }, StdSeparator);
         }
 
         public static void Description(this Panel p, params string[] content)
@@ -34,7 +36,12 @@ namespace PokemonRandomizer.UI
             {
                 p.Add(new Label() { Content = line });
             }
-            p.Add(new Separator());
+            p.Add(StdSeparator);
+        }
+
+        public static void Separator(this Panel p)
+        {
+            p.Add(StdSeparator);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

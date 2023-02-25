@@ -25,15 +25,15 @@ namespace PokemonRandomizer.UI.Views
         {
             var stack = CreateMainStack();
             stack.Add(new Label() { Content = "Weather Randomization" });
-            stack.Add(new Separator());
+            stack.Separator();
             var strategyDrop = stack.Add(new EnumComboBoxUI<WeatherOption>("Randomization Strategy", WeatherOptionDropdown, model.WeatherSetting));
             strategyDrop.BindVisibility(stack.Add(new WeightedSetUI<Weather>("Custom Weather Type", model.CustomWeatherWeights, GetWeatherWeightDropdown)), (int)WeatherOption.CustomWeighting);
             var settingsStack = stack.Add(strategyDrop.BindEnabled(CreateStack(), (int)WeatherOption.CompletelyRandom, (int)WeatherOption.InBattleWeather, (int)WeatherOption.CustomWeighting));
             settingsStack.Add(new RandomChanceUI("Apply to Route Weather", model.RandomizeRouteWeather, model.RouteWeatherRandChance));
             settingsStack.Add(new RandomChanceUI("Apply to Gym Weather", model.RandomizeGymWeather, model.GymWeatherRandChance));
             settingsStack.Add(new RandomChanceUI("Apply to Town Weather", model.RandomizeTownWeather, model.TownWeatherRandChance));
-            settingsStack.Add(new BoundCheckBoxUI(model.KeepExistingWeather, "Keep Existing Weather", "Keeps weather for places that already have special weather (e.g. the desert will still have sandstorm weather)"));
-            var banFlashingCb = settingsStack.Add(new BoundCheckBoxUI(model.BanFlashing, "Ban Flashing Weather", banFlashingTooltip));
+            settingsStack.Add(new BoundCheckBoxUI("Keep Existing Weather", model.KeepExistingWeather, "Keeps weather for places that already have special weather (e.g. the desert will still have sandstorm weather)"));
+            var banFlashingCb = settingsStack.Add(new BoundCheckBoxUI("Ban Flashing Weather", model.BanFlashing, banFlashingTooltip));
             settingsStack.Add(banFlashingCb.BindVisibility(new Label() { Content = banFlashingWarning }));
         }
 
@@ -42,8 +42,8 @@ namespace PokemonRandomizer.UI.Views
             new WeightedSetUI<Weather>.MenuBoxItem { Item = Weather.Rain, Header="Rain"},
             new WeightedSetUI<Weather>.MenuBoxItem { Item = Weather.RainThunderstorm, Header="Thunderstorm"},
             new WeightedSetUI<Weather>.MenuBoxItem { Item = Weather.RainHeavyThunderstrorm, Header="Heavy Thunderstorm"},
-            new WeightedSetUI<Weather>.MenuBoxItem { Item = Weather.RainSometimes1, Header="Rain (Sometimes) #1"},
-            new WeightedSetUI<Weather>.MenuBoxItem { Item = Weather.RainSometimes2, Header="Rain (Sometimes) #2"},
+            new WeightedSetUI<Weather>.MenuBoxItem { Item = Weather.RainSometimes1, Header="Rain (Sometimes) #1 (RSE Only)"},
+            new WeightedSetUI<Weather>.MenuBoxItem { Item = Weather.RainSometimes2, Header="Rain (Sometimes) #2 (RSE Only)"},
             new WeightedSetUI<Weather>.MenuBoxItem { Item = Weather.StrongSunlight, Header="Strong Sunlight"},
             new WeightedSetUI<Weather>.MenuBoxItem { Item = Weather.Sandstorm, Header="Sandstorm"},
             new WeightedSetUI<Weather>.MenuBoxItem { Item = Weather.Snow, Header="Snow"},
