@@ -792,8 +792,13 @@ namespace PokemonRandomizer.Backend.Randomization
                     battles.RemoveAt(0);
                     // Randomize the first battle
                     trainerRand.Randomize(firstBattle, pokemonSet, trainerSettings, false);
-                    // Set the appropriate starter as the ace
-                    firstBattle.Pokemon[^1].species = data.Starters[originalStarters ? i : data.RivalRemap[i]];
+                    // Set the appropriate starter as the ace and regenerate moveset if necessary
+                    var firstBattleAce = firstBattle.Pokemon[^1];
+                    firstBattleAce.species = data.Starters[originalStarters ? i : data.RivalRemap[i]];
+                    if (trainerSettings.RandomizePokemon)
+                    {
+                        trainerRand.FinishPokemonRandomization(firstBattleAce);
+                    }
                     // Procedurally generate the rest of the battles
                     trainerRand.RandomizeReoccurring(firstBattle, battles, pokemonSet, trainerSettings);
                     if (settings.EasyFirstRivalBattle)
@@ -831,10 +836,15 @@ namespace PokemonRandomizer.Backend.Randomization
                 wallyBattles.Sort(Trainer.AverageLevelComparer);
                 var firstBattle = wallyBattles[0];
                 wallyBattles.RemoveAt(0);
-                // Set Wally's first pokemon to the catching tut pokemon
+                // Randomize the first battle
                 trainerRand.Randomize(firstBattle, pokemonSet, trainerSettings, false);
+                // Set Wally's ace pokemon to the catching tut pokemon and regenerate moveset if necessary
                 var firstBattleAce = firstBattle.Pokemon[^1];
                 firstBattleAce.species = evoUtils.MaxEvolution(data.CatchingTutPokemon, firstBattleAce.level, trainerSettings.RestrictIllegalEvolutions);
+                if (trainerSettings.RandomizePokemon || settings.RandomizeWallyAce)
+                {
+                    trainerRand.FinishPokemonRandomization(firstBattleAce);
+                }
                 // Procedurally generate the rest of Wally's battles
                 trainerRand.RandomizeReoccurring(firstBattle, wallyBattles, pokemonSet, trainerSettings);
             }
