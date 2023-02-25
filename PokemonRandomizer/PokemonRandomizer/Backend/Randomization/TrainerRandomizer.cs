@@ -73,10 +73,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 pokemon.species = pokeRand.RandomPokemon(pokemonSet, pokemon.species, metrics, settings, pokemon.level);
 
                 // Reset special moves if necessary
-                if (pokemon.HasSpecialMoves)
-                {
-                    pokemon.moves = movesetGenerator.SmartMoveSet(dataT.GetBaseStats(pokemon.species), pokemon.level);
-                }
+                FinishPokemonRandomization(pokemon);
             }
         }
 
@@ -190,7 +187,7 @@ namespace PokemonRandomizer.Backend.Randomization
             RandomizeReoccurring(firstBattle, reoccuringBattles, pokemonSet, settings);
         }
 
-        /// <summary> Radnomize the given trainer encounter </summary>
+        /// <summary> Randomize the given trainer encounter </summary>
         public void Randomize(Trainer trainer, IEnumerable<Pokemon> pokemonSet, TrainerSettings settings, bool safe = true)
         {
             if (settings.RandomizePokemon)
@@ -422,5 +419,13 @@ namespace PokemonRandomizer.Backend.Randomization
         }
 
         #endregion
+
+        public void FinishPokemonRandomization(TrainerPokemon pokemon)
+        {
+            if (pokemon.HasSpecialMoves)
+            {
+                pokemon.moves = movesetGenerator.SmartMoveSet(dataT.GetBaseStats(pokemon.species), pokemon.level);
+            }
+        }
     }
 }
