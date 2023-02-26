@@ -140,7 +140,7 @@ namespace PokemonRandomizer.Backend.Utilities
                 lines.Add($"Level Up: {pkmn.learnSet}");
                 lines.Add($"TM: {MoveCompatibility(pkmn.TMCompat, data.TMMoves, "TM")}");
                 lines.Add($"HM: {MoveCompatibility(pkmn.HMCompat, data.HMMoves, "HM")}");
-                lines.Add($"Tutor: {MoveCompatibility(pkmn.moveTutorCompat, data.tutorMoves)}");
+                lines.Add($"Tutor: {MoveCompatibility(pkmn.moveTutorCompat, data.TutorMoves)}");
                 lines.Add($"Egg: {EnumArray(pkmn.eggMoves)}");
             }
 

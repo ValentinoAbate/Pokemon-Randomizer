@@ -11,7 +11,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
 
     public class Gen3ScriptParser
     {
-        private readonly HashSet<int> scriptOffsets = new HashSet<int>();
+        public Dictionary<int, Script> scriptDatabase = new Dictionary<int, Script>();
         private readonly HashSet<int> visitedOffsets = new HashSet<int>(255);
         public Script Parse(Rom rom, int offset, RomMetadata metadata)
         {
@@ -22,14 +22,14 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
         private Script Parse(Rom rom, int offset, int originalOffset, RomMetadata metadata)
         {
             // If we have already been to this offset or we have already parsed this script
-            if (visitedOffsets.Contains(offset) || scriptOffsets.Contains(offset))
+            if (visitedOffsets.Contains(offset) || scriptDatabase.ContainsKey(offset))
             {
                 return null;
             }
-            scriptOffsets.Add(offset);
+            var script = new Script();
+            scriptDatabase.Add(offset, script);
             rom.SaveOffset();
             rom.Seek(offset);
-            var script = new Script();
             while (true)
             {
                 visitedOffsets.Add(rom.InternalOffset);
@@ -94,7 +94,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
                 }
                 else if (command.code == Gen3Command.special)
                 {
-                    script.Add(ParseSpecialCommand(command, metadata));
+                    script.Add(ParseSpecialCommand(command, metadata, script));
                 }
                 else if (command.code == Gen3Command.setvar)
                 {
@@ -215,7 +215,34 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
                 }
             }
             rom.LoadOffset();
+            PostProcessScript(script);
             return script;
+        }
+
+        private void PostProcessScript(Script script)
+        {
+            for (int i = 0; i < script.Count; i++)
+            {
+                Command command = script[i];
+                // Check for move tutor pattern
+                if (i + 1 >= script.Count || command is not Gen3Command gen3Command)
+                {
+                    continue;
+                }
+                if (gen3Command.code == Gen3Command.setvar && gen3Command.ArgData(0) == Gen3Command.moveTutorIndexVar)
+                {
+                    var nextCommand = script[i + 1];
+                    if(nextCommand is not CallCommand callCommand)
+                    {
+                        continue;
+                    }
+                    if(scriptDatabase.TryGetValue(callCommand.offset, out var calledScript) && calledScript.Metadata.HasFlag(Script.ScriptMetadata.IsMoveTutorChooseScript))
+                    {
+                        script.Metadata |= Script.ScriptMetadata.IsMoveTutorScript;
+                        script.IntParam = gen3Command.ArgData(1);
+                    }
+                }
+            }
         }
 
         private bool TryParseGiveItemMultiCommand(Rom rom, RomMetadata metadata, Gen3Command command1, out GiveItemCommand giveItemMultiCommand)
@@ -424,11 +451,15 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
             return shopCommand;
         }
 
-        private Command ParseSpecialCommand(Gen3Command command, RomMetadata metadata)
+        private Command ParseSpecialCommand(Gen3Command command, RomMetadata metadata, Script script)
         {
             int specialCode = command.ArgData(0);
             if (metadata.IsFireRedOrLeafGreen)
             {
+                if(specialCode == Gen3Command.specialSelectMonForMoveTutorFrlg)
+                {
+                    script.Metadata |= Script.ScriptMetadata.IsMoveTutorChooseScript;
+                }
                 return specialCode switch
                 {
                     Gen3Command.specialGiveNationalDexFrlg => new GivePokedexCommand { Type = GivePokedexCommand.PokedexType.National },
@@ -438,6 +469,10 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
             }
             else if (metadata.IsEmerald)
             {
+                if (specialCode == Gen3Command.specialSelectMonForMoveTutorEmerald)
+                {
+                    script.Metadata |= Script.ScriptMetadata.IsMoveTutorChooseScript;
+                }
                 return specialCode switch
                 {
                     Gen3Command.specialGiveNationalDexEmerald => new GivePokedexCommand { Type = GivePokedexCommand.PokedexType.National },
@@ -515,7 +550,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
 
         public void Clear()
         {
-            scriptOffsets.Clear();
+            scriptDatabase.Clear();
         }
     }
 }

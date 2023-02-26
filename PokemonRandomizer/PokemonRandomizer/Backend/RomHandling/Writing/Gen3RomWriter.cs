@@ -52,7 +52,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
             // Write HM definitions
             WriteMoveMappings(rom, info, ElementNames.hmMoves, data.HMMoves, info.HexAttr(ElementNames.hmMoves, "duplicateOffset"));
             // Write Move Tutor definitions
-            WriteMoveMappings(rom, info, ElementNames.tutorMoves, data.tutorMoves);
+            WriteMoveMappings(rom, info, ElementNames.tutorMoves, data.TutorMoves);
             // Write the move definitions
             WriteMoveData(data.MoveData, rom, info, ref repoints);
             WritePokemonBaseStats(data, rom, info);

@@ -197,19 +197,19 @@ namespace PokemonRandomizer.Backend.Randomization
                 data.RandomizationResults.Add("TM Moves", data.TMMoves.Select(EnumUtils.ToDisplayString).ToList());
             }
             // Randomize Move Tutor mappings
-            for (int i = 0; i < data.tutorMoves.Length; ++i)
+            for (int i = 0; i < data.TutorMoves.Length; ++i)
             {
-                if (settings.KeepImportantTMsAndTutors && settings.ImportantTMsAndTutors.Contains(data.tutorMoves[i]))
+                if (settings.KeepImportantTMsAndTutors && settings.ImportantTMsAndTutors.Contains(data.TutorMoves[i]))
                     continue; // Important Tutor moves have already been removed from the move pool, so this will not cause duplicates
                 if (rand.RollSuccess(settings.MoveTutorRandChance))
-                    data.tutorMoves[i] = rand.Choice(moves);
+                    data.TutorMoves[i] = rand.Choice(moves);
                 if (settings.PreventDuplicateTMsAndTutors)
-                    moves.Remove(data.tutorMoves[i]);
+                    moves.Remove(data.TutorMoves[i]);
             }
             // Log results
-            if(settings.MoveTutorRandChance > 0 && data.tutorMoves.Length > 0)
+            if(settings.MoveTutorRandChance > 0 && data.TutorMoves.Length > 0)
             {
-                data.RandomizationResults.Add("Move Tutors", data.tutorMoves.Select(EnumUtils.ToDisplayString).ToList());
+                data.RandomizationResults.Add("Move Tutors", data.TutorMoves.Select(EnumUtils.ToDisplayString).ToList());
             }
             // Remap TM Pallets and descriptions (if necessary)
             if(settings.TMRandChance > 0)
@@ -367,7 +367,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 #region TM, HM, and Move tutor Compatibility
 
                 compatRand.RandomizeCompatibility(settings.MoveCompatSetting, pokemon.TMCompat, data.TMMoves, pokemon, compatSettings);
-                compatRand.RandomizeCompatibility(settings.MoveCompatSetting, pokemon.moveTutorCompat, data.tutorMoves, pokemon, compatSettings);
+                compatRand.RandomizeCompatibility(settings.MoveCompatSetting, pokemon.moveTutorCompat, data.TutorMoves, pokemon, compatSettings);
                 // If all on, force all HMs on
                 // Else, if intelligent compatibility is on and the pokemon is a variant, intelligently set HM compat
                 if(settings.ForceFullHmCompatibility || settings.MoveCompatSetting == Settings.MoveCompatOption.AllOn)
@@ -517,6 +517,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 fossilSet = fossilSet,
                 staticPokemonMap = new Dictionary<Pokemon, Pokemon>(),
                 staticPokemonSet = new HashSet<Pokemon>(pokemonSet),
+                data = data,
             };
             // Initialize gym metadata
             var gymMetadataDict = new Dictionary<string, GymMetadata>(16); // 8 gyms + extra room for invalid gyms

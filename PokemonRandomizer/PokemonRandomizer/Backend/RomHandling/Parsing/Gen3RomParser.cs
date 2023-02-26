@@ -47,7 +47,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
             //Read the HM move mappings from the ROM
             data.HMMoves = ReadMoveMappings(ElementNames.hmMoves, rom, info);
             //Read the move tutor move mappings from the ROM
-            data.tutorMoves = ReadMoveMappings(ElementNames.tutorMoves, rom, info);
+            data.TutorMoves = ReadMoveMappings(ElementNames.tutorMoves, rom, info);
             #endregion
 
             data.MoveData = ReadMoves(rom, info);

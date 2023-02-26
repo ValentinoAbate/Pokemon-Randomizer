@@ -119,7 +119,18 @@ namespace PokemonRandomizer.Backend.DataStructures
         #region TM, HM, and tutor move definition arrays
         public Move[] TMMoves;
         public Move[] HMMoves;
-        public Move[] tutorMoves;
+        public Move[] TutorMoves 
+        {
+            get => tutorMoves;
+            set
+            {
+                tutorMoves = value;
+                OriginalTutorMoves = new Move[value.Length];
+                Array.Copy(value, OriginalTutorMoves, value.Length);
+            }
+        }
+        private Move[] tutorMoves;
+        public Move[] OriginalTutorMoves { get; private set; }
         #endregion
 
         public Script SetBerryTreeScript { get; set; }
@@ -269,7 +280,7 @@ namespace PokemonRandomizer.Backend.DataStructures
                 pokemon.originalTmHmMtMoves.Clear();
                 LinkMoves(pokemon.TMCompat, TMMoves, pokemon.originalTmHmMtMoves, pokemon.originalUnlearnableTmHmMtMoves);
                 LinkMoves(pokemon.HMCompat, HMMoves, pokemon.originalTmHmMtMoves, pokemon.originalUnlearnableTmHmMtMoves);
-                LinkMoves(pokemon.moveTutorCompat, tutorMoves, pokemon.originalTmHmMtMoves, pokemon.originalUnlearnableTmHmMtMoves);
+                LinkMoves(pokemon.moveTutorCompat, TutorMoves, pokemon.originalTmHmMtMoves, pokemon.originalUnlearnableTmHmMtMoves);
             }
         }
     }

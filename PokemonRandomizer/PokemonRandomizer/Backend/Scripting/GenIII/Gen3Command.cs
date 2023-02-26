@@ -10,6 +10,7 @@ namespace PokemonRandomizer.Backend.Scripting.GenIII
         public const int eventPokemonSpeciesVar = 0x8004;
         public const int eventPokemonLevelVar = 0x8005;
         public const int eventPokemonItemVar = 0x8006;
+        public const int moveTutorIndexVar = 0x8005;
 
         #region Command Constants
 
@@ -301,6 +302,8 @@ namespace PokemonRandomizer.Backend.Scripting.GenIII
         public const int specialSetWildEventPokemonEmerald = 0x1E2;
         public const int specialGiveRegionalDexFrlg = 0x181;
         public const int specialGiveNationalDexEmerald = 0x1F3;
+        public const int specialSelectMonForMoveTutorEmerald = 0x1DD;
+        public const int specialSelectMonForMoveTutorFrlg = 0x18D;
 
         #endregion
 

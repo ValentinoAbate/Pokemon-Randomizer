@@ -54,6 +54,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 }
             }
             RemapStaticPokemon(settings, args);
+            RemapMoveTutorText(settings, args, script);
         }
 
         private void RemapItems(Item oldItem, int oldPrice, IEnumerable<ItemCommand> commands, List<MoneyCommand> relatedMoneyCommands, List<TextCommand> textCommands, Settings settings, Args args)
@@ -129,6 +130,26 @@ namespace PokemonRandomizer.Backend.Randomization
                 {
                     command.Pokemon = newPokemon;
                 }
+            }
+        }
+
+        private void RemapMoveTutorText(Settings settings, Args args, Script script)
+        {
+            if (settings.MoveTutorRandChance <= 0 || textCommands.Count <= 0)
+                return;
+            if (!script.Metadata.HasFlag(Script.ScriptMetadata.IsMoveTutorScript))
+                return;
+            if (script.IntParam >= args.data.TutorMoves.Length)
+                return;
+            var originalMove = args.data.OriginalTutorMoves[script.IntParam];
+            var newMove = args.data.TutorMoves[script.IntParam];
+            if (originalMove == newMove)
+                return;
+            var originalMoveText = originalMove.ToDisplayString();
+            var newMoveText = newMove.ToDisplayString();
+            foreach (var command in textCommands)
+            {
+                command.Text = command.Text.Replace(originalMoveText, newMoveText);
             }
         }
 
@@ -307,6 +328,7 @@ namespace PokemonRandomizer.Backend.Randomization
             // Static Pokemon Randomization Params
             public HashSet<Pokemon> staticPokemonSet;
             public Dictionary<Pokemon, Pokemon> staticPokemonMap;
+            public RomData data;
             public GymMetadata gymMetadata;
             public bool IsGym => gymMetadata != null;
         }
