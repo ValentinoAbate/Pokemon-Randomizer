@@ -62,16 +62,16 @@ namespace PokemonRandomizer.UI.Views
         }
 
         // Catch rate parameters
-        private const string intelligentCatchRateTooltip = "Intelligently make some pokemon easier to catch because they can be found at the beginning of the game";
+        private const string intelligentCatchRateTooltip = "Intelligently make some pokemon easier to catch so that they can be caught at the beginning of the game";
 
         private CompositeCollection CatchRateOptionDropdown => new CompositeCollection()
         {
-            new ComboBoxItem() { Content="Unchanged"},
-            new ComboBoxItem() { Content="Random"},
-            new ComboBoxItem() { Content="Constant", ToolTip = "Set all pokemon to the same catch difficulty"},
-            new ComboBoxItem() { Content="Intelligent (Easy)", ToolTip = intelligentCatchRateTooltip + " (Easy)"},
+            new ComboBoxItem() { Content="Unchanged", ToolTip="Leave catch rates the same as they are in the base game"},
+            new ComboBoxItem() { Content="Random", ToolTip="All pokemon will have a completely random catch rate"},
+            new ComboBoxItem() { Content="Constant", ToolTip = "Set all pokemon to the same catch rate based on a difficulty value (0-1)"},
+            new ComboBoxItem() { Content="Intelligent (Easy)", ToolTip = intelligentCatchRateTooltip + " (Easy mode)"},
             new ComboBoxItem() { Content="Intelligent (Normal)", ToolTip = intelligentCatchRateTooltip},
-            new ComboBoxItem() { Content="Intelligent (Hard)", ToolTip = intelligentCatchRateTooltip + " (Hard)"},
+            new ComboBoxItem() { Content="Intelligent (Hard)", ToolTip = intelligentCatchRateTooltip + " (Hard mode)"},
             new ComboBoxItem() { Content="All Easiest", ToolTip = "All pokemon are as easy to catch as possible"},
         };
 
@@ -79,9 +79,9 @@ namespace PokemonRandomizer.UI.Views
         {
             var stack = CreateStack();
             stack.Header("Catch Rate Randomization");
-            var optionCb = stack.Add(new EnumComboBoxUI<CatchRateOption>("Randomization Strategy", CatchRateOptionDropdown, model.CatchRateSetting));
-            optionCb.BindVisibility(stack.Add(new BoundSliderUI("Constant Difficulty", model.CatchRateConstantDifficulty, false)), (int)CatchRateOption.Constant);
-            stack.Add(new BoundCheckBoxUI("Keep Legendary Catch Rates", model.KeepLegendaryCatchRates));
+            var optionCb = stack.Add(new EnumComboBoxUI<CatchRateOption>("Randomization Strategy", CatchRateOptionDropdown, model.CatchRateSetting) { ToolTip = "The strategy to use when modifying catch rates" + TooltipConstants.checkDropdownTooltip});
+            optionCb.BindVisibility(stack.Add(new BoundSliderUI("Constant Difficulty", model.CatchRateConstantDifficulty, false) { ToolTip = "The constant diffuculty to set all pokemon's catch rate to. Lower is easier and higher is harder"}), (int)CatchRateOption.Constant);
+            stack.Add(new BoundCheckBoxUI("Keep Legendary Catch Rates", model.KeepLegendaryCatchRates, "Keeps catch rates for legendary pokemon the same as they are in the base game"));
             stack.Header("Egg Hatch Rate Modifications");
             stack.Add(new BoundCheckBoxUI("Fast Egg Hatching", model.FastHatching, "All pokemon eggs hatch in the minimum possible egg cycles"));
             return CreateTabItem("Catch / Hatch Rate", stack);
