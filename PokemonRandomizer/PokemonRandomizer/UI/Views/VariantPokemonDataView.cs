@@ -13,7 +13,7 @@ namespace PokemonRandomizer.UI.Views
         private const string rebalanceAttackingStatsTooltip = "Rebalance the attacking stats of Variant pokemon to match their variant type(s)" +
             "\nFor example, a psychic type Machamp will become a special attacker instead of a physical attacker" +
             "\nAdditionally, a fighting/psychic Machamp will become a split attacker to support both its STAB types" +
-            "\nAttack stat rebalancing will never result in a Pokemon's base stats being lowered, but may result in them increasing if it becomes a split attacker";
+            "\nAttack stat rebalancing will never result in a pokemon's base stats being lowered, but may result in the lower of its two attacking stats increasing if the pokemon becomes a split attacker";
 
         private const string typeWeightDropdownTooltip = "The chances that determine which initial type transformation is chosen for the first pokemon in a Variant evolution line" +
             "\nThe type transformation applied to pokemon that evolve from the first pokemon are then calculated based on the initial type transformation and the type changes the pokemon would normally undergo when evolving" +
