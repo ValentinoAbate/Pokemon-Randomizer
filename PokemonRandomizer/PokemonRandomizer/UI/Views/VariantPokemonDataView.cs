@@ -15,18 +15,18 @@ namespace PokemonRandomizer.UI.Views
             "\nAdditionally, a fighting/psychic Machamp will become a split attacker to support both its STAB types" +
             "\nAttack stat rebalancing will never result in a Pokemon's base stats being lowered, but may result in them increasing if it becomes a split attacker";
 
-        private const string typeWeightDropdownTooltip = "The chances that determine which initial type transformation is applied to the first pokemon in a Variant evolution line" +
+        private const string typeWeightDropdownTooltip = "The chances that determine which initial type transformation is chosen for the first pokemon in a Variant evolution line" +
             "\nThe type transformation applied to pokemon that evolve from the first pokemon are then calculated based on the initial type transformation and the type changes the pokemon would normally undergo when evolving" +
             "\nSee the \"Custom\" dropdown option for a list of all initial type transformations" +
             TooltipConstants.checkDropdownTooltip;
-        private const string singleTypeWeightTooltip = "The chances that determine which initial type transformation applies to a given single-typed pokemon";
-        private const string dualTypeWeightTooltip = "The chances that determine which initial type transformation applies to a given dual-typed pokemon";
+        private const string singleTypeWeightTooltip = "The chances that determine which initial type transformation is chosen for a given single-typed pokemon";
+        private const string dualTypeWeightTooltip = "The chances that determine which initial type transformation is chosen for a given dual-typed pokemon";
 
         public CompositeCollection TypeTransformationOptionDropdown => new CompositeCollection()
         {
             new ComboBoxItem() {Content="Random", ToolTip = "Randomly choose an initial type transformation for each evolution line (Not Recommended)"},
             new ComboBoxItem() {Content="Balanced (Recommended)", ToolTip = "Choose an initial type transformation based on balanced chances that make \"Double Type Replacement\" and \"Become Single Type\" transformations rarer (Recommended)"},
-            new ComboBoxItem() {Content="Custom", ToolTip = "Choose custom chances for each initial type transformation"},
+            new ComboBoxItem() {Content="Custom", ToolTip = "Choose custom chances that determine which initial type transformation will be chosen"},
         };
 
         public VariantPokemonDataView(VariantPokemonDataModel model)
