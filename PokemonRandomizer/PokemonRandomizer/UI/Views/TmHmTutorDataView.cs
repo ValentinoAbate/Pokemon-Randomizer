@@ -1,5 +1,6 @@
 ﻿using System.Windows.Controls;
 using System.Windows.Data;
+using PokemonRandomizer.UI.Utilities;
 
 namespace PokemonRandomizer.UI.Views
 {
@@ -16,8 +17,7 @@ namespace PokemonRandomizer.UI.Views
 
         private const string intelligentRandomTooltip = "The chance that any non-NORMAL move whose compatibility can't be explicitly determined will be compatible";
         private const string intelligentRandomNormalTooltip = "The chance that any NORMAL move whose compatibility can't be explicitly determined will be compatible";
-        private const string compatOptionTooltip = "The strategy used to determing TM/HM/Tutor compatibility" +
-            "\nRead the tooltips of the options in the dropdown menu for more info on how they work";
+        private const string compatOptionTooltip = "The strategy used to determing TM/HM/Tutor compatibility" + TooltipConstants.checkDropdownTooltip;
         private static CompositeCollection CompatOptionDropdown => new()
         {
             new ComboBoxItem() {Content="Unchanged", ToolTip="Compatiblity will be left as it is in the base game. This may cause compatibility to not make sense if TM or Tutors are randomized and for Variant Pokemon" },

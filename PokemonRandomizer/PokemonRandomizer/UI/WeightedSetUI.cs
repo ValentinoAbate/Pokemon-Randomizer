@@ -29,15 +29,20 @@ namespace PokemonRandomizer.UI
         private readonly Button addButton;
         private readonly ContextMenu contextMenu;
 
-
         public WeightedSetUI(string name, WeightedSet<T> set, Func<IReadOnlyList<MenuBoxItem>> getChoiceList, float cbWidth = 150)
+            : this(name, set, getChoiceList, null, cbWidth)
+        {
+
+        }
+
+        public WeightedSetUI(string name, WeightedSet<T> set, Func<IReadOnlyList<MenuBoxItem>> getChoiceList, string headerTooltip, float cbWidth = 150)
         {
             CbWidth = cbWidth;
             this.set = set;
             referenceList = getChoiceList();
             mainStack = new StackPanel() { Orientation = Orientation.Vertical };
             var controlStack = new StackPanel { Orientation = Orientation.Horizontal };
-            controlStack.Add(new Label() { Content = name });
+            controlStack.Add(new Label() { Content = name, ToolTip = headerTooltip });
             addButton = controlStack.Add(new Button() { Content = "Add Weight", Height = 17, Width = 100, Margin = new Thickness(0, 0, 0, 1), FontSize = 11 });
             addButton.Click += AddButtonClick;
             contextMenu = new ContextMenu();
@@ -165,12 +170,14 @@ namespace PokemonRandomizer.UI
             {
                 Orientation = Orientation.Horizontal;
                 Item = item;
-                this.Add(new Label() { Content = choices[FindIndex(item, choices)].Header, MinWidth = parent.CbWidth });
+                var choice = choices[FindIndex(item, choices)];
+                ToolTip = choice.ToolTip;
+                this.Add(new Label() { Content = choice.Header, MinWidth = parent.CbWidth,  });
                 // Slider
                 Slider = new BoundSliderUI("Chance", weight, (_) => parent.OnValueChanged(this)) { IsEnabled = !isDefault };
                 this.Add(Slider);
                 // Remove Button
-                RemoveButton = new Button() { Content = "-" };
+                RemoveButton = new Button() { Content = "-", ToolTip = "Remove this option" };
                 RemoveButton.Click += (_, _2) => parent.Remove(this);
                 this.Add(RemoveButton);
             }
