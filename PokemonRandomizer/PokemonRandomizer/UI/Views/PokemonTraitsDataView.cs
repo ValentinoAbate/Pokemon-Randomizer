@@ -102,21 +102,23 @@ namespace PokemonRandomizer.UI.Views
 
         private List<WeightedSetUI<AddMoveSource>.MenuBoxItem> GetAddMoveWeightDropdown() => new List<WeightedSetUI<AddMoveSource>.MenuBoxItem>
         {
-            new WeightedSetUI<AddMoveSource>.MenuBoxItem { Item = AddMoveSource.Random, Header="Random"},
-            new WeightedSetUI<AddMoveSource>.MenuBoxItem { Item = AddMoveSource.EggMoves, Header="Egg Moves"},
+            new WeightedSetUI<AddMoveSource>.MenuBoxItem { Item = AddMoveSource.Random, Header="Random", ToolTip="The chance that a given bonus move will be a completely random move"},
+            new WeightedSetUI<AddMoveSource>.MenuBoxItem { Item = AddMoveSource.EggMoves, Header="Egg Moves", ToolTip="The chance that a bonus move will be one of the pokemon's egg moves",},
         };
+
+        private const string bonusMoveWeightsTooltip = "The chances that determine which bonus move source is chosen for each bonus move granted";
 
         private TabItem CreateLearnsetsTab(PokemonTraitsModel model)
         {
             var stack = CreateStack();
             stack.Header("Bonus Moves");
             var bonusMovesStack = CreateStack();
-            bonusMovesStack.Add(new WeightedSetUI<AddMoveSource>("Bonus Move Source", model.AddMoveSourceWeights, GetAddMoveWeightDropdown, 100));
-            bonusMovesStack.Add(new BoundSliderUI("Average number of moves to add", model.NumMovesMean, false, 0.5, 0, maxAddMoves));
-            bonusMovesStack.Add(new BoundSliderUI("Number of moves variance", model.NumMovesStdDeviation, false, 0.5, 0, 5));
+            bonusMovesStack.Add(new WeightedSetUI<AddMoveSource>("Bonus Move Source", model.AddMoveSourceWeights, GetAddMoveWeightDropdown, bonusMoveWeightsTooltip, 100));
+            bonusMovesStack.Add(new BoundSliderUI("Average number of moves to add", model.NumMovesMean, false, 0.5, 0, maxAddMoves) { ToolTip = "The average amount of bonus moves given to each evolution line. On average, each evolution line will be given the average amount +/- variance" });
+            bonusMovesStack.Add(new BoundSliderUI("Number of moves variance", model.NumMovesStdDeviation, false, 0.5, 0, 5) { ToolTip = "The variance in the amount of bonus moves given to each evolution line. On average, each evolution line will be given the average amount +/- variance" });
             //bonusMovesStack.Add(new BoundSliderUI("Minimum number of moves to add", model.NumMovesMin, false, 1, 0, 5));
-            bonusMovesStack.Add(new BoundCheckBoxUI("Ban adding HM moves", model.DisableAddingHmMoves));
-            stack.Add(new RandomChanceUI("Bonus Moves", model.AddMoves, model.AddMovesChance, bonusMovesStack));
+            bonusMovesStack.Add(new BoundCheckBoxUI("Ban adding HM moves", model.DisableAddingHmMoves, "Prevents HM moves from being added as bonus moves"));
+            stack.Add(new RandomChanceUI("Bonus Moves", model.AddMoves, model.AddMovesChance, bonusMovesStack) { ToolTip = "Add bonus moves to pokemon learnsets. The percentage is the chance that any given evolution line will recieve bonus moves. Variant pokemon will not recieve bonus moves" });
             stack.Add(bonusMovesStack);
             stack.Separator();
             stack.Header(UISkin.Current.HacksAndTweaksHeader);

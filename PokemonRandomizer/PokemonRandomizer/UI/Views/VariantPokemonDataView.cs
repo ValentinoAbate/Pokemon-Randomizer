@@ -54,8 +54,8 @@ namespace PokemonRandomizer.UI.Views
             var stack = CreateStack();
             stack.Add(new BoundCheckBoxUI("Rebalance Attacking Stats", model.AdjustAttackStats, rebalanceAttackingStatsTooltip));
             var bonusStatCb = stack.Add(new BoundCheckBoxUI("Bonus Stats", model.GiveBonusStats) { ToolTip = "Give variant Pokemon Evolution Lines a small buff to their base stats"});
-            bonusStatCb.BindVisibility(stack.Add(new BoundSliderUI("Bonus Stat Amount Average", model.BonusStatAmountMean, false, 0.5, 0, 50) { ToolTip = "The average amount of base stats granted to each evolution line. Full calculation: Average +/- Variance" }));
-            bonusStatCb.BindVisibility(stack.Add(new BoundSliderUI("Bonus Stat Amount Variance", model.BonusStatAmountStdDev, false, 0.5, 0, 25) { ToolTip = "The amount of variance in the amount of base stats granted to each evolution line. Full calculation: Average +/- Variance"}));
+            bonusStatCb.BindVisibility(stack.Add(new BoundSliderUI("Bonus Stat Amount Average", model.BonusStatAmountMean, false, 0.5, 0, 50) { ToolTip = "The average amount of base stats granted to each evolution line. On average, each evolution line will be granted the average amount +/- variance" }));
+            bonusStatCb.BindVisibility(stack.Add(new BoundSliderUI("Bonus Stat Amount Variance", model.BonusStatAmountStdDev, false, 0.5, 0, 25) { ToolTip = "The variance in the amount of base stats granted to each evolution line. On average, each evolution line will be granted the average amount +/- variance" }));
             return CreateTabItem("Base Stat Options", stack);
         }
 
