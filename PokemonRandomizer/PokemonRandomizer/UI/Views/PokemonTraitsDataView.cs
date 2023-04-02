@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using PokemonRandomizer.UI.Utilities;
 
 namespace PokemonRandomizer.UI.Views
 {
@@ -20,14 +21,14 @@ namespace PokemonRandomizer.UI.Views
             "\nFriendship (Day) -> Sun Stone (FRLG Only)" +
             "\nFriendship (Night) -> Moon Stone (FRLG Only)";
         private const string dunsparsePlagueTooltip = "Add a chance that any given evolution line will be infected with the dunsparse plague" +
-            "\nAny pokemon who's evolution line is infected will have a 50% chance of evolving into DUNSPARSE when evolving by basic level up" +
-            "\nFor example, if the TREECKO evolution line is infected, 50% of TREECKO will evolve into GROVYLE, and the other 50% will evolve into DUNSPARSE" +
-            "\nIn this example, if a TREECKO successfully evolves into GROVYLE, the resulting GROVYLE will always evolve into SCEPTILE (as the original TREECKO was immune)" +
+            "\nAny pokemon who's evolution line is infected will have a 50% chance of evolving into Dunsparse when evolving by basic level up" +
+            "\nFor example, if the Treecko evolution line is infected, 50% of Treecko will evolve into Grovyle, and the other 50% will evolve into Dunsparse" +
+            "\nIn this example, if a Treecko successfully evolves into Grovyle, the resulting Grovyle will always evolve into Sceptile (as the original Treecko was immune)" +
             "\nThe dunsparse plague also affects NPC trainers who keep and evolve their party over the course of the game";
-        private const string dunsparsePlagueFriendshipTooltip = "If checked, pokemon whose evolution lines are infected by the plague may also evolve into DUNSPARSE when evolving by basic friendship, depending on the time of day" +
-            "\nPokemon that previously evolved properly by level up may still evolve into DUNSPARSE by friendship and vice-versa" +
-            "\nFor example, if the ZUBAT line is infected and a given ZUBAT successfully evolves into GOLBAT, that GOLBAT may still evolve into DUNSPARSE instead of CROBAT" +
-            "\nAdditionally, if the AZURILL line is infected and a given AZURILL successfully evolves into MARILL, that MARILL may still evolve into DUNSPARSE instead of AZUMARILL";
+        private const string dunsparsePlagueFriendshipTooltip = "If checked, pokemon whose evolution lines are infected by the plague may also evolve into Dunsparse when evolving by basic friendship, depending on the time of day" +
+            "\nPokemon that previously evolved properly by level up may still evolve into Dunsparse by friendship and vice-versa" +
+            "\nFor example, if the Zubat line is infected and a given Zubat successfully evolves into Golbat, that Golbat may still evolve into Dunsparse instead of Crobat" +
+            "\nAdditionally, if the Azurill line is infected and a given Azurill successfully evolves into Marill, that Marill may still evolve into Dunsparse instead of Azumarill";
 
         public PokemonTraitsDataView(PokemonTraitsModel model, RomMetadata metadata)
         {
@@ -40,7 +41,7 @@ namespace PokemonRandomizer.UI.Views
 
         private CompositeCollection TradeItemOptionDropdown => new CompositeCollection()
         {
-            new ComboBoxItem() { Content="Level Up", ToolTip = "Pokemon that normally evolve by trading with an item will evolve by level-up. Slowpoke and Clamperl will evolve with wurmple logic" },
+            new ComboBoxItem() { Content="Level Up", ToolTip = "Pokemon that normally evolve by trading with an item will evolve by level-up. Slowpoke and Clamperl will evolve with Wurmple logic" },
             new ComboBoxItem() { Content="Use Item", ToolTip = "Pokemon that normally evolve by trading with an item will evolve when that item is used on them"},
         };
 
@@ -49,9 +50,9 @@ namespace PokemonRandomizer.UI.Views
             var stack = CreateStack();
             stack.Header(UISkin.Current.HacksAndTweaksHeader);
             var impossibleCb = stack.Add(new BoundCheckBoxUI("Fix Impossible Evolutions", model.FixImpossibleEvos, fixImpossibleEvosTooltip));
-            impossibleCb.BindEnabled(stack.Add(new EnumComboBoxUI<TradeItemPokemonOption>("Trade item evolution type", TradeItemOptionDropdown, model.TradeItemEvoSetting)));
-            impossibleCb.BindEnabled(stack.Add(new BoundCheckBoxUI("Fix Beauty-Based Evolutions", model.ConsiderEvolveByBeautyImpossible)));
-            impossibleCb.BindEnabled(stack.Add(new BoundSliderUI("Fixed evolution level variance", model.ImpossibleEvoLevelStandardDev, false, 0.01, 0, 3)));
+            impossibleCb.BindEnabled(stack.Add(new EnumComboBoxUI<TradeItemPokemonOption>("Trade item evolution type", TradeItemOptionDropdown, model.TradeItemEvoSetting) { ToolTip = "The evolution method used for pokemon that normally evolve by trading with an item" + TooltipConstants.checkDropdownTooltip}));
+            impossibleCb.BindEnabled(stack.Add(new BoundCheckBoxUI("Fix Beauty-Based Evolutions", model.ConsiderEvolveByBeautyImpossible, "Allow pokemon that would normally only evolve with a high Beauty stat (Feebas) to evolve by level-up")));
+            impossibleCb.BindEnabled(stack.Add(new BoundSliderUI("Fixed evolution level variance", model.ImpossibleEvoLevelStandardDev, false, 0.01, 0, 3) { ToolTip = "The amount a level-up level for a fixed evolution can vary by (on average)"}));
             var plagueCB = stack.Add(new RandomChanceUI("Dunsparse Plague", model.DunsparsePlague, model.DunsparsePlaugeChance) { ToolTip = dunsparsePlagueTooltip});
             if (!metadata.IsFireRedOrLeafGreen)
             {
