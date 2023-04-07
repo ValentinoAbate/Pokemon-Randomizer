@@ -9,7 +9,7 @@ Procedural Pokemon Randomizer is a Pokemon randomizer I'm creating as a fun side
 	- Intelligent wild pokemon choices: find pokemon where they make sense (water pokemon when fishing, electric pokemon in the power plant, etc)!
 	- Reoccuring trainer logic: trainers that you see multiple times (like rivals, etc.) will raise a team that keeps members but grows and evolves over the course of the game.
 	- Battle type randomization: randomize the battle type of trainers you encounter! I prefer all double battles.
-	- The Dunsparse Plague: anything can evolve into Dunsparse... half of the time. Affects NPCs too!
+	- The Dunsparce Plague: anything can evolve into Dunsparce... half of the time. Affects NPCs too!
 	- Bonus Moves: add bonus moves to pokemon movesets at a level that makes sense. Can draw moves from the pokemon's egg moves or make a random choice!
 	- Type-Themed villainous teams: ever wonder what it would be like if Team Aqua used Electric and Dragon pokemon?
 	- Dream Team Generator: generate type-restricted or base stat total restricted teams of pokemon that will appear on the first route of the game!
