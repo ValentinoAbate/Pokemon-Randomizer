@@ -25,7 +25,7 @@ namespace PokemonRandomizer.UI.Views
             "\nFor example, if the Treecko evolution line is infected, 50% of Treecko will evolve into Grovyle, and the other 50% will evolve into Dunsparce" +
             "\nIn this example, if a Treecko successfully evolves into Grovyle, the resulting Grovyle will always evolve into Sceptile (as the original Treecko was immune)" +
             "\nThe Dunsparce Plague also affects NPC trainers who keep and evolve their party over the course of the game";
-        private const string dunsparcePlagueFriendshipTooltip = "If checked, pokemon whose evolution lines are infected by the plague may also evolve into Dunsparce when evolving by basic friendship, depending on the time of day" +
+        private const string dunsparcePlagueFriendshipTooltip = "If checked, pokemon whose evolution lines are infected by the Dunsparce Plague may also evolve into Dunsparce when evolving by basic friendship, depending on the time of day" +
             "\nPokemon that previously evolved properly by level up may still evolve into Dunsparce by friendship and vice-versa" +
             "\nFor example, if the Zubat line is infected and a given Zubat successfully evolves into Golbat, that Golbat may still evolve into Dunsparce instead of Crobat" +
             "\nAdditionally, if the Azurill line is infected and a given Azurill successfully evolves into Marill, that Marill may still evolve into Dunsparce instead of Azumarill";
