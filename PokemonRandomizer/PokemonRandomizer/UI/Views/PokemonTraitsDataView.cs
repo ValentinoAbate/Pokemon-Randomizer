@@ -20,15 +20,15 @@ namespace PokemonRandomizer.UI.Views
             "\nBeauty -> Level Up or Beauty (Optional)" +
             "\nFriendship (Day) -> Sun Stone (FRLG Only)" +
             "\nFriendship (Night) -> Moon Stone (FRLG Only)";
-        private const string dunsparsePlagueTooltip = "Add a chance that any given evolution line will be infected with the dunsparse plague" +
-            "\nAny pokemon who's evolution line is infected will have a 50% chance of evolving into Dunsparse when evolving by basic level up" +
-            "\nFor example, if the Treecko evolution line is infected, 50% of Treecko will evolve into Grovyle, and the other 50% will evolve into Dunsparse" +
+        private const string dunsparcePlagueTooltip = "Add a chance that any given evolution line will be infected with the dunsparce plague" +
+            "\nAny pokemon who's evolution line is infected will have a 50% chance of evolving into Dunsparce when evolving by basic level up" +
+            "\nFor example, if the Treecko evolution line is infected, 50% of Treecko will evolve into Grovyle, and the other 50% will evolve into Dunsparce" +
             "\nIn this example, if a Treecko successfully evolves into Grovyle, the resulting Grovyle will always evolve into Sceptile (as the original Treecko was immune)" +
-            "\nThe dunsparse plague also affects NPC trainers who keep and evolve their party over the course of the game";
-        private const string dunsparsePlagueFriendshipTooltip = "If checked, pokemon whose evolution lines are infected by the plague may also evolve into Dunsparse when evolving by basic friendship, depending on the time of day" +
-            "\nPokemon that previously evolved properly by level up may still evolve into Dunsparse by friendship and vice-versa" +
-            "\nFor example, if the Zubat line is infected and a given Zubat successfully evolves into Golbat, that Golbat may still evolve into Dunsparse instead of Crobat" +
-            "\nAdditionally, if the Azurill line is infected and a given Azurill successfully evolves into Marill, that Marill may still evolve into Dunsparse instead of Azumarill";
+            "\nThe dunsparce plague also affects NPC trainers who keep and evolve their party over the course of the game";
+        private const string dunsparcePlagueFriendshipTooltip = "If checked, pokemon whose evolution lines are infected by the plague may also evolve into Dunsparce when evolving by basic friendship, depending on the time of day" +
+            "\nPokemon that previously evolved properly by level up may still evolve into Dunsparce by friendship and vice-versa" +
+            "\nFor example, if the Zubat line is infected and a given Zubat successfully evolves into Golbat, that Golbat may still evolve into Dunsparce instead of Crobat" +
+            "\nAdditionally, if the Azurill line is infected and a given Azurill successfully evolves into Marill, that Marill may still evolve into Dunsparce instead of Azumarill";
 
         public PokemonTraitsDataView(PokemonTraitsModel model, RomMetadata metadata)
         {
@@ -53,10 +53,10 @@ namespace PokemonRandomizer.UI.Views
             impossibleCb.BindEnabled(stack.Add(new EnumComboBoxUI<TradeItemPokemonOption>("Trade item evolution type", TradeItemOptionDropdown, model.TradeItemEvoSetting) { ToolTip = "The evolution method used for pokemon that normally evolve by trading with an item" + TooltipConstants.checkDropdownTooltip}));
             impossibleCb.BindEnabled(stack.Add(new BoundCheckBoxUI("Fix Beauty-Based Evolutions", model.ConsiderEvolveByBeautyImpossible, "Allow pokemon that would normally only evolve with a high Beauty stat (Feebas) to evolve by level-up")));
             impossibleCb.BindEnabled(stack.Add(new BoundSliderUI("Fixed evolution level variance", model.ImpossibleEvoLevelStandardDev, false, 0.01, 0, 3) { ToolTip = "The amount a level-up level for a fixed evolution can vary by (on average)"}));
-            var plagueCB = stack.Add(new RandomChanceUI("Dunsparse Plague", model.DunsparsePlague, model.DunsparsePlaugeChance) { ToolTip = dunsparsePlagueTooltip});
+            var plagueCB = stack.Add(new RandomChanceUI("Dunsparce Plague", model.DunsparsePlague, model.DunsparsePlaugeChance) { ToolTip = dunsparcePlagueTooltip});
             if (!metadata.IsFireRedOrLeafGreen)
             {
-                plagueCB.BindEnabled(stack.Add(new BoundCheckBoxUI("Apply Dunsparse Plague to Friendship Evolutions", model.DunsparsePlagueFriendship, dunsparsePlagueFriendshipTooltip)));
+                plagueCB.BindEnabled(stack.Add(new BoundCheckBoxUI("Apply Dunsparce Plague to Friendship Evolutions", model.DunsparsePlagueFriendship, dunsparcePlagueFriendshipTooltip)));
             }
             return CreateTabItem("Evolution", stack);
         }

@@ -179,8 +179,8 @@ namespace PokemonRandomizer.AppSettings
         public override bool ConsiderEvolveByBeautyImpossible => pokemonData.ConsiderEvolveByBeautyImpossible;
         public override double ImpossibleEvoLevelStandardDev => pokemonData.ImpossibleEvoLevelStandardDev;
         public override TradeItemPokemonOption TradeItemEvoSetting => pokemonData.TradeItemEvoSetting;
-        public override double DunsparsePlaugeChance => RandomChance(pokemonData.DunsparsePlague, pokemonData.DunsparsePlaugeChance);
-        public override bool ApplyDunsparsePlagueToFriendshipEvos => pokemonData.DunsparsePlagueFriendship;
+        public override double DunsparcePlaugeChance => RandomChance(pokemonData.DunsparsePlague, pokemonData.DunsparsePlaugeChance);
+        public override bool ApplyDunsparcePlagueToFriendshipEvos => pokemonData.DunsparsePlagueFriendship;
 
         #endregion
 

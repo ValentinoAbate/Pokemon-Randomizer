@@ -79,8 +79,8 @@ namespace PokemonRandomizer.AppSettings
         public override bool ConsiderEvolveByBeautyImpossible => true;
         public override double ImpossibleEvoLevelStandardDev => 1;
         public override TradeItemPokemonOption TradeItemEvoSetting => TradeItemPokemonOption.LevelUp;
-        public override double DunsparsePlaugeChance => 0.25;
-        public override bool ApplyDunsparsePlagueToFriendshipEvos => true;
+        public override double DunsparcePlaugeChance => 0.25;
+        public override bool ApplyDunsparcePlagueToFriendshipEvos => true;
 
         #endregion
 

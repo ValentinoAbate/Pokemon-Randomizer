@@ -77,8 +77,8 @@ namespace PokemonRandomizer
             UseItem,
         }
         public abstract TradeItemPokemonOption TradeItemEvoSetting { get; }
-        public abstract double DunsparsePlaugeChance { get; }
-        public abstract bool ApplyDunsparsePlagueToFriendshipEvos { get; }
+        public abstract double DunsparcePlaugeChance { get; }
+        public abstract bool ApplyDunsparcePlagueToFriendshipEvos { get; }
 
         #endregion
 

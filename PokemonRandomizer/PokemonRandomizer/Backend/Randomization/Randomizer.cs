@@ -437,13 +437,13 @@ namespace PokemonRandomizer.Backend.Randomization
                 #endregion
             }
 
-            // Dunsparse Plague Pass
-            if(settings.DunsparsePlaugeChance > 0)
+            // Dunsparce Plague Pass
+            if(settings.DunsparcePlaugeChance > 0)
             {
-                bool applyToFriendshipEvos = settings.ApplyDunsparsePlagueToFriendshipEvos && !metadata.IsFireRedOrLeafGreen;
+                bool applyToFriendshipEvos = settings.ApplyDunsparcePlagueToFriendshipEvos && !metadata.IsFireRedOrLeafGreen;
                 foreach (var pokemon in data.Pokemon)
                 {
-                    ApplyDunsparsePlague(pokemon, applyToFriendshipEvos);
+                    ApplyDunsparcePlague(pokemon, applyToFriendshipEvos);
                 }
             }
 
@@ -1076,76 +1076,68 @@ namespace PokemonRandomizer.Backend.Randomization
             }
         }
 
-        private enum DunsparsePlagueFriendshipOption
-        {
-            None,
-            Allow,
-            Day,
-            Night,
-        }
-
-        private void ApplyDunsparsePlague(PokemonBaseStats pokemon, bool applyToFriendshipEvos)
+        private void ApplyDunsparcePlague(PokemonBaseStats pokemon, bool applyToFriendshipEvos)
         {
             // If this isn't the start to an evolution line or we fail the chance, return
-            if(!pokemon.IsBasic || !rand.RollSuccess(settings.DunsparsePlaugeChance))
+            if(!pokemon.IsBasic || !rand.RollSuccess(settings.DunsparcePlaugeChance))
             {
                 return;
             }
             // Choose friendship option
             bool useDay = applyToFriendshipEvos && rand.RandomBool();
-            ApplyDunsparsePlagueRecursive(pokemon, applyToFriendshipEvos, useDay);
+            ApplyDunsparcePlagueRecursive(pokemon, applyToFriendshipEvos, useDay);
         }
-        private void ApplyDunsparsePlagueRecursive(PokemonBaseStats pokemon, bool applyToFriendshipEvos, bool useDay)
+        private void ApplyDunsparcePlagueRecursive(PokemonBaseStats pokemon, bool applyToFriendshipEvos, bool useDay)
         {
             foreach (var evo in pokemon.evolvesTo)
             {
                 if (!evo.IsRealEvolution || evo.Pokemon == Pokemon.DUNSPARCE)
                     continue;
                 // Apply plague
-                ApplyDunsparsePlague(pokemon, evo, applyToFriendshipEvos, useDay);
+                ApplyDunsparcePlague(pokemon, evo, applyToFriendshipEvos, useDay);
                 // Propogate
-                ApplyDunsparsePlagueRecursive(data.GetBaseStats(evo.Pokemon), applyToFriendshipEvos, useDay);
+                ApplyDunsparcePlagueRecursive(data.GetBaseStats(evo.Pokemon), applyToFriendshipEvos, useDay);
             }
         }
-        private void ApplyDunsparsePlague(PokemonBaseStats pokemon, Evolution evo, bool applyToFriendshipEvos, bool useDay)
+        private void ApplyDunsparcePlague(PokemonBaseStats pokemon, Evolution evo, bool applyToFriendshipEvos, bool useDay)
         {
             // Add the plague
             if (evo.Type == EvolutionType.LevelUp)
             {
-                var dunsparseEvo = pokemon.FirstEmptyEvolution;
-                if(dunsparseEvo != null)
+                var dunsparceEvo = pokemon.FirstEmptyEvolution;
+                if(dunsparceEvo != null)
                 {
                     evo.Type = EvolutionType.LevelUpWithPersonality1;
-                    dunsparseEvo.Pokemon = Pokemon.DUNSPARCE;
-                    dunsparseEvo.Type = EvolutionType.LevelUpWithPersonality2;
-                    dunsparseEvo.IntParameter = evo.IntParameter;
+                    dunsparceEvo.Pokemon = Pokemon.DUNSPARCE;
+                    dunsparceEvo.Type = EvolutionType.LevelUpWithPersonality2;
+                    dunsparceEvo.IntParameter = evo.IntParameter;
                 }
                 else
                 {
-                    Logger.main.Error($"Failed to apply Dunsparse Plague to evolution: {evo}");
+                    Logger.main.Error($"Failed to apply Dunsparce Plague to evolution: {evo}");
                 }
             }
             else if (evo.Type == EvolutionType.Friendship && applyToFriendshipEvos)
             {
-                var dunsparseEvo = pokemon.FirstEmptyEvolution;
-                if (dunsparseEvo != null)
+                var dunsparceEvo = pokemon.FirstEmptyEvolution;
+                if (dunsparceEvo != null)
                 {
-                    dunsparseEvo.Pokemon = Pokemon.DUNSPARCE;
-                    dunsparseEvo.IntParameter = evo.IntParameter;
+                    dunsparceEvo.Pokemon = Pokemon.DUNSPARCE;
+                    dunsparceEvo.IntParameter = evo.IntParameter;
                     if (useDay)
                     {
                         evo.Type = EvolutionType.FriendshipNight;
-                        dunsparseEvo.Type = EvolutionType.FriendshipDay;
+                        dunsparceEvo.Type = EvolutionType.FriendshipDay;
                     }
                     else
                     {
                         evo.Type = EvolutionType.FriendshipDay;
-                        dunsparseEvo.Type = EvolutionType.FriendshipNight;
+                        dunsparceEvo.Type = EvolutionType.FriendshipNight;
                     }
                 }
                 else
                 {
-                    Logger.main.Error($"Failed to apply Dunsparse Plague to evolution: {evo}");
+                    Logger.main.Error($"Failed to apply Dunsparce Plague to evolution: {evo}");
                 }
             }
         }

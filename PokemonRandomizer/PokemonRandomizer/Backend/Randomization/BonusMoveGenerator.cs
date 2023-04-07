@@ -67,7 +67,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 var evo = p.evolvesTo[i];
                 if (!evo.IsRealEvolution)
                     return;
-                // Make this stable with the Dunsparse Plague
+                // Make this stable with the Dunsparce Plague
                 if (evo.Pokemon == Pokemon.DUNSPARCE)
                     continue;
                 // Don't add the move twice to pokemon that appear twice in the same evoltion tree
