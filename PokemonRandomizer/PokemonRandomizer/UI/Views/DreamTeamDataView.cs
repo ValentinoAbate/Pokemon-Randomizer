@@ -14,11 +14,13 @@ namespace PokemonRandomizer.UI.Views
 {
     public class DreamTeamDataView : DataView<DreamTeamDataModel>
     {
+        private const string dreamTeamOptionTooltip = "The strategy used to choose the pokemon included in the Dream Team";
+        private const string customPokemonTooltip = "The 1-6 custom pokemon that will be included in the dream team";
         public CompositeCollection DreamTeamOptionDropdown => new CompositeCollection()
         {
-            new ComboBoxItem() {Content="No Dream Team" },
-            new ComboBoxItem() {Content="Custom Dream Team" },
-            new ComboBoxItem() {Content="Generate Dream Team", ToolTip="Generates 6 Pokemon based on settings such as BST limits, allowed types, etc."},
+            new ComboBoxItem() {Content="No Dream Team", ToolTip="No Dream Team will be generated" },
+            new ComboBoxItem() {Content="Custom Dream Team", ToolTip="Choose a team of 1-6 custom pokemon" },
+            new ComboBoxItem() {Content="Generate Dream Team", ToolTip="Generate a team of 6 pokemon based on settings such as base stat total limits, allowed types, etc."},
         };
         public CompositeCollection DreamTeamBstOption => new CompositeCollection()
         {
@@ -57,7 +59,7 @@ namespace PokemonRandomizer.UI.Views
             var stack = CreateMainStack();
             stack.Header("Dream Team");
             stack.Description("Dream Team will put 6 Pokemon in the first route of the game. You can select custom pokemon, or randomly generate a team!");
-            var optionCb = stack.Add(new EnumComboBoxUI<DreamTeamSetting>("Dream Team Strategy", DreamTeamOptionDropdown, model.DreamTeamOption));
+            var optionCb = stack.Add(new EnumComboBoxUI<DreamTeamSetting>("Dream Team Strategy", DreamTeamOptionDropdown, model.DreamTeamOption) { ToolTip = dreamTeamOptionTooltip });
 
             // Custom Team UI
             var pokemonOptions = new List<string>(pokemonNames.Length + 1) { "None" };
@@ -67,7 +69,8 @@ namespace PokemonRandomizer.UI.Views
                 return new BoundComboBoxUI("", pokemonOptions, pokemon.IndexOf(model.CustomDreamTeam[index]), i => model.CustomDreamTeam[index] = pokemon[i]);
             }
             var customStack = stack.Add(new StackPanel() { Orientation = Orientation.Horizontal });
-            customStack.Add(new Label() { Content = "Custom Team:" }, CustomStarterCB(0), CustomStarterCB(1), CustomStarterCB(2), CustomStarterCB(3), CustomStarterCB(4), CustomStarterCB(5));
+            var customPokemonLabel = new Label() { Content = "Custom Team:", ToolTip = customPokemonTooltip };
+            customStack.Add(customPokemonLabel, CustomStarterCB(0), CustomStarterCB(1), CustomStarterCB(2), CustomStarterCB(3), CustomStarterCB(4), CustomStarterCB(5));
             optionCb.BindVisibility(customStack, (int)DreamTeamSetting.Custom);
 
             var genStack = stack.Add(CreateStack());
