@@ -16,6 +16,12 @@ namespace PokemonRandomizer.UI.Views
     {
         private const string dreamTeamOptionTooltip = "The strategy used to choose the pokemon included in the Dream Team";
         private const string customPokemonTooltip = "The 1-6 custom pokemon that will be included in the dream team";
+        private const string bstLimitTooltip = "Restricts the pokemon that are chosen based on a configurable base stat total minimum or maximum" +
+            "\nBase stat total limitations always use a pokemon's fully evolved base stat total, and can apply to individual pokemon or to the party base stat total";
+        private const string partyBstMinTooltip = "The sum of the base stat totals of each pokemon in the Dream Team (when fully evolved) will be greater than or equal to the minimum value (when possible)";
+        private const string partyBstMaxTooltip = "The sum of the base stat totals of each pokemon in the Dream Team (when fully evolved) will be less than or equal to the maximum value (when possible)";
+        private const string individualBstMinTooltip = "The base stat total of each pokemon in the Dream Team (when fully evolved) will be greater than or equal to the minimum value (when possible)";
+        private const string individualBstMaxTooltip = "The base stat total of each pokemon in the Dream Team (when fully evolved) will be less than or equal to the maximum value (when possible)";
         public CompositeCollection DreamTeamOptionDropdown => new CompositeCollection()
         {
             new ComboBoxItem() {Content="No Dream Team", ToolTip="No Dream Team will be generated" },
@@ -24,11 +30,11 @@ namespace PokemonRandomizer.UI.Views
         };
         public CompositeCollection DreamTeamBstOption => new CompositeCollection()
         {
-            new ComboBoxItem() {Content="None" },
-            new ComboBoxItem() {Content="Fully Evolved Party Base Stat Total Must be Greater Than Limit" },
-            new ComboBoxItem() {Content="Fully Evolved Party Base Stat Total Must be Less Than Limit" },
-            new ComboBoxItem() {Content="Fully Evolved Individual Base Stat Total Must be Greater Than Limit" },
-            new ComboBoxItem() {Content="Fully Evolved Individual Base Stat Total Must be Less Than Limit" },
+            new ComboBoxItem() {Content="None", ToolTip="No base stat total limits will be applied to the Dream Team" },
+            new ComboBoxItem() {Content="Party Fully Evolved Base Stat Total Minimum", ToolTip=partyBstMinTooltip },
+            new ComboBoxItem() {Content="Party Fully Evolved Base Stat Total Maximum", ToolTip=partyBstMaxTooltip },
+            new ComboBoxItem() {Content="Individual Fully Evolved Base Stat Total Minimum", ToolTip=individualBstMinTooltip },
+            new ComboBoxItem() {Content="Individual Fully Evolved Base Stat Total Maximum", ToolTip=individualBstMaxTooltip },
         };
 
         private static List<TypedComboBoxItem<PokemonType>> GetTypeDropdown() => new List<TypedComboBoxItem<PokemonType>>
@@ -74,18 +80,18 @@ namespace PokemonRandomizer.UI.Views
             optionCb.BindVisibility(customStack, (int)DreamTeamSetting.Custom);
 
             var genStack = stack.Add(CreateStack());
-            var useTotalBstCb = genStack.Add(new EnumComboBoxUI<DreamTeamBstTotalOption>("Base Stat Total Limitation", DreamTeamBstOption, model.UseTotalBST));
-            useTotalBstCb.BindVisibility(genStack.Add(new BoundSliderUI("Base Stat Total Lower Limit", model.BstTotalLowerBound, false, 50, 1900, 4050)), (int)DreamTeamBstTotalOption.TotalMin);
-            useTotalBstCb.BindVisibility(genStack.Add(new BoundSliderUI("Base Stat Total Upper Limit", model.BstTotalUpperBound, false, 50, 1900, 4050)), (int)DreamTeamBstTotalOption.TotalMax);
-            useTotalBstCb.BindVisibility(genStack.Add(new BoundSliderUI("Individual Base Stat Lower Limit", model.BstIndividualLowerBound, false, 10, 400, 600)), (int)DreamTeamBstTotalOption.IndividualMin);
-            useTotalBstCb.BindVisibility(genStack.Add(new BoundSliderUI("Individual Base Stat Upper Limit", model.BstIndividualUpperBound, false, 10, 400, 600)), (int)DreamTeamBstTotalOption.IndividualMax);
-            var typeFilterCb = genStack.Add(new BoundCheckBoxUI("Type Limitiation", model.UseTypeFilter));
+            var useTotalBstCb = genStack.Add(new EnumComboBoxUI<DreamTeamBstTotalOption>("Base Stat Total Limitation", DreamTeamBstOption, model.UseTotalBST) { ToolTip = bstLimitTooltip});
+            useTotalBstCb.BindVisibility(genStack.Add(new BoundSliderUI("Party Base Stat Total Minimum", model.BstTotalLowerBound, false, 50, 1900, 4050)), (int)DreamTeamBstTotalOption.TotalMin);
+            useTotalBstCb.BindVisibility(genStack.Add(new BoundSliderUI("Party Base Stat Total Maximum", model.BstTotalUpperBound, false, 50, 1900, 4050)), (int)DreamTeamBstTotalOption.TotalMax);
+            useTotalBstCb.BindVisibility(genStack.Add(new BoundSliderUI("Individual Base Stat Total Minimum", model.BstIndividualLowerBound, false, 10, 400, 600)), (int)DreamTeamBstTotalOption.IndividualMin);
+            useTotalBstCb.BindVisibility(genStack.Add(new BoundSliderUI("Individual Base Stat Total Maximum", model.BstIndividualUpperBound, false, 10, 400, 600)), (int)DreamTeamBstTotalOption.IndividualMax);
+            var typeFilterCb = genStack.Add(new BoundCheckBoxUI("Type Limitiation", model.UseTypeFilter) { ToolTip="Limit which type(s) of pokemon can appear in the Dream Team" });
             typeFilterCb.BindVisibility(genStack.Add(new BoundComboBoxUI("Allowed Type 1", GetTypeDropdown(), ReferenceDropdown.FindIndex(i => i.Item == model.AllowedType1.Value), i => model.AllowedType1.Value = ReferenceDropdown[i].Item)));
             typeFilterCb.BindVisibility(genStack.Add(new BoundComboBoxUI("Allowed Type 2", GetTypeDropdown(), ReferenceDropdown.FindIndex(i => i.Item == model.AllowedType2.Value), i => model.AllowedType2.Value = ReferenceDropdown[i].Item)));
             typeFilterCb.BindVisibility(genStack.Add(new BoundComboBoxUI("Allowed Type 3", GetTypeDropdown(), ReferenceDropdown.FindIndex(i => i.Item == model.AllowedType3.Value), i => model.AllowedType3.Value = ReferenceDropdown[i].Item)));
-            genStack.Add(new BoundCheckBoxUI("Prioritize Variants", model.PrioritizeVariants) { ToolTip = "Choose Variant Pokemon first when possible"});
-            genStack.Add(new BoundCheckBoxUI("Ban Legendaries", model.BanLegendaries));
-            genStack.Add(new BoundCheckBoxUI("Ban Illegal Evolutions", model.BanIllegalEvolutions));
+            genStack.Add(new BoundCheckBoxUI("Prioritize Variants", model.PrioritizeVariants, "Choose Variant Pokemon first when possible"));
+            genStack.Add(new BoundCheckBoxUI("Ban Legendaries", model.BanLegendaries, "Prevent legendary pokemon from appearing in the Dream Team"));
+            genStack.Add(new BoundCheckBoxUI("Ban Illegal Evolutions", model.BanIllegalEvolutions, "Ensure that pokemon in the Dream Team appear at a legal evolution stage for the level they appear at"));
             optionCb.BindVisibility(genStack, (int)DreamTeamSetting.Random);
         }
     }
