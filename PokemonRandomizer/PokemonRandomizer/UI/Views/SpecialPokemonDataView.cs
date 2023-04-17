@@ -45,16 +45,18 @@ namespace PokemonRandomizer.UI.Views
 
         public CompositeCollection StaticLegendaryOptionDropdown => new CompositeCollection()
         {
-            new ComboBoxItem() {Content="Randomize", ToolTip="Wild Legendaries will be randomized in the same way as other static wild encounters" },
-            new ComboBoxItem() {Content="Skip (Don't Randomize)", ToolTip="Wild Legendaries will not be randomized, even if other static wild encounters are" },
-            new ComboBoxItem() {Content="Randomize (Ensure Legendary)", ToolTip="Wild Legendaries will randomize to another Legendary, even if \"Ban Legenaries\" is checked"},
+            new ComboBoxItem() {Content="Randomize", ToolTip="Static legendaries will be randomized in the same way as other static wild encounters" },
+            new ComboBoxItem() {Content="Skip (Don't Randomize)", ToolTip="Static legendaries will not be randomized, even if other static wild encounters are" },
+            new ComboBoxItem() {Content="Randomize (Ensure Legendary)", ToolTip="Static legendaries will randomize to another legendary, even if \"Ban Legendaries\" is checked"},
         };
+
+        private const string staticWildTooltip = "Randomizes the pokemon encountered in static wild encounters, such as Voltorb pokeballs and legendary encounters";
 
         private TabItem CreateStaticPokemonTab(StaticPokemonDataModel model)
         {
             var stack = CreateStack();
             stack.Header("Randomization");
-            var staticRand = stack.Add(new RandomChanceUI("Randomize Static Wild Pokemon", model.RandomizeStatics, model.StaticRandChance));
+            var staticRand = stack.Add(new RandomChanceUI("Randomize Static Wild Pokemon", model.RandomizeStatics, model.StaticRandChance) { ToolTip = staticWildTooltip });
             var optionsStack = stack.Add(staticRand.BindEnabled(CreateStack()));
             optionsStack.Add(new PokemonSettingsUI(model.Settings));
             optionsStack.Add(new EnumComboBoxUI<Settings.LegendaryRandSetting>("Legendary Logic", StaticLegendaryOptionDropdown, model.LegendarySetting));
