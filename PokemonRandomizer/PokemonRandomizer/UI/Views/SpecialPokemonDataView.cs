@@ -26,15 +26,20 @@ namespace PokemonRandomizer.UI.Views
 
         }
 
+        private const string giftPokemonTooltip = "Randomizes pokemon and pokemon eggs given by NPCs (such as the Castform given at the weather institute)" +
+            "\nAlso randomizes pokemon given by pokeballs and other such methods (such as the Eevee in Celadon City)";
+        private const string fossilReviveTooltip = "Ensures that randomized pokemon that are revived from fossils will be fossil pokemon";
+        private const string babyEggTooltip = "Ensures that randomized gift eggs will hatch into baby pokemon";
+
         private TabItem CreateGiftPokemonTab(GiftPokemonDataModel model)
         {
             var stack = CreateStack();
             stack.Header("Randomization");
-            stack.Add(new RandomChanceUI("Randomize Gift Pokemon", model.RandomizeGiftPokemon, model.GiftPokemonRandChance))
+            stack.Add(new RandomChanceUI("Randomize Gift Pokemon", model.RandomizeGiftPokemon, model.GiftPokemonRandChance) { ToolTip = giftPokemonTooltip })
                 .BindEnabled(stack.Add(new PokemonSettingsUI(model.GiftSpeciesSettings)));
             stack.Header("Restrictions");
-            stack.Add(new BoundCheckBoxUI("Ensure Fossil Revives are Fossil Pokemon", model.EnsureFossilRevivesAreFossilPokemon));
-            stack.Add(new BoundCheckBoxUI("Ensure Gift Eggs are Baby Pokemon", model.EnsureGiftEggsAreBabyPokemon));
+            stack.Add(new BoundCheckBoxUI("Ensure Fossil Revives are Fossil Pokemon", model.EnsureFossilRevivesAreFossilPokemon, fossilReviveTooltip));
+            stack.Add(new BoundCheckBoxUI("Ensure Gift Eggs are Baby Pokemon", model.EnsureGiftEggsAreBabyPokemon, babyEggTooltip));
             return CreateTabItem("Gift Pokemon", stack);
         }
 
