@@ -75,6 +75,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
             {
                 WriteCatchingTutOpponent(data, rom, info);
             }
+            WriteBattleTents(rom, data.BattleTents, info);
 
             // Hacks and tweaks
 
@@ -1033,6 +1034,38 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
             if (offset == Rom.nullPointer)
                 return;
             scriptWriter.Write(script, rom, offset, metadata);
+        }
+
+        // Battle frontier and minigames
+        private void WriteBattleTents(Rom rom, List<BattleTent> battleTents, XmlManager info)
+        {
+            foreach (var battleTent in battleTents)
+            {
+                int pointerOffset = info.Pointer(info.Attr(battleTent.Name, "rewardsElement"));
+                if(battleTent.Rewards.Count <= battleTent.OriginalRewardsCount)
+                {
+                    // Write over original data
+                    rom.Seek(rom.ReadPointer(pointerOffset));
+                }
+                else // Needs expansion and repoint
+                {
+                    int? newOffset = rom.FindFreeSpaceOffset((battleTent.Rewards.Count + 1) * 2, true);
+                    if(!newOffset.HasValue)
+                    {
+                        Logger.main.Error("Unable to write expanded battle tent rewards in free space. Battle tent rewards will not be written");
+                        return;
+                    }
+                    // Repoint and seek new offset
+                    rom.WritePointer(pointerOffset, newOffset.Value);
+                    rom.Seek(newOffset.Value);
+                }
+                // Actually write items
+                foreach (var item in battleTent.Rewards)
+                {
+                    rom.WriteUInt16(ItemToInternalIndex(RemapItem(item)));
+                }
+                rom.WriteRepeating(0x00, 2); // Array terminator
+            }
         }
 
         public class RepointList : List<(int, int)>

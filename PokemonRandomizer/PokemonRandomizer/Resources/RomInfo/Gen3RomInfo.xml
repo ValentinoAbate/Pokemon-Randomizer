@@ -176,7 +176,6 @@
     <itemEvents spriteSetIndex="59"/>
     <pickupItems pointer="0x055DF4" num="18"/>
     <pickupRareItems pointer="0x055D2C" num="11"/>
-    <setBerryTreeScript offset="0x27149D"/>
     
     <!-- from dabomstew's UP randomizer source https://github.com/Dabomstew/universal-pokemon-randomizer -->
     <starterItems offset="0xB117A"/>
@@ -212,6 +211,17 @@
     <!-- and thethethe's forum post: http://pokemonhackersonline.com/showthread.php?t=2586 -->
     <mapBankPointers offset="0x486578" pointer="0x84AA4"/>
     <maps bankLengths="[57,5,5,6,7,8,9,7,7,14,8,17,10,23,13,15,15,2,2,2,3,1,1,1,108,61,89,2,1,13,1,1,2,1]"/>
+
+	<!-- Battle Frontier and Minigames -->
+
+	<!-- Battle Tents -->
+	<battleTents elementNames="[verdanturfBattleTent,fallarborBattleTent,slateportBattleTent]"/>
+	<verdanturfBattleTent rewardsElement="verdanturfBattleTentRewards"/>
+	<verdanturfBattleTentRewards pointer="0x1B9B20" offset="0x6160D4"/>
+	<fallarborBattleTent rewardsElement="fallarborBattleTentRewards"/>
+	<fallarborBattleTentRewards pointer="0x1B9C90" offset="0x6160F4"/>
+	<slateportBattleTent rewardsElement="slateportBattleTentRewards"/>
+	<slateportBattleTentRewards pointer="0x1B9E18" offset="0x616120"/>
 
   </BPEE0>
   

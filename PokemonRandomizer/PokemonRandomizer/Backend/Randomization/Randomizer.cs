@@ -911,6 +911,8 @@ namespace PokemonRandomizer.Backend.Randomization
             // Randomize Berry Trees
             RandomizeBerryTress(data.SetBerryTreeScript, settings, items);
 
+            // Randomize Battle Tent Rewards
+
             #endregion
 
             // Invoke delayed item randomizations in a random order

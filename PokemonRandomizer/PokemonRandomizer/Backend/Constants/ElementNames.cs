@@ -71,6 +71,7 @@
             public const string sunHack = "sunHack";
             public const string deoxysMewObeyFix = "deoxysMewObeyFix";
             public const string stevenAllyBattle = "stevenAllyBattle";
+            public const string battleTents = "battleTents";
         }
 
         public abstract class GenIV
