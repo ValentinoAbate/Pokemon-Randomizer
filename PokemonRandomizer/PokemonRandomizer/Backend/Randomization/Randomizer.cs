@@ -909,7 +909,7 @@ namespace PokemonRandomizer.Backend.Randomization
             }
 
             // Randomize Berry Trees
-            RandomizeBerryTress(data.SetBerryTreeScript, settings, items);
+            RandomizeBerryTrees(data.SetBerryTreeScript, settings, items);
 
             // Randomize Battle Tent Rewards
 
@@ -1003,7 +1003,7 @@ namespace PokemonRandomizer.Backend.Randomization
             Logger.main.Info($"Sextuplets: {duplicateOccurence[6]}");
         }
 
-        private void RandomizeBerryTress(Script berryTreeScript, Settings s, IEnumerable<ItemData> allItems)
+        private void RandomizeBerryTrees(Script berryTreeScript, Settings s, IEnumerable<ItemData> allItems)
         {
             if (berryTreeScript == null || s.BerryTreeRandChance <= 0)
                 return;
