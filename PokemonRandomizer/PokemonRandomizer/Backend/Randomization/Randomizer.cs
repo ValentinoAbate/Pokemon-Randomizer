@@ -31,6 +31,7 @@ namespace PokemonRandomizer.Backend.Randomization
         private readonly TrainerOrganizationRandomizer trainerOrgRand;
         private readonly StarterRandomizer starterRandomizer;
         private readonly TypeChartRandomizer typeChartRandomizer;
+        private readonly BattleTentRandomizer battleTentRandomizer;
         private readonly RomMetadata metadata;
 
         /// <summary>
@@ -66,6 +67,7 @@ namespace PokemonRandomizer.Backend.Randomization
             trainerOrgRand = new TrainerOrganizationRandomizer(rand, paletteModifier);
             starterRandomizer = new StarterRandomizer(pokeRand);
             typeChartRandomizer = new TypeChartRandomizer();
+            battleTentRandomizer = new BattleTentRandomizer(itemRand, delayedRandomizationCalls);
         }
         // Apply mutations based on program settings.
         public RomData Randomize()
@@ -911,7 +913,14 @@ namespace PokemonRandomizer.Backend.Randomization
             // Randomize Berry Trees
             RandomizeBerryTrees(data.SetBerryTreeScript, settings, items);
 
-            // Randomize Battle Tent Rewards
+            #endregion
+
+            #region Battle Frontier and Minigames
+
+            foreach(var battleTent in data.BattleTents)
+            {
+                battleTentRandomizer.RandomizeBattleTent(battleTent, items);
+            }
 
             #endregion
 
