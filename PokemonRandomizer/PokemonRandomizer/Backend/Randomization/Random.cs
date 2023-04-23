@@ -76,6 +76,19 @@ namespace PokemonRandomizer.Backend.Randomization
         {
             return items[rand.Next(0, items.Length)];
         }
+        /// <summary> Returns an unweighted random choice from the given IList </summary> 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public T Choice<T>(IList<T> items)
+        {
+            return items[rand.Next(0, items.Count)];
+        }
+        /// <summary> Returns an unweighted random choice from the given IList </summary> 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public T Choice<T>(IList<T> items, out int selectedIndex)
+        {
+            selectedIndex = rand.Next(0, items.Count);
+            return items[selectedIndex];
+        }
         /// <summary> Returns an unweighted random choice from the given IEnumerable </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public T Choice<T>(IEnumerable<T> items)
