@@ -1,11 +1,12 @@
 ﻿using System;
+using PokemonRandomizer.Backend.EnumTypes;
 
 namespace PokemonRandomizer.Backend.DataStructures.Trainers
 {
     public class StevenAllyTrainerPokemon : TrainerPokemon, IHasTrainerPokemonNature, IHasTrainerPokemonEvs
     {
         public override int MaxIV => PokemonBaseStats.maxIV;
-        public int Nature { get; set; }
+        public Nature Nature { get; set; }
         public byte[] EVs { get; set; }
 
         public override TrainerPokemon Clone()

@@ -422,7 +422,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
             var sprites = new List<TrainerSprite>(numSprites);
             for (int i = 0; i < numSprites; ++i)
             {
-                sprites.Add(new TrainerSprite { 
+                sprites.Add(new TrainerSprite {
                     FrontPalette = paletteParser.ParseCompressed(rom.ReadPointer(), rom),
                 });
                 rom.Skip(4); // uint16 palette index and uint16 unused
@@ -519,8 +519,8 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
             {
                 return;
             }
-            var stevenAllyBattle = new StevenAllyTrainer() 
-            { 
+            var stevenAllyBattle = new StevenAllyTrainer()
+            {
                 pokemonOffset = rom.InternalOffset
             };
             stevenAllyBattle.PokemonData = new Trainer.TrainerPokemonData(TrainerPokemon.DataType.SpecialMoves, Trainer.multiBattlePartySize);
@@ -532,7 +532,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
                     species = InternalIndexToPokemon(rom.ReadUInt16()),
                     IVLevel = rom.ReadByte(),
                     level = rom.ReadByte(),
-                    Nature = rom.ReadByte(),
+                    Nature = (Nature)rom.ReadByte(),
                     EVs = rom.ReadBlock(PokemonBaseStats.numStats),
                 };
                 rom.Skip(); // padding 0x00
@@ -623,7 +623,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
                 }
                 var spriteNums = info.IntArrayAttr(name, "sprites");
                 var spriteKeys = info.ArrayAttr(name, "spriteKeys");
-                for(int i = 0; i < spriteNums.Length && i < spriteKeys.Length; i++)
+                for (int i = 0; i < spriteNums.Length && i < spriteKeys.Length; i++)
                 {
                     var palKey = spriteKeys[i];
                     if (!villaneousTeamPaletteData.ContainsKey(palKey))
@@ -879,7 +879,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
                     battleEffectOffset = rom.ReadPointer(),
                     extraData = rom.ReadUInt32(),
                 };
-                if(item.IsMysteryGiftEventItem = IsMysteryGiftEventItem(item, metadata))
+                if (item.IsMysteryGiftEventItem = IsMysteryGiftEventItem(item, metadata))
                 {
                     mysteryGiftEventItems.Add(item);
                 }
@@ -964,18 +964,54 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
             var battleTents = info.ArrayAttr(ElementNames.GenIII.battleTents, AttributeNames.elementNames);
             foreach (var battleTentElement in battleTents)
             {
-                if (!info.FindAndSeekOffset(info.Attr(battleTentElement, "rewardsElement"), rom))
-                    continue;
                 var battleTent = new BattleTent(battleTentElement);
-                int itemIndex = rom.ReadUInt16();
-                while (itemIndex > 0)
-                {
-                    battleTent.Rewards.Add(InternalIndexToItem(itemIndex));
-                    itemIndex = rom.ReadUInt16();
-                }
+                ReadBattleTentRewards(battleTent, rom, info);
+                ReadBattleTentPokemon(battleTent, rom, info);
                 battleTent.SetOriginalValues();
                 data.BattleTents.Add(battleTent);
             }
+        }
+
+        private void ReadBattleTentRewards(BattleTent battleTent, Rom rom, XmlManager info)
+        {
+            if (!info.FindAndSeekOffset(info.Attr(battleTent.Name, "rewardsElement"), rom))
+                return;
+            int itemIndex = rom.ReadUInt16();
+            while (itemIndex > 0)
+            {
+                battleTent.Rewards.Add(InternalIndexToItem(itemIndex));
+                itemIndex = rom.ReadUInt16();
+            }
+        }
+
+        private void ReadBattleTentPokemon(BattleTent battleTent, Rom rom, XmlManager info)
+        {
+            var pokemonElement = info.Attr(battleTent.Name, "pokemonElement");
+            if (!info.FindAndSeekOffset(pokemonElement, rom))
+                return;
+            int num = info.Num(pokemonElement);
+            battleTent.Pokemon.Capacity = num;
+            for(int i = 0; i < num; ++i)
+            {
+                battleTent.Pokemon.Add(ReadFrontierTrainerPokemon(rom));
+            }
+        }
+
+        private FrontierTrainerPokemon ReadFrontierTrainerPokemon(Rom rom)
+        {
+            var pokemon = new FrontierTrainerPokemon()
+            {
+                dataType = TrainerPokemon.DataType.SpecialMoves,
+            };
+            pokemon.species = InternalIndexToPokemon(rom.ReadUInt16());
+            for (int i = 0; i < TrainerPokemon.numMoves; ++i)
+            {
+                pokemon.moves[i] = InternalIndexToMove(rom.ReadUInt16());
+            }
+            pokemon.HeldItemIndex = rom.ReadByte();
+            pokemon.Evs = (IHasFrontierTrainerEvs.EvFlags)rom.ReadByte();
+            pokemon.Nature = (Nature)rom.ReadUInt32();
+            return pokemon;
         }
     }
 }
