@@ -94,7 +94,13 @@ namespace PokemonRandomizer.Backend.Randomization
         public T Choice<T>(IEnumerable<T> items)
         {
             if (!items.Any())
+            {
                 return default;
+            }
+            if(items is IList<T> list)
+            {
+                return Choice(list);
+            }
             return Choice(items.ToArray());
         }
         /// <summary> Returns a weighted random choice from the given items and float weights </summary> 
