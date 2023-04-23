@@ -18,7 +18,7 @@ namespace PokemonRandomizer.Backend.Randomization
         {
             this.pokeRand = pokeRand;
         }
-        public void Randomize(RomData data, IEnumerable<Pokemon> pokemonSet, Settings settings)
+        public void Randomize(RomData data, List<Pokemon> pokemonSet, Settings settings)
         {
             if (settings.StarterSetting != Settings.StarterPokemonOption.Unchanged)
             {
@@ -32,7 +32,7 @@ namespace PokemonRandomizer.Backend.Randomization
             }
         }
 
-        private void ChooseStarters(RomData data, IEnumerable<Pokemon> pokemonSet, Settings settings) 
+        private void ChooseStarters(RomData data, List<Pokemon> pokemonSet, Settings settings) 
         {
             var starterSettings = settings.StarterPokemonSettings;
             if (settings.StarterSetting == Settings.StarterPokemonOption.Random)

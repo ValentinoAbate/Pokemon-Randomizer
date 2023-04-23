@@ -34,35 +34,35 @@ namespace PokemonRandomizer.Backend.Randomization
 
         // Safe methods (if there is no valid pokemon the original will be returned
 
-        public Pokemon RandomPokemon(IEnumerable<Pokemon> all, Pokemon pokemon, PokemonSettings settings, int level)
+        public Pokemon RandomPokemon(List<Pokemon> all, Pokemon pokemon, PokemonSettings settings, int level)
         {
             return SafePokemon(pokemon, RandomPokemonUnsafe(all, CreateBasicMetrics(all, pokemon, settings.Data), settings, level));
         }
-        public Pokemon RandomPokemon(IEnumerable<Pokemon> all, Pokemon pokemon, PokemonSettings settings)
+        public Pokemon RandomPokemon(List<Pokemon> all, Pokemon pokemon, PokemonSettings settings)
         {
             return SafePokemon(pokemon, RandomPokemonUnsafe(all, CreateBasicMetrics(all, pokemon, settings.Data), settings));
         }
-        public Pokemon RandomPokemon(IEnumerable<Pokemon> all, Pokemon pokemon, IEnumerable<Metric<Pokemon>> data, PokemonSettings settings, int level)
+        public Pokemon RandomPokemon(List<Pokemon> all, Pokemon pokemon, IEnumerable<Metric<Pokemon>> data, PokemonSettings settings, int level)
         {
             return SafePokemon(pokemon, RandomPokemonUnsafe(all, data, settings, level));
         }
-        public Pokemon RandomPokemon(IEnumerable<Pokemon> all, Pokemon pokemon, IEnumerable<Metric<Pokemon>> data, PokemonSettings settings)
+        public Pokemon RandomPokemon(List<Pokemon> all, Pokemon pokemon, IEnumerable<Metric<Pokemon>> data, PokemonSettings settings)
         {
             return SafePokemon(pokemon, RandomPokemonUnsafe(all, data, settings));
         }
-        public Pokemon RandomPokemonRestricted(IEnumerable<Pokemon> all, IEnumerable<Pokemon> restricted, Pokemon pokemon, PokemonSettings settings, int level)
+        public Pokemon RandomPokemonRestricted(List<Pokemon> all, List<Pokemon> restricted, Pokemon pokemon, PokemonSettings settings, int level)
         {
             return SafePokemon(pokemon, RandomPokemonUnsafe(all, restricted, CreateBasicMetrics(all, pokemon, settings.Data), settings, level));
         }
-        public Pokemon RandomPokemonRestricted(IEnumerable<Pokemon> all, IEnumerable<Pokemon> restricted, Pokemon pokemon, PokemonSettings settings)
+        public Pokemon RandomPokemonRestricted(List<Pokemon> all, List<Pokemon> restricted, Pokemon pokemon, PokemonSettings settings)
         {
             return SafePokemon(pokemon, RandomPokemonUnsafe(all, restricted, CreateBasicMetrics(all, pokemon, settings.Data), settings));
         }
-        public Pokemon RandomPokemonRestricted(IEnumerable<Pokemon> all, IEnumerable<Pokemon> restricted, Pokemon pokemon, IEnumerable<Metric<Pokemon>> data, PokemonSettings settings, int level)
+        public Pokemon RandomPokemonRestricted(List<Pokemon> all, List<Pokemon> restricted, Pokemon pokemon, IEnumerable<Metric<Pokemon>> data, PokemonSettings settings, int level)
         {
             return SafePokemon(pokemon, RandomPokemonUnsafe(all, restricted, data, settings, level));
         }
-        public Pokemon RandomPokemonRestricted(IEnumerable<Pokemon> all, IEnumerable<Pokemon> restricted, Pokemon pokemon, IEnumerable<Metric<Pokemon>> data, PokemonSettings settings)
+        public Pokemon RandomPokemonRestricted(List<Pokemon> all, List<Pokemon> restricted, Pokemon pokemon, IEnumerable<Metric<Pokemon>> data, PokemonSettings settings)
         {
             return SafePokemon(pokemon, RandomPokemonUnsafe(all, restricted, data, settings));
         }
@@ -71,20 +71,23 @@ namespace PokemonRandomizer.Backend.Randomization
 
 
 
-        private Pokemon RandomPokemonUnsafe(IEnumerable<Pokemon> all, IEnumerable<Pokemon> restricted, IEnumerable<Metric<Pokemon>> data, PokemonSettings settings, int level)
+        private Pokemon RandomPokemonUnsafe(List<Pokemon> all, List<Pokemon> restricted, IEnumerable<Metric<Pokemon>> data, PokemonSettings settings, int level)
         {
-            var levelRestricted = settings.RestrictIllegalEvolutions ? restricted.Where(p => evoUtils.IsPokemonValidLevel(dataT.GetBaseStats(p), level)) : restricted;
+            if (settings.RestrictIllegalEvolutions)
+            {
+                restricted.RemoveAll(p => !evoUtils.IsPokemonValidLevel(dataT.GetBaseStats(p), level));
+            }
             if (settings.ForceHighestLegalEvolution)
             {
-                levelRestricted = levelRestricted.Where(p => evoUtils.IsMaxEvolution(p, level));
+                restricted.RemoveAll(p => !evoUtils.IsMaxEvolution(p, level));
             }
-            var newPokemon = RandomPokemonUnsafe(all, levelRestricted, data, settings);
+            var newPokemon = RandomPokemonUnsafe(all, restricted, data, settings);
             // If we got a null result, propegate that
             if (newPokemon == Pokemon.None)
                 return Pokemon.None;
             return newPokemon;
         }
-        private Pokemon RandomPokemonUnsafe(IEnumerable<Pokemon> all, IEnumerable<Pokemon> restricted, IEnumerable<Metric<Pokemon>> data, PokemonSettings settings)
+        private Pokemon RandomPokemonUnsafe(List<Pokemon> all, List<Pokemon> restricted, IEnumerable<Metric<Pokemon>> data, PokemonSettings settings)
         {
             if (!restricted.Any())
             {
@@ -99,7 +102,9 @@ namespace PokemonRandomizer.Backend.Randomization
             if (!data.Any())
             {
                 if (settings.BanLegendaries) // Remove legendaries if banned
-                    return rand.Choice(restricted.Where(p => !p.IsLegendary()));
+                {
+                    restricted.RemoveAll(PokemonUtils.IsLegendary);
+                }
                 return rand.Choice(restricted); 
             }
             // Process the metrics
@@ -113,11 +118,11 @@ namespace PokemonRandomizer.Backend.Randomization
             }
             return metricChoices.Count > 0 ? rand.Choice(metricChoices) : Pokemon.None;
         }
-        private Pokemon RandomPokemonUnsafe(IEnumerable<Pokemon> all, IEnumerable<Metric<Pokemon>> data, PokemonSettings settings, int level)
+        private Pokemon RandomPokemonUnsafe(List<Pokemon> all, IEnumerable<Metric<Pokemon>> data, PokemonSettings settings, int level)
         {
             return RandomPokemonUnsafe(all, all, data, settings, level);
         }
-        private Pokemon RandomPokemonUnsafe(IEnumerable<Pokemon> all, IEnumerable<Metric<Pokemon>> data, PokemonSettings settings)
+        private Pokemon RandomPokemonUnsafe(List<Pokemon> all, IEnumerable<Metric<Pokemon>> data, PokemonSettings settings)
         {
             return RandomPokemonUnsafe(all, all, data, settings);
         }
@@ -134,6 +139,7 @@ namespace PokemonRandomizer.Backend.Randomization
             if (input.Count < 3)
                 return null; // TODO: Log
             var pool = possiblePokemon.Where(p => evoUtils.IsPokemonValidLevel(dataT.GetBaseStats(p), 5)).ToHashSet();
+            var list = pool.ToList();
             var metrics = new List<Metric<Pokemon>>[]
             {
                 CreateBasicMetrics(pool, input[0], settings.Data),
@@ -143,13 +149,15 @@ namespace PokemonRandomizer.Backend.Randomization
 
             while (pool.Count > 0)
             {
-                var first = RandomPokemonUnsafe(pool, metrics[0], settings);
+                var first = RandomPokemonUnsafe(list, metrics[0], settings);
                 // No valid pokemon for first pokemon so no valid triangle
                 if (first == Pokemon.None)
                     return null;
                 pool.Remove(first);
+                list.Clear();
+                list.AddRange(pool);
                 // Get potential second pokemon
-                var secondPossiblities = pool.Where(p => OneWayWeakness(typeDefinitions, first, p, strong)).ToHashSet();
+                var secondPossiblities = list.Where(p => OneWayWeakness(typeDefinitions, first, p, strong)).ToHashSet();
                 // Finish the triangle if possible
                 var triangle = FinishTriangle(pool, secondPossiblities, first, metrics, typeDefinitions, settings, strong);
                 if (triangle != null)
@@ -160,15 +168,18 @@ namespace PokemonRandomizer.Backend.Randomization
         /// <summary> Helper method for the RandomTypeTriangle method </summary>
         private List<Pokemon> FinishTriangle(HashSet<Pokemon> pool, HashSet<Pokemon> possibleSeconds, Pokemon first, List<Metric<Pokemon>>[] metrics, TypeEffectivenessChart typeDefinitions, PokemonSettings settings, bool strong)
         {
+            var list = new List<Pokemon>(possibleSeconds);
             while (possibleSeconds.Count > 0)
             {
-                var second = RandomPokemonUnsafe(possibleSeconds, metrics[1], settings);
+                var second = RandomPokemonUnsafe(list, metrics[1], settings);
                 // No valid pokemon for first pokemon so no valid triangle
                 if (second == Pokemon.None)
                     return null;
                 possibleSeconds.Remove(second);
+                list.Clear();
+                list.AddRange(possibleSeconds);
                 // Get third pokemon
-                var possibleThirds = pool.Where(p => OneWayWeakness(typeDefinitions, second, p, strong) && OneWayWeakness(typeDefinitions, p, first, strong)).ToHashSet();
+                var possibleThirds = list.Where(p => OneWayWeakness(typeDefinitions, second, p, strong) && OneWayWeakness(typeDefinitions, p, first, strong)).ToList();
                 // If at least one works, choose one randomly
                 if (possibleThirds.Count > 0)
                 {

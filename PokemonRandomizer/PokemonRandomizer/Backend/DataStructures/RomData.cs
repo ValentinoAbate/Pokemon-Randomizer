@@ -214,6 +214,18 @@ namespace PokemonRandomizer.Backend.DataStructures
             }
             return list;
         }
+        public bool HasPokemon(Pokemon pokemon) => PokemonLookup.ContainsKey(pokemon);
+        public List<Pokemon> GetAllValidPokemon()
+        {
+            var list = new List<Pokemon>(Pokemon.Count);
+            foreach(var pokemon in Pokemon)
+            {
+                if (pokemon.species is EnumTypes.Pokemon.None or EnumTypes.Pokemon.POKÉMON_EGG or EnumTypes.Pokemon.MANAPHY_EGG)
+                    continue;
+                list.Add(pokemon.species);
+            }
+            return list;
+        }
 
         // updates the metrics from the current data
         public void CalculateMetrics()

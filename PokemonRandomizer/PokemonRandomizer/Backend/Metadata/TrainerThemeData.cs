@@ -48,7 +48,7 @@ namespace PokemonRandomizer.Backend.Metadata
         }
 
         // Create the pokemon metrics for an individual pokemon on the trainer's team
-        public List<Metric<Pokemon>> GetPokemonMetrics(Randomization.Random rand, PkmnRandomizer pkmnRand, IEnumerable<Pokemon> all, Pokemon pokemon, Trainer trainer, IDataTranslator dataT)
+        public List<Metric<Pokemon>> GetPokemonMetrics(Randomization.Random rand, PkmnRandomizer pkmnRand, List<Pokemon> all, Pokemon pokemon, Trainer trainer, IDataTranslator dataT)
         {
             return new List<Metric<Pokemon>>() { new Metric<Pokemon>(Theme switch
             {
@@ -59,7 +59,7 @@ namespace PokemonRandomizer.Backend.Metadata
             }, 0, 1)};
         }
 
-        private WeightedSet<Pokemon> TypedMetric(Randomization.Random rand, PkmnRandomizer pkmnRand, IEnumerable<Pokemon> all, IDataTranslator dataT)
+        private WeightedSet<Pokemon> TypedMetric(Randomization.Random rand, PkmnRandomizer pkmnRand, List<Pokemon> all, IDataTranslator dataT)
         {
             var types = rand.RollSuccess(PrimaryTypeChance) ? Types : SecondaryTypes;
             return pkmnRand.TypeSimilarityGroup(all, new WeightedSet<PokemonType>(types));

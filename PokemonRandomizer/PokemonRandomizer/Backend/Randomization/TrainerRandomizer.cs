@@ -35,7 +35,7 @@ namespace PokemonRandomizer.Backend.Randomization
 
         #region Trainer Randomization
 
-        private void RandomizeTrainerPokemon(Trainer trainer, IEnumerable<Pokemon> pokemonSet, PokemonSettings settings, float duplicateMultiplier, WeightedSet<PokemonType> typeOccurence, int? startIndex = null, int? endIndex = null)
+        private void RandomizeTrainerPokemon(Trainer trainer, List<Pokemon> pokemonSet, PokemonSettings settings, float duplicateMultiplier, WeightedSet<PokemonType> typeOccurence, int? startIndex = null, int? endIndex = null)
         {
             // Get type sample if necessary
             var partyTypeOccurence = typeOccurence ?? GetTrainerTypeOccurence(trainer);
@@ -77,12 +77,12 @@ namespace PokemonRandomizer.Backend.Randomization
             }
         }
 
-        private void RandomizeTrainerPokemon(Trainer trainer, IEnumerable<Pokemon> pokemonSet, PokemonSettings settings, float duplicateMultiplier, int? startIndex = null, int? endIndex = null)
+        private void RandomizeTrainerPokemon(Trainer trainer, List<Pokemon> pokemonSet, PokemonSettings settings, float duplicateMultiplier, int? startIndex = null, int? endIndex = null)
         {
             RandomizeTrainerPokemon(trainer, pokemonSet, settings, duplicateMultiplier, null, startIndex, endIndex);
         }
 
-        private IEnumerable<Metric<Pokemon>> CreatePokemonMetrics(Trainer trainer, IEnumerable<Pokemon> all, Pokemon pokemon, WeightedSet<PokemonType> partyTypeOccurence, IReadOnlyList<MetricData> data)
+        private IEnumerable<Metric<Pokemon>> CreatePokemonMetrics(Trainer trainer, List<Pokemon> all, Pokemon pokemon, WeightedSet<PokemonType> partyTypeOccurence, IReadOnlyList<MetricData> data)
         {
             if(trainer.ThemeData != null)
             {
@@ -160,7 +160,7 @@ namespace PokemonRandomizer.Backend.Randomization
         }
 
 
-        public void RandomizeAll(List<Trainer> allBattles, IEnumerable<Pokemon> pokemonSet, TrainerSettings settings)
+        public void RandomizeAll(List<Trainer> allBattles, List<Pokemon> pokemonSet, TrainerSettings settings)
         {
             // No battles, return
             if(allBattles.Count <= 0)
@@ -188,7 +188,7 @@ namespace PokemonRandomizer.Backend.Randomization
         }
 
         /// <summary> Randomize the given trainer encounter </summary>
-        public void Randomize(Trainer trainer, IEnumerable<Pokemon> pokemonSet, TrainerSettings settings, bool safe = true)
+        public void Randomize(Trainer trainer, List<Pokemon> pokemonSet, TrainerSettings settings, bool safe = true)
         {
             if (settings.RandomizePokemon)
             {
@@ -228,7 +228,7 @@ namespace PokemonRandomizer.Backend.Randomization
         /// Battles is assumed to be in chronological order, and that the first battle has been appropriately randomized.
         /// Use unsafe randomization for randomizing the first battle.
         /// </summary>
-        public void RandomizeReoccurring(Trainer firstBattle, List<Trainer> battles, IEnumerable<Pokemon> pokemonSet, TrainerSettings settings)
+        public void RandomizeReoccurring(Trainer firstBattle, List<Trainer> battles, List<Pokemon> pokemonSet, TrainerSettings settings)
         {
             if (settings.RandomizePokemon)
             {

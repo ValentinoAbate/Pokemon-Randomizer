@@ -269,12 +269,12 @@ namespace PokemonRandomizer.Backend.Randomization
                 }
                 return pokemon;
             }
-            IEnumerable<Pokemon> restrictedPokemon;
+            List<Pokemon> restrictedPokemon;
             Settings.PokemonSettings pokemonSettings;
             // Keep Legendaries Logic
             if(isLegendary && settings.StaticLegendaryRandomizationStrategy == Settings.LegendaryRandSetting.RandomizeEnsureLegendary)
             {
-                restrictedPokemon = args.staticPokemonSet.Where(PokemonUtils.IsLegendary);
+                restrictedPokemon = args.staticPokemonSet.Where(PokemonUtils.IsLegendary).ToList();
                 pokemonSettings = new Settings.PokemonSettings(settings.StaticEncounterSettings)
                 {
                     BanLegendaries = false,
@@ -282,7 +282,7 @@ namespace PokemonRandomizer.Backend.Randomization
             }
             else
             {
-                restrictedPokemon = args.staticPokemonSet;
+                restrictedPokemon = args.staticPokemonSet.ToList();
                 pokemonSettings = settings.StaticEncounterSettings;
             }
             // Get new pokemon
@@ -321,10 +321,10 @@ namespace PokemonRandomizer.Backend.Randomization
         public class Args
         {
             public IEnumerable<ItemData> items;
-            public IEnumerable<Pokemon> pokemonSet;
+            public List<Pokemon> pokemonSet;
             // Gift Pokemon Randomization Params
-            public HashSet<Pokemon> fossilSet;
-            public HashSet<Pokemon> babySet;
+            public List<Pokemon> fossilSet;
+            public List<Pokemon> babySet;
             // Static Pokemon Randomization Params
             public HashSet<Pokemon> staticPokemonSet;
             public Dictionary<Pokemon, Pokemon> staticPokemonMap;

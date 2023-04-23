@@ -29,7 +29,7 @@ namespace PokemonRandomizer.Backend.Randomization
             this.romMetrics = romMetrics;
         }
 
-        public void RandomizeEncounters(IEnumerable<Pokemon> pokemonSet, IEnumerable<EncounterSet> encounters, PokemonSettings settings, Strategy strategy)
+        public void RandomizeEncounters(List<Pokemon> pokemonSet, IEnumerable<EncounterSet> encounters, PokemonSettings settings, Strategy strategy)
         {
             if (strategy == Strategy.Unchanged)
                 return;
@@ -111,7 +111,7 @@ namespace PokemonRandomizer.Backend.Randomization
             return PokemonMetrics.TypeOccurence(encounter, e => dataT.GetBaseStats(e.pokemon));
         }
 
-        private IEnumerable<Metric<Pokemon>> CreateMetrics(IEnumerable<Pokemon> all, Pokemon pokemon, EncounterSet.Type slotType, WeightedSet<PokemonType> typeOccurence, IReadOnlyList<MetricData> data)
+        private List<Metric<Pokemon>> CreateMetrics(List<Pokemon> all, Pokemon pokemon, EncounterSet.Type slotType, WeightedSet<PokemonType> typeOccurence, IReadOnlyList<MetricData> data)
         {
             var metrics = pokeRand.CreateBasicMetrics(all, pokemon, data, out List<MetricData> specialData);
             foreach (var d in specialData)
@@ -130,7 +130,7 @@ namespace PokemonRandomizer.Backend.Randomization
             return metrics;
         }
 
-        private WeightedSet<Pokemon> GetEncounterBankType(IEnumerable<Pokemon> all, EncounterSet.Type slotType, MetricData data)
+        private WeightedSet<Pokemon> GetEncounterBankType(List<Pokemon> all, EncounterSet.Type slotType, MetricData data)
         {
             if (!data.Flags.Contains(slotType.ToString()) || !romMetrics.EncounterSlotTypeOccurence.ContainsKey(slotType))
                 return null;

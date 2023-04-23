@@ -72,11 +72,14 @@ namespace PokemonRandomizer.Backend.Randomization
         {
             Timer.main.Start();
             delayedRandomizationCalls.Clear();
-            var pokemonSet = DefinePokemonSet();
-            var fossilSet = pokemonSet.Where(PokemonUtils.IsFossil).ToHashSet();
-            if (settings.CountRelicanthAsFossil && pokemonSet.Contains(Pokemon.RELICANTH))
-                fossilSet.Add(Pokemon.RELICANTH);
-            var babySet = pokemonSet.Where(PokemonUtils.IsBaby).ToHashSet();
+            // Get Pokemon List
+            var pokemonList = data.GetAllValidPokemon();
+            // Define Fossil Pokemon
+            var fossilList = pokemonList.Where(PokemonUtils.IsFossil).ToList();
+            if (settings.CountRelicanthAsFossil && data.HasPokemon(Pokemon.RELICANTH))
+                fossilList.Add(Pokemon.RELICANTH);
+            // Define Baby Pokemon
+            var babyList = pokemonList.Where(PokemonUtils.IsBaby).ToList();
             var items = data.GetAllValidItemData();
             // Apply Allow Mystery Gift Item in Randomization if necessary
             if(settings.MysteryGiftItemAcquisitionSetting == Settings.MysteryGiftItemSetting.AllowInRandomization)
@@ -450,7 +453,7 @@ namespace PokemonRandomizer.Backend.Randomization
             #endregion
 
             #region Starters
-            starterRandomizer.Randomize(data, pokemonSet, settings);
+            starterRandomizer.Randomize(data, pokemonList, settings);
             #endregion
 
             #region In-Game Trades
@@ -458,11 +461,11 @@ namespace PokemonRandomizer.Backend.Randomization
             {
                 if (rand.RollSuccess(settings.TradePokemonGiveRandChance))
                 {
-                    trade.pokemonWanted = pokeRand.RandomPokemon(pokemonSet, trade.pokemonWanted, settings.TradeSpeciesSettingsGive);
+                    trade.pokemonWanted = pokeRand.RandomPokemon(pokemonList, trade.pokemonWanted, settings.TradeSpeciesSettingsGive);
                 }
                 if (rand.RollSuccess(settings.TradePokemonRecievedRandChance))
                 {
-                    trade.pokemonRecieved = pokeRand.RandomPokemon(pokemonSet, trade.pokemonRecieved, settings.TradeSpeciesSettingsReceive);
+                    trade.pokemonRecieved = pokeRand.RandomPokemon(pokemonList, trade.pokemonRecieved, settings.TradeSpeciesSettingsReceive);
                     var recievedPokemonData = data.GetBaseStats(trade.pokemonRecieved);
                     // If the recieved pokemon only has one ability, ensure that the trade data uses ability index 0
                     // If the recieved pokemon has two possible abilities, choose a random ability index
@@ -511,12 +514,12 @@ namespace PokemonRandomizer.Backend.Randomization
             #region Maps
             var scriptRandomizationArgs = new ScriptRandomizer.Args
             {
-                babySet = babySet,
+                babySet = babyList,
                 items = items,
-                pokemonSet = pokemonSet,
-                fossilSet = fossilSet,
+                pokemonSet = pokemonList,
+                fossilSet = fossilList,
                 staticPokemonMap = new Dictionary<Pokemon, Pokemon>(),
-                staticPokemonSet = new HashSet<Pokemon>(pokemonSet),
+                staticPokemonSet = new HashSet<Pokemon>(pokemonList),
                 data = data,
             };
             // Initialize gym metadata
@@ -596,7 +599,7 @@ namespace PokemonRandomizer.Backend.Randomization
 
             #region Wild Encounters
 
-            encounterRand.RandomizeEncounters(pokemonSet, data.Encounters, settings.EncounterSettings, settings.EncounterStrategy);
+            encounterRand.RandomizeEncounters(pokemonList, data.Encounters, settings.EncounterSettings, settings.EncounterStrategy);
 
             // Apply dream team to first encounter if desired
             if(settings.DreamTeamOption != Settings.DreamTeamSetting.None && data.FirstEncounterSet != null)
@@ -605,7 +608,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 var team = settings.DreamTeamOption switch
                 {
                     Settings.DreamTeamSetting.Custom => settings.CustomDreamTeam.Where(p => p != Pokemon.None).ToArray(),
-                    Settings.DreamTeamSetting.Random => dreamTeamRandomizer.GenerateDreamTeam(pokemonSet, settings.DreamTeamOptions),
+                    Settings.DreamTeamSetting.Random => dreamTeamRandomizer.GenerateDreamTeam(pokemonList, settings.DreamTeamOptions),
                     _ => Array.Empty<Pokemon>(),
                 };
                 if(team.Length > 0)
@@ -767,12 +770,12 @@ namespace PokemonRandomizer.Backend.Randomization
             // Randomize trainers
             foreach (var kvp in TrainersByName)
             {
-                trainerRand.RandomizeAll(kvp.Value, pokemonSet, trainerSettings);
+                trainerRand.RandomizeAll(kvp.Value, pokemonList, trainerSettings);
             }
 
             foreach(var trainer in gruntTrainers)
             {
-                trainerRand.Randomize(trainer, pokemonSet, trainerSettings);
+                trainerRand.Randomize(trainer, pokemonList, trainerSettings);
             }
 
             #region Rivals
@@ -792,7 +795,7 @@ namespace PokemonRandomizer.Backend.Randomization
                     var firstBattle = battles[0];
                     battles.RemoveAt(0);
                     // Randomize the first battle
-                    trainerRand.Randomize(firstBattle, pokemonSet, trainerSettings, false);
+                    trainerRand.Randomize(firstBattle, pokemonList, trainerSettings, false);
                     // Set the appropriate starter as the ace and regenerate moveset if necessary
                     var firstBattleAce = firstBattle.Pokemon[^1];
                     firstBattleAce.species = data.Starters[originalStarters ? i : data.RivalRemap[i]];
@@ -801,7 +804,7 @@ namespace PokemonRandomizer.Backend.Randomization
                         trainerRand.FinishPokemonRandomization(firstBattleAce);
                     }
                     // Procedurally generate the rest of the battles
-                    trainerRand.RandomizeReoccurring(firstBattle, battles, pokemonSet, trainerSettings);
+                    trainerRand.RandomizeReoccurring(firstBattle, battles, pokemonList, trainerSettings);
                     if (settings.EasyFirstRivalBattle)
                     {
                         foreach (var pokemon in firstBattle.Pokemon)
@@ -822,7 +825,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 if (settings.RandomizeWallyAce)
                 {
                     // Remove all pokemon that cannot be male (the tutorial cutscene crashes if the catching tut pokemon isn't able to be male)
-                    var possibleCatchingTutPokemon = new List<Pokemon>(pokemonSet);
+                    var possibleCatchingTutPokemon = new List<Pokemon>(pokemonList);
                     possibleCatchingTutPokemon.RemoveAll(p => data.GetBaseStats(p).genderRatio > 0xFD);
                     var catchingTutSettings = new Settings.PokemonSettings()
                     {
@@ -838,7 +841,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 var firstBattle = wallyBattles[0];
                 wallyBattles.RemoveAt(0);
                 // Randomize the first battle
-                trainerRand.Randomize(firstBattle, pokemonSet, trainerSettings, false);
+                trainerRand.Randomize(firstBattle, pokemonList, trainerSettings, false);
                 // Set Wally's ace pokemon to the catching tut pokemon and regenerate moveset if necessary
                 var firstBattleAce = firstBattle.Pokemon[^1];
                 firstBattleAce.species = evoUtils.MaxEvolution(data.CatchingTutPokemon, firstBattleAce.level, trainerSettings.RestrictIllegalEvolutions);
@@ -847,7 +850,7 @@ namespace PokemonRandomizer.Backend.Randomization
                     trainerRand.FinishPokemonRandomization(firstBattleAce);
                 }
                 // Procedurally generate the rest of Wally's battles
-                trainerRand.RandomizeReoccurring(firstBattle, wallyBattles, pokemonSet, trainerSettings);
+                trainerRand.RandomizeReoccurring(firstBattle, wallyBattles, pokemonList, trainerSettings);
             }
 
             #endregion
@@ -934,33 +937,6 @@ namespace PokemonRandomizer.Backend.Randomization
 
             return data;
         }
-
-        #region Set Definitions
-
-        /// <summary> Define and return the set of valid pokemon (with applicable restrictions)</summary>
-        private HashSet<Pokemon> DefinePokemonSet()
-        {
-            //Start with all for now
-            HashSet<Pokemon> pokemonSet = new(data.Pokemon.Count);
-            foreach(var pokemon in data.Pokemon)
-            {
-                if(pokemon.species != Pokemon.None)
-                {
-                    pokemonSet.Add(pokemon.species);
-                }
-            }
-            if (pokemonSet.Contains(Pokemon.POKÉMON_EGG))
-            {
-                pokemonSet.Remove(Pokemon.POKÉMON_EGG);
-            }
-            if (pokemonSet.Contains(Pokemon.MANAPHY_EGG))
-            {
-                pokemonSet.Remove(Pokemon.MANAPHY_EGG);
-            }
-            return pokemonSet;
-        }
-
-        #endregion
 
         private void LogDuplicateTrainerPokemon()
         {
