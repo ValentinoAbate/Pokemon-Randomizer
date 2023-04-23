@@ -30,7 +30,7 @@ namespace PokemonRandomizer.Backend.Randomization
             var availableMoves = new HashSet<Move>(availableAddMoves);
             var learnSetLookup = pokemon.learnSet.GetMovesLookup();
             availableMoves.RemoveWhere(learnSetLookup.Contains);
-            var availableEggMoves = pokemon.eggMoves.Where(m => availableMoves.Contains(m)).ToHashSet();
+            var availableEggMoves = pokemon.eggMoves.Where(m => availableMoves.Contains(m)).ToList();
             for (int i = 0; i < numMoves; ++i)
             {
                 Move move = Move.None;
@@ -42,8 +42,8 @@ namespace PokemonRandomizer.Backend.Randomization
                     case AddMoveSource.EggMoves:
                         if (availableEggMoves.Count > 0)
                         {
-                            move = rand.Choice(availableEggMoves);
-                            availableEggMoves.Remove(move);
+                            move = rand.Choice(availableEggMoves, out int eggMoveIndex);
+                            availableEggMoves.RemoveAt(eggMoveIndex);
                         }
                         break;
                 }
