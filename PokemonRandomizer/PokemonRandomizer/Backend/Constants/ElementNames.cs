@@ -72,6 +72,7 @@
             public const string deoxysMewObeyFix = "deoxysMewObeyFix";
             public const string stevenAllyBattle = "stevenAllyBattle";
             public const string battleTents = "battleTents";
+            public const string frontierHeldItems = "frontierHeldItems";
         }
 
         public abstract class GenIV

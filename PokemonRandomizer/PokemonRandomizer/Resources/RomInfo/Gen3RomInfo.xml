@@ -214,6 +214,9 @@
 
 	<!-- Battle Frontier and Minigames -->
 
+	<!-- Battle Frontier -->
+	<frontierHeldItems pointer="0x163440" num="63"/>
+	  
 	<!-- Battle Tents -->
 	<battleTents elementNames="[verdanturfBattleTent,fallarborBattleTent,slateportBattleTent]"/>
 	<verdanturfBattleTent rewardsElement="verdanturfBattleTentRewards" pokemonElement="verdanturfBattleTentPokemon"/>

@@ -98,6 +98,8 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
             data.PickupItems = ReadPickupData(rom, info, metadata);
             // Read berry tree script (if applicable)
             data.SetBerryTreeScript = ReadSetBerryTreeScript(rom, info, metadata);
+            // Read Battle Frontier
+            ReadBattleFrontierItemTable(rom, data, info);
             // Read Battle Tents
             ReadBattleTents(rom, data, info);
             // Calculate the balance metrics from the loaded data
@@ -957,6 +959,17 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
         }
 
         // Battle frontier and minigames
+        private void ReadBattleFrontierItemTable(Rom rom, RomData data, XmlManager info)
+        {
+            if (!info.FindAndSeekOffset(ElementNames.GenIII.frontierHeldItems, rom))
+                return;
+            int num = info.Num(ElementNames.GenIII.frontierHeldItems);
+            data.BattleFrontierHeldItems.Capacity = num;
+            for (int i = 0; i < num; ++i)
+            {
+                data.BattleFrontierHeldItems.Add(InternalIndexToItem(rom.ReadUInt16()));
+            }
+        }
         private void ReadBattleTents(Rom rom, RomData data, XmlManager info)
         {
             if (!info.HasElementWithAttr(ElementNames.GenIII.battleTents, AttributeNames.elementNames))

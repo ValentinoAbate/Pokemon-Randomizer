@@ -136,6 +136,8 @@ namespace PokemonRandomizer.Backend.DataStructures
         public Script SetBerryTreeScript { get; set; }
 
         // Battle Frontier and Minigames
+
+        public List<Item> BattleFrontierHeldItems { get; } = new();
         public List<BattleTent> BattleTents { get; } = new(3);
 
         public int[] RivalRemap { get; set; }
