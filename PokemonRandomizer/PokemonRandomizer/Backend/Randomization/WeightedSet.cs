@@ -28,31 +28,20 @@ namespace PokemonRandomizer.Backend.Randomization
         #region Constructors
         public WeightedSet() { items = new Dictionary<T, float>(); }
         public WeightedSet(int capacity) { items = new Dictionary<T, float>(capacity); }
+        public WeightedSet(IDictionary<T,float> items)
+        {
+            this.items = new Dictionary<T,float>(items);
+        }
         public WeightedSet(WeightedSet<T> toCopy) : this(toCopy.items) { }
         public WeightedSet(IEnumerable<T> items, float weight = 1)
         {
             this.items = new Dictionary<T, float>(items.Count());
-            foreach (var item in items)
-                Add(item, weight);
+            AddRange(items, weight);
         }
-        public WeightedSet(IEnumerable<T> items, IEnumerable<float> weights)
+        public WeightedSet(ICollection<T> items, float weight = 1)
         {
-            this.items = new Dictionary<T, float>(items.Count());
-            if (items.Count() != weights.Count())
-                throw new Exception("Weighted Set Construction Exception: Items and weights are not the same length");
-            IEnumerator<float> e = weights.GetEnumerator();
-            e.MoveNext();
-            foreach (T item in items)
-            {
-                Add(item, e.Current);
-                e.MoveNext();
-            }
-        }
-        public WeightedSet(IEnumerable<KeyValuePair<T, float>> pairs)
-        {
-            items = new Dictionary<T, float>(pairs.Count());
-            foreach (var kvp in pairs)
-                Add(kvp.Key, kvp.Value);
+            this.items = new Dictionary<T, float>(items.Count);
+            AddRange(items, weight);
         }
         /// <summary>
         /// Creates a weighted set where the weight of each value given is the value of the metric function evaluated with the item
@@ -60,6 +49,11 @@ namespace PokemonRandomizer.Backend.Randomization
         public WeightedSet(IEnumerable<T> items, Func<T, float> weight)
         {
             this.items = new Dictionary<T, float>(items.Count());
+            AddRange(items, weight);
+        }
+        public WeightedSet(ICollection<T> items, Func<T, float> weight)
+        {
+            this.items = new Dictionary<T, float>(items.Count);
             AddRange(items, weight);
         }
         #endregion
