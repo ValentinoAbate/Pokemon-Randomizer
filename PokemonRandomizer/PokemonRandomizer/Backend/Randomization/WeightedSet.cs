@@ -199,7 +199,7 @@ namespace PokemonRandomizer.Backend.Randomization
 
         public override string ToString()
         {
-            List<string> ret = new List<string>();
+            var ret = new List<string>(Count);
             float totalWieght = Weights.Aggregate((a, b) => a + b);
             foreach (var kvp in items)
             {
