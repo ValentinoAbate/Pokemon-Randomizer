@@ -1041,31 +1041,61 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
         {
             foreach (var battleTent in battleTents)
             {
-                int pointerOffset = info.Pointer(info.Attr(battleTent.Name, "rewardsElement"));
-                if(battleTent.Rewards.Count <= battleTent.OriginalRewardsCount)
-                {
-                    // Write over original data
-                    rom.Seek(rom.ReadPointer(pointerOffset));
-                }
-                else // Needs expansion and repoint
-                {
-                    int? newOffset = rom.FindFreeSpaceOffset((battleTent.Rewards.Count + 1) * 2, true);
-                    if(!newOffset.HasValue)
-                    {
-                        Logger.main.Error("Unable to write expanded battle tent rewards in free space. Battle tent rewards will not be written");
-                        return;
-                    }
-                    // Repoint and seek new offset
-                    rom.WritePointer(pointerOffset, newOffset.Value);
-                    rom.Seek(newOffset.Value);
-                }
-                // Actually write items
-                foreach (var item in battleTent.Rewards)
-                {
-                    rom.WriteUInt16(ItemToInternalIndex(RemapItem(item)));
-                }
-                rom.WriteRepeating(0x00, 2); // Array terminator
+                WriteBattleTentPokemon(rom, battleTent, info);
+                WriteBattleTentRewards(rom, battleTent, info);
             }
+        }
+
+        private void WriteBattleTentPokemon(Rom rom, BattleTent battleTent, XmlManager info)
+        {
+            var pokemonElement = info.Attr(battleTent.Name, "pokemonElement");
+            if (!info.FindAndSeekOffset(pokemonElement, rom))
+                return;
+            int num = info.Num(pokemonElement);
+            for (int i = 0; i < num; ++i)
+            {
+                WriteFrontierTrainerPokemon(rom, battleTent.Pokemon[i]);
+            }
+        }
+
+        private void WriteBattleTentRewards(Rom rom, BattleTent battleTent, XmlManager info)
+        {
+            int rewardsPointerOffset = info.Pointer(info.Attr(battleTent.Name, "rewardsElement"));
+            if (battleTent.Rewards.Count <= battleTent.OriginalRewardsCount)
+            {
+                // Write over original data
+                rom.Seek(rom.ReadPointer(rewardsPointerOffset));
+            }
+            else // Needs expansion and repoint
+            {
+                int? newOffset = rom.FindFreeSpaceOffset((battleTent.Rewards.Count + 1) * 2, true);
+                if (!newOffset.HasValue)
+                {
+                    Logger.main.Error("Unable to write expanded battle tent rewards in free space. Battle tent rewards will not be written");
+                    return;
+                }
+                // Repoint and seek new offset
+                rom.WritePointer(rewardsPointerOffset, newOffset.Value);
+                rom.Seek(newOffset.Value);
+            }
+            // Actually write items
+            foreach (var item in battleTent.Rewards)
+            {
+                rom.WriteUInt16(ItemToInternalIndex(RemapItem(item)));
+            }
+            rom.WriteRepeating(0x00, 2); // Array terminator
+        }
+
+        private void WriteFrontierTrainerPokemon(Rom rom, FrontierTrainerPokemon pokemon)
+        {
+            rom.WriteUInt16(PokemonToInternalIndex(pokemon.species));
+            for (int i = 0; i < TrainerPokemon.numMoves; ++i)
+            {
+                rom.WriteUInt16(MoveToInternalIndex(pokemon.moves[i]));
+            }
+            rom.WriteByte((byte)pokemon.HeldItemIndex);
+            rom.WriteByte((byte)pokemon.Evs);
+            rom.WriteUInt32((int)pokemon.Nature);
         }
 
         public class RepointList : List<(int, int)>
