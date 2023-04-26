@@ -21,16 +21,16 @@ namespace PokemonRandomizer.Backend.Randomization
         private readonly Func<Trainer.Category, int> numBonusPokemon;
         private readonly MovesetGenerator movesetGenerator;
 
-        public TrainerRandomizer(Random rand, PkmnRandomizer pokeRand, EvolutionUtils evoUtils, RomData dataT, Settings s)
+        public TrainerRandomizer(Random rand, PkmnRandomizer pokeRand, EvolutionUtils evoUtils, MovesetGenerator movesetGenerator, IDataTranslator dataT, Settings s)
         {
             this.pokeRand = pokeRand;
             this.rand = rand;
             this.evoUtils = evoUtils;
             this.dataT = dataT;
+            this.movesetGenerator = movesetGenerator;
             shouldBanLegendaries = s.BanLegendaries;
             shouldApplyTheming = s.ApplyTheming;
             numBonusPokemon = s.NumBonusPokmon;
-            movesetGenerator = new MovesetGenerator(dataT.GetValidMoves(false, s.BanSelfdestruct), dataT, rand);
         }
 
         #region Trainer Randomization

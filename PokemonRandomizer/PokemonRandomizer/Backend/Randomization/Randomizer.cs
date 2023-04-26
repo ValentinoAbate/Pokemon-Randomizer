@@ -56,7 +56,8 @@ namespace PokemonRandomizer.Backend.Randomization
             // Initialize encounter randomizer
             encounterRand = new WildEncounterRandomizer(pokeRand, evoUtils, data.Metrics, data);
             // Initialize Trainer randomizer
-            trainerRand = new TrainerRandomizer(rand, pokeRand, evoUtils, data, settings);
+            var movesetGenerator = new MovesetGenerator(data.GetValidMoves(false, settings.BanSelfdestruct), data, rand);
+            trainerRand = new TrainerRandomizer(rand, pokeRand, evoUtils, movesetGenerator, data, settings);
             compatRand = new MoveCompatibilityRandomizer(rand, data);
             bonusMoveGenerator = new BonusMoveGenerator(rand, data, settings);
             var paletteModifier = new VariantPaletteModifier();
@@ -67,7 +68,7 @@ namespace PokemonRandomizer.Backend.Randomization
             trainerOrgRand = new TrainerOrganizationRandomizer(rand, paletteModifier);
             starterRandomizer = new StarterRandomizer(pokeRand);
             typeChartRandomizer = new TypeChartRandomizer();
-            battleTentRandomizer = new BattleTentRandomizer(itemRand, delayedRandomizationCalls);
+            battleTentRandomizer = new BattleTentRandomizer(data, pokeRand, itemRand, delayedRandomizationCalls, movesetGenerator);
         }
         // Apply mutations based on program settings.
         public RomData Randomize()
@@ -919,7 +920,7 @@ namespace PokemonRandomizer.Backend.Randomization
 
             foreach(var battleTent in data.BattleTents)
             {
-                battleTentRandomizer.RandomizeBattleTent(battleTent, items);
+                battleTentRandomizer.RandomizeBattleTent(battleTent, pokemonSet, new Settings.PokemonSettings(), items);
             }
 
             #endregion
