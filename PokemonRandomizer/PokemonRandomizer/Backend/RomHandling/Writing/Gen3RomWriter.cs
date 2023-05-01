@@ -75,7 +75,9 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
             {
                 WriteCatchingTutOpponent(data, rom, info);
             }
+            // Frontier and Minigames
             WriteBattleTents(rom, data.BattleTents, info);
+            WriteRouletteData(rom, data.RouletteWagers, info);
 
             // Hacks and tweaks
 
@@ -1096,6 +1098,61 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
             rom.WriteByte((byte)pokemon.HeldItemIndex);
             rom.WriteByte((byte)pokemon.Evs);
             rom.WriteUInt32((int)pokemon.Nature);
+        }
+
+        private void WriteRouletteData(Rom rom, byte[] wagers, XmlManager info)
+        {
+            // Write wagers
+            if (!info.FindAndSeekOffset(ElementNames.GenIII.rouletteWagers, rom) || wagers.Length != 4)
+                return;
+            rom.WriteBlock(wagers);
+
+            // Attempt text digits fix
+            ApplyRouletteTextFix(rom, wagers, info);
+            // Attempt low table fix
+            ApplyRouletteLowTableFix(rom, wagers, info);
+        }
+
+        private void ApplyRouletteTextFix(Rom rom, byte[] wagers, XmlManager info)
+        {
+            // By default, the roulette table only uses 1 digit to diplay wagers and up to 2 digits to display payouts
+            // This fix attempts to expand the number of digits used to accomodate for increased wagers
+            if (!info.HasElement(ElementNames.GenIII.rouletteWagerTextFix))
+                return;
+            byte maxWager = wagers.Max();
+            // Wager Text (by default the wager only displays up to 1 digit)
+            byte maxWagerDigits = (byte)MathUtils.NumDigits(maxWager);
+            if (maxWagerDigits > 1)
+            {
+                rom.WriteByte(info.HexAttr(ElementNames.GenIII.rouletteWagerTextFix, "entryWagerDigitsOffset"), maxWagerDigits);
+                rom.WriteByte(info.HexAttr(ElementNames.GenIII.rouletteWagerTextFix, "specialWagerDigitsOffset"), maxWagerDigits);
+            }
+            // Payout Text
+            int maxPayoutDigits = MathUtils.NumDigits(maxWager * 12); // This uses int math
+            if (maxPayoutDigits > 2)
+            {
+                rom.WriteByte(info.HexAttr(ElementNames.GenIII.rouletteWagerTextFix, "payoutDigitsOffset"), (byte)maxPayoutDigits);
+            }
+        }
+
+        private void ApplyRouletteLowTableFix(Rom rom, byte[] wagers, XmlManager info)
+        {
+            // Several parts of the roulette code check which table they by checking if the wager is 1 (in the base game, the low table always has a wager of 1)
+            // This fix changes those checks so they check against the new low table wager
+            byte lowTableWager = wagers[0];
+            // No need to apply the low table fix if the low table wager is still 1
+            if (lowTableWager == 1 || !info.HasElement(ElementNames.GenIII.rouletteLowTableFix))
+                return;
+            // Update wager checks
+            rom.WriteByte(info.HexAttr(ElementNames.GenIII.rouletteLowTableFix, "bgCheckOffset"), lowTableWager);
+            rom.WriteByte(info.HexAttr(ElementNames.GenIII.rouletteLowTableFix, "setBallCounterCheckOffset"), lowTableWager);
+            rom.WriteByte(info.HexAttr(ElementNames.GenIII.rouletteLowTableFix, "startSpinCheckOffset"), lowTableWager);
+            // Fix start spin ASM
+            // The start spin routine assumes that the wager is 1 if the check is passed and uses the wager value for the board spin delay
+            // If the wager check is changed to pass when the wager != 1, then the ASM needs to be modified to decouple the board spin delay from the wager amount
+            int offset = info.HexAttr(ElementNames.GenIII.rouletteLowTableFix, "startSpinAsmOffset");
+            var asm = info.ByteArrayAttr(ElementNames.GenIII.rouletteLowTableFix, "startSpinAsm");
+            rom.WriteBlock(offset, asm);
         }
 
         public class RepointList : List<(int, int)>

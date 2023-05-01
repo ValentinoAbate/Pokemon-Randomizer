@@ -73,6 +73,9 @@
             public const string stevenAllyBattle = "stevenAllyBattle";
             public const string battleTents = "battleTents";
             public const string frontierHeldItems = "frontierHeldItems";
+            public const string rouletteWagers = "rouletteWagers";
+            public const string rouletteWagerTextFix = "rouletteWagerTextFix";
+            public const string rouletteLowTableFix = "rouletteLowTableFix";
         }
 
         public abstract class GenIV

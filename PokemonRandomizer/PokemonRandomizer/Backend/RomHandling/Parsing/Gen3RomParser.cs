@@ -102,6 +102,8 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
             ReadBattleFrontierItemTable(rom, data, info);
             // Read Battle Tents
             ReadBattleTents(rom, data, info);
+            // Read Game Corner Data
+            ReadRouletteData(rom, data, info);
             // Calculate the balance metrics from the loaded data
             data.CalculateMetrics();
             // Set PaletteOverrideKey for variant generator until I figure out a better way to do this
@@ -1022,6 +1024,13 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
             pokemon.Evs = (IHasFrontierTrainerEvs.EvFlags)rom.ReadByte();
             pokemon.Nature = (Nature)rom.ReadUInt32();
             return pokemon;
+        }
+
+        private void ReadRouletteData(Rom rom, RomData data, XmlManager info)
+        {
+            if (!info.FindAndSeekOffset(ElementNames.GenIII.rouletteWagers, rom))
+                return;
+            data.RouletteWagers =  rom.ReadBlock(4);
         }
     }
 }

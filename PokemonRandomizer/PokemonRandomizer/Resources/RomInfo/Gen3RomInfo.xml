@@ -228,7 +228,12 @@
 	<slateportBattleTent rewardsElement="slateportBattleTentRewards" pokemonElement="slateportBattleTentPokemon"/>
 	<slateportBattleTentRewards pointer="0x1B9E18" offset="0x616120"/>
 	<slateportBattleTentPokemon offset="0x5dE02C" num="70"/>
-
+	  
+	<!-- Game Corner -->
+	<rouletteWagers offset="0x5b6344"/>
+	<rouletteLowTableFix bgCheckOffset="0x1404F4" setBallCounterCheckOffset="0x143740" startSpinCheckOffset="0x140F80" startSpinAsmOffset="0x140F84" startSpinAsm="[0x23,0x31,0x01,0x20,0x08]"/>
+	<rouletteWagerTextFix entryWagerDigitsOffset="0x142AC4" specialWagerDigitsOffset="0x142A1E" payoutDigitsOffset="0x141A46"/>
+	  
   </BPEE0>
   
   <!-- Ruby / Sapphire Constants -->

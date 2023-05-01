@@ -139,6 +139,7 @@ namespace PokemonRandomizer.Backend.DataStructures
 
         public List<Item> BattleFrontierHeldItems { get; } = new();
         public List<BattleTent> BattleTents { get; } = new(3);
+        public byte[] RouletteWagers { get; set; } = Array.Empty<byte>();
 
         public int[] RivalRemap { get; set; }
 
