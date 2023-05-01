@@ -923,6 +923,8 @@ namespace PokemonRandomizer.Backend.Randomization
                 battleTentRandomizer.RandomizeBattleTent(battleTent, pokemonSet, new Settings.PokemonSettings(), items);
             }
 
+            RandomizeGameCorner(data, settings);
+
             #endregion
 
             // Invoke delayed item randomizations in a random order
@@ -1085,6 +1087,21 @@ namespace PokemonRandomizer.Backend.Randomization
                         berryTreeCommand.berry = rand.Choice(berries).Item;
                     }
                 }
+            }
+        }
+
+        private void RandomizeGameCorner(RomData data, Settings s)
+        {
+            // WIP, just return for now
+            return;
+            // Randomize Roulette Table Wagers (if applicable)
+            // The wagers are as follows: [leftTableNormal,rightTableNormal,leftTableSpecial,rightTableSpecial]
+            if (data.RouletteWagers.Length > 0)
+            {
+                byte baseWager = 16;
+                data.RouletteWagers[0] = data.RouletteWagers[2] = baseWager;
+                data.RouletteWagers[1] = (byte)Math.Min(baseWager * 3, byte.MaxValue);
+                data.RouletteWagers[3] = (byte)Math.Min(baseWager * 6, byte.MaxValue);
             }
         }
 
