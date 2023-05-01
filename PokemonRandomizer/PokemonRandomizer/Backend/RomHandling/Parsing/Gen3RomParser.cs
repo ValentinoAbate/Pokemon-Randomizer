@@ -984,7 +984,6 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
                 data.BattleTents.Add(battleTent);
             }
         }
-
         private void ReadBattleTentRewards(BattleTent battleTent, Rom rom, XmlManager info)
         {
             if (!info.FindAndSeekOffset(info.Attr(battleTent.Name, "rewardsElement"), rom))
@@ -996,7 +995,6 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
                 itemIndex = rom.ReadUInt16();
             }
         }
-
         private void ReadBattleTentPokemon(BattleTent battleTent, Rom rom, XmlManager info)
         {
             var pokemonElement = info.Attr(battleTent.Name, "pokemonElement");
@@ -1009,7 +1007,6 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
                 battleTent.Pokemon.Add(ReadFrontierTrainerPokemon(rom));
             }
         }
-
         private FrontierTrainerPokemon ReadFrontierTrainerPokemon(Rom rom)
         {
             var pokemon = new FrontierTrainerPokemon()
