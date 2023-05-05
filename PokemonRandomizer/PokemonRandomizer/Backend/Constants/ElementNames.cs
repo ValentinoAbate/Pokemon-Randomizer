@@ -56,6 +56,9 @@
         // Map metadata
         public const string nonHeaderWeatherIsAltRoute = "nonHeaderWeatherIsAltRoute";
 
+        // Battle Frontier and Minigames
+        public const string frontierPokemon = "frontierPokemon";
+
         // Hacks and Tweaks / Misc
         public const string pcPotion = "pcPotion";
         public const string runIndoors = "runIndoors";

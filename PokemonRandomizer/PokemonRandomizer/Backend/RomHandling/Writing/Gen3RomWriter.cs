@@ -76,6 +76,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
                 WriteCatchingTutOpponent(data, rom, info);
             }
             // Frontier and Minigames
+            WriteBattleFrontier(rom, data, info);
             WriteBattleTents(rom, data.BattleTents, info);
             WriteRouletteData(rom, data.RouletteWagers, info);
 
@@ -1039,6 +1040,27 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
         }
 
         // Battle frontier and minigames
+
+        // Battle Frontier
+
+        private void WriteBattleFrontier(Rom rom, RomData data, XmlManager info)
+        {
+            WriteBattleFrontierTrainerPokemon(rom, data, info);
+        }
+
+        private void WriteBattleFrontierTrainerPokemon(Rom rom, RomData data, XmlManager info)
+        {
+            if (!info.FindAndSeekOffset(ElementNames.frontierPokemon, rom))
+                return;
+            int num = Math.Min(data.BattleFrontierTrainerPokemon.Count, info.Num(ElementNames.frontierPokemon));
+            for (int i = 0; i < num; i++)
+            {
+                WriteFrontierTrainerPokemon(rom, data.BattleFrontierTrainerPokemon[i]);
+            }
+        }
+
+        // Battle Tents
+
         private void WriteBattleTents(Rom rom, List<BattleTent> battleTents, XmlManager info)
         {
             foreach (var battleTent in battleTents)
@@ -1088,6 +1110,8 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
             rom.WriteRepeating(0x00, 2); // Array terminator
         }
 
+        // Shared Battle Frontier + Tent
+
         private void WriteFrontierTrainerPokemon(Rom rom, FrontierTrainerPokemon pokemon)
         {
             rom.WriteUInt16(PokemonToInternalIndex(pokemon.species));
@@ -1099,6 +1123,8 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
             rom.WriteByte((byte)pokemon.Evs);
             rom.WriteUInt32((int)pokemon.Nature);
         }
+
+        // Game Corner
 
         private void WriteRouletteData(Rom rom, byte[] wagers, XmlManager info)
         {

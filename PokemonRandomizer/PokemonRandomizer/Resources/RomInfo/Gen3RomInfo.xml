@@ -215,6 +215,7 @@
 	<!-- Battle Frontier and Minigames -->
 
 	<!-- Battle Frontier -->
+	<frontierPokemon pointer="0x165C80" num="882"/>
 	<frontierHeldItems pointer="0x163440" num="63"/>
 	  
 	<!-- Battle Tents -->

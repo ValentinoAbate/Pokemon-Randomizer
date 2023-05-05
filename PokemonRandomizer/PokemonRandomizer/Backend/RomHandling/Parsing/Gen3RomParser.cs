@@ -100,6 +100,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
             data.SetBerryTreeScript = ReadSetBerryTreeScript(rom, info, metadata);
             // Read Battle Frontier
             ReadBattleFrontierItemTable(rom, data, info);
+            ReadBattleFrontierTrainerPokemon(rom, data, info);
             // Read Battle Tents
             ReadBattleTents(rom, data, info);
             // Read Game Corner Data
@@ -961,6 +962,19 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
         }
 
         // Battle frontier and minigames
+
+        // Battle Frontier
+        private void ReadBattleFrontierTrainerPokemon(Rom rom, RomData data, XmlManager info)
+        {
+            if (!info.FindAndSeekOffset(ElementNames.frontierPokemon, rom))
+                return;
+            int num = info.Num(ElementNames.frontierPokemon);
+            data.BattleFrontierTrainerPokemon.Capacity = num;
+            for (int i = 0; i < num; i++)
+            {
+                data.BattleFrontierTrainerPokemon.Add(ReadFrontierTrainerPokemon(rom));
+            }
+        }
         private void ReadBattleFrontierItemTable(Rom rom, RomData data, XmlManager info)
         {
             if (!info.FindAndSeekOffset(ElementNames.GenIII.frontierHeldItems, rom))
@@ -972,6 +986,8 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
                 data.BattleFrontierHeldItems.Add(InternalIndexToItem(rom.ReadUInt16()));
             }
         }
+
+        // Battle Tents
         private void ReadBattleTents(Rom rom, RomData data, XmlManager info)
         {
             if (!info.HasElementWithAttr(ElementNames.GenIII.battleTents, AttributeNames.elementNames))
@@ -1009,6 +1025,8 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
                 battleTent.Pokemon.Add(ReadFrontierTrainerPokemon(rom));
             }
         }
+
+        // Fontier and Battle Tent (shared)
         private FrontierTrainerPokemon ReadFrontierTrainerPokemon(Rom rom)
         {
             var pokemon = new FrontierTrainerPokemon()
@@ -1026,6 +1044,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
             return pokemon;
         }
 
+        // Game corner
         private void ReadRouletteData(Rom rom, RomData data, XmlManager info)
         {
             if (!info.FindAndSeekOffset(ElementNames.GenIII.rouletteWagers, rom))
