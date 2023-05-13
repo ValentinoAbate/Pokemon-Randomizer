@@ -103,7 +103,7 @@ namespace PokemonRandomizer.UI.Views
         private List<WeightedSetUI<AddMoveSource>.MenuBoxItem> GetAddMoveWeightDropdown() => new List<WeightedSetUI<AddMoveSource>.MenuBoxItem>
         {
             new WeightedSetUI<AddMoveSource>.MenuBoxItem { Item = AddMoveSource.Random, Header="Random", ToolTip="The chance that a given bonus move will be a completely random move"},
-            new WeightedSetUI<AddMoveSource>.MenuBoxItem { Item = AddMoveSource.EggMoves, Header="Egg Moves", ToolTip="The chance that a bonus move will be one of the pokemon's egg moves",},
+            new WeightedSetUI<AddMoveSource>.MenuBoxItem { Item = AddMoveSource.EggMoves, Header="Egg Moves", ToolTip="The chance that a given bonus move will be one of the pokemon's egg moves",},
         };
 
         private const string bonusMoveWeightsTooltip = "The chances that determine which bonus move source is chosen for each bonus move granted";
