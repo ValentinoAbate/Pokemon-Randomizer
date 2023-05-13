@@ -17,8 +17,8 @@ namespace PokemonRandomizer.UI.Views
         public CompositeCollection WeatherOptionDropdown => new CompositeCollection()
         {
             new ComboBoxItem() {Content="Unchanged", ToolTip="Leave overworld weather as it is in the base game"},
-            new ComboBoxItem() {Content="Random", ToolTip="Choose a completely random stable overworld weather for each affected map. Uses weathers that have in-battle effects and those that are purely visual"},
-            new ComboBoxItem() {Content="Random Battle Weather", ToolTip="Choose a random stable overworld weather with in-battle effects for each affected map using a balanced set of chances"},
+            new ComboBoxItem() {Content="Random", ToolTip="Choose a random overworld weather for each affected map. Uses weathers that have in-battle effects and those that are purely visual"},
+            new ComboBoxItem() {Content="Random Battle Weather", ToolTip="Choose a random overworld weather with in-battle effects for each affected map using a balanced set of chances"},
             new ComboBoxItem() {Content="Custom Weather Chances", ToolTip="Set custom chances that determine which weather will be chosen for each affected map"},
         };
 
