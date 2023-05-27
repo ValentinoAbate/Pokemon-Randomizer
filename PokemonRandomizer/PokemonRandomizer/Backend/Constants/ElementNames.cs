@@ -58,6 +58,8 @@
 
         // Battle Frontier and Minigames
         public const string frontierPokemon = "frontierPokemon";
+        public const string frontierBrainPokemon = "frontierBrainPokemon";
+        public const string frontierFacilities = "frontierFacilities";
 
         // Hacks and Tweaks / Misc
         public const string pcPotion = "pcPotion";

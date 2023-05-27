@@ -101,6 +101,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
             // Read Battle Frontier
             ReadBattleFrontierItemTable(rom, data, info);
             ReadBattleFrontierTrainerPokemon(rom, data, info);
+            ReadBattleFrontierBrainPokemon(rom, data, info);
             // Read Battle Tents
             ReadBattleTents(rom, data, info);
             // Read Game Corner Data
@@ -975,6 +976,19 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
                 data.BattleFrontierTrainerPokemon.Add(ReadFrontierTrainerPokemon(rom));
             }
         }
+        private void ReadBattleFrontierBrainPokemon(Rom rom, RomData data, XmlManager info)
+        {
+            if (!info.FindAndSeekOffset(ElementNames.frontierBrainPokemon, rom))
+                return;
+            int numSymbols = 2;
+            int frontierBrainPartySize = 3;
+            int num = info.Num(ElementNames.frontierFacilities) * frontierBrainPartySize * numSymbols;
+            data.BattleFrontierBrainPokemon.Capacity = num;
+            for (int i = 0; i < num; i++)
+            {
+                data.BattleFrontierBrainPokemon.Add(ReadFrontierBrainTrainerPokemon(rom));
+            }
+        }
         private void ReadBattleFrontierItemTable(Rom rom, RomData data, XmlManager info)
         {
             if (!info.FindAndSeekOffset(ElementNames.GenIII.frontierHeldItems, rom))
@@ -985,6 +999,24 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
             {
                 data.BattleFrontierHeldItems.Add(InternalIndexToItem(rom.ReadUInt16()));
             }
+        }
+
+        private FrontierBrainTrainerPokemon ReadFrontierBrainTrainerPokemon(Rom rom)
+        {
+            var pokemon = new FrontierBrainTrainerPokemon()
+            {
+                dataType = TrainerPokemon.DataType.SpecialMovesAndHeldItem,
+            };
+            pokemon.species = InternalIndexToPokemon(rom.ReadUInt16());
+            pokemon.heldItem = InternalIndexToItem(rom.ReadUInt16());
+            pokemon.IVLevel = rom.ReadByte();
+            pokemon.Nature = (Nature) rom.ReadByte();
+            pokemon.EVs = rom.ReadBlock(PokemonBaseStats.numStats);
+            for (int i = 0; i < TrainerPokemon.numMoves; ++i)
+            {
+                pokemon.moves[i] = InternalIndexToMove(rom.ReadUInt16());
+            }
+            return pokemon;
         }
 
         // Battle Tents

@@ -215,7 +215,9 @@
 	<!-- Battle Frontier and Minigames -->
 
 	<!-- Battle Frontier -->
+	<frontierFacilities num ="7"/>
 	<frontierPokemon pointer="0x165C80" num="882"/>
+	<frontierBrainPokemon offset="0x61156c"/>
 	<frontierHeldItems pointer="0x163440" num="63"/>
 	  
 	<!-- Battle Tents -->
