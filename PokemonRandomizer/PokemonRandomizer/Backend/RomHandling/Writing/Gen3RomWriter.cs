@@ -1046,6 +1046,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
         private void WriteBattleFrontier(Rom rom, RomData data, XmlManager info)
         {
             WriteBattleFrontierTrainerPokemon(rom, data, info);
+            WriteBattleFrontierBrainPokemon(rom, data, info);
         }
 
         private void WriteBattleFrontierTrainerPokemon(Rom rom, RomData data, XmlManager info)
@@ -1122,6 +1123,29 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
             rom.WriteByte((byte)pokemon.HeldItemIndex);
             rom.WriteByte((byte)pokemon.Evs);
             rom.WriteUInt32((int)pokemon.Nature);
+        }
+
+        private void WriteBattleFrontierBrainPokemon(Rom rom, RomData data, XmlManager info)
+        {
+            if (!info.FindAndSeekOffset(ElementNames.frontierBrainPokemon, rom))
+                return;
+            foreach(var pokemon in data.BattleFrontierBrainPokemon) 
+            { 
+                WriteFrontierBrainTrainerPokemon(rom, pokemon);
+            }
+        }
+
+        private void WriteFrontierBrainTrainerPokemon(Rom rom, FrontierBrainTrainerPokemon pokemon)
+        {
+            rom.WriteUInt16(PokemonToInternalIndex(pokemon.species));
+            rom.WriteUInt16(ItemToInternalIndex(RemapItem(pokemon.heldItem)));
+            rom.WriteByte((byte)pokemon.IVLevel);
+            rom.WriteByte((byte)pokemon.Nature);
+            rom.WriteBlock(pokemon.EVs);
+            for (int i = 0; i < TrainerPokemon.numMoves; ++i)
+            {
+                rom.WriteUInt16(MoveToInternalIndex(pokemon.moves[i]));
+            }
         }
 
         // Game Corner
