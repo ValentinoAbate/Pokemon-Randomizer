@@ -980,8 +980,8 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
         {
             if (!info.FindAndSeekOffset(ElementNames.frontierBrainPokemon, rom))
                 return;
-            int numSymbols = 2;
-            int frontierBrainPartySize = 3;
+            const int numSymbols = 2;
+            const int frontierBrainPartySize = 3;
             int num = info.Num(ElementNames.frontierFacilities) * frontierBrainPartySize * numSymbols;
             data.BattleFrontierBrainPokemon.Capacity = num;
             for (int i = 0; i < num; i++)

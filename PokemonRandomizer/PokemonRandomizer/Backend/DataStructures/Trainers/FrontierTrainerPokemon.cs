@@ -1,4 +1,5 @@
 ﻿using PokemonRandomizer.Backend.EnumTypes;
+using PokemonRandomizer.Backend.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,5 +13,10 @@ namespace PokemonRandomizer.Backend.DataStructures.Trainers
         public Nature Nature { get; set; }
         public IHasFrontierTrainerEvs.EvFlags Evs { get; set; }
         public int HeldItemIndex { get; set; }
+
+        public override string ToString()
+        {
+            return $"{species.ToDisplayString()} ({Nature})";
+        }
     }
 }
