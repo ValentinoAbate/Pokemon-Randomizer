@@ -100,6 +100,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
             data.SetBerryTreeScript = ReadSetBerryTreeScript(rom, info, metadata);
             // Read Battle Frontier
             ReadBattleFrontierItemTable(rom, data, info);
+            ReadBattleFrontierTutorIndices(rom, data, info);
             ReadBattleFrontierTrainerPokemon(rom, data, info);
             ReadBattleFrontierBrainPokemon(rom, data, info);
             // Read Battle Tents
@@ -999,6 +1000,30 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
             {
                 data.BattleFrontierHeldItems.Add(InternalIndexToItem(rom.ReadUInt16()));
             }
+        }
+
+        private void ReadBattleFrontierTutorIndices(Rom rom, RomData data, XmlManager info)
+        {
+            if (!info.FindAndSeekOffset(ElementNames.GenIII.frontierTutorMoves1, rom))
+                return;
+            int num = info.Num(ElementNames.GenIII.frontierTutorMoves1);
+            data.BattleFrontierTutorIndices.Add(ReadBattleFrontierTutorIndicesArray(rom, data, num));
+            if (!info.FindAndSeekOffset(ElementNames.GenIII.frontierTutorMoves2, rom))
+                return;
+            num = info.Num(ElementNames.GenIII.frontierTutorMoves2);
+            data.BattleFrontierTutorIndices.Add(ReadBattleFrontierTutorIndicesArray(rom, data, num));
+        }
+
+        private List<int> ReadBattleFrontierTutorIndicesArray(Rom rom, RomData data, int num)
+        {
+            var tutorIndexList = new List<int>(num);
+            for (int i = 0; i < num; ++i)
+            {
+                var tutorMove = InternalIndexToMove(rom.ReadUInt16());
+
+                tutorIndexList.Add(Array.IndexOf(data.TutorMoves, tutorMove));
+            }
+            return tutorIndexList;
         }
 
         private FrontierBrainTrainerPokemon ReadFrontierBrainTrainerPokemon(Rom rom)

@@ -140,6 +140,7 @@ namespace PokemonRandomizer.Backend.DataStructures
         public List<FrontierTrainerPokemon> BattleFrontierTrainerPokemon { get; } = new();
         public List<FrontierBrainTrainerPokemon> BattleFrontierBrainPokemon { get; } = new();
         public List<Item> BattleFrontierHeldItems { get; } = new();
+        public List<List<int>> BattleFrontierTutorIndices { get; } = new();
         public List<BattleTent> BattleTents { get; } = new(3);
         public byte[] RouletteWagers { get; set; } = Array.Empty<byte>();
 

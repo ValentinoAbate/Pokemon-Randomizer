@@ -1047,6 +1047,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
         {
             WriteBattleFrontierTrainerPokemon(rom, data, info);
             WriteBattleFrontierBrainPokemon(rom, data, info);
+            WriteBattleFrontierTutorMoves(rom, data, info);
         }
 
         private void WriteBattleFrontierTrainerPokemon(Rom rom, RomData data, XmlManager info)
@@ -1145,6 +1146,29 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
             for (int i = 0; i < TrainerPokemon.numMoves; ++i)
             {
                 rom.WriteUInt16(MoveToInternalIndex(pokemon.moves[i]));
+            }
+        }
+
+        private void WriteBattleFrontierTutorMoves(Rom rom, RomData data, XmlManager info)
+        {
+            if (data.BattleFrontierTutorIndices.Count < 1 || !info.FindAndSeekOffset(ElementNames.GenIII.frontierTutorMoves1, rom))
+                return;
+            WriteBattleFrontierTutorIndicesArray(rom, data.BattleFrontierTutorIndices[0], data.TutorMoves);
+            if (data.BattleFrontierTutorIndices.Count < 2 || !info.FindAndSeekOffset(ElementNames.GenIII.frontierTutorMoves2, rom))
+                return;
+            WriteBattleFrontierTutorIndicesArray(rom, data.BattleFrontierTutorIndices[1], data.TutorMoves);
+        }
+
+        private void WriteBattleFrontierTutorIndicesArray(Rom rom, List<int> tutorIndices, Move[] tutorMoves)
+        {
+            foreach (var index in tutorIndices)
+            {
+                if(index < 0 || index >= tutorMoves.Length)
+                {
+                    Logger.main.Error($"Improper battle frontier tutor index ({index}). Frontier tutors may not work correctly");
+                    return;
+                }
+                rom.WriteUInt16(MoveToInternalIndex(tutorMoves[index]));
             }
         }
 
