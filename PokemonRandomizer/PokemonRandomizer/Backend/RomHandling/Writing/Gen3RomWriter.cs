@@ -1198,7 +1198,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
                 }
                 else
                 {
-                    Logger.main.Error($"Not enough free space to write battle frontier tutor multichoice text: {newDescription}");
+                    Logger.main.Error($"Not enough free space to write battle frontier tutor description text: {newDescription}");
                 }
             }
             WriteScrollableMultichoiceText(rom, info, multichoiceTextIndex, multichoiceText);
