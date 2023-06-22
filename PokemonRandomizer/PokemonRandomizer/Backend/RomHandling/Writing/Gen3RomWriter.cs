@@ -945,7 +945,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
             ("Ensnares", "Snares"), ("Senses the foe’s action", "Senses action"), ("Wraps and squeezes", "Squeezes"),
             ("Strikes the foe with", "Strikes with"), ("strike the foe", "strike"), ("Envelops", "Covers"), ("stop it from", "prevent"),
             ("over 2 to 6 turns", "2 to 6 times"), ("if the TRAINER is disliked", "with lower friendship"),
-            ("Torments the foe and stops", "Torments the foe to stop"), ("POKéMON move", "move"), ("is also made to", " will also"),
+            ("Torments the foe and stops", "Torments the foe to stop"), ("POKéMON move", "move"), ("is also made to", "will also"),
             ("always induce","induce")
         };
 
