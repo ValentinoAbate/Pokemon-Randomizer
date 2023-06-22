@@ -1154,16 +1154,16 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
             if (data.BattleFrontierTutorIndices.Count < 1 || !info.FindAndSeekOffset(ElementNames.GenIII.frontierTutorMoves1, rom))
                 return;
             int multichoiceTextIndex = info.IntAttr(ElementNames.GenIII.frontierTutorMoves1, "multichoiceTextIndex");
-            var multichoiceText = WriteBattleFrontierTutor(rom, info, data.BattleFrontierTutorIndices[0], data.TutorMoves, multichoiceTextIndex);
-            WriteScrollableMultichoiceText(rom, info, multichoiceTextIndex, multichoiceText);
+            int descriptionTextOffset = rom.ReadPointer(info.HexAttr(ElementNames.GenIII.frontierTutorMoves1, "descriptionTextsPointer"));
+            WriteBattleFrontierTutor(rom, data, info, data.BattleFrontierTutorIndices[0], data.TutorMoves, multichoiceTextIndex, descriptionTextOffset);
             if (data.BattleFrontierTutorIndices.Count < 2 || !info.FindAndSeekOffset(ElementNames.GenIII.frontierTutorMoves2, rom))
                 return;
             multichoiceTextIndex = info.IntAttr(ElementNames.GenIII.frontierTutorMoves2, "multichoiceTextIndex");
-            multichoiceText = WriteBattleFrontierTutor(rom, info, data.BattleFrontierTutorIndices[1], data.TutorMoves, multichoiceTextIndex);
-            WriteScrollableMultichoiceText(rom, info, multichoiceTextIndex, multichoiceText);
+            descriptionTextOffset = rom.ReadPointer(info.HexAttr(ElementNames.GenIII.frontierTutorMoves2, "descriptionTextsPointer"));
+            WriteBattleFrontierTutor(rom, data, info, data.BattleFrontierTutorIndices[1], data.TutorMoves, multichoiceTextIndex, descriptionTextOffset);
         }
 
-        private List<string> WriteBattleFrontierTutor(Rom rom, XmlManager info, List<int> tutorIndices, Move[] tutorMoves, int multichoiceTextIndex)
+        private void WriteBattleFrontierTutor(Rom rom, RomData romData, XmlManager info, List<int> tutorIndices, Move[] tutorMoves, int multichoiceTextIndex, int descriptionTextOffset)
         {
             var oldMultiChoiceText = ReadScrollableMultichoiceText(rom, info, multichoiceTextIndex);
             var multichoiceText = new List<string>(tutorIndices.Count);
@@ -1173,7 +1173,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
                 if (index < 0 || index >= tutorMoves.Length)
                 {
                     Logger.main.Error($"Improper battle frontier tutor index ({index}). Frontier tutors may not work correctly");
-                    return multichoiceText;
+                    return;
                 }
                 var newMove = tutorMoves[index];
                 var oldMove = InternalIndexToMove(rom.ReadUInt16(rom.InternalOffset));
@@ -1182,8 +1182,26 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
                 {
                     multichoiceText.Add(oldMultiChoiceText[i].Replace(oldMove.ToDisplayString(), newMove.ToDisplayString()));
                 }
+                if(oldMove == newMove)
+                {
+                    continue;
+                }
+                // Remap move description
+                string newDescription = TextUtils.ReformatAndAbbreviate(romData.GetMoveData(newMove).Description, '\n',
+                            16, 3, tmDescriptionRemovals, tmDescriptionReplacements);
+                var newTextEncoded = rom.TranslateString(newDescription, true);
+                var newOffset = rom.WriteInFreeSpace(newTextEncoded);
+                if (newOffset.HasValue)
+                {
+                    int moveDescriptionOffset = descriptionTextOffset + (i * Rom.pointerSize);
+                    rom.WritePointer(moveDescriptionOffset, newOffset.Value);
+                }
+                else
+                {
+                    Logger.main.Error($"Not enough free space to write battle frontier tutor multichoice text: {newDescription}");
+                }
             }
-            return multichoiceText;
+            WriteScrollableMultichoiceText(rom, info, multichoiceTextIndex, multichoiceText);
         }
 
         // Game Corner
