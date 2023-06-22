@@ -6,7 +6,11 @@ namespace PokemonRandomizer.Backend.Utilities
     public static class TextUtils
     {
         public static string Reformat(string text, char newline, int maxLineLength) => Reformat(text, newline, maxLineLength, out int _);
-        public static string Reformat(string text, char newline, int maxLineLength, out int numLines)
+        public static string Reformat(string text, char newline, int maxLineLength, out int numLines, int maxLines)
+        {
+            return Reformat(text, newline, maxLineLength, out numLines, false, maxLines);
+        }
+        public static string Reformat(string text, char newline, int maxLineLength, out int numLines, bool allowHyphenation = false, int maxLines = int.MaxValue)
         {
             if (string.IsNullOrWhiteSpace(text))
             {
@@ -23,14 +27,30 @@ namespace PokemonRandomizer.Backend.Utilities
             string line = tokens[0];
             for (int i = 1; i < tokens.Length; ++i)
             {
-                if(line.Length + tokens[i].Length > maxLineLength)
+                string word = tokens[i];
+                if(line.Length + word.Length + 1 > maxLineLength)
                 {
-                    lines.Add(line);
-                    line = tokens[i];
+                    int splitIndex = maxLineLength - line.Length - 2;
+                    if(i == tokens.Length - 1 && line.Length + word.Length == maxLineLength && lines.Count == maxLines - 1 && word[^1] == '.')
+                    {
+                        line += $" {word[..(word.Length-1)]}";
+                        lines.Add(line);
+                    }
+                    else if (allowHyphenation && splitIndex > 1 && word.Length - splitIndex > 1)
+                    {
+                        line += $" {word[..splitIndex]}-";
+                        lines.Add(line);
+                        line = word[splitIndex..];
+                    }
+                    else
+                    {
+                        lines.Add(line);
+                        line = word;
+                    }
                 }
                 else
                 {
-                    line += ' ' + tokens[i];
+                    line += ' ' + word;
                 }
                 // Add the last line even if it doesn't overflow
                 if(i == tokens.Length - 1)
@@ -44,7 +64,7 @@ namespace PokemonRandomizer.Backend.Utilities
 
         public static string ReformatAndAbbreviate(string text, char newline, int maxLineLength, int maxLines, string[] toRemove, (string, string)[] toReplace)
         {
-            string reformatted = Reformat(text, newline, maxLineLength, out int lines);
+            string reformatted = Reformat(text, newline, maxLineLength, out int lines, maxLines);
             if (lines <= maxLines)
                 return reformatted;
             Logger.main.Info($"Text ({RemoveNewLines(text)}) with greater than {maxLines} lines ({lines}) detected after reformat. Attempting abbreviation");
@@ -59,7 +79,14 @@ namespace PokemonRandomizer.Backend.Utilities
                 // try replacements
                 abbreviated = ReplaceAll(abbreviated, toReplace);
             }
-            reformatted = Reformat(abbreviated, newline, maxLineLength, out lines);
+            reformatted = Reformat(abbreviated, newline, maxLineLength, out lines, maxLines);
+            if (lines <= maxLines)
+            {
+                Logger.main.Info($"Reformat successful, text ({RemoveNewLines(reformatted)}) is now {lines} lines");
+                return reformatted;
+            }
+            // Try hyphenating
+            reformatted = Reformat(abbreviated, newline, maxLineLength, out lines, true, maxLines);
             if (lines <= maxLines)
             {
                 Logger.main.Info($"Reformat successful, text ({RemoveNewLines(reformatted)}) is now {lines} lines");

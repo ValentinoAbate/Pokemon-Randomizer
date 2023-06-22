@@ -1188,7 +1188,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
                 }
                 // Remap move description
                 string newDescription = TextUtils.ReformatAndAbbreviate(romData.GetMoveData(newMove).Description, '\n',
-                            16, 3, tmDescriptionRemovals, tmDescriptionReplacements);
+                            17, 3, tmDescriptionRemovals, tmDescriptionReplacements);
                 var newTextEncoded = rom.TranslateString(newDescription, true);
                 var newOffset = rom.WriteInFreeSpace(newTextEncoded);
                 if (newOffset.HasValue)
