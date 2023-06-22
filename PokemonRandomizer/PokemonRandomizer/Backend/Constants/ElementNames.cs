@@ -84,6 +84,7 @@
             public const string rouletteWagers = "rouletteWagers";
             public const string rouletteWagerTextFix = "rouletteWagerTextFix";
             public const string rouletteLowTableFix = "rouletteLowTableFix";
+            public const string scrollableMultichoiceOptions = "scrollableMultichoiceOptions";
         }
 
         public abstract class GenIV

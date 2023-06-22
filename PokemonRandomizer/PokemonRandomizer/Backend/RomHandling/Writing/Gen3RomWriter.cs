@@ -1153,23 +1153,37 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
         {
             if (data.BattleFrontierTutorIndices.Count < 1 || !info.FindAndSeekOffset(ElementNames.GenIII.frontierTutorMoves1, rom))
                 return;
-            WriteBattleFrontierTutorIndicesArray(rom, data.BattleFrontierTutorIndices[0], data.TutorMoves);
+            int multichoiceTextIndex = info.IntAttr(ElementNames.GenIII.frontierTutorMoves1, "multichoiceTextIndex");
+            var multichoiceText = WriteBattleFrontierTutor(rom, info, data.BattleFrontierTutorIndices[0], data.TutorMoves, multichoiceTextIndex);
+            WriteScrollableMultichoiceText(rom, info, multichoiceTextIndex, multichoiceText);
             if (data.BattleFrontierTutorIndices.Count < 2 || !info.FindAndSeekOffset(ElementNames.GenIII.frontierTutorMoves2, rom))
                 return;
-            WriteBattleFrontierTutorIndicesArray(rom, data.BattleFrontierTutorIndices[1], data.TutorMoves);
+            multichoiceTextIndex = info.IntAttr(ElementNames.GenIII.frontierTutorMoves2, "multichoiceTextIndex");
+            multichoiceText = WriteBattleFrontierTutor(rom, info, data.BattleFrontierTutorIndices[1], data.TutorMoves, multichoiceTextIndex);
+            WriteScrollableMultichoiceText(rom, info, multichoiceTextIndex, multichoiceText);
         }
 
-        private void WriteBattleFrontierTutorIndicesArray(Rom rom, List<int> tutorIndices, Move[] tutorMoves)
+        private List<string> WriteBattleFrontierTutor(Rom rom, XmlManager info, List<int> tutorIndices, Move[] tutorMoves, int multichoiceTextIndex)
         {
-            foreach (var index in tutorIndices)
+            var oldMultiChoiceText = ReadScrollableMultichoiceText(rom, info, multichoiceTextIndex);
+            var multichoiceText = new List<string>(tutorIndices.Count);
+            for (int i = 0; i < tutorIndices.Count; i++)
             {
-                if(index < 0 || index >= tutorMoves.Length)
+                int index = tutorIndices[i];
+                if (index < 0 || index >= tutorMoves.Length)
                 {
                     Logger.main.Error($"Improper battle frontier tutor index ({index}). Frontier tutors may not work correctly");
-                    return;
+                    return multichoiceText;
                 }
-                rom.WriteUInt16(MoveToInternalIndex(tutorMoves[index]));
+                var newMove = tutorMoves[index];
+                var oldMove = InternalIndexToMove(rom.ReadUInt16(rom.InternalOffset));
+                rom.WriteUInt16(MoveToInternalIndex(newMove));
+                if(i < oldMultiChoiceText.Count)
+                {
+                    multichoiceText.Add(oldMultiChoiceText[i].Replace(oldMove.ToDisplayString(), newMove.ToDisplayString()));
+                }
             }
+            return multichoiceText;
         }
 
         // Game Corner
@@ -1227,6 +1241,115 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
             int offset = info.HexAttr(ElementNames.GenIII.rouletteLowTableFix, "startSpinAsmOffset");
             var asm = info.ByteArrayAttr(ElementNames.GenIII.rouletteLowTableFix, "startSpinAsm");
             rom.WriteBlock(offset, asm);
+        }
+
+        // MultichoiceText Helpers
+
+        private void WriteScrollableMultichoiceText(Rom rom, XmlManager info, int index, IList<string> options)
+        {
+            // Basic Checks
+            if(index < 0 || !options.Any()) 
+                return;
+            // Save and seek offset
+            rom.SaveOffset();
+            if(!info.FindAndSeekOffset(ElementNames.GenIII.scrollableMultichoiceOptions, rom))
+            {
+                rom.DumpOffset();
+                return;
+            }
+            // Check if index is within bounds
+            int num = info.Num(ElementNames.GenIII.scrollableMultichoiceOptions);
+            if (index >= num)
+            {
+                rom.LoadOffset();
+                return;
+            }
+            // Seek specific multichoice
+            int numOptions = info.IntAttr(ElementNames.GenIII.scrollableMultichoiceOptions, "numOptions");
+            rom.Skip(numOptions * Rom.pointerSize * index);
+
+            for (int i = 0; i < options.Count; i++)
+            {
+                if(i >= options.Count)
+                {
+                    rom.WritePointer(Rom.nullPointer);
+                    continue;
+                }
+                int address = rom.ReadPointer();
+                if (address == Rom.nullPointer)
+                {
+                    continue;
+                }
+                string oldText = rom.ReadVariableLengthString(address);
+                string newText = options[i];
+                if(oldText == newText)
+                {
+                    continue;
+                }
+                if(newText.Length <= oldText.Length) 
+                {
+                    rom.WriteVariableLengthString(address, newText);
+                    continue;
+                }
+                // Needs repoint
+                var newTextEncoded = rom.TranslateString(newText, true);
+                var newOffset = rom.WriteInFreeSpace(newTextEncoded);
+                if (newOffset.HasValue)
+                {
+                    rom.Skip(-Rom.pointerSize);
+                    rom.WritePointer(newOffset.Value);
+                }
+                else
+                {
+                    Logger.main.Error($"Not enough free space to write battle frontier tutor multichoice text: {newText}");
+                }
+            }
+
+            rom.LoadOffset();
+            return;
+        }
+
+        private IReadOnlyList<string> ReadScrollableMultichoiceText(Rom rom, XmlManager info, int index)
+        {
+            // Basic Checks
+            if (index < 0)
+            {
+                return Array.Empty<string>();
+            }
+
+            // Save and seek offset
+            rom.SaveOffset();
+            if (!info.FindAndSeekOffset(ElementNames.GenIII.scrollableMultichoiceOptions, rom))
+            {
+                rom.DumpOffset();
+                return Array.Empty<string>();
+            }
+            // Check if index is within bounds
+            int num = info.Num(ElementNames.GenIII.scrollableMultichoiceOptions);
+            if (index >= num)
+            {
+                rom.LoadOffset();
+                return Array.Empty<string>();
+            }
+
+            // Seek specific multichoice
+            int numOptions = info.IntAttr(ElementNames.GenIII.scrollableMultichoiceOptions, "numOptions");
+            rom.Skip(numOptions * Rom.pointerSize * index);
+
+            var options = new string[numOptions];
+            for (int i = 0; i < options.Length; i++)
+            {
+                int address = rom.ReadPointer();
+                if (address == Rom.nullPointer)
+                {
+                    options[i] = string.Empty;
+                    continue;
+                }
+                options[i] = rom.ReadVariableLengthString(address);
+            }
+
+            rom.LoadOffset();
+            return options;
         }
 
         public class RepointList : List<(int, int)>
