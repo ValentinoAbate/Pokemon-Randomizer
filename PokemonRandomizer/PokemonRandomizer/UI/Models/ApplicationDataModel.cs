@@ -13,6 +13,7 @@ namespace PokemonRandomizer.UI.Models
         public TrainerOrganizationDataModel TrainerOrgData { get; set; } = new TrainerOrganizationDataModel();
         public ItemDataModel ItemData { get; set; } = new ItemDataModel();
         public WeatherDataModel WeatherData { get; set; } = new WeatherDataModel();
+        public PostgameAndSideContentDataModel  PostgameAndSideContentData { get; set; } = new PostgameAndSideContentDataModel();
         public MiscDataModel MiscData { get; set; } = new MiscDataModel();
     }
 }

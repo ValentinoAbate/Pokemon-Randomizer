@@ -104,6 +104,8 @@ namespace PokemonRandomizer
         private const string checkAboutHelpMessage = "Please check Help->About for a list of supported ROMs";
         private const string debugSeed = "DEBUG";
 
+        private object DefaultTabSelection => TmHmTutorView;
+
         private ApplicationDataModel AppData { get; set; }
 
         public Settings AppSettings => UseHardCodedSettings ? hardCodedSettings : appSettings;
@@ -250,6 +252,20 @@ namespace PokemonRandomizer
             MiscView.Content = new MiscDataView(AppData.MiscData, metadata);
             TrainerOrgView.Content = new TrainerOrganizationDataView(AppData.TrainerOrgData, metadata);
             ItemsView.Content = new ItemDataView(AppData.ItemData, data.GetAllItemsOrdered(true), metadata);
+            // Post game and side content tab (if supported)
+            if (metadata.IsEmerald)
+            {
+                PostgameAndSideContentView.Visibility = Visibility.Visible;
+                PostgameAndSideContentView.Content = new PostgameAndSideContentDataView(AppData.PostgameAndSideContentData, metadata);
+            }
+            else
+            {
+                PostgameAndSideContentView.Visibility = Visibility.Collapsed;
+                if (MainTabControl.SelectedItem == PostgameAndSideContentView)
+                {
+                    MainTabControl.SelectedItem = DefaultTabSelection;
+                }
+            }
         }
 
         private void SetLastRandomizationInfo(RomData data, RomMetadata metadata, bool includeSettingsString)

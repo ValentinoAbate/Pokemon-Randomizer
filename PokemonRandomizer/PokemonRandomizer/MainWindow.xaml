@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:PokemonRandomizer"
         xmlns:converter="clr-namespace:PokemonRandomizer.Converters"
         mc:Ignorable="d"
-        Title="Procedural Pokemon Randomizer (Beta)" Height="660" Width="950">
+        Title="Procedural Pokemon Randomizer (Beta)" Height="660" Width="970">
 
     <!--Main Window Resources-->
 
@@ -138,6 +138,10 @@
             </TabItem>
 
             <TabItem Name="WeatherView" Header="Weather">
+
+            </TabItem>
+
+            <TabItem Name="PostgameAndSideContentView" Header="Postgame and Side Content">
 
             </TabItem>
 
