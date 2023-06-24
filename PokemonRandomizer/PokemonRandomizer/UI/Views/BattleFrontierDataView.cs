@@ -9,7 +9,7 @@ namespace PokemonRandomizer.UI.Views
 {
     public class BattleFrontierDataView : DataView<BattleFrontierDataModel>
     {
-        private static CompositeCollection PowerScalingDropdown => new()
+        public static CompositeCollection PowerScalingDropdown => new()
         {
             new ComboBoxItem() { Content = "Power Scaled", ToolTip = "Pokemon and move choices will be scaled by the original pokemon's power and moveset" },
             new ComboBoxItem() { Content = "All Strongest", ToolTip = "Pokemon and move choices will be calculated as if the pokemon were level 100" },
