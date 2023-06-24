@@ -24,14 +24,12 @@ namespace PokemonRandomizer.UI.Models
 
         public Box<bool> RandomizeRentalPokemon { get; set; } = new Box<bool>();
         public Box<double> RentalPokemonRandChance { get; set; } = new Box<double>(1);
-        public Box<FrontierPokemonRandStrategy> RentalPokemonRandStrategy { get; set; } = new Box<FrontierPokemonRandStrategy>(FrontierPokemonRandStrategy.PowerScaled);
+        public Box<FrontierPokemonRandStrategy> RentalPokemonRandStrategy { get; set; } = new Box<FrontierPokemonRandStrategy>(FrontierPokemonRandStrategy.FixedLevel);
         public SpecialMoveSettingsUI.SpecialMoveSettingsWrapper RentalSpecialMoveSettings { get; set; } = new(UsageOption.Dynamic, Sources.All);
         public Box<bool> BanRentalLegendaries { get; set; } = new Box<bool>(true);
 
         // Prizes
 
         public Box<bool> RandomizePrizes { get; set; } = new Box<bool>(false);
-
-        public Box<double> BonusPrizes { get; set; } = new Box<double>(0);
     }
 }

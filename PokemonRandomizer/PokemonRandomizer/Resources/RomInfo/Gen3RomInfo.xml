@@ -227,13 +227,13 @@
 	  
 	<!-- Battle Tents -->
 	<battleTents elementNames="[verdanturfBattleTent,fallarborBattleTent,slateportBattleTent]"/>
-	<verdanturfBattleTent rewardsElement="verdanturfBattleTentRewards" pokemonElement="verdanturfBattleTentPokemon"/>
+	<verdanturfBattleTent rewardsElement="verdanturfBattleTentRewards" pokemonElement="verdanturfBattleTentPokemon" isRental="false"/>
 	<verdanturfBattleTentRewards pointer="0x1B9B20" offset="0x6160D4"/>
 	<verdanturfBattleTentPokemon offset="0x5DEC28" num="45"/>
-	<fallarborBattleTent rewardsElement="fallarborBattleTentRewards" pokemonElement="fallarborBattleTentPokemon"/>
+	<fallarborBattleTent rewardsElement="fallarborBattleTentRewards" pokemonElement="fallarborBattleTentPokemon" isRental="false"/>
 	<fallarborBattleTentRewards pointer="0x1B9C90" offset="0x6160F4"/>
 	<fallarborBattleTentPokemon offset="0x5DF69C" num="45"/>
-	<slateportBattleTent rewardsElement="slateportBattleTentRewards" pokemonElement="slateportBattleTentPokemon"/>
+	<slateportBattleTent rewardsElement="slateportBattleTentRewards" pokemonElement="slateportBattleTentPokemon" isRental="true"/>
 	<slateportBattleTentRewards pointer="0x1B9E18" offset="0x616120"/>
 	<slateportBattleTentPokemon offset="0x5dE02C" num="70"/>
 	  

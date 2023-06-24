@@ -36,8 +36,7 @@ namespace PokemonRandomizer.UI.Views
             rentalPokemonStack.Add(new BoundCheckBoxUI("Ban Legendaries", model.BanRentalLegendaries));
 
             stack.Header("Battle Tent Prize Randomization");
-            var prizeRand = stack.Add(new BoundCheckBoxUI("Randomize Battle Tent Prizes", model.RandomizePrizes));
-            stack.Add(prizeRand.BindEnabled(new BoundSliderUI("Bonus Battle Tent Prizes", model.BonusPrizes, false, 1, 0, 4)));
+            stack.Add(new BoundCheckBoxUI("Randomize Battle Tent Prizes", model.RandomizePrizes));
         }
     }
 }

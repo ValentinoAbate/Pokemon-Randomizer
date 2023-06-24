@@ -398,6 +398,14 @@ namespace PokemonRandomizer.AppSettings
 
         #endregion
 
+        #region Battle Frontier and Minigames
+
+
+        // Battle Tent Settings
+        public override BattleTentRandomizer.Settings GetBattleTentSettings(BattleTent tent) => new();
+
+        #endregion
+
         #region Misc
 
         public override bool UpgradeUnown => true;

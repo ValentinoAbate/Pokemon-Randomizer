@@ -1052,7 +1052,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
             var battleTents = info.ArrayAttr(ElementNames.GenIII.battleTents, AttributeNames.elementNames);
             foreach (var battleTentElement in battleTents)
             {
-                var battleTent = new BattleTent(battleTentElement);
+                var battleTent = new BattleTent(battleTentElement, info.BoolAttr(battleTentElement, "isRental"));
                 ReadBattleTentRewards(battleTent, rom, info);
                 ReadBattleTentPokemon(battleTent, rom, info);
                 battleTent.SetOriginalValues();

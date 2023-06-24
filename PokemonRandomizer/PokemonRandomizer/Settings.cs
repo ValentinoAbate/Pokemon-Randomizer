@@ -3,8 +3,12 @@ using PokemonRandomizer.Backend.DataStructures.Trainers;
 using PokemonRandomizer.Backend.EnumTypes;
 using PokemonRandomizer.Backend.Randomization;
 using PokemonRandomizer.Backend.Utilities;
+using PokemonRandomizer.UI;
 using PokemonRandomizer.UI.Models;
+using PokemonRandomizer.UI.Utilities;
 using System.Collections.Generic;
+using static PokemonRandomizer.Settings.SpecialMoveSettings;
+using static PokemonRandomizer.UI.Models.BattleFrontierDataModel;
 
 namespace PokemonRandomizer
 {
@@ -475,6 +479,14 @@ namespace PokemonRandomizer
         public abstract bool BanMinigameBerries { get; }
         public abstract bool BanEvBerries { get; }
         public abstract bool RemapBerries { get; }
+
+        #endregion
+
+        #region Battle Frontier and Minigames
+
+
+        // Battle Tent Settings
+        public abstract BattleTentRandomizer.Settings GetBattleTentSettings(BattleTent tent);
 
         #endregion
 

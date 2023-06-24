@@ -304,6 +304,12 @@ namespace PokemonRandomizer.Backend.Utilities
             return Array.ConvertAll(ArrayAttrLowerCase(element, attribute), PokemonTypeUtils.FromString);
         }
 
+        public bool BoolAttr(string element, string attribute)
+        {
+            var attr = Attr(element, attribute);
+            return attr != null && attr == "true";
+        }
+
         /// <summary> returns the given element's content as a string </summary> 
         public string StringElt(string element)
         {

@@ -68,7 +68,7 @@ namespace PokemonRandomizer.Backend.Randomization
             trainerOrgRand = new TrainerOrganizationRandomizer(rand, paletteModifier);
             starterRandomizer = new StarterRandomizer(pokeRand);
             typeChartRandomizer = new TypeChartRandomizer();
-            battleTentRandomizer = new BattleTentRandomizer(data, pokeRand, itemRand, delayedRandomizationCalls, movesetGenerator);
+            battleTentRandomizer = new BattleTentRandomizer(rand, data, pokeRand, itemRand, delayedRandomizationCalls, movesetGenerator);
         }
         // Apply mutations based on program settings.
         public RomData Randomize()
@@ -920,7 +920,7 @@ namespace PokemonRandomizer.Backend.Randomization
 
             foreach(var battleTent in data.BattleTents)
             {
-                battleTentRandomizer.RandomizeBattleTent(battleTent, pokemonSet, new Settings.PokemonSettings(), items);
+                battleTentRandomizer.RandomizeBattleTent(battleTent, settings.GetBattleTentSettings(battleTent), pokemonSet, items);
             }
 
             RandomizeGameCorner(data, settings);

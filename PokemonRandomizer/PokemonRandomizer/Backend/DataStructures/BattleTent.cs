@@ -11,9 +11,11 @@ namespace PokemonRandomizer.Backend.DataStructures
         public List<Item> Rewards { get; } = new List<Item>();
         public int OriginalRewardsCount { get; private set; }
         public List<FrontierTrainerPokemon> Pokemon { get; } = new List<FrontierTrainerPokemon>();
-        public BattleTent(string name)
+        public bool IsRental { get; }
+        public BattleTent(string name, bool isRental)
         {
             Name = name;
+            IsRental = isRental;
         }
 
         public void SetOriginalValues()

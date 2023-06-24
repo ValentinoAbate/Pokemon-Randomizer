@@ -28,6 +28,8 @@ namespace PokemonRandomizer.AppSettings
         private TrainerOrganizationDataModel trainerOrgData;
         private ItemDataModel itemData;
         private WeatherDataModel weatherData;
+        private BattleFrontierDataModel battleFrontierData;
+        private BattleTentDataModel battleTentData;
         private MiscDataModel miscData;
 
         public AppSettings(ApplicationDataModel data) : base(data) { }
@@ -49,6 +51,9 @@ namespace PokemonRandomizer.AppSettings
             trainerOrgData = data.TrainerOrgData;
             itemData = data.ItemData;
             weatherData = data.WeatherData;
+            var frontierAndMinigameData = data.PostgameAndSideContentData;
+            battleFrontierData = frontierAndMinigameData.FrontierData;
+            battleTentData = frontierAndMinigameData.BattleTentData;
             miscData = data.MiscData;
         }
 
@@ -468,6 +473,36 @@ namespace PokemonRandomizer.AppSettings
             UseTypeFilter = dreamTeamData.UseTypeFilter,
             TypeFilter = (new List<PokemonType>() { dreamTeamData.AllowedType1, dreamTeamData.AllowedType2, dreamTeamData.AllowedType3 }).Where(t => t != (PokemonType)19).ToArray()
         };
+
+        #endregion
+
+        #region Battle Frontier and Minigames
+
+
+        // Battle Tent Settings
+        public override BattleTentRandomizer.Settings GetBattleTentSettings(BattleTent tent)
+        {
+            var settings = new BattleTentRandomizer.Settings() 
+            { 
+                RandomizePrizes = battleTentData.RandomizePrizes,
+            };
+
+            if (tent.IsRental)
+            {
+                settings.PokemonRandChance = RandomChance(battleTentData.RandomizeRentalPokemon, battleTentData.RentalPokemonRandChance);
+                settings.PokemonRandStrategy = battleTentData.RentalPokemonRandStrategy;
+                settings.SpecialMoveSettings = battleTentData.RentalSpecialMoveSettings.Settings;
+                settings.BanLegendaries = battleTentData.BanRentalLegendaries;
+            }
+            else
+            {
+                settings.PokemonRandChance = RandomChance(battleTentData.RandomizePokemon, battleTentData.PokemonRandChance);
+                settings.PokemonRandStrategy = battleTentData.PokemonRandStrategy;
+                settings.SpecialMoveSettings = battleTentData.SpecialMoveSettings.Settings;
+                settings.BanLegendaries = battleTentData.BanLegendaries;
+            }
+            return settings;
+        }
 
         #endregion
 
