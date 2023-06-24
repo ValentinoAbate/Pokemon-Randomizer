@@ -613,6 +613,32 @@ namespace PokemonRandomizer
             }
         }
 
+        public class SpecialMoveSettings
+        {
+            public enum UsageOption
+            {
+                None,
+                Constant,
+                Dynamic,
+                Unlimited,
+            }
+
+            [System.Flags]
+            public enum Sources
+            {
+                None = 0,
+                TM = 1,
+                HM = 2,
+                Tutor = 4,
+                Egg = 8,
+                Special = 16,
+                All = TM | HM | Tutor | Egg | Special,
+            }
+
+            public UsageOption Usage { get; set; } = UsageOption.None;
+            public Sources AllowedSources { get; set; } = Sources.None;
+        }
+
         public class MetricData
         {
             public static MetricData Empty => new MetricData(emptyMetric, 4);

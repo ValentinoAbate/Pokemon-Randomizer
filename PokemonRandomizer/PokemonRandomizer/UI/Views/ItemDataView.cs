@@ -73,17 +73,18 @@ namespace PokemonRandomizer.UI.Views
         private const string discountSoldItemsTooltip = "Randomized items sold outside of stores and vending machines (e.g. the Lava Cookie lady in RSE) will be sold at their sell price instead of their buy price (min $100)." +
             "\nFor example, if the Lava Cookie lady is randomized to sell Protein, it will cost $4,900 instead of $9,800. This doesn't change the price it is bought or sold at in other stores";
 
+        private static Label CategoryLabel(string label) => new Label() { Content = label, Width = 125, FontSize = 14, VerticalAlignment = System.Windows.VerticalAlignment.Center };
         private TabItem CreateItemRandomizerSettingsTab(ItemDataModel model)
         {
             var stack = CreateStack();
             stack.Header("General Randomization");
-            SetItemCategorySize(stack.Add(new BoundFlagsEnumListBoxUI<Categories>("Banned Items", model.BannedCategories, GetItemCategoryDropDown, CategoryOrEquals, banItemTooltip)).ListBox);
-            SetItemCategorySize(stack.Add(new BoundFlagsEnumListBoxUI<Categories>("Skipped Items", model.SkipCategories, GetItemCategoryDropDown, CategoryOrEquals, skipItemTooltip)).ListBox);
+            SetItemCategorySize(stack.Add(new BoundFlagsEnumListBoxUI<Categories>(CategoryLabel("Banned Items"), model.BannedCategories, GetItemCategoryDropDown, CategoryOrEquals, banItemTooltip)).ListBox);
+            SetItemCategorySize(stack.Add(new BoundFlagsEnumListBoxUI<Categories>(CategoryLabel("Skipped Items"), model.SkipCategories, GetItemCategoryDropDown, CategoryOrEquals, skipItemTooltip)).ListBox);
             stack.Header("Duplicate Reduction");
-            SetItemCategorySize(stack.Add(new BoundFlagsEnumListBoxUI<Categories>("Reduce Duplicates", model.ReduceDuplicatesCategories, GetItemCategoryDropDown, CategoryOrEquals, reduceDuplicatesTooltip)).ListBox);
+            SetItemCategorySize(stack.Add(new BoundFlagsEnumListBoxUI<Categories>(CategoryLabel("Reduce Duplicates"), model.ReduceDuplicatesCategories, GetItemCategoryDropDown, CategoryOrEquals, reduceDuplicatesTooltip)).ListBox);
             stack.Add(new EnumComboBoxUI<ItemDataModel.DuplicateReductionOption>("Duplicate Reduction Strength", DuplicateReductionOptionDropdown, model.DupeReductionStrength));
             stack.Header("Category Preservation");
-            SetItemCategorySize(stack.Add(new BoundFlagsEnumListBoxUI<Categories>("Keep Category", model.KeepCategoryCategories, GetItemCategoryDropDown, CategoryOrEquals, keepSameCategoryTooltip)).ListBox);
+            SetItemCategorySize(stack.Add(new BoundFlagsEnumListBoxUI<Categories>(CategoryLabel("Keep Category"), model.KeepCategoryCategories, GetItemCategoryDropDown, CategoryOrEquals, keepSameCategoryTooltip)).ListBox);
             stack.Add(new BoundSliderUI("Keep Category Chance", model.SameCategoryChance));
             stack.Add(new BoundCheckBoxUI("Allow Banned Items When Keeping Category", model.AllowBannedItemsWhenKeepingCategory) { ToolTip="Allows Items in \"Keep Category\" categories to randomize to all Items in their own category, including Items in banned categories" });
             return CreateTabItem("Item Category Settings", stack);

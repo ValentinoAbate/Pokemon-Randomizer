@@ -1,9 +1,7 @@
-﻿using PokemonRandomizer.Backend.Utilities.Debug;
-using PokemonRandomizer.UI.Utilities;
+﻿using PokemonRandomizer.UI.Utilities;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using System.Windows.Controls;
 using System.Windows.Markup;
 using System.Xml;
@@ -31,6 +29,11 @@ namespace PokemonRandomizer.UI
         private readonly Box<T> combinedFlags;
 
         public BoundFlagsEnumListBoxUI(string label, Box<T> combinedFlags, Func<IReadOnlyList<MenuBoxItem>> getChoiceList, Func<T, T, T> orEquals, string tooltip = null)
+            : this(new Label() { Content = label }, combinedFlags, getChoiceList, orEquals, tooltip)
+        {
+
+        }
+        public BoundFlagsEnumListBoxUI(Label label, Box<T> combinedFlags, Func<IReadOnlyList<MenuBoxItem>> getChoiceList, Func<T, T, T> orEquals, string tooltip = null)
         {
             this.combinedFlags = combinedFlags;
             Orientation = Orientation.Horizontal;
@@ -41,7 +44,7 @@ namespace PokemonRandomizer.UI
                 item.Selected += OnItemSelected;
                 item.Unselected += OnItemSelected;
             }
-            var labelElement = this.Add(new Label() { Content = label, Width = 125, FontSize = 14, VerticalAlignment = System.Windows.VerticalAlignment.Center });
+            var labelElement = this.Add(label);
             if(!string.IsNullOrWhiteSpace(tooltip))
             {
                 labelElement.ToolTip = tooltip;
