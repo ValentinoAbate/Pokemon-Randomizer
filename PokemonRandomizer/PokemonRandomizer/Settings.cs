@@ -484,6 +484,16 @@ namespace PokemonRandomizer
 
         #region Battle Frontier and Minigames
 
+        // Battle Frontier
+        public abstract double BattleFrontierPokemonRandChance { get; }
+        public abstract FrontierPokemonRandStrategy BattleFrontierPokemonRandStrategy { get; }
+        public abstract SpecialMoveSettings BattleFrontierSpecialMoveSettings { get; }
+        public abstract bool BattleFrontierBanLegendaries { get; }
+
+        public abstract double FrontierBrainPokemonRandChance { get; }
+        public abstract SpecialMoveSettings FrontierBrainSpecialMoveSettings { get; }
+        public abstract bool FrontierBrainBanLegendaries { get; }
+        public abstract bool FrontierBrainKeepLegendaries { get; }
 
         // Battle Tent Settings
         public abstract BattleTentRandomizer.Settings GetBattleTentSettings(BattleTent tent);

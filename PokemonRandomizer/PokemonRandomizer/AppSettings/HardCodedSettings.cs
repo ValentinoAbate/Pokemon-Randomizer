@@ -7,6 +7,8 @@ namespace PokemonRandomizer.AppSettings
     using Backend.Randomization;
     using PokemonRandomizer.Backend.DataStructures.Trainers;
     using UI.Models;
+    using static PokemonRandomizer.UI.Models.BattleFrontierDataModel;
+
     public class HardCodedSettings : Settings
     {
         public HardCodedSettings(ApplicationDataModel data) : base(data) { }
@@ -400,6 +402,15 @@ namespace PokemonRandomizer.AppSettings
 
         #region Battle Frontier and Minigames
 
+        // Battle Frontier
+        public override double BattleFrontierPokemonRandChance => 0;
+        public override FrontierPokemonRandStrategy BattleFrontierPokemonRandStrategy => FrontierPokemonRandStrategy.PowerScaled;
+        public override SpecialMoveSettings BattleFrontierSpecialMoveSettings => new();
+        public override bool BattleFrontierBanLegendaries => true;
+        public override double FrontierBrainPokemonRandChance => 0;
+        public override SpecialMoveSettings FrontierBrainSpecialMoveSettings => new();
+        public override bool FrontierBrainBanLegendaries => false;
+        public override bool FrontierBrainKeepLegendaries => true;
 
         // Battle Tent Settings
         public override BattleTentRandomizer.Settings GetBattleTentSettings(BattleTent tent) => new();

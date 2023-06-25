@@ -15,64 +15,26 @@ namespace PokemonRandomizer.Backend.Randomization
         {
             NoneToOtherChance = 1,
         };
-        private readonly IDataTranslator dataT;
-        private readonly PkmnRandomizer pokeRand;
         private readonly ItemRandomizer itemRand;
         private readonly List<Action> delayedRandomizationCalls;
-        private readonly MovesetGenerator movesetGenerator;
-        private readonly Random rand;
-        public BattleTentRandomizer(Random rand, IDataTranslator dataT, PkmnRandomizer pokeRand, ItemRandomizer itemRand, List<Action> delayedRandomizationCalls, MovesetGenerator movesetGenerator)
+        private readonly BattleFrontierRandomizer battleFrontierRand;
+        public BattleTentRandomizer(BattleFrontierRandomizer battleFrontierRand, ItemRandomizer itemRand, List<Action> delayedRandomizationCalls)
         {
-            this.rand = rand;
-            this.dataT = dataT;
-            this.pokeRand = pokeRand;
             this.itemRand = itemRand;
             this.delayedRandomizationCalls = delayedRandomizationCalls;
-            this.movesetGenerator = movesetGenerator;
+            this.battleFrontierRand = battleFrontierRand;
         }
         public void RandomizeBattleTent(BattleTent battleTent, Settings settings, IEnumerable<Pokemon> pokemonSet, IList<ItemData> allItems)
         {
-            RandomizePokemon(battleTent, settings, pokemonSet);
-            RandomizeRewards(battleTent, settings, allItems);
-        }
-
-        private void RandomizePokemon(BattleTent battleTent, Settings settings, IEnumerable<Pokemon> pokemonSet)
-        {
-            if (settings.PokemonRandChance <= 0)
-            {
-                // Todo: remap variant movesets
-                return;
-            }
-
+            // Randomize Pokemon
             var pokemonSettings = new PokemonSettings()
             {
                 BanLegendaries = settings.BanLegendaries,
             };
-            foreach (var pokemon in battleTent.Pokemon)
-            {
-                if (rand.RollSuccess(settings.PokemonRandChance))
-                {
-                    // TODO: config pokemon settings for power scaling
-                    pokemon.species = pokeRand.RandomPokemon(pokemonSet, pokemon.species, pokemonSettings);
-
-
-                    // Generate equivalent level
-                    int level = settings.PokemonRandStrategy switch
-                    {
-                        FrontierPokemonRandStrategy.PowerScaled => 50, // TODO: actual power scaling
-                        FrontierPokemonRandStrategy.AllStrongest => 100,
-                        FrontierPokemonRandStrategy.FixedLevel => 30,
-                        _ => 50
-                    };
-
-                    // TODO: special move support
-                    pokemon.moves = movesetGenerator.SmartMoveSet(dataT.GetBaseStats(pokemon.species), level);
-                }
-                else // If pokemon is variant
-                {
-                    // Remap variant moves
-                }
-            }
+            battleFrontierRand.RandomizePokemon(battleTent.Pokemon, settings.PokemonRandChance,
+                settings.PokemonRandStrategy, pokemonSettings, settings.SpecialMoveSettings, pokemonSet);
+            // Randomize Other Properties
+            RandomizeRewards(battleTent, settings, allItems);
         }
 
         private void RandomizeRewards(BattleTent battleTent, Settings settings, IEnumerable<ItemData> allItems)
