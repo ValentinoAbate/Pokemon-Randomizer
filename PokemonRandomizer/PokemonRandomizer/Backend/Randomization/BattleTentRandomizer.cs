@@ -44,7 +44,10 @@ namespace PokemonRandomizer.Backend.Randomization
                 return;
             }
 
-            var pokemonSettings = new PokemonSettings();
+            var pokemonSettings = new PokemonSettings()
+            {
+                BanLegendaries = settings.BanLegendaries,
+            };
             foreach (var pokemon in battleTent.Pokemon)
             {
                 if (rand.RollSuccess(settings.PokemonRandChance))
