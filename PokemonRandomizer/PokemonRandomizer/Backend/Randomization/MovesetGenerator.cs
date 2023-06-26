@@ -811,6 +811,16 @@ namespace PokemonRandomizer.Backend.Randomization
                     }
                 }
             }
+            if (specialMoveSettings.AllowedSources.HasFlag(SpecialMoveSettings.Sources.Tutor))
+            {
+                for (int i = 0; i < pokemon.moveTutorCompat.Count; ++i)
+                {
+                    if (pokemon.moveTutorCompat[i])
+                    {
+                        AddMove(ref availableMoves, dataT.GetTutorMove(i), 1);
+                    }
+                }
+            }
         }
 
         private void AddMove(ref Dictionary<Move, int> availableMoves, LearnSet.Entry entry) => AddMove(ref availableMoves, entry.move, entry.learnLvl);

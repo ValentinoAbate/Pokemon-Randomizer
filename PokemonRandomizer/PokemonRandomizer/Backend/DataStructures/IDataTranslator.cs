@@ -13,6 +13,7 @@ namespace PokemonRandomizer.Backend.DataStructures
 
         public Move GetTmMove(int index);
         public Move GetHmMove(int index);
+        public Move GetTutorMove(int index);
 
         public Trainer GetTrainer(int trainerIndex);
     }
