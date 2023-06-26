@@ -3,8 +3,8 @@ using PokemonRandomizer.Backend.EnumTypes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
 using static PokemonRandomizer.Backend.DataStructures.MoveData;
+using SpecialMoveSettings = PokemonRandomizer.Settings.SpecialMoveSettings;
 
 namespace PokemonRandomizer.Backend.Randomization
 {
@@ -68,19 +68,19 @@ namespace PokemonRandomizer.Backend.Randomization
             return !m.IsStatus && m.IsType(t);
         }
 
-        public Move[] SmartMoveSet(PokemonBaseStats pokemon, int level)
+        public Move[] SmartMoveSet(PokemonBaseStats pokemon, int level, SpecialMoveSettings specialMoveSettings = null)
         {
             if (pokemon.species is Pokemon.SHUCKLE or Pokemon.HAPPINY or Pokemon.CHANSEY or Pokemon.BLISSEY or Pokemon.HOPPIP or Pokemon.SKIPLOOM or Pokemon.JUMPLUFF)
             {
-                return LowAttackMoveSet(pokemon, level);
+                return LowAttackMoveSet(pokemon, level, specialMoveSettings);
             }
             else if (pokemon.species is Pokemon.LILEEP or Pokemon.CRADILY)
             {
-                return rand.RandomBool() ? LowAttackMoveSet(pokemon, level) : AttackingMoveset(pokemon, level);
+                return rand.RandomBool() ? LowAttackMoveSet(pokemon, level, specialMoveSettings) : AttackingMoveset(pokemon, level, specialMoveSettings);
             }
             else if (pokemon.species is Pokemon.WYNAUT or Pokemon.WOBBUFFET)
             {
-                return CounterAttackMoveSet(pokemon, level);
+                return CounterAttackMoveSet(pokemon, level, specialMoveSettings);
             }
             else if (pokemon.species is Pokemon.SMEARGLE)
             {
@@ -99,32 +99,32 @@ namespace PokemonRandomizer.Backend.Randomization
                 double smeargleSetChance = rand.RandomDouble();
                 if (smeargleSetChance < 0.01)
                 {
-                    return CounterAttackMoveSet(pokemon, level, sketches);
+                    return CounterAttackMoveSet(pokemon, level, specialMoveSettings, sketches);
                 }
                 else if(smeargleSetChance < 0.02)
                 {
-                    return AttackingMoveset(pokemon, level, sketches);
+                    return AttackingMoveset(pokemon, level, specialMoveSettings, sketches);
                 }
                 else if(smeargleSetChance < 0.07)
                 {
-                    return LowAttackMoveSet(pokemon, level, sketches);
+                    return LowAttackMoveSet(pokemon, level, specialMoveSettings, sketches);
                 }
                 else
                 {
-                    return RandomMoveSet(pokemon, level, sketches);
+                    return RandomMoveSet(pokemon, level, specialMoveSettings, sketches);
                 }
             }
             else 
             {
-                return AttackingMoveset(pokemon, level);
+                return AttackingMoveset(pokemon, level, specialMoveSettings);
             }
         }
 
-        public Move[] AttackingMoveset(PokemonBaseStats pokemon, int level, int maxMoves = 4)
+        public Move[] AttackingMoveset(PokemonBaseStats pokemon, int level, SpecialMoveSettings specialMoveSettings, int maxMoves = 4)
         {
             bool IsStab(Move m) => pokemon.IsType(dataT.GetMoveData(m).type);
             // Initialize move choices
-            var availableMoves = AvailableMoves(pokemon, level);
+            var availableMoves = AvailableMoves(pokemon, level, specialMoveSettings);
             // Initialize returns
             var ret = EmptyMoveset();
             if (availableMoves.Count <= 0)
@@ -234,10 +234,10 @@ namespace PokemonRandomizer.Backend.Randomization
             CalculateMoveSynergy(m => m.IsVeryLowAccuracy, m => m.effect is MoveEffect.NextMoveAlwaysHits, preferSynergy);
             return metrics;
         }
-        public Move[] LowAttackMoveSet(PokemonBaseStats pokemon, int level, int maxMoves = 4)
+        public Move[] LowAttackMoveSet(PokemonBaseStats pokemon, int level, SpecialMoveSettings specialMoveSettings, int maxMoves = 4)
         {
             // Initialize move choices
-            var availableMoves = AvailableMoves(pokemon, level);
+            var availableMoves = AvailableMoves(pokemon, level, specialMoveSettings);
             // Initialize returns
             var ret = EmptyMoveset();
             if (availableMoves.Count <= 0)
@@ -314,10 +314,10 @@ namespace PokemonRandomizer.Backend.Randomization
             return ret;
         }
 
-        public Move[] CounterAttackMoveSet(PokemonBaseStats pokemon, int level, int maxMoves = 4)
+        public Move[] CounterAttackMoveSet(PokemonBaseStats pokemon, int level, SpecialMoveSettings specialMoveSettings, int maxMoves = 4)
         {
             // Initialize move choices
-            var availableMoves = AvailableMoves(pokemon, level);
+            var availableMoves = AvailableMoves(pokemon, level, specialMoveSettings);
             // Initialize returns
             var ret = EmptyMoveset();
             if (availableMoves.Count <= 0)
@@ -347,10 +347,10 @@ namespace PokemonRandomizer.Backend.Randomization
             return ret;
         }
 
-        public Move[] RandomMoveSet(PokemonBaseStats pokemon, int level, int maxMoves = 4)
+        public Move[] RandomMoveSet(PokemonBaseStats pokemon, int level, SpecialMoveSettings specialMoveSettings, int maxMoves = 4)
         {
             // Initialize move choices
-            var availableMoves = AvailableMoves(pokemon, level);
+            var availableMoves = AvailableMoves(pokemon, level, specialMoveSettings);
             // Initialize returns
             var ret = EmptyMoveset();
             if (availableMoves.Count <= 0)
@@ -708,7 +708,7 @@ namespace PokemonRandomizer.Backend.Randomization
             return dataT.GetMoveData(m).IsStatus;
         }
 
-        private Dictionary<Move, int> AvailableMoves(PokemonBaseStats pokemon, int level)
+        private Dictionary<Move, int> AvailableMoves(PokemonBaseStats pokemon, int level, SpecialMoveSettings specialMoveSettings)
         {
             // Give smeargle access to all moves
             if(pokemon.species is Pokemon.SMEARGLE)
@@ -727,6 +727,7 @@ namespace PokemonRandomizer.Backend.Randomization
             }
             var availableMoves = new Dictionary<Move, int>(pokemon.learnSet.Count * 4);
             AddMovesFromPokemon(ref availableMoves, pokemon, level);
+            AddSpecialMoves(ref availableMoves, pokemon, level, specialMoveSettings);
             if(pokemon.evolvesFrom.Count > 0)
             {
                 // Create moveset lookup
@@ -775,6 +776,39 @@ namespace PokemonRandomizer.Backend.Randomization
                 {
                     // Pre-evo exclusive move, add to available moves
                     AddMove(ref availableMoves, entry);
+                }
+            }
+        }
+
+        private void AddSpecialMoves(ref Dictionary<Move, int> availableMoves, PokemonBaseStats pokemon, int level, SpecialMoveSettings specialMoveSettings)
+        {
+            if (specialMoveSettings == null)
+                return;
+            if (specialMoveSettings.AllowedSources.HasFlag(SpecialMoveSettings.Sources.Egg))
+            {
+                foreach(var move in pokemon.eggMoves)
+                {
+                    AddMove(ref availableMoves, move, 1);
+                }
+            }
+            if (specialMoveSettings.AllowedSources.HasFlag(SpecialMoveSettings.Sources.TM))
+            {
+                for (int i = 0; i< pokemon.TMCompat.Count; ++i)
+                {
+                    if (pokemon.TMCompat[i])
+                    {
+                        AddMove(ref availableMoves, dataT.GetTmMove(i), 1);
+                    }
+                }
+            }
+            if (specialMoveSettings.AllowedSources.HasFlag(SpecialMoveSettings.Sources.HM))
+            {
+                for (int i = 0; i < pokemon.HMCompat.Count; ++i)
+                {
+                    if (pokemon.HMCompat[i])
+                    {
+                        AddMove(ref availableMoves, dataT.GetHmMove(i), 1);
+                    }
                 }
             }
         }

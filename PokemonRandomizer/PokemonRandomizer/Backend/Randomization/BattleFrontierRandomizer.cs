@@ -63,7 +63,7 @@ namespace PokemonRandomizer.Backend.Randomization
                     };
 
                     // TODO: special move support
-                    pokemon.moves = movesetGenerator.SmartMoveSet(dataT.GetBaseStats(pokemon.species), level);
+                    pokemon.moves = movesetGenerator.SmartMoveSet(dataT.GetBaseStats(pokemon.species), level, specialMoveSettings);
                 }
                 else // If pokemon is variant
                 {
@@ -83,6 +83,7 @@ namespace PokemonRandomizer.Backend.Randomization
             {
                 BanLegendaries = settings.FrontierBrainBanLegendaries,
             };
+            var specialMoveSettings = settings.FrontierBrainSpecialMoveSettings;
             foreach (var pokemon in data.BattleFrontierBrainPokemon)
             {
                 if (rand.RollSuccess(settings.FrontierBrainPokemonRandChance))
@@ -90,7 +91,7 @@ namespace PokemonRandomizer.Backend.Randomization
                     // TODO: config pokemon settings for power scaling
                     pokemon.species = pokeRand.RandomPokemon(pokemonSet, pokemon.species, pokemonSettings);
                     // TODO: special move support
-                    pokemon.moves = movesetGenerator.SmartMoveSet(dataT.GetBaseStats(pokemon.species), 100);
+                    pokemon.moves = movesetGenerator.SmartMoveSet(dataT.GetBaseStats(pokemon.species), 100, specialMoveSettings);
                 }
                 else // If pokemon is variant
                 {
