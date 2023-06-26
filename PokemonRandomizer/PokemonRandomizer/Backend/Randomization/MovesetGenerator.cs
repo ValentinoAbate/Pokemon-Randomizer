@@ -3,6 +3,7 @@ using PokemonRandomizer.Backend.EnumTypes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using static PokemonRandomizer.Backend.DataStructures.MoveData;
 
 namespace PokemonRandomizer.Backend.Randomization
@@ -726,24 +727,34 @@ namespace PokemonRandomizer.Backend.Randomization
             }
             var availableMoves = new Dictionary<Move, int>(pokemon.learnSet.Count * 4);
             AddMovesFromPokemon(ref availableMoves, pokemon, level);
-            // Add movesets from evolved from (moves down the chain)
-            for (var preEvolution = pokemon; preEvolution.evolvesFrom.Count > 0;)
+            if(pokemon.evolvesFrom.Count > 0)
             {
-                preEvolution = dataT.GetBaseStats(preEvolution.evolvesFrom[0].Pokemon);
-                AddMovesFromPreEvolution(ref availableMoves, pokemon, level, preEvolution);
+                // Create moveset lookup
+                var movesetLookup = pokemon.learnSet.GetMovesLookup();                
+                // Add movesets from evolved from (moves down the chain)
+                for(var preEvolution = pokemon; preEvolution.evolvesFrom.Count > 0;)
+                {
+                    preEvolution = dataT.GetBaseStats(preEvolution.evolvesFrom[0].Pokemon);
+                    AddMovesFromPreEvolution(ref availableMoves, movesetLookup, level, preEvolution);
+                } 
             }
             return availableMoves;
         }
 
         private void AddMovesFromPokemon(ref Dictionary<Move, int> availableMoves, PokemonBaseStats pokemon, int level)
         {
-            AddMoves(ref availableMoves, pokemon.learnSet.Where(e => e.learnLvl <= level));
+            foreach (var entry in pokemon.learnSet)
+            {
+                if(entry.learnLvl > level)
+                {
+                    break;
+                }
+                AddMove(ref availableMoves, entry);
+            }
         }
 
-        private void AddMovesFromPreEvolution(ref Dictionary<Move, int> availableMoves, PokemonBaseStats pokemon, int level, PokemonBaseStats preEvolution)
+        private void AddMovesFromPreEvolution(ref Dictionary<Move, int> availableMoves, HashSet<Move> pokemonMovesetLookup, int level, PokemonBaseStats preEvolution)
         {
-            var eligibleMoves = new List<LearnSet.Entry>(preEvolution.learnSet.Count);
-            var movesetLookup = pokemon.learnSet.GetMovesLookup();
             foreach(var entry in preEvolution.learnSet)
             {
                 // Ignore moves past the learn level and SPLASH
@@ -751,7 +762,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 {
                     continue;
                 }
-                if (availableMoves.ContainsKey(entry.move))
+                else if (availableMoves.ContainsKey(entry.move))
                 {
                     if(entry.learnLvl > availableMoves[entry.move])
                     {
@@ -760,31 +771,25 @@ namespace PokemonRandomizer.Backend.Randomization
                     }
                     continue;
                 }
-                if (!movesetLookup.Contains(entry.move))
+                else if (!pokemonMovesetLookup.Contains(entry.move))
                 {
-                    // Pre-evo exclusive move, add to eligible moves
-                    eligibleMoves.Add(entry);
+                    // Pre-evo exclusive move, add to available moves
+                    AddMove(ref availableMoves, entry);
                 }
             }
-            if (eligibleMoves.Count <= 0)
-                return;
-            AddMoves(ref availableMoves, eligibleMoves);
         }
 
-        private void AddMoves(ref Dictionary<Move, int> availableMoves, IEnumerable<LearnSet.Entry> moves)
+        private void AddMove(ref Dictionary<Move, int> availableMoves, LearnSet.Entry entry) => AddMove(ref availableMoves, entry.move, entry.learnLvl);
+
+        private void AddMove(ref Dictionary<Move, int> availableMoves, Move move, int learnLevel)
         {
-            foreach (var entry in moves)
+            if (!availableMoves.ContainsKey(move))
             {
-                var move = entry.move;
-                var learnLevel = entry.learnLvl;
-                if (!availableMoves.ContainsKey(move))
-                {
-                    availableMoves.Add(move, learnLevel);
-                }
-                else if (availableMoves[move] < learnLevel)
-                {
-                    availableMoves[move] = learnLevel;
-                }
+                availableMoves.Add(move, learnLevel);
+            }
+            else if (availableMoves[move] < learnLevel)
+            {
+                availableMoves[move] = learnLevel;
             }
         }
 
