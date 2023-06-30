@@ -157,9 +157,9 @@ namespace PokemonRandomizer.Backend.DataStructures
 
         public PokemonBaseStats GetBaseStats(Pokemon p) => PokemonLookup[p];
         public MoveData GetMoveData(Move m) => MoveDataLookup[m];
-        public Move GetTmMove(int index) => index > 0 && index < TMMoves.Length ? TMMoves[index] : Move.None;
-        public Move GetHmMove(int index) => index > 0 && index < HMMoves.Length ? HMMoves[index] : Move.None;
-        public Move GetTutorMove(int index) => index > 0 && index < TutorMoves.Length ? TutorMoves[index] : Move.None;
+        public Move GetTmMove(int index) => index >= 0 && index < TMMoves.Length ? TMMoves[index] : Move.None;
+        public Move GetHmMove(int index) => index >= 0 && index < HMMoves.Length ? HMMoves[index] : Move.None;
+        public Move GetTutorMove(int index) => index >= 0 && index < TutorMoves.Length ? TutorMoves[index] : Move.None;
         public ItemData GetItemData(Item i) => ItemDataLookup[i];
         public Trainer GetTrainer(int trainerIndex) => Trainers[trainerIndex];
         public HashSet<Move> GetAllMoves()
