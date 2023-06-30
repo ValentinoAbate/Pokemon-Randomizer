@@ -50,7 +50,13 @@ namespace PokemonRandomizer.Backend.Randomization
             {
                 basePower *= 1.5f;
             }
+            basePower *= AccuracyFactor(data); 
             return MathF.Pow(basePower, 3);
+        }
+
+        private float AccuracyFactor(MoveData data)
+        {
+            return data.accuracy == 0 ? 1 : data.accuracy / 100f;
         }
 
         private static float LevelWeightScale(int learnLevel)
@@ -141,7 +147,6 @@ namespace PokemonRandomizer.Backend.Randomization
                         return 0.25f;
                 }
                 return 1;
-
             }
             float StabBonus(Move m) => IsStab(m) ? 2f : 1;
             float LevelFactor(Move e) => MathF.Pow(availableMoves[e], 2);
