@@ -323,44 +323,25 @@ namespace PokemonRandomizer.Backend.DataStructures
         {
             get
             {
-                switch (effect)
+                return effect switch
                 {
-                    case MoveEffect.Multihit:
-                        return power * 3;
-                    case MoveEffect.DamageTwoHit: 
-                    case MoveEffect.DamageTwoHitPoisonChance:
-                        return power * 2;
-                    case MoveEffect.DamageThreeConsecutiveHits:
-                        return 47;
-                    case MoveEffect.Selfdestruct:
-                        return (int)Math.Floor(power / 2.5);
-                    case MoveEffect.Magnitude:
-                        return 71;
-                    case MoveEffect.DamageTiredAfterUse:
-                        return (int)Math.Floor(power / 1.5);
-                    case MoveEffect.DelayedAttack:
-                    case MoveEffect.SkullBash:
-                        return (int)Math.Floor(power * 0.75);
-                    case MoveEffect.DamageWeightBased:
-                        return 40;
-                    case MoveEffect.FlatDamage20:
-                        return 50;
-                    case MoveEffect.FlatDamage40:
-                        return 70;
-                    case MoveEffect.FlatDamageLevel:
-                        return 30;
-                    case MoveEffect.VaryingDamageLevel:
-                        return 40;
-                    case MoveEffect.HiddenPower:
-                        return 50;
-                    case MoveEffect.Present:
-                        return 30;
-                    case MoveEffect.DamageMoreAtLowHP:
-                        return 20; // Flail, reversal, etc
-                    default:
-                        return power;
-                }
-
+                    MoveEffect.Multihit => power * 3,
+                    MoveEffect.DamageTwoHit or MoveEffect.DamageTwoHitPoisonChance => power * 2,
+                    MoveEffect.DamageThreeConsecutiveHits => 47,
+                    MoveEffect.Selfdestruct => (int)Math.Floor(power / 2.5),
+                    MoveEffect.Magnitude => 71,
+                    MoveEffect.DamageTiredAfterUse => (int)Math.Floor(power / 1.5),
+                    MoveEffect.DelayedAttack or MoveEffect.SkullBash => (int)Math.Floor(power * 0.75),
+                    MoveEffect.DamageWeightBased => 40,
+                    MoveEffect.FlatDamage20 => 50,
+                    MoveEffect.FlatDamage40 => 70,
+                    MoveEffect.FlatDamageLevel => 30,
+                    MoveEffect.VaryingDamageLevel => 40,
+                    MoveEffect.HiddenPower => 50,
+                    MoveEffect.Present => 30,
+                    MoveEffect.DamageMoreAtLowHP => 20,// Flail, reversal, etc
+                    _ => power,
+                };
             }
         }
         public bool HasUndefinedRealPower => power == 1;
