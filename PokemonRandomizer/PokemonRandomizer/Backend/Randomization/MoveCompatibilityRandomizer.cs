@@ -105,7 +105,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 return false;
             if (pokemon.originalTmHmMtMoves.Contains(move))
                 return true;
-            if (moveData.IsType(pokemon))
+            if (pokemon.VariantTypes.Contains(moveData.type))
                 return true;
             if (pokemon.species is Pokemon.CASTFORM && CastformCompat(moveData))
                 return true;
@@ -113,6 +113,8 @@ namespace PokemonRandomizer.Backend.Randomization
                 return true;
             if (pokemon.originalUnlearnableTmHmMtMoves.Contains(move))
                 return false;
+            if (moveData.IsType(pokemon))
+                return true;
             if (moveData.IsType(PokemonType.NRM))
                 return rand.RollSuccess(data.intelligentNormalRandChance);
             return rand.RollSuccess(data.intelligentRandChance);
