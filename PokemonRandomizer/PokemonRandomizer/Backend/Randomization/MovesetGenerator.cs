@@ -1,5 +1,7 @@
 ﻿using PokemonRandomizer.Backend.DataStructures;
 using PokemonRandomizer.Backend.EnumTypes;
+using PokemonRandomizer.Backend.Utilities;
+using PokemonRandomizer.Backend.Utilities.Debug;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -42,15 +44,15 @@ namespace PokemonRandomizer.Backend.Randomization
 
         private static Move[] EmptyMoveset() => new Move[4] { Move.None, Move.None, Move.None, Move.None };
 
-        private float PowerFactorScale(Move m, bool isStab)
+        private float PowerFactorScale(Move m, PokemonBaseStats pokemon)
         {
             var data = dataT.GetMoveData(m);
             float basePower = data.IsCallMove ? 25 : data.EffectivePower;
-            if (isStab)
+            if (data.AffectedByStab && IsStab(data, pokemon))
             {
                 basePower *= 1.5f;
             }
-            basePower *= AccuracyFactor(data); 
+            basePower *= AccuracyFactor(data);
             return MathF.Pow(basePower, 3);
         }
 
@@ -126,16 +128,20 @@ namespace PokemonRandomizer.Backend.Randomization
             }
         }
 
+        private bool IsStab(MoveData move, PokemonBaseStats pokemon)
+        {
+            return pokemon.IsType(move.type);
+        }
+
         public Move[] AttackingMoveset(PokemonBaseStats pokemon, int level, SpecialMoveSettings specialMoveSettings, int maxMoves = 4)
         {
-            bool IsStab(Move m) => pokemon.IsType(dataT.GetMoveData(m).type);
             // Initialize move choices
             var availableMoves = AvailableMoves(pokemon, level, specialMoveSettings);
             // Initialize returns
             var ret = EmptyMoveset();
             if (availableMoves.Count <= 0)
                 return ret;
-            float PowerFactor(Move m) => PowerFactorScale(m, IsStab(m));
+            float PowerFactor(Move m) => PowerFactorScale(m, pokemon);
             float RedundantTypeFactor(Move m)
             {
                 var mType = dataT.GetMoveData(m).type;
@@ -148,7 +154,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 }
                 return 1;
             }
-            float StabBonus(Move m) => IsStab(m) ? 2f : 1;
+            float StabBonus(Move m) => IsStab(dataT.GetMoveData(m), pokemon) ? 2f : 1;
             float LevelFactor(Move e) => MathF.Pow(availableMoves[e], 2);
             float LevelFactorSmall(Move e) => MathF.Pow(availableMoves[e], 1.5f);
             float LevelFactorLog(Move e) => MathF.Max(1, MathF.Log(availableMoves[e]));
