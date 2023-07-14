@@ -233,7 +233,7 @@ namespace PokemonRandomizer.Backend.Randomization
             // Choose fourth move
             ret[3] = rand.Choice(new WeightedSet<Move>(availableMoves.Keys, m => LevelFactor(m) * MoveSynergyFactor(metrics, m)));
 
-            Logger.main.Info($"{pokemon.species.ToDisplayString()} LV {level}: {ret[0].ToDisplayString()}, {ret[1].ToDisplayString()}, {ret[2].ToDisplayString()}, {ret[3].ToDisplayString()}");
+            //Logger.main.Info($"{pokemon.species.ToDisplayString()} LV {level}: {ret[0].ToDisplayString()}, {ret[1].ToDisplayString()}, {ret[2].ToDisplayString()}, {ret[3].ToDisplayString()}");
             return ret;
         }
 
