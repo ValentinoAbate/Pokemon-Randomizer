@@ -78,12 +78,31 @@ namespace PokemonRandomizer.Backend.Randomization
                 basePower *= 1.5f;
             }
             basePower *= AccuracyFactor(data);
+            basePower *= AttackingStatFactor(data, pokemon);
             return MathF.Pow(basePower, 3);
         }
 
         private float AccuracyFactor(MoveData data)
         {
             return data.accuracy == 0 ? 1 : data.accuracy / 100f;
+        }
+
+        private float AttackingStatFactor(MoveData data, PokemonBaseStats pokemon) 
+        {
+            int attack = pokemon.EffectiveAttack;
+            float maxStat = MathF.Max(attack, pokemon.SpAttack);
+            if(data.MoveCategory == MoveData.Type.Physical)
+            {
+                return attack / maxStat;
+            }
+            else if(data.MoveCategory == MoveData.Type.Special)
+            {
+                return pokemon.SpAttack / maxStat;
+            }
+            else
+            {
+                return 1;
+            }
         }
 
         private static float LevelWeightScale(int learnLevel)
@@ -894,6 +913,8 @@ namespace PokemonRandomizer.Backend.Randomization
                     return AbilityMod(m => m.effect is MoveEffect.WeatherSandstorm, weakMod);
                 case Ability.Ice_Body or Ability.Snow_Cloak:
                     return AbilityMod(m => m.effect is MoveEffect.WeatherHail, weakMod);
+                // Secondary effect move + serene grace
+                // Rock head + recoil moves
                 default:
                     return m => 1;
             };
