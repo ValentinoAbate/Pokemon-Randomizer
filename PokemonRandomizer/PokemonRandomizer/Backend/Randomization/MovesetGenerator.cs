@@ -44,10 +44,35 @@ namespace PokemonRandomizer.Backend.Randomization
 
         private static Move[] EmptyMoveset() => new Move[4] { Move.None, Move.None, Move.None, Move.None };
 
+        private static float EffectivePower(MoveData data)
+        {
+            int power = data.power;
+            return data.effect switch
+            {
+                MoveEffect.Multihit => power * 3,
+                MoveEffect.DamageTwoHit or MoveEffect.DamageTwoHitPoisonChance => power * 2,
+                MoveEffect.DamageThreeConsecutiveHits => 47,
+                MoveEffect.Selfdestruct => (int)Math.Floor(power / 2.75),
+                MoveEffect.Magnitude => 71,
+                MoveEffect.DamageTiredAfterUse => (int)Math.Floor(power / 1.75),
+                MoveEffect.DelayedAttack or MoveEffect.SkullBash => (int)Math.Floor(power * 0.75),
+                MoveEffect.DamageWeightBased => 40,
+                MoveEffect.FlatDamage20 => 45,
+                MoveEffect.FlatDamage40 => 65,
+                MoveEffect.FlatDamageLevel => 30,
+                MoveEffect.VaryingDamageLevel => 40,
+                MoveEffect.HiddenPower => 50,
+                MoveEffect.Present => 30,
+                MoveEffect.DamageMoreAtLowHP => 20,// Flail, reversal, etc
+                MoveEffect.FocusPunch => (int)Math.Floor(power / 1.75),
+                _ => power,
+            };
+        }
+
         private float PowerFactorScale(Move m, PokemonBaseStats pokemon)
         {
             var data = dataT.GetMoveData(m);
-            float basePower = data.IsCallMove ? 25 : data.EffectivePower;
+            float basePower = data.IsCallMove ? 25 : EffectivePower(data);
             if (data.AffectedByStab && IsStab(data, pokemon))
             {
                 basePower *= 1.5f;
@@ -189,6 +214,7 @@ namespace PokemonRandomizer.Backend.Randomization
             // Choose fourth move
             ret[3] = rand.Choice(new WeightedSet<Move>(availableMoves.Keys, m => LevelFactor(m) * MoveSynergyFactor(metrics, m)));
 
+            Logger.main.Info($"{pokemon.species.ToDisplayString()} LV {level}: {ret[0].ToDisplayString()}, {ret[1].ToDisplayString()}, {ret[2].ToDisplayString()}, {ret[3].ToDisplayString()}");
             return ret;
         }
 
@@ -480,9 +506,9 @@ namespace PokemonRandomizer.Backend.Randomization
                 }
             }
             // Attacking moves
-            else if (moveData.EffectivePower > 0) // Normal Attacking Moves
+            else if (EffectivePower(moveData) > 0) // Normal Attacking Moves
             { 
-                weight = (moveData.EffectivePower * lowAttackingStatPowerModifier) / Math.Max(choiceCount * 0.1f, 1f);
+                weight = (EffectivePower(moveData) * lowAttackingStatPowerModifier) / Math.Max(choiceCount * 0.1f, 1f);
                 if (moveData.effect is MoveEffect.DoTTrap)
                 {
                     weight += 75; 
