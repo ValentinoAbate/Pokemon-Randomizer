@@ -321,12 +321,18 @@ namespace PokemonRandomizer.Backend.DataStructures
 
         public bool IsHighCrit => effect is MoveEffect.DamageHighCrit or MoveEffect.DamageHighCritPoisonChance or MoveEffect.DamageHighCritBurnChance or MoveEffect.SkyAttack; // Gen 3 (Razor wind doesn't have high crit in Gen III apparently)
 
+        public bool IsTwoTurnAttack => effect is MoveEffect.DelayedAttack or MoveEffect.SkullBash or MoveEffect.RazorWind or MoveEffect.SkyAttack or MoveEffect.Solarbeam;
+
         public bool IsVeryLowAccuracy => accuracy > 0 && accuracy <= 50; // 0 accuracy moves always hit
 
         public int EffectivePower
         {
             get
             {
+                if (IsTwoTurnAttack)
+                {
+                    return (int)Math.Floor(power * 0.75);
+                }
                 return effect switch
                 {
                     MoveEffect.Multihit => power * 3,
@@ -335,7 +341,6 @@ namespace PokemonRandomizer.Backend.DataStructures
                     MoveEffect.Selfdestruct => (int)Math.Floor(power / 2.5),
                     MoveEffect.Magnitude => 71,
                     MoveEffect.DamageTiredAfterUse => (int)Math.Floor(power / 1.5),
-                    MoveEffect.DelayedAttack or MoveEffect.SkullBash => (int)Math.Floor(power * 0.75),
                     MoveEffect.DamageWeightBased => 40,
                     MoveEffect.FlatDamage20 => 50,
                     MoveEffect.FlatDamage40 => 70,

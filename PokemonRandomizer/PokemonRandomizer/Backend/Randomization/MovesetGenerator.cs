@@ -47,6 +47,10 @@ namespace PokemonRandomizer.Backend.Randomization
         private static float EffectivePower(MoveData data)
         {
             int power = data.power;
+            if (data.IsTwoTurnAttack)
+            {
+                return (int)Math.Floor(power * 0.75);
+            }
             return data.effect switch
             {
                 MoveEffect.Multihit => power * 3,
@@ -55,7 +59,6 @@ namespace PokemonRandomizer.Backend.Randomization
                 MoveEffect.Selfdestruct => (int)Math.Floor(power / 2.75),
                 MoveEffect.Magnitude => 71,
                 MoveEffect.DamageTiredAfterUse => (int)Math.Floor(power / 1.75),
-                MoveEffect.DelayedAttack or MoveEffect.SkullBash => (int)Math.Floor(power * 0.75),
                 MoveEffect.DamageWeightBased => 40,
                 MoveEffect.FlatDamage20 => 45,
                 MoveEffect.FlatDamage40 => 65,
