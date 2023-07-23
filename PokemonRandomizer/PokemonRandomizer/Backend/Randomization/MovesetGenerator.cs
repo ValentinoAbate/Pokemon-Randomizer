@@ -82,7 +82,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 basePower *= 1.5f;
             }
             basePower *= SignatureMoveFactor(data, pokemon);
-            basePower *= AccuracyFactor(data);
+            basePower *= AccuracyFactor(data, pokemon);
             basePower *= AttackingStatFactor(data, pokemon);
             return MathF.Pow(basePower, 3);
         }
@@ -96,9 +96,21 @@ namespace PokemonRandomizer.Backend.Randomization
             return 1;
         }
 
-        private static float AccuracyFactor(MoveData data)
+        private static float AccuracyFactor(MoveData data, PokemonBaseStats pokemon)
         {
-            return data.accuracy == 0 ? 1 : data.accuracy / 100f;
+            // Move ignores accuracy
+            if (data.accuracy == 0)
+                return 1;
+            float accuracy = data.accuracy;
+            // TODO: actually check if the pokemon currently being randomized has the ability
+            // Compound Eyes (doesn't affect OHKO moves)
+            if (pokemon.HasAbility(Ability.Compoundeyes) && !data.IsOneHitKO)
+            {
+                accuracy = MathF.Min(accuracy * 1.3f, 100);
+            }
+            // TODO: Hustle
+            // TODO: No Guard       
+            return accuracy / 100;
         }
 
         private static float AttackingStatFactor(MoveData data, PokemonBaseStats pokemon) 

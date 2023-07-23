@@ -67,7 +67,7 @@ namespace PokemonRandomizer.Backend.DataStructures
         public byte Speed { get => stats[3]; set => stats[3] = value; }
         public byte SpAttack { get => stats[4]; set => stats[4] = value; }
         public byte SpDefense { get => stats[5]; set => stats[5] = value; }
-        public int EffectiveAttack => HasAbility(Ability.Huge_Power) || HasAbility(Ability.Pure_Power) ? Attack * 2 : Attack;
+        public int EffectiveAttack => HasAbility(Ability.Huge_Power) || HasAbility(Ability.Pure_Power) ? Attack * 2 : Attack; // TODO: hustle
         public int BST => stats.Sum(b => b);
 
         #endregion
