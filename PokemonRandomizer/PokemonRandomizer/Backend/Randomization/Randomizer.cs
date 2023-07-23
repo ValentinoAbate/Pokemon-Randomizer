@@ -138,7 +138,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 SetAccuracyAndPower(data.GetMoveData(Move.WHIRLPOOL), 35, 85);
                 // Sand Tomb: 15 -> 35 Power, 70 -> 85 ACC
                 SetAccuracyAndPower(data.GetMoveData(Move.SAND_TOMB), 35, 85);
-                // Sand Tomb: 70 -> 85 ACC, 10 -> 15 PP
+                // Clamp: 70 -> 85 ACC, 10 -> 15 PP
                 var clamp = data.GetMoveData(Move.CLAMP);
                 clamp.pp = 15;
                 clamp.accuracy = 85;
