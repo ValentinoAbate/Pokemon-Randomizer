@@ -14,7 +14,7 @@ namespace PokemonRandomizer.Backend.Randomization
     {
         private const float needSynergy = 12500;
         private const float preferSynergy = needSynergy / 2;
-        private const float weakSynergy = needSynergy / 10;
+        private const float weakSynergy = needSynergy / 100;
 
         private readonly IDataTranslator dataT;
         private readonly Random rand;
@@ -303,11 +303,11 @@ namespace PokemonRandomizer.Backend.Randomization
             // Weather Ball + Sandstorm
             CalculateMoveSynergy(m => m.effect == MoveEffect.WeatherBall, m => m.effect == MoveEffect.WeatherSandstorm, weakSynergy);
             // Charge + Attacking Electric Move
-            CalculateMoveSynergy(m => m.effect == MoveEffect.Charge, m => IsAttackMoveOfType(m, PokemonType.ELE), weakSynergy);
+            CalculateMoveSynergy(m => m.effect == MoveEffect.Charge, m => IsAttackMoveOfType(m, PokemonType.ELE), preferSynergy);
             // Endure + Endeavor
-            CalculateMoveSynergy(m => m.effect == MoveEffect.Endure, m => m.effect == MoveEffect.Endeavor, weakSynergy);
+            CalculateMoveSynergy(m => m.effect == MoveEffect.Endure, m => m.effect == MoveEffect.Endeavor, preferSynergy);
             // Endure + Flailing Move
-            CalculateMoveSynergy(m => m.effect == MoveEffect.Endure, m => m.effect == MoveEffect.DamageMoreAtLowHP, weakSynergy);
+            CalculateMoveSynergy(m => m.effect == MoveEffect.Endure, m => m.effect == MoveEffect.DamageMoreAtLowHP, preferSynergy);
             // Flailing Move + Endure
             CalculateMoveSynergy(m => m.effect == MoveEffect.DamageMoreAtLowHP, m => m.effect == MoveEffect.Endure, weakSynergy);
             // Perish song + Trapping move
