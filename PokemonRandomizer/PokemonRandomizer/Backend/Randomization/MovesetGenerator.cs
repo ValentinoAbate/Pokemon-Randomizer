@@ -65,6 +65,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 MoveEffect.Present => 30,
                 MoveEffect.DamageMoreAtLowHP => 20,// Flail, reversal, etc
                 MoveEffect.FocusPunch => (int)Math.Floor(power / 1.75),
+                MoveEffect.WeatherBall => power * 2,
                 _ => power,
             };
         }
@@ -77,12 +78,22 @@ namespace PokemonRandomizer.Backend.Randomization
             {
                 basePower *= 1.5f;
             }
+            basePower *= SignatureMoveFactor(data, pokemon);
             basePower *= AccuracyFactor(data);
             basePower *= AttackingStatFactor(data, pokemon);
             return MathF.Pow(basePower, 3);
         }
 
-        private float AccuracyFactor(MoveData data)
+        private static float SignatureMoveFactor(MoveData data, PokemonBaseStats pokemon)
+        {
+            if (data.move is Move.WEATHER_BALL && pokemon.species is Pokemon.CASTFORM)
+            {
+                return 2;
+            }
+            return 1;
+        }
+
+        private static float AccuracyFactor(MoveData data)
         {
             return data.accuracy == 0 ? 1 : data.accuracy / 100f;
         }
