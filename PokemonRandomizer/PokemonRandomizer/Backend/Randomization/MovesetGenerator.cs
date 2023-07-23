@@ -301,6 +301,8 @@ namespace PokemonRandomizer.Backend.Randomization
             CalculateMoveSynergy(m => m.effect is MoveEffect.NextMoveAlwaysHits, m => m.IsVeryLowAccuracy, preferSynergy);
             // OHKO or low acc move + Lock-on
             CalculateMoveSynergy(m => m.IsVeryLowAccuracy, m => m.effect is MoveEffect.NextMoveAlwaysHits, preferSynergy);
+            // Focus Energy + high crit move
+            CalculateMoveSynergy(m => m.effect is MoveEffect.StatusCritRateUp, m => m.IsHighCrit, preferSynergy);
             return metrics;
         }
         public Move[] LowAttackMoveSet(PokemonBaseStats pokemon, int level, SpecialMoveSettings specialMoveSettings, int maxMoves = 4)

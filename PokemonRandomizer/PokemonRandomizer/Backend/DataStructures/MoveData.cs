@@ -55,7 +55,7 @@ namespace PokemonRandomizer.Backend.DataStructures
             TriAttack,
             Rest,
             OneHitKill,
-            ChargedHighCrit,
+            RazorWind,
             HalfHp,
             FlatDamage40,
             DoTTrap,
@@ -318,6 +318,8 @@ namespace PokemonRandomizer.Backend.DataStructures
         public bool IsSleepStatusMove => effect is MoveEffect.StatusSleep or MoveEffect.Yawn;
 
         public bool IsTrappingMove => effect is MoveEffect.Trap or MoveEffect.DoTTrap;
+
+        public bool IsHighCrit => effect is MoveEffect.DamageHighCrit or MoveEffect.DamageHighCritPoisonChance or MoveEffect.DamageHighCritBurnChance or MoveEffect.SkyAttack; // Gen 3 (Razor wind doesn't have high crit in Gen III apparently)
 
         public bool IsVeryLowAccuracy => accuracy > 0 && accuracy <= 50; // 0 accuracy moves always hit
 
