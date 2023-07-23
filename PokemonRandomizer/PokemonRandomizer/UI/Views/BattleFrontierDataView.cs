@@ -9,10 +9,15 @@ namespace PokemonRandomizer.UI.Views
 {
     public class BattleFrontierDataView : DataView<BattleFrontierDataModel>
     {
-        public static CompositeCollection PowerScalingDropdown => new()
+        public const string powerScaledTooltip = "Pokemon and move choices will be scaled by the original pokemon's power and moveset";
+        public const string levelTooltip = "Pokemon and move choices will be calculated as if the pokemon were level ";
+        public const string level100Tooltip = levelTooltip + "100";
+        public const string level50Tooltip = levelTooltip + "50";
+        private static CompositeCollection PowerScalingDropdown => new()
         {
-            new ComboBoxItem() { Content = "Power Scaled", ToolTip = "Pokemon and move choices will be scaled by the original pokemon's power and moveset" },
-            new ComboBoxItem() { Content = "All Strongest", ToolTip = "Pokemon and move choices will be calculated as if the pokemon were level 100" },
+            new ComboBoxItem() { Content = "Power Scaled", ToolTip = powerScaledTooltip},
+            new ComboBoxItem() { Content = "Level 100", ToolTip = level100Tooltip },
+            new ComboBoxItem() { Content = "Level 50", ToolTip = level50Tooltip },
         };
         private const string brainLegendaryBanTooltip = "Prevent legendary pokemon from being randomly chosen as Frontier Brain pokemon" +
             "\nLegendaries can still be chosen as Frontier Brain pokemon when the unrandomized pokemon is legendary and \"Ensure Randomized Legendaries are Legendary\" is selected";

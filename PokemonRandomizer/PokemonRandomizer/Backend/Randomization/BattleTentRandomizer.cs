@@ -30,6 +30,8 @@ namespace PokemonRandomizer.Backend.Randomization
             var pokemonSettings = new PokemonSettings()
             {
                 BanLegendaries = settings.BanLegendaries,
+                ForceHighestLegalEvolution = true,
+                RestrictIllegalEvolutions = true,
             };
             battleFrontierRand.RandomizePokemon(battleTent.Pokemon, settings.PokemonRandChance,
                 settings.PokemonRandStrategy, pokemonSettings, settings.SpecialMoveSettings, pokemonSet);

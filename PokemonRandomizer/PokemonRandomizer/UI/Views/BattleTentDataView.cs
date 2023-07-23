@@ -12,19 +12,30 @@ namespace PokemonRandomizer.UI.Views
 {
     public class BattleTentDataView : DataView<BattleTentDataModel>
     {
-        public static CompositeCollection RentalScalingDropdown => new()
+        private const string level30Tooltip = BattleFrontierDataView.levelTooltip + "30";
+        private const string level30RentalTooltip = level30Tooltip + " (rental pokemon in the Slateport Battle Tent are level 30)";
+        private static CompositeCollection RentalScalingDropdown => new()
         {
-            new ComboBoxItem() { Content = "Power Scaled", ToolTip = "Pokemon and move choices will be scaled by the original pokemon's power and moveset" },
-            new ComboBoxItem() { Content = "All Strongest", ToolTip = "Pokemon and move choices will be calculated as if the pokemon were level 100" },
-            new ComboBoxItem() { Content = "Level 30", ToolTip = "Pokemon and move choices will be calculated as if the pokemon were level 30 (rental pokemon in the Slateport Battle Tent are level 30)" },
+            new ComboBoxItem() { Content = "Power Scaled", ToolTip = BattleFrontierDataView.powerScaledTooltip },
+            new ComboBoxItem() { Content = "Level 100", ToolTip = BattleFrontierDataView.level100Tooltip },
+            new ComboBoxItem() { Content = "Level 50", ToolTip = BattleFrontierDataView.level50Tooltip },
+            new ComboBoxItem() { Content = "Level 30", ToolTip = level30RentalTooltip },
         };
-        public BattleTentDataView(BattleTentDataModel model) 
+
+        private static CompositeCollection PowerScalingDropDown => new()
+        {
+            new ComboBoxItem() { Content = "Power Scaled", ToolTip = BattleFrontierDataView.powerScaledTooltip },
+            new ComboBoxItem() { Content = "Level 100", ToolTip = BattleFrontierDataView.level100Tooltip },
+            new ComboBoxItem() { Content = "Level 50", ToolTip = BattleFrontierDataView.level50Tooltip },
+            new ComboBoxItem() { Content = "Level 30", ToolTip = level30Tooltip },
+        };
+        public BattleTentDataView(BattleTentDataModel model)
         {
             var stack = CreateMainStack();
             stack.Header("Battle Tent Pokemon Randomization (Fallarbor and Verdanturf Battle Tents)");
             var pokemonRand = stack.Add(new RandomChanceUI("Randomize Battle Tent Pokemon", model.RandomizePokemon, model.PokemonRandChance));
             var pokemonRandStack = stack.Add(pokemonRand.BindEnabled(CreateStack()));
-            pokemonRandStack.Add(new EnumComboBoxUI<FrontierPokemonRandStrategy>("Power Scaling", BattleFrontierDataView.PowerScalingDropdown, model.PokemonRandStrategy));
+            pokemonRandStack.Add(new EnumComboBoxUI<FrontierPokemonRandStrategy>("Power Scaling", PowerScalingDropDown, model.PokemonRandStrategy));
             pokemonRandStack.Add(new SpecialMoveSettingsUI(model.SpecialMoveSettings));
             pokemonRandStack.Add(new BoundCheckBoxUI("Ban Legendaries", model.BanLegendaries));
 

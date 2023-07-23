@@ -13,8 +13,9 @@ namespace PokemonRandomizer.UI.Models
         public enum FrontierPokemonRandStrategy
         {
             PowerScaled,
-            AllStrongest,
-            FixedLevel,
+            Level100,
+            Level50,
+            Level30,
         }
         // Normal pokemon fields
         public Box<bool> RandomizePokemon { get; set; } = new Box<bool>();

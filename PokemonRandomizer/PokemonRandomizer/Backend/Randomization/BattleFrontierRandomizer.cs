@@ -31,6 +31,8 @@ namespace PokemonRandomizer.Backend.Randomization
             var pokemonSettings = new PokemonSettings()
             {
                 BanLegendaries = settings.BattleFrontierBanLegendaries,
+                ForceHighestLegalEvolution = true,
+                RestrictIllegalEvolutions = false,
             };
             RandomizePokemon(data.BattleFrontierTrainerPokemon, settings.BattleFrontierPokemonRandChance, 
                 settings.BattleFrontierPokemonRandStrategy, pokemonSettings, settings.BattleFrontierSpecialMoveSettings, pokemonSet);
@@ -49,18 +51,18 @@ namespace PokemonRandomizer.Backend.Randomization
             {
                 if (rand.RollSuccess(chance))
                 {
-                    // TODO: config pokemon settings for power scaling
-                    pokemon.species = pokeRand.RandomPokemon(pokemonSet, pokemon.species, pokemonSettings);
-
-
                     // Generate equivalent level
                     int level = strategy switch
                     {
                         FrontierPokemonRandStrategy.PowerScaled => 50, // TODO: actual power scaling
-                        FrontierPokemonRandStrategy.AllStrongest => 100,
-                        FrontierPokemonRandStrategy.FixedLevel => 30, // TODO: custom level?
+                        FrontierPokemonRandStrategy.Level100 => 100,
+                        FrontierPokemonRandStrategy.Level50 => 50,
+                        FrontierPokemonRandStrategy.Level30 => 30,
                         _ => 50
                     };
+
+                    // TODO: config pokemon settings for power scaling
+                    pokemon.species = pokeRand.RandomPokemon(pokemonSet, pokemon.species, pokemonSettings, level);
 
                     // TODO: special move support
                     pokemon.moves = movesetGenerator.SmartMoveSet(dataT.GetBaseStats(pokemon.species), level, specialMoveSettings);
