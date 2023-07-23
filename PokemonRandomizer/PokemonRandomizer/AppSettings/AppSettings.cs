@@ -480,11 +480,11 @@ namespace PokemonRandomizer.AppSettings
         #region Battle Frontier and Minigames
 
         // Battle Frontier
-        public override double BattleFrontierPokemonRandChance => battleFrontierData.PokemonRandChance;
+        public override double BattleFrontierPokemonRandChance => RandomChance(battleFrontierData.RandomizePokemon, battleFrontierData.PokemonRandChance);
         public override FrontierPokemonRandStrategy BattleFrontierPokemonRandStrategy => battleFrontierData.PokemonRandStrategy;
         public override SpecialMoveSettings BattleFrontierSpecialMoveSettings => battleFrontierData.SpecialMoveSettings.Settings;
         public override bool BattleFrontierBanLegendaries => battleFrontierData.BanLegendaries;
-        public override double FrontierBrainPokemonRandChance => battleFrontierData.BrainPokemonRandChance;
+        public override double FrontierBrainPokemonRandChance => RandomChance(battleFrontierData.RandomizeBrainPokemon, battleFrontierData.BrainPokemonRandChance);
         public override SpecialMoveSettings FrontierBrainSpecialMoveSettings => battleFrontierData.BrainSpecialMoveSettings.Settings;
         public override bool FrontierBrainBanLegendaries => battleFrontierData.BanBrainLegendaries;
         public override bool FrontierBrainKeepLegendaries => battleFrontierData.KeepBrainLegendaries;
