@@ -303,6 +303,8 @@ namespace PokemonRandomizer.Backend.DataStructures
 
         public bool AffectedByStab => !IsStatus && !IsOneHitKO && !IsFlatDamage;
 
+        public bool AffectedByAttackingStat => !IsStatus && !IsOneHitKO && !IsFlatDamage && !IsCounterAttack;
+
         public bool IsOneHitKO => effect == MoveEffect.OneHitKill;
 
         public bool IsFlatDamage => effect is MoveEffect.FlatDamageLevel or MoveEffect.FlatDamage20 or MoveEffect.FlatDamage40 or MoveEffect.VaryingDamageLevel;
@@ -355,9 +357,11 @@ namespace PokemonRandomizer.Backend.DataStructures
         {
             get
             {
-                // Implement logic for type split later
+                // Gen III Logic
                 if (power <= 0)
                     return Type.Status;
+                if (move is Move.WEATHER_BALL)
+                    return Type.Special;
                 return type <= PokemonType.Unknown ? Type.Physical : Type.Special;
             }
 

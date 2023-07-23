@@ -87,17 +87,19 @@ namespace PokemonRandomizer.Backend.Randomization
             return data.accuracy == 0 ? 1 : data.accuracy / 100f;
         }
 
-        private float AttackingStatFactor(MoveData data, PokemonBaseStats pokemon) 
+        private static float AttackingStatFactor(MoveData data, PokemonBaseStats pokemon) 
         {
+            if (!data.AffectedByAttackingStat)
+                return 1;
             int attack = pokemon.EffectiveAttack;
             float maxStat = MathF.Max(attack, pokemon.SpAttack);
-            if(data.MoveCategory == MoveData.Type.Physical)
-            {
-                return attack / maxStat;
-            }
-            else if(data.MoveCategory == MoveData.Type.Special)
+            if(data.MoveCategory == MoveData.Type.Special)
             {
                 return pokemon.SpAttack / maxStat;
+            }
+            else if (data.MoveCategory == MoveData.Type.Physical)
+            {
+                return attack / maxStat;
             }
             else
             {
