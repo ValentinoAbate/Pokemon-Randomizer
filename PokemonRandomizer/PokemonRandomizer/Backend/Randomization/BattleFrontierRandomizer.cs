@@ -13,13 +13,15 @@ namespace PokemonRandomizer.Backend.Randomization
         private readonly IDataTranslator dataT;
         private readonly PkmnRandomizer pokeRand;
         private readonly MovesetGenerator movesetGenerator;
+        private readonly EvolutionUtils evoUtils;
         private readonly Random rand;
-        public BattleFrontierRandomizer(Random rand, IDataTranslator dataT, PkmnRandomizer pokeRand, MovesetGenerator movesetGenerator)
+        public BattleFrontierRandomizer(Random rand, IDataTranslator dataT, PkmnRandomizer pokeRand, MovesetGenerator movesetGenerator, EvolutionUtils evoUtils)
         {
             this.rand = rand;
             this.dataT = dataT;
             this.pokeRand = pokeRand;
             this.movesetGenerator = movesetGenerator;
+            this.evoUtils = evoUtils;
         }
 
         public void Randomize(RomData data, Settings settings, IEnumerable<Pokemon> pokemonSet)
@@ -64,12 +66,54 @@ namespace PokemonRandomizer.Backend.Randomization
         {
             return strategy switch
             {
-                FrontierPokemonRandStrategy.PowerScaled => 50, // TODO: actual power scaling
+                FrontierPokemonRandStrategy.PowerScaled => DynanamicLevel(pokemon),
                 FrontierPokemonRandStrategy.Level100 => 100,
                 FrontierPokemonRandStrategy.Level50 => 50,
                 FrontierPokemonRandStrategy.Level30 => 30,
                 _ => 50
             };
+        }
+
+        private int DynanamicLevel(FrontierTrainerPokemon pokemon)
+        {
+            int minLevel = 1;
+            int maxLevel = 100;
+            var stats = dataT.GetBaseStats(pokemon.species);
+            foreach (var evolution in stats.evolvesTo)
+            {
+                if (!evolution.IsRealEvolution)
+                    continue;
+                int evoLevel = evoUtils.EquivalentLevelReq(evolution, stats);
+                if(evoLevel < maxLevel)
+                {
+                    maxLevel = evoLevel;
+                }
+            }
+            if (!stats.IsBasicOrEvolvesFromBaby)
+            {
+                foreach(var evolution in stats.evolvesFrom)
+                {
+                    if (!evolution.IsRealEvolution)
+                        continue;
+                    int evoLevel = evoUtils.EquivalentLevelReq(evolution, stats);
+                    if (evoLevel > minLevel)
+                    {
+                        minLevel = evoLevel;
+                    }
+                }
+            }
+            var learnsetLookup = stats.OriginalLearnset.GetMinimumLearnLevelLookup();
+            foreach(var move in pokemon.moves)
+            {
+                if (!learnsetLookup.ContainsKey(move))
+                    continue;
+                int learnLevel = learnsetLookup[move];
+                if(learnLevel > minLevel)
+                {
+                    minLevel = learnLevel;
+                }
+            }
+            return minLevel >= maxLevel ? minLevel : rand.RandomInt(minLevel, maxLevel + 1);
         }
 
         private void RandomizeFrontierBrainPokemon(RomData data, Settings settings, IEnumerable<Pokemon> pokemonSet)

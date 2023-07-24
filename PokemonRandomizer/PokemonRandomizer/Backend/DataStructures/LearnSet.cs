@@ -1,28 +1,34 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
 using PokemonRandomizer.Backend.EnumTypes;
 using PokemonRandomizer.Backend.Utilities;
-using PokemonRandomizer.Backend.Utilities.Debug;
 
 namespace PokemonRandomizer.Backend
 {
     public class LearnSet : IEnumerable<LearnSet.Entry>
     {
         public const int MaxMoves = 25;
-        /// <summary>
-        /// The original number of moves in this moveset when read from the rom.
-        /// If -1, this value was never set.
-        /// </summary>
-        public int OriginalCount { get; private set; } = -1;
-        public int OriginalOffset { get; set; }
 
         public int Count => items.Count;
 
         public Entry this[int index] { get => items[index]; set => items[index] = value; }
 
-        private readonly List<Entry> items = new List<Entry>();
+        private readonly List<Entry> items;
+
+        public LearnSet()
+        {
+            items = new List<Entry>(MaxMoves);
+        }
+
+        public LearnSet(LearnSet toCopy)
+        {
+            items = new List<Entry>(toCopy.items.Count);
+            foreach(var item in toCopy.items)
+            {
+                items.Add(new Entry(item));
+            }
+        }
 
         public HashSet<Move> GetMovesLookup()
         {
@@ -34,6 +40,20 @@ namespace PokemonRandomizer.Backend
                     continue;
                 }
                 lookup.Add(entry.move);
+            }
+            return lookup;
+        }
+
+        public Dictionary<Move, int> GetMinimumLearnLevelLookup()
+        {
+            var lookup = new Dictionary<Move, int>(items.Count);
+            foreach (var entry in items)
+            {
+                // Learnset is sorted so first instance is guaranteed to be first
+                if (!lookup.ContainsKey(entry.move))
+                {
+                    lookup.Add(entry.move, entry.learnLvl);
+                }
             }
             return lookup;
         }
@@ -74,13 +94,7 @@ namespace PokemonRandomizer.Backend
         {
             items.RemoveAll(pred);
         }
-        /// <summary>
-        /// Sets the original count value to the current count
-        /// </summary>
-        public void SetOriginalCount()
-        {
-            OriginalCount = items.Count;
-        }
+
         public override string ToString()
         {
             return string.Join(", ", items);
@@ -107,6 +121,8 @@ namespace PokemonRandomizer.Backend
                 this.move = move;
                 this.learnLvl = learnLvl;
             }
+
+            public Entry(Entry toCopy) : this(toCopy.move, toCopy.learnLvl) { }
             public int CompareTo(Entry other)
             {
                 return learnLvl.CompareTo(other.learnLvl);

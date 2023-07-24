@@ -82,7 +82,7 @@ namespace PokemonRandomizer.Backend.Randomization
             }
             return false;
         }
-        /// <summary> Returns the equivalent required level of an evolution for a give pokemon (including non-leveling evolutions if applicable) </summary>
+        /// <summary> Returns the equivalent required level of an evolution for a given pokemon (including non-leveling evolutions if applicable) </summary>
         public int EquivalentLevelReq(Evolution evo, PokemonBaseStats pokemon)
         {
             if (evo.EvolvesByLevel)

@@ -69,7 +69,7 @@ namespace PokemonRandomizer.Backend.Randomization
             trainerOrgRand = new TrainerOrganizationRandomizer(rand, paletteModifier);
             starterRandomizer = new StarterRandomizer(pokeRand);
             typeChartRandomizer = new TypeChartRandomizer();
-            battleFrontierRandomizer = new BattleFrontierRandomizer(rand, data, pokeRand, movesetGenerator);
+            battleFrontierRandomizer = new BattleFrontierRandomizer(rand, data, pokeRand, movesetGenerator, evoUtils);
             battleTentRandomizer = new BattleTentRandomizer(battleFrontierRandomizer, itemRand, delayedRandomizationCalls);
         }
         // Apply mutations based on program settings.

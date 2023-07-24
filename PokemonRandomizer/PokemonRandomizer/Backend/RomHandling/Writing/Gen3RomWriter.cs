@@ -537,7 +537,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
                 var stats = romData.GetBaseStats((Pokemon)i);
                 WriteBaseStatsSingle(stats, pkmnOffset + i * pkmnSize, rom);
                 int learnsetPointerOffset = movesetTableOffset + (i * Rom.pointerSize);
-                if (stats.learnSet.Count == stats.learnSet.OriginalCount)
+                if (stats.learnSet.Count == stats.OriginalLearnset.Count)
                 {
                     WriteAttacks(rom, stats.learnSet, rom.ReadPointer(learnsetPointerOffset));
                 }
