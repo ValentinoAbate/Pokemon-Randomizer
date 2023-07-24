@@ -271,13 +271,16 @@ namespace PokemonRandomizer.Backend.Randomization
         {
             var currentMovesProcessed = currentMoves.Where(m => m != Move.None).Select(dataT.GetMoveData);
             var metrics = new List<Func<Move, float>>();
-            void CalculateMoveSynergy(Func<MoveData, bool> currMovePred, Predicate<MoveData> moveChoicePred, float intensity)
+            void CalculateMoveSynergy(Func<MoveData, bool> currMovePred, Func<MoveData, bool> moveChoicePred, float intensity, bool applyMultiple = false)
             {
                 int count = currentMovesProcessed.Count(currMovePred);
-                if (count > 0)
-                {
-                    metrics.Add(m => (moveChoicePred(dataT.GetMoveData(m)) ? intensity : 1) * count);
-                }
+                // If we don't have any moves that need this synergy, return
+                if (count <= 0)
+                    return;
+                // Synergy is already fulfilled, return
+                if (!applyMultiple && currentMovesProcessed.Any(moveChoicePred))
+                    return;
+                metrics.Add(m => (moveChoicePred(dataT.GetMoveData(m)) ? intensity : 1) * count);
             }
 
             // Nightmare or Dream Eater + Sleep move Synergy
@@ -289,7 +292,7 @@ namespace PokemonRandomizer.Backend.Randomization
             // Spit Up or Swallow + Stockpile Synergy
             CalculateMoveSynergy(m => m.effect is MoveEffect.SpitUp or MoveEffect.Swallow, m => m.effect == MoveEffect.Stockpile, needSynergy);
             // Stockpile + Spit Up or Swallow Synergy
-            CalculateMoveSynergy(m => m.effect == MoveEffect.Stockpile, m => m.effect is MoveEffect.SpitUp or MoveEffect.Swallow, preferSynergy);
+            CalculateMoveSynergy(m => m.effect == MoveEffect.Stockpile, m => m.effect is MoveEffect.SpitUp or MoveEffect.Swallow, preferSynergy, true);
             // Sun Move + Sun
             CalculateMoveSynergy(m => m.effect is MoveEffect.Solarbeam or MoveEffect.RecoverHpWeather1 or MoveEffect.RecoverHpWeather2 or MoveEffect.RecoverHpWeather3, m => m.effect == MoveEffect.WeatherSun, preferSynergy);
             // Attacking Fire Move + Sun
@@ -299,7 +302,7 @@ namespace PokemonRandomizer.Backend.Randomization
             // Attacking Water Move + Rain
             CalculateMoveSynergy(m => IsAttackMoveOfType(m, PokemonType.WAT), m => m.effect == MoveEffect.WeatherRain, weakSynergy);
             // Weather Ball + Weather (Rain / Sun / Hail)
-            CalculateMoveSynergy(m => m.effect == MoveEffect.WeatherBall, m => m.effect is MoveEffect.WeatherRain or MoveEffect.WeatherSun or MoveEffect.WeatherHail, needSynergy);
+            CalculateMoveSynergy(m => m.effect == MoveEffect.WeatherBall, m => m.effect is MoveEffect.WeatherRain or MoveEffect.WeatherSun or MoveEffect.WeatherHail, needSynergy, true);
             // Weather Ball + Sandstorm
             CalculateMoveSynergy(m => m.effect == MoveEffect.WeatherBall, m => m.effect == MoveEffect.WeatherSandstorm, weakSynergy);
             // Charge + Attacking Electric Move
