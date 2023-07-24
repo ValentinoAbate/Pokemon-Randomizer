@@ -3,9 +3,6 @@ using PokemonRandomizer.Backend.DataStructures.Trainers;
 using PokemonRandomizer.Backend.EnumTypes;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using static PokemonRandomizer.Settings;
 using static PokemonRandomizer.UI.Models.BattleFrontierDataModel;
 
@@ -42,36 +39,37 @@ namespace PokemonRandomizer.Backend.Randomization
 
         public void RandomizePokemon(IEnumerable<FrontierTrainerPokemon> pokemonInput, double chance, FrontierPokemonRandStrategy strategy, PokemonSettings pokemonSettings, SpecialMoveSettings specialMoveSettings, IEnumerable<Pokemon> pokemonSet)
         {
-            if (chance <= 0)
-            {
-                // Todo: remap variant movesets
-                return;
-            }
             foreach (var pokemon in pokemonInput)
             {
                 if (rand.RollSuccess(chance))
                 {
                     // Generate equivalent level
-                    int level = strategy switch
-                    {
-                        FrontierPokemonRandStrategy.PowerScaled => 50, // TODO: actual power scaling
-                        FrontierPokemonRandStrategy.Level100 => 100,
-                        FrontierPokemonRandStrategy.Level50 => 50,
-                        FrontierPokemonRandStrategy.Level30 => 30,
-                        _ => 50
-                    };
-
-                    // TODO: config pokemon settings for power scaling
+                    int level = GetPokemonLevel(pokemon, strategy);
+                    // Randomize Pokemon
                     pokemon.species = pokeRand.RandomPokemon(pokemonSet, pokemon.species, pokemonSettings, level);
-
-                    // TODO: special move support
+                    // Generate moveset
                     pokemon.moves = movesetGenerator.SmartMoveSet(dataT.GetBaseStats(pokemon.species), level, specialMoveSettings);
                 }
-                else // If pokemon is variant
+                else if (dataT.GetBaseStats(pokemon.species).IsVariant) // If pokemon is variant
                 {
+                    // Generate equivalent level
+                    int level = GetPokemonLevel(pokemon, strategy);
                     // Remap variant moves
+                    pokemon.moves = movesetGenerator.SmartMoveSet(dataT.GetBaseStats(pokemon.species), level, specialMoveSettings);
                 }
             }
+        }
+
+        private int GetPokemonLevel(FrontierTrainerPokemon pokemon, FrontierPokemonRandStrategy strategy)
+        {
+            return strategy switch
+            {
+                FrontierPokemonRandStrategy.PowerScaled => 50, // TODO: actual power scaling
+                FrontierPokemonRandStrategy.Level100 => 100,
+                FrontierPokemonRandStrategy.Level50 => 50,
+                FrontierPokemonRandStrategy.Level30 => 30,
+                _ => 50
+            };
         }
 
         private void RandomizeFrontierBrainPokemon(RomData data, Settings settings, IEnumerable<Pokemon> pokemonSet)
