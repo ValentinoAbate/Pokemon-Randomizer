@@ -286,7 +286,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 if (!pokemon.IsBasic)
                     continue;
                 // Variant Generation
-                if (rand.RollSuccess(settings.VariantChance))
+                if (variantRand.RollVariantChance(settings.VariantChance))
                 {
                     variantRand.CreateVariant(pokemon, settings.VariantSettings);
                 }

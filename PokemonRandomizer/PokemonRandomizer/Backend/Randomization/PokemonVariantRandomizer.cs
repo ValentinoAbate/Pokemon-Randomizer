@@ -50,6 +50,11 @@ namespace PokemonRandomizer.Backend.Randomization
             availableMoves = data.GetValidMoves(true, settings.BanSelfdestruct);
         }
 
+        public bool RollVariantChance(double chance)
+        {
+            return rand.RollSuccess(chance);
+        }
+
         public void CreateVariant(PokemonBaseStats pokemon, Settings settings)
         {
             if (pokemon.IsVariant)
