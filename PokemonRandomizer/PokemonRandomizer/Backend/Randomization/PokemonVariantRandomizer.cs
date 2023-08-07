@@ -30,19 +30,6 @@ namespace PokemonRandomizer.Backend.Randomization
             Physical
         }
 
-        // Pokemon that require / deserve special variant logic
-        private static readonly HashSet<Pokemon> specialPokemon = new HashSet<Pokemon>()
-        {
-            Pokemon.SMEARGLE,
-            Pokemon.SHUCKLE,
-            Pokemon.DITTO,
-            Pokemon.UNOWN,
-            Pokemon.WYNAUT,
-            Pokemon.WOBBUFFET,
-            Pokemon.CASTFORM,
-            Pokemon.DELIBIRD
-        };
-
         private readonly Random rand;
         private readonly IDataTranslator dataT;
         private readonly BonusMoveGenerator bonusMoveGenerator;
