@@ -1063,6 +1063,84 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
             }
         }
 
+        private void WriteBattleFrontierBrainPokemon(Rom rom, RomData data, XmlManager info)
+        {
+            if (!info.FindAndSeekOffset(ElementNames.frontierBrainPokemon, rom))
+                return;
+            foreach (var pokemon in data.BattleFrontierBrainPokemon)
+            {
+                WriteFrontierBrainTrainerPokemon(rom, pokemon);
+            }
+        }
+
+        private void WriteFrontierBrainTrainerPokemon(Rom rom, FrontierBrainTrainerPokemon pokemon)
+        {
+            rom.WriteUInt16(PokemonToInternalIndex(pokemon.species));
+            rom.WriteUInt16(ItemToInternalIndex(RemapItem(pokemon.heldItem)));
+            rom.WriteByte((byte)pokemon.IVLevel);
+            rom.WriteByte((byte)pokemon.Nature);
+            rom.WriteBlock(pokemon.EVs);
+            for (int i = 0; i < TrainerPokemon.numMoves; ++i)
+            {
+                rom.WriteUInt16(MoveToInternalIndex(pokemon.moves[i]));
+            }
+        }
+
+        private void WriteBattleFrontierTutorMoves(Rom rom, RomData data, XmlManager info)
+        {
+            if (data.BattleFrontierTutorIndices.Count < 1 || !info.FindAndSeekOffset(ElementNames.GenIII.frontierTutorMoves1, rom))
+                return;
+            int multichoiceTextIndex = info.IntAttr(ElementNames.GenIII.frontierTutorMoves1, "multichoiceTextIndex");
+            int descriptionTextOffset = rom.ReadPointer(info.HexAttr(ElementNames.GenIII.frontierTutorMoves1, "descriptionTextsPointer"));
+            WriteBattleFrontierTutor(rom, data, info, data.BattleFrontierTutorIndices[0], data.TutorMoves, multichoiceTextIndex, descriptionTextOffset);
+            if (data.BattleFrontierTutorIndices.Count < 2 || !info.FindAndSeekOffset(ElementNames.GenIII.frontierTutorMoves2, rom))
+                return;
+            multichoiceTextIndex = info.IntAttr(ElementNames.GenIII.frontierTutorMoves2, "multichoiceTextIndex");
+            descriptionTextOffset = rom.ReadPointer(info.HexAttr(ElementNames.GenIII.frontierTutorMoves2, "descriptionTextsPointer"));
+            WriteBattleFrontierTutor(rom, data, info, data.BattleFrontierTutorIndices[1], data.TutorMoves, multichoiceTextIndex, descriptionTextOffset);
+        }
+
+        private void WriteBattleFrontierTutor(Rom rom, RomData romData, XmlManager info, List<int> tutorIndices, Move[] tutorMoves, int multichoiceTextIndex, int descriptionTextOffset)
+        {
+            var oldMultiChoiceText = ReadScrollableMultichoiceText(rom, info, multichoiceTextIndex);
+            var multichoiceText = new List<string>(tutorIndices.Count);
+            for (int i = 0; i < tutorIndices.Count; i++)
+            {
+                int index = tutorIndices[i];
+                if (index < 0 || index >= tutorMoves.Length)
+                {
+                    Logger.main.Error($"Improper battle frontier tutor index ({index}). Frontier tutors may not work correctly");
+                    return;
+                }
+                var newMove = tutorMoves[index];
+                var oldMove = InternalIndexToMove(rom.ReadUInt16(rom.InternalOffset));
+                rom.WriteUInt16(MoveToInternalIndex(newMove));
+                if (i < oldMultiChoiceText.Count)
+                {
+                    multichoiceText.Add(oldMultiChoiceText[i].Replace(oldMove.ToDisplayString(), newMove.ToDisplayString()));
+                }
+                if (oldMove == newMove)
+                {
+                    continue;
+                }
+                // Remap move description
+                string newDescription = TextUtils.ReformatAndAbbreviate(romData.GetMoveData(newMove).Description, '\n',
+                            17, 3, tmDescriptionRemovals, tmDescriptionReplacements);
+                var newTextEncoded = rom.TranslateString(newDescription, true);
+                var newOffset = rom.WriteInFreeSpace(newTextEncoded);
+                if (newOffset.HasValue)
+                {
+                    int moveDescriptionOffset = descriptionTextOffset + (i * Rom.pointerSize);
+                    rom.WritePointer(moveDescriptionOffset, newOffset.Value);
+                }
+                else
+                {
+                    Logger.main.Error($"Not enough free space to write battle frontier tutor description text: {newDescription}");
+                }
+            }
+            WriteScrollableMultichoiceText(rom, info, multichoiceTextIndex, multichoiceText);
+        }
+
         private void WriteFrontierSudowoodoScript(Rom rom, RomData data, XmlManager info, RomMetadata metadata)
         {
             if (!info.FindAndSeekOffset(ElementNames.GenIII.frontierSudowoodoScript, rom) 
@@ -1136,84 +1214,6 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
             rom.WriteByte((byte)pokemon.HeldItemIndex);
             rom.WriteByte((byte)pokemon.Evs);
             rom.WriteUInt32((int)pokemon.Nature);
-        }
-
-        private void WriteBattleFrontierBrainPokemon(Rom rom, RomData data, XmlManager info)
-        {
-            if (!info.FindAndSeekOffset(ElementNames.frontierBrainPokemon, rom))
-                return;
-            foreach(var pokemon in data.BattleFrontierBrainPokemon) 
-            { 
-                WriteFrontierBrainTrainerPokemon(rom, pokemon);
-            }
-        }
-
-        private void WriteFrontierBrainTrainerPokemon(Rom rom, FrontierBrainTrainerPokemon pokemon)
-        {
-            rom.WriteUInt16(PokemonToInternalIndex(pokemon.species));
-            rom.WriteUInt16(ItemToInternalIndex(RemapItem(pokemon.heldItem)));
-            rom.WriteByte((byte)pokemon.IVLevel);
-            rom.WriteByte((byte)pokemon.Nature);
-            rom.WriteBlock(pokemon.EVs);
-            for (int i = 0; i < TrainerPokemon.numMoves; ++i)
-            {
-                rom.WriteUInt16(MoveToInternalIndex(pokemon.moves[i]));
-            }
-        }
-
-        private void WriteBattleFrontierTutorMoves(Rom rom, RomData data, XmlManager info)
-        {
-            if (data.BattleFrontierTutorIndices.Count < 1 || !info.FindAndSeekOffset(ElementNames.GenIII.frontierTutorMoves1, rom))
-                return;
-            int multichoiceTextIndex = info.IntAttr(ElementNames.GenIII.frontierTutorMoves1, "multichoiceTextIndex");
-            int descriptionTextOffset = rom.ReadPointer(info.HexAttr(ElementNames.GenIII.frontierTutorMoves1, "descriptionTextsPointer"));
-            WriteBattleFrontierTutor(rom, data, info, data.BattleFrontierTutorIndices[0], data.TutorMoves, multichoiceTextIndex, descriptionTextOffset);
-            if (data.BattleFrontierTutorIndices.Count < 2 || !info.FindAndSeekOffset(ElementNames.GenIII.frontierTutorMoves2, rom))
-                return;
-            multichoiceTextIndex = info.IntAttr(ElementNames.GenIII.frontierTutorMoves2, "multichoiceTextIndex");
-            descriptionTextOffset = rom.ReadPointer(info.HexAttr(ElementNames.GenIII.frontierTutorMoves2, "descriptionTextsPointer"));
-            WriteBattleFrontierTutor(rom, data, info, data.BattleFrontierTutorIndices[1], data.TutorMoves, multichoiceTextIndex, descriptionTextOffset);
-        }
-
-        private void WriteBattleFrontierTutor(Rom rom, RomData romData, XmlManager info, List<int> tutorIndices, Move[] tutorMoves, int multichoiceTextIndex, int descriptionTextOffset)
-        {
-            var oldMultiChoiceText = ReadScrollableMultichoiceText(rom, info, multichoiceTextIndex);
-            var multichoiceText = new List<string>(tutorIndices.Count);
-            for (int i = 0; i < tutorIndices.Count; i++)
-            {
-                int index = tutorIndices[i];
-                if (index < 0 || index >= tutorMoves.Length)
-                {
-                    Logger.main.Error($"Improper battle frontier tutor index ({index}). Frontier tutors may not work correctly");
-                    return;
-                }
-                var newMove = tutorMoves[index];
-                var oldMove = InternalIndexToMove(rom.ReadUInt16(rom.InternalOffset));
-                rom.WriteUInt16(MoveToInternalIndex(newMove));
-                if(i < oldMultiChoiceText.Count)
-                {
-                    multichoiceText.Add(oldMultiChoiceText[i].Replace(oldMove.ToDisplayString(), newMove.ToDisplayString()));
-                }
-                if(oldMove == newMove)
-                {
-                    continue;
-                }
-                // Remap move description
-                string newDescription = TextUtils.ReformatAndAbbreviate(romData.GetMoveData(newMove).Description, '\n',
-                            17, 3, tmDescriptionRemovals, tmDescriptionReplacements);
-                var newTextEncoded = rom.TranslateString(newDescription, true);
-                var newOffset = rom.WriteInFreeSpace(newTextEncoded);
-                if (newOffset.HasValue)
-                {
-                    int moveDescriptionOffset = descriptionTextOffset + (i * Rom.pointerSize);
-                    rom.WritePointer(moveDescriptionOffset, newOffset.Value);
-                }
-                else
-                {
-                    Logger.main.Error($"Not enough free space to write battle frontier tutor description text: {newDescription}");
-                }
-            }
-            WriteScrollableMultichoiceText(rom, info, multichoiceTextIndex, multichoiceText);
         }
 
         // Game Corner
