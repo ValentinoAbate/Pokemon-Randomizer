@@ -18,7 +18,11 @@ namespace PokemonRandomizer.UI.Views
         private const string addWeatherAbilitiesTooltup = "Distribute Drizzle and Drought to the pokemon that can have them as of Gen VII+" +
             "\nPelliper gains Drizzle as a secondary ability, and Wingull gets Rain Dish as a secondary ability (so that you can tell what ability it will have when evolved)" +
             "\nPolitoed gains Drizzle as a secondary ability, replacing Damp" +
-            "\nVulpix, Ninetales, and Torkoal all gain Drought as a secondary ability";
+            "\nVulpix, Ninetales, and Torkoal all gain Drought as a secondary ability" +
+            "\nNote: link battles between a ROM that has \"Distribute Weather Abilities\" applied and one that doesn't that include affected pokemon may behave incorrectly";
+        private const string typeEffectivenessModLinkWarning = "\nNote: link battles between two ROMs that have different \"Type Effectiveness Modification\" settings may behave incorrectly";
+        private const string updateDOTMovesTooltip = "Updates the moves Wrap, Bind, Fire Spin, Sand Tomb, Whirlpool, and Clamp to their Gen V power, accuracy, and PP" +
+            "\nNote: link battles between a ROM that has \"Update Wrap Moves\" applied and one that doesn't may behave incorrectly when using affected moves";
         public CompositeCollection MysteryGiftEventItemDropdown => new CompositeCollection()
         {
             new ComboBoxItem() {Content="None", ToolTip="Mystery gift event items such as the Eon Ticket will not be obtainable, except through normal means or another randomizer setting such as the \"Custom PC Potion\" or \"Custom Shop Item\" settings" },
@@ -29,8 +33,8 @@ namespace PokemonRandomizer.UI.Views
         public CompositeCollection TypeChartOptionDropdown => new CompositeCollection()
         {
             new ComboBoxItem() {Content="None" },
-            new ComboBoxItem() {Content="Invert", ToolTip="Type effectiveness will be inverted (like in inverse battles). Any weakness will become a resistance, and any resistance or immunity will become a weakness" },
-            new ComboBoxItem() {Content="Swap", ToolTip="Type effectiveness will be swapped. For example, (DRG is weak to ICE) becomes (ICE is weak to DRG), (GHO is immune to FTG) becomes (FTG is immune to GHO), etc."},
+            new ComboBoxItem() {Content="Invert", ToolTip="Type effectiveness will be inverted (like in inverse battles). Any weakness will become a resistance, and any resistance or immunity will become a weakness" + typeEffectivenessModLinkWarning},
+            new ComboBoxItem() {Content="Swap", ToolTip="Type effectiveness will be swapped. For example, (DRG is weak to ICE) becomes (ICE is weak to DRG), (GHO is immune to FTG) becomes (FTG is immune to GHO), etc." + typeEffectivenessModLinkWarning},
         };
 
         public MiscDataView(MiscDataModel model, RomMetadata metadata)
@@ -41,7 +45,7 @@ namespace PokemonRandomizer.UI.Views
 
             stack.Header(UISkin.Current.HacksAndTweaksHeader);
             stack.Add(new BoundCheckBoxUI("Run Indoors", model.RunIndoors));
-            stack.Add(new BoundCheckBoxUI("Update Wrap Moves", model.UpdateDOTMoves, "Updates the moves Wrap, Bind, Fire Spin, Sand Tomb, Whirlpool, and Clamp to their Gen V power, accuracy, and PP"));
+            stack.Add(new BoundCheckBoxUI("Update Wrap Moves", model.UpdateDOTMoves, updateDOTMovesTooltip));
             var pokemonTweakStack = stack.Add(CreateHorizontalStack());
             pokemonTweakStack.Add(new BoundCheckBoxUI("Upgrade Unown", model.UpgradeUnown, upgradeUnownTooltip));
             pokemonTweakStack.Add(new BoundCheckBoxUI("Upgrade Castform", model.UpgradeCastform, upgradeCastformTooltip));
