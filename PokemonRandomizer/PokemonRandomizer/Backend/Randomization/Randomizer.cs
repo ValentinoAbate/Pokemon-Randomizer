@@ -599,6 +599,13 @@ namespace PokemonRandomizer.Backend.Randomization
             }
             #endregion
 
+            #region Special Scripts
+            foreach(var kvp in data.SpecialScripts)
+            {
+                scriptRand.RandomizeScript(kvp.Value, settings, scriptRandomizationArgs);
+            }
+            #endregion
+
             #region Wild Encounters
 
             encounterRand.RandomizeEncounters(pokemonSet, data.Encounters, settings.EncounterSettings, settings.EncounterStrategy);

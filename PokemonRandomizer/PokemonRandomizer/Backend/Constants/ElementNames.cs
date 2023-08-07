@@ -81,6 +81,7 @@
             private const string frontierTutorMoves = "frontierTutorMoves";
             public const string frontierTutorMoves1 = frontierTutorMoves + "1";
             public const string frontierTutorMoves2 = frontierTutorMoves + "2";
+            public const string frontierSudowoodoScript = "frontierSudowoodoScript";
             public const string rouletteWagers = "rouletteWagers";
             public const string rouletteWagerTextFix = "rouletteWagerTextFix";
             public const string rouletteLowTableFix = "rouletteLowTableFix";

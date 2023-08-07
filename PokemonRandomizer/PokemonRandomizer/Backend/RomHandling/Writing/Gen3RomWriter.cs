@@ -76,7 +76,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
                 WriteCatchingTutOpponent(data, rom, info);
             }
             // Frontier and Minigames
-            WriteBattleFrontier(rom, data, info);
+            WriteBattleFrontier(rom, data, info, metadata);
             WriteBattleTents(rom, data.BattleTents, info);
             WriteRouletteData(rom, data.RouletteWagers, info);
 
@@ -1044,11 +1044,12 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
 
         // Battle Frontier
 
-        private void WriteBattleFrontier(Rom rom, RomData data, XmlManager info)
+        private void WriteBattleFrontier(Rom rom, RomData data, XmlManager info, RomMetadata metadata)
         {
             WriteBattleFrontierTrainerPokemon(rom, data, info);
             WriteBattleFrontierBrainPokemon(rom, data, info);
             WriteBattleFrontierTutorMoves(rom, data, info);
+            WriteFrontierSudowoodoScript(rom, data, info, metadata);
         }
 
         private void WriteBattleFrontierTrainerPokemon(Rom rom, RomData data, XmlManager info)
@@ -1060,6 +1061,16 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
             {
                 WriteFrontierTrainerPokemon(rom, data.BattleFrontierTrainerPokemon[i]);
             }
+        }
+
+        private void WriteFrontierSudowoodoScript(Rom rom, RomData data, XmlManager info, RomMetadata metadata)
+        {
+            if (!info.FindAndSeekOffset(ElementNames.GenIII.frontierSudowoodoScript, rom) 
+                || !data.SpecialScripts.TryGetValue(ElementNames.GenIII.frontierSudowoodoScript, out var script))
+            {
+                return;
+            }
+            scriptWriter.Write(script, rom, rom.InternalOffset, metadata);
         }
 
         // Battle Tents

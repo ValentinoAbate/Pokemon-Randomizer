@@ -134,6 +134,7 @@ namespace PokemonRandomizer.Backend.DataStructures
         #endregion
 
         public Script SetBerryTreeScript { get; set; }
+        public Dictionary<string, Script> SpecialScripts { get; } = new();
 
         // Battle Frontier and Minigames
 

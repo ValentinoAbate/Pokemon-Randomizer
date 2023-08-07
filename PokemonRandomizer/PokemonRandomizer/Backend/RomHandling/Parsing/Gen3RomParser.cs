@@ -103,6 +103,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
             ReadBattleFrontierTutorIndices(rom, data, info);
             ReadBattleFrontierTrainerPokemon(rom, data, info);
             ReadBattleFrontierBrainPokemon(rom, data, info);
+            ReadFrontierSudowoodoScript(rom, data, info, metadata);
             // Read Battle Tents
             ReadBattleTents(rom, data, info);
             // Read Game Corner Data
@@ -1042,6 +1043,13 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
                 pokemon.moves[i] = InternalIndexToMove(rom.ReadUInt16());
             }
             return pokemon;
+        }
+
+        private void ReadFrontierSudowoodoScript(Rom rom, RomData data, XmlManager info, RomMetadata metadata)
+        {
+            if (!info.FindAndSeekOffset(ElementNames.GenIII.frontierSudowoodoScript, rom))
+                return;
+            data.SpecialScripts.Add(ElementNames.GenIII.frontierSudowoodoScript, scriptParser.Parse(rom, rom.InternalOffset, metadata));
         }
 
         // Battle Tents
