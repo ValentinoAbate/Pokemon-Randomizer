@@ -44,7 +44,11 @@ namespace PokemonRandomizer.UI.Views
         private TabItem GeneralTab(VariantPokemonDataModel model)
         {
             var stack = CreateStack();
-            stack.Add(new BoundTextBoxUI("Seed", model.Seed));
+            stack.Header("Variant Seed");
+            stack.Description("Two randomized ROMs that have the same Variant Seed and the same Variant Pokemon settings will have the same variant pokemon.", 
+                "Use this feature to create multiple randomized ROMs that are compatible for link battles and trading, or for multi-ROM challenge runs like Soullockes!",
+                "Leave blank for a random Variant Seed.");
+            stack.Add(new BoundTextBoxUI("Variant Seed", model.Seed));
             return CreateTabItem("General Options", stack);
         }
 
