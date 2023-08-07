@@ -3,6 +3,7 @@ using PokemonRandomizer.Backend.DataStructures.Trainers;
 using PokemonRandomizer.Backend.EnumTypes;
 using System;
 using System.Collections.Generic;
+using static PokemonRandomizer.Backend.Randomization.WildEncounterRandomizer;
 using static PokemonRandomizer.Settings;
 using static PokemonRandomizer.UI.Models.BattleFrontierDataModel;
 
@@ -118,28 +119,24 @@ namespace PokemonRandomizer.Backend.Randomization
 
         private void RandomizeFrontierBrainPokemon(RomData data, Settings settings, IEnumerable<Pokemon> pokemonSet)
         {
-            if (settings.FrontierBrainPokemonRandChance <= 0)
-            {
-                // Todo: remap variant movesets
-                return;
-            }
             var pokemonSettings = new PokemonSettings()
             {
                 BanLegendaries = settings.FrontierBrainBanLegendaries,
+                ForceHighestLegalEvolution = true,
+                RestrictIllegalEvolutions = false,
             };
             var specialMoveSettings = settings.FrontierBrainSpecialMoveSettings;
             foreach (var pokemon in data.BattleFrontierBrainPokemon)
             {
                 if (rand.RollSuccess(settings.FrontierBrainPokemonRandChance))
                 {
-                    // TODO: config pokemon settings for power scaling
                     pokemon.species = pokeRand.RandomPokemon(pokemonSet, pokemon.species, pokemonSettings);
-                    // TODO: special move support
                     pokemon.moves = movesetGenerator.SmartMoveSet(dataT.GetBaseStats(pokemon.species), 100, specialMoveSettings);
                 }
-                else // If pokemon is variant
+                else if (dataT.GetBaseStats(pokemon.species).IsVariant) // If pokemon is variant
                 {
                     // Remap variant moves
+                    pokemon.moves = movesetGenerator.SmartMoveSet(dataT.GetBaseStats(pokemon.species), 100, specialMoveSettings);
                 }
             }
         }
