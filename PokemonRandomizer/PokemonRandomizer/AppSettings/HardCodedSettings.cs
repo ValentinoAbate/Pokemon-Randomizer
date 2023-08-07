@@ -53,7 +53,8 @@ namespace PokemonRandomizer.AppSettings
 
         #region Variants
 
-        public override double VariantChance => 0.2; 
+        public override double VariantChance => 0.2;
+        public override string VariantSeed => "";
 
         public override PokemonVariantRandomizer.Settings VariantSettings { get; } = new PokemonVariantRandomizer.Settings()
         {

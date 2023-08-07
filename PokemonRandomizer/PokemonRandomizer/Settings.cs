@@ -66,6 +66,7 @@ namespace PokemonRandomizer
         #region Variants
 
         public abstract double VariantChance { get; }
+        public abstract string VariantSeed { get; }
         public abstract PokemonVariantRandomizer.Settings VariantSettings { get; }
 
         #endregion

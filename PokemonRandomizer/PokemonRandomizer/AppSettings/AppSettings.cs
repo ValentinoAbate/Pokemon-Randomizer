@@ -176,6 +176,7 @@ namespace PokemonRandomizer.AppSettings
         };
 
         public override double VariantChance => RandomChance(variantData.CreateVariants, variantData.VariantChance);
+        public override string VariantSeed => variantData.Seed;
 
         #endregion
 

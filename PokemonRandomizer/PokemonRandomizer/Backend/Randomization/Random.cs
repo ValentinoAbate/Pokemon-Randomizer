@@ -27,6 +27,10 @@ namespace PokemonRandomizer.Backend.Randomization
             IntSeed = int.TryParse(seed, out int intSeed) ? intSeed : StringToInt(seed);
             rand = new System.Random(IntSeed);
         }
+        public Random(Random parent) : this(parent.RandomInt(int.MinValue, int.MaxValue))
+        {
+
+        }
 
         private static int StringToInt(string seed)
         {

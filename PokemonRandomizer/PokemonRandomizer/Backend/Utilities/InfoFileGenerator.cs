@@ -13,6 +13,7 @@ namespace PokemonRandomizer.Backend.Utilities
         private const string subdivider = "---------------------------------------------------------------------------------------------------------------------------------------";
         private const string unrandomized = "None (unrandomized)";
         private const string none = "None";
+        private const string notApplicable = "N/A";
         private const int headerLines = 5;
         public string[] GenerateInfoFile(RomData data, RomMetadata metadata, string settingsString = null)
         {
@@ -20,6 +21,7 @@ namespace PokemonRandomizer.Backend.Utilities
             Header(ref lines, "Randomizer Info");
             lines.Add($"Randomizer Version : {MainWindow.version}");
             lines.Add($"Seed               : {(string.IsNullOrEmpty(data.Seed) ? unrandomized : data.Seed)}");
+            lines.Add($"Variant Seed       : {(string.IsNullOrEmpty(data.VariantSeed) ? notApplicable : data.VariantSeed)}");
             lines.Add($"ROM                : {metadata}");
             lines.Add($"Generation         : {metadata.Gen}");
 

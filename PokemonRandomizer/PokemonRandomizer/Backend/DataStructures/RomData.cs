@@ -15,6 +15,7 @@ namespace PokemonRandomizer.Backend.DataStructures
         // A metrics database calculated from the input ROM data (the base game if the rom being loaded is normal)
         public RomMetrics Metrics { get; private set; }
         public string Seed { get; set; }
+        public string VariantSeed { get; set; }
         public Item PcStartItem { get; set; }
         public List<Pokemon> Starters { get; set; }
         public List<Item> StarterItems { get; set; }
