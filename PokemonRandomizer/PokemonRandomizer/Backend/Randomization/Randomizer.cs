@@ -824,6 +824,10 @@ namespace PokemonRandomizer.Backend.Randomization
                     {
                         trainerRand.FinishPokemonRandomization(firstBattleAce);
                     }
+                    else
+                    {
+                        trainerRand.RemapVariantMoveset(firstBattleAce);
+                    }
                     // Procedurally generate the rest of the battles
                     trainerRand.RandomizeReoccurring(firstBattle, battles, pokemonSet, trainerSettings);
                     if (settings.EasyFirstRivalBattle)
@@ -869,6 +873,10 @@ namespace PokemonRandomizer.Backend.Randomization
                 if (trainerSettings.RandomizePokemon || settings.RandomizeWallyAce)
                 {
                     trainerRand.FinishPokemonRandomization(firstBattleAce);
+                }
+                else
+                {
+                    trainerRand.RemapVariantMoveset(firstBattleAce);
                 }
                 // Procedurally generate the rest of Wally's battles
                 trainerRand.RandomizeReoccurring(firstBattle, wallyBattles, pokemonSet, trainerSettings);

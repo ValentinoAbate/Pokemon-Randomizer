@@ -51,6 +51,7 @@ namespace PokemonRandomizer.Backend.DataStructures.Trainers
             get => PokemonData.DataType;
             set => PokemonData.DataType = value;
         }
+        public bool HasSpecialMoves => DataType is TrainerPokemon.DataType.SpecialMoves or TrainerPokemon.DataType.SpecialMovesAndHeldItem;
         public TrainerPokemonData PokemonData { get; set; }
 
         public void EnsureSafeBattleType()

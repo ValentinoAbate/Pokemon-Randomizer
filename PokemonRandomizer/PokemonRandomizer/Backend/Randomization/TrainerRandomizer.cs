@@ -221,6 +221,31 @@ namespace PokemonRandomizer.Backend.Randomization
                 }
                 RandomizeTrainerPokemon(trainer, pokemonSet, CreatePokemonSettings(trainer, settings), settings.DuplicateMultiplier);
             }
+            else
+            {
+                RemapVariantMovesets(trainer);
+            }
+        }
+
+        public void RemapVariantMovesets(Trainer trainer)
+        {
+            if (!trainer.HasSpecialMoves)
+                return;
+            foreach(var pokemon in trainer.Pokemon)
+            {
+                RemapVariantMoveset(pokemon);
+            }
+        }
+
+        public void RemapVariantMoveset(TrainerPokemon pokemon)
+        {
+            if (!pokemon.HasSpecialMoves)
+                return;
+            var stats = dataT.GetBaseStats(pokemon.species);
+            if (stats.IsVariant)
+            {
+                pokemon.moves = movesetGenerator.SmartMoveSet(stats, pokemon.level);
+            }
         }
 
         /// <summary>
@@ -333,6 +358,13 @@ namespace PokemonRandomizer.Backend.Randomization
                         RandomizeTrainerPokemon(battle, pokemonSet, pkmnSettings, settings.DuplicateMultiplier, typeOccurence, 0, battleSize - lastBattleSize);
                         lastBattle = battle;
                     }
+                }
+            }
+            else
+            {
+                foreach(var battle in battles)
+                {
+                    RemapVariantMovesets(battle);
                 }
             }
         }
