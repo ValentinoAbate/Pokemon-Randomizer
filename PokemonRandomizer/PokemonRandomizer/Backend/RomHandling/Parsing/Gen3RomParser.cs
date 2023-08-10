@@ -1104,7 +1104,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
                 pokemon.moves[i] = InternalIndexToMove(rom.ReadUInt16());
             }
             pokemon.HeldItemIndex = rom.ReadByte();
-            pokemon.Evs = (IHasFrontierTrainerEvs.EvFlags)rom.ReadByte();
+            pokemon.EVs = (IHasFrontierTrainerEvs.EvFlags)rom.ReadByte();
             pokemon.Nature = (Nature)rom.ReadUInt32();
             return pokemon;
         }

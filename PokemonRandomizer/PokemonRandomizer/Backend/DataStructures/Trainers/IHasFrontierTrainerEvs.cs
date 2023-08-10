@@ -20,6 +20,6 @@ namespace PokemonRandomizer.Backend.DataStructures.Trainers
             SpDef = 32,
         }
 
-        public EvFlags Evs { get; set; }
+        public EvFlags EVs { get; set; }
     }
 }

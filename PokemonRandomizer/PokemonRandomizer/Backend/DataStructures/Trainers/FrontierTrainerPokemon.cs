@@ -11,12 +11,22 @@ namespace PokemonRandomizer.Backend.DataStructures.Trainers
     public class FrontierTrainerPokemon : TrainerPokemon, IHasTrainerPokemonNature, IHasFrontierTrainerEvs
     {
         public Nature Nature { get; set; }
-        public IHasFrontierTrainerEvs.EvFlags Evs { get; set; }
+        public IHasFrontierTrainerEvs.EvFlags EVs { get; set; }
         public int HeldItemIndex { get; set; }
 
         public override string ToString()
         {
             return $"{species.ToDisplayString()} ({Nature})";
+        }
+
+        public override TrainerPokemon Clone()
+        {
+            var other = new FrontierTrainerPokemon();
+            other.CopyBasicValuesFrom(this);
+            other.Nature = Nature;
+            other.EVs = EVs;
+            other.HeldItemIndex = HeldItemIndex;
+            return other;
         }
     }
 }

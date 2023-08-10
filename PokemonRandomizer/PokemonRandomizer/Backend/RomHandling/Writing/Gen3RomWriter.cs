@@ -1212,7 +1212,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
                 rom.WriteUInt16(MoveToInternalIndex(pokemon.moves[i]));
             }
             rom.WriteByte((byte)pokemon.HeldItemIndex);
-            rom.WriteByte((byte)pokemon.Evs);
+            rom.WriteByte((byte)pokemon.EVs);
             rom.WriteUInt32((int)pokemon.Nature);
         }
 

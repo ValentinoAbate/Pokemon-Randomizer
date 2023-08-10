@@ -15,5 +15,15 @@ namespace PokemonRandomizer.Backend.DataStructures.Trainers
         {
             return $"{species.ToDisplayString()} ({Nature})";
         }
+
+        public override TrainerPokemon Clone()
+        {
+            var other = new FrontierBrainTrainerPokemon();
+            other.CopyBasicValuesFrom(this);
+            other.Nature = Nature;
+            other.EVs = new byte[EVs.Length];
+            Array.Copy(EVs, other.EVs, EVs.Length);
+            return other;
+        }
     }
 }
