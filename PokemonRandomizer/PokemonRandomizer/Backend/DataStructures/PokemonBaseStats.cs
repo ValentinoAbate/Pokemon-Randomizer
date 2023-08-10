@@ -12,6 +12,12 @@ namespace PokemonRandomizer.Backend.DataStructures
     public class PokemonBaseStats
     {
         public const int numStats = 6;
+        public const int hpStatIndex = 0;
+        public const int atkStatIndex = 1;
+        public const int defStatIndex = 2;
+        public const int spdStatIndex = 3;
+        public const int spAtkStatIndex = 4;
+        public const int spDefStatIndex = 5;
         public const int maxIV = 31;
         public Pokemon species;
 
@@ -69,6 +75,43 @@ namespace PokemonRandomizer.Backend.DataStructures
         public byte SpDefense { get => stats[5]; set => stats[5] = value; }
         public int EffectiveAttack => HasAbility(Ability.Huge_Power) || HasAbility(Ability.Pure_Power) ? Attack * 2 : Attack; // TODO: hustle
         public int BST => stats.Sum(b => b);
+        // Note: only accurate for Gen III+
+        public int GetStatAtLevel(int statIndex, int level, int EVs, int IVs, Nature nature)
+        {
+            if(statIndex < 0 || statIndex >= stats.Length)
+                return 0;
+            // SHEDINJA always has 1 hp, regardless of EVs / IVs
+            if(species == Pokemon.SHEDINJA && statIndex == Hp)
+            {
+                return 1;
+            }
+            float baseValue = (((stats[statIndex] * 2) + IVs + (EVs / 4)) * level) / 100f;
+            if(statIndex == Hp) 
+            {
+                return (int)Math.Floor(baseValue + level + 10);
+            }
+            return (int)Math.Floor((baseValue + 5) * NatureStatMultiplier(nature, statIndex));
+        }
+
+        private const float positiveNature = 1.1f;
+        private const float negativeNature = 0.9f;
+        public static float NatureStatMultiplier(Nature nature, int statIndex)
+        {
+            return statIndex switch
+            {
+                atkStatIndex when nature is Nature.LONELY or Nature.ADAMANT or Nature.NAUGHTY or Nature.BRAVE => positiveNature,
+                atkStatIndex when nature is Nature.BOLD or Nature.MODEST or Nature.CALM or Nature.TIMID => negativeNature,                
+                defStatIndex when nature is Nature.BOLD or Nature.IMPISH or Nature.LAX or Nature.RELAXED => positiveNature,
+                defStatIndex when nature is Nature.LONELY or Nature.MILD or Nature.GENTLE or Nature.HASTY => negativeNature,
+                spdStatIndex when nature is Nature.TIMID or Nature.HASTY or Nature.JOLLY or Nature.NAIVE => positiveNature,
+                spdStatIndex when nature is Nature.BRAVE or Nature.RELAXED or Nature.QUIET or Nature.SASSY => negativeNature,
+                spAtkStatIndex when nature is Nature.MODEST or Nature.MILD or Nature.RASH or Nature.QUIET => positiveNature,
+                spAtkStatIndex when nature is Nature.ADAMANT or Nature.IMPISH or Nature.CAREFUL or Nature.JOLLY => negativeNature,
+                spDefStatIndex when nature is Nature.CALM or Nature.GENTLE or Nature.CAREFUL or Nature.SASSY => positiveNature,
+                spDefStatIndex when nature is Nature.NAUGHTY or Nature.LAX or Nature.RASH or Nature.NAIVE => negativeNature,
+                _ => 1
+            };
+        }
 
         #endregion
 
