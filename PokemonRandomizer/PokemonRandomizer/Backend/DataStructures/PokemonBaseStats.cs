@@ -90,27 +90,7 @@ namespace PokemonRandomizer.Backend.DataStructures
             {
                 return (int)Math.Floor(baseValue + level + 10);
             }
-            return (int)Math.Floor((baseValue + 5) * NatureStatMultiplier(nature, statIndex));
-        }
-
-        private const float positiveNature = 1.1f;
-        private const float negativeNature = 0.9f;
-        public static float NatureStatMultiplier(Nature nature, int statIndex)
-        {
-            return statIndex switch
-            {
-                atkStatIndex when nature is Nature.LONELY or Nature.ADAMANT or Nature.NAUGHTY or Nature.BRAVE => positiveNature,
-                atkStatIndex when nature is Nature.BOLD or Nature.MODEST or Nature.CALM or Nature.TIMID => negativeNature,                
-                defStatIndex when nature is Nature.BOLD or Nature.IMPISH or Nature.LAX or Nature.RELAXED => positiveNature,
-                defStatIndex when nature is Nature.LONELY or Nature.MILD or Nature.GENTLE or Nature.HASTY => negativeNature,
-                spdStatIndex when nature is Nature.TIMID or Nature.HASTY or Nature.JOLLY or Nature.NAIVE => positiveNature,
-                spdStatIndex when nature is Nature.BRAVE or Nature.RELAXED or Nature.QUIET or Nature.SASSY => negativeNature,
-                spAtkStatIndex when nature is Nature.MODEST or Nature.MILD or Nature.RASH or Nature.QUIET => positiveNature,
-                spAtkStatIndex when nature is Nature.ADAMANT or Nature.IMPISH or Nature.CAREFUL or Nature.JOLLY => negativeNature,
-                spDefStatIndex when nature is Nature.CALM or Nature.GENTLE or Nature.CAREFUL or Nature.SASSY => positiveNature,
-                spDefStatIndex when nature is Nature.NAUGHTY or Nature.LAX or Nature.RASH or Nature.NAIVE => negativeNature,
-                _ => 1
-            };
+            return (int)Math.Floor((baseValue + 5) * nature.StatMultiplier(statIndex));
         }
 
         #endregion

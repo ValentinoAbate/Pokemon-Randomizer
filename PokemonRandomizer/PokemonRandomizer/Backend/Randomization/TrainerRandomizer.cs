@@ -159,6 +159,47 @@ namespace PokemonRandomizer.Backend.Randomization
             }
         }
 
+        public static Nature GetRandomNature(Random rand, PokemonBaseStats pokemon)
+        {
+            float maxStat = pokemon.stats[1..].Max();
+            var normalizedStats = new float[PokemonBaseStats.numStats];
+            normalizedStats[PokemonBaseStats.hpStatIndex] = 0;
+            normalizedStats[PokemonBaseStats.atkStatIndex] = pokemon.Attack / maxStat;
+            normalizedStats[PokemonBaseStats.defStatIndex] = pokemon.Defense / maxStat;
+            normalizedStats[PokemonBaseStats.spdStatIndex] = pokemon.Speed / maxStat;
+            normalizedStats[PokemonBaseStats.spAtkStatIndex] = pokemon.SpAttack / maxStat;
+            normalizedStats[PokemonBaseStats.spDefStatIndex] = pokemon.SpDefense / maxStat;
+            var statWeights = new WeightedSet<int>(PokemonBaseStats.numStats);
+            for (int i = 1; i < PokemonBaseStats.numStats; ++i)
+            {
+                statWeights.Add(i, MathF.Pow(normalizedStats[i], 3));
+            }
+            int positiveStat = rand.Choice(statWeights);
+            int negativeStat;
+            if(pokemon.EffectiveAttack * 1.6f <= pokemon.SpAttack)
+            {
+                negativeStat = PokemonBaseStats.atkStatIndex;
+            }
+            else if (pokemon.SpAttack * 1.6f <= pokemon.EffectiveAttack)
+            {
+                negativeStat = PokemonBaseStats.spAtkStatIndex;
+            }
+            else if (pokemon.Speed <= (int)(pokemon.BST * 0.1f))
+            {
+                negativeStat = pokemon.Speed;
+            }
+            else
+            {
+                statWeights.Clear();
+                for (int i = 1; i < PokemonBaseStats.numStats; ++i)
+                {
+                    statWeights.Add(i, 1 / MathF.Pow(normalizedStats[i], 3));
+                }
+                negativeStat = rand.Choice(statWeights);
+            }
+            return NatureUtils.GetNature(positiveStat, negativeStat);
+        }
+
 
         public void RandomizeAll(List<Trainer> allBattles, IEnumerable<Pokemon> pokemonSet, TrainerSettings settings)
         {

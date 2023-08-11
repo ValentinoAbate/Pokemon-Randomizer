@@ -1,9 +1,10 @@
 ﻿using PokemonRandomizer.Backend.DataStructures;
 using PokemonRandomizer.Backend.DataStructures.Trainers;
 using PokemonRandomizer.Backend.EnumTypes;
+using PokemonRandomizer.Backend.Utilities;
 using System;
 using System.Collections.Generic;
-using static PokemonRandomizer.Backend.Randomization.WildEncounterRandomizer;
+using System.Linq;
 using static PokemonRandomizer.Settings;
 using static PokemonRandomizer.UI.Models.BattleFrontierDataModel;
 
@@ -50,15 +51,21 @@ namespace PokemonRandomizer.Backend.Randomization
                     int level = GetPokemonLevel(pokemon, strategy);
                     // Randomize Pokemon
                     pokemon.species = pokeRand.RandomPokemon(pokemonSet, pokemon.species, pokemonSettings, level);
-                    // Generate moveset
-                    pokemon.moves = movesetGenerator.SmartMoveSet(dataT.GetBaseStats(pokemon.species), level, specialMoveSettings);
+                    // Generate moveset and Nature
+                    var stats = dataT.GetBaseStats(pokemon.species);
+                    pokemon.Nature = TrainerRandomizer.GetRandomNature(rand, stats);
+                    pokemon.moves = movesetGenerator.SmartMoveSet(stats, level, specialMoveSettings);
+                    pokemon.Nature = CorrectBadNature(pokemon.moves, pokemon.Nature);
                 }
                 else if (dataT.GetBaseStats(pokemon.species).IsVariant) // If pokemon is variant
                 {
                     // Generate equivalent level
                     int level = GetPokemonLevel(pokemon, strategy);
-                    // Remap variant moves
-                    pokemon.moves = movesetGenerator.SmartMoveSet(dataT.GetBaseStats(pokemon.species), level, specialMoveSettings);
+                    // Remap variant moves and Nature
+                    var stats = dataT.GetBaseStats(pokemon.species);
+                    pokemon.Nature = TrainerRandomizer.GetRandomNature(rand, stats);
+                    pokemon.moves = movesetGenerator.SmartMoveSet(stats, level, specialMoveSettings);
+                    pokemon.Nature = CorrectBadNature(pokemon.moves, pokemon.Nature);
                 }
             }
         }
@@ -131,13 +138,78 @@ namespace PokemonRandomizer.Backend.Randomization
                 if (rand.RollSuccess(settings.FrontierBrainPokemonRandChance))
                 {
                     pokemon.species = pokeRand.RandomPokemon(pokemonSet, pokemon.species, pokemonSettings);
-                    pokemon.moves = movesetGenerator.SmartMoveSet(dataT.GetBaseStats(pokemon.species), 100, specialMoveSettings);
+                    // Generate moveset and Nature
+                    var stats = dataT.GetBaseStats(pokemon.species);
+                    pokemon.Nature = TrainerRandomizer.GetRandomNature(rand, stats);
+                    pokemon.moves = movesetGenerator.SmartMoveSet(stats, 100, specialMoveSettings);
+                    pokemon.Nature = CorrectBadNature(pokemon.moves, pokemon.Nature);
                 }
                 else if (dataT.GetBaseStats(pokemon.species).IsVariant) // If pokemon is variant
                 {
-                    // Remap variant moves
-                    pokemon.moves = movesetGenerator.SmartMoveSet(dataT.GetBaseStats(pokemon.species), 100, specialMoveSettings);
+                    // Remap variant moves and Nature
+                    var stats = dataT.GetBaseStats(pokemon.species);
+                    pokemon.Nature = TrainerRandomizer.GetRandomNature(rand, stats);
+                    pokemon.moves = movesetGenerator.SmartMoveSet(stats, 100, specialMoveSettings);
+                    pokemon.Nature = CorrectBadNature(pokemon.moves, pokemon.Nature);
                 }
+            }
+        }
+
+        private Nature CorrectBadNature(IReadOnlyList<Move> moves, Nature currentNature)
+        {
+            int currPositiveStat = currentNature.PositiveStatIndex();
+            int currNegativeStat = currentNature.NegativeStatIndex();
+            int newPositiveStat = -1;
+            int newNegativeStat = -1;
+
+            if (currPositiveStat == PokemonBaseStats.spAtkStatIndex)
+            {
+                // if +special nature and no special moves, change to +atk
+                if (!moves.Any(m => dataT.GetMoveData(m).MoveCategory == MoveData.Type.Special))
+                {
+                    newPositiveStat = PokemonBaseStats.atkStatIndex;
+                }
+            }
+            else if(currPositiveStat == PokemonBaseStats.atkStatIndex)
+            {
+                // if +atk and no physical moves, change to +special
+                if (!moves.Any(m => dataT.GetMoveData(m).MoveCategory == MoveData.Type.Physical))
+                {
+                    newPositiveStat = PokemonBaseStats.spAtkStatIndex;
+                }
+            }
+            if (currNegativeStat != PokemonBaseStats.atkStatIndex)
+            {
+                // if not -atk nature and no physical moves, change to -atk
+                if (!moves.Any(m => dataT.GetMoveData(m).MoveCategory == MoveData.Type.Physical))
+                {
+                    newNegativeStat = PokemonBaseStats.atkStatIndex;
+                }
+            }
+            if (currNegativeStat != PokemonBaseStats.spAtkStatIndex)
+            {
+                // if not -special nature and no special moves, change to -special
+                if (!moves.Any(m => dataT.GetMoveData(m).MoveCategory == MoveData.Type.Special))
+                {
+                    newNegativeStat = PokemonBaseStats.spAtkStatIndex;
+                }
+            }
+
+            // if -special and no physical moves, change to -atk
+            // if -atk and no special moves, change to -special
+            if (newPositiveStat == -1)
+            {
+                if (newNegativeStat == -1)
+                    return currentNature;
+                return NatureUtils.GetNature(currPositiveStat, newNegativeStat);
+            }
+            else if(newNegativeStat == -1)
+            {
+                return NatureUtils.GetNature(newPositiveStat, currNegativeStat);
+            }
+            else
+            {
+                return NatureUtils.GetNature(newPositiveStat, newNegativeStat);
             }
         }
     }
