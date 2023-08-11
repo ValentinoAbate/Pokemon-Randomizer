@@ -56,6 +56,7 @@ namespace PokemonRandomizer.Backend.Randomization
                     pokemon.Nature = TrainerRandomizer.GetRandomNature(rand, stats);
                     pokemon.moves = movesetGenerator.SmartMoveSet(stats, level, specialMoveSettings);
                     pokemon.Nature = CorrectBadNature(pokemon.moves, pokemon.Nature);
+                    pokemon.EVs = CorrectBadEvs(pokemon.moves, pokemon.EVs, pokemon.Nature);
                 }
                 else if (dataT.GetBaseStats(pokemon.species).IsVariant) // If pokemon is variant
                 {
@@ -66,6 +67,7 @@ namespace PokemonRandomizer.Backend.Randomization
                     pokemon.Nature = TrainerRandomizer.GetRandomNature(rand, stats);
                     pokemon.moves = movesetGenerator.SmartMoveSet(stats, level, specialMoveSettings);
                     pokemon.Nature = CorrectBadNature(pokemon.moves, pokemon.Nature);
+                    pokemon.EVs = CorrectBadEvs(pokemon.moves, pokemon.EVs, pokemon.Nature);
                 }
             }
         }
@@ -211,6 +213,61 @@ namespace PokemonRandomizer.Backend.Randomization
             {
                 return NatureUtils.GetNature(newPositiveStat, newNegativeStat);
             }
+        }
+
+        private IHasFrontierTrainerEvs.EvFlags CorrectBadEvs(IReadOnlyList<Move> moves, IHasFrontierTrainerEvs.EvFlags current, Nature nature)
+        {
+            if(current.HasFlag(IHasFrontierTrainerEvs.EvFlags.SpAtk) && !moves.Any(m => dataT.GetMoveData(m).MoveCategory == MoveData.Type.Special))
+            {
+                current ^= IHasFrontierTrainerEvs.EvFlags.SpAtk;
+                if (!current.HasFlag(IHasFrontierTrainerEvs.EvFlags.Atk) && moves.Any(m => dataT.GetMoveData(m).MoveCategory == MoveData.Type.Physical))
+                {
+                    current |= IHasFrontierTrainerEvs.EvFlags.Atk;
+                }
+                else
+                {
+                    current = ReplaceEVs(current, nature);
+                }
+            }
+            if (current.HasFlag(IHasFrontierTrainerEvs.EvFlags.Atk) && !moves.Any(m => dataT.GetMoveData(m).MoveCategory == MoveData.Type.Physical))
+            {
+                current ^= IHasFrontierTrainerEvs.EvFlags.Atk;
+                if (!current.HasFlag(IHasFrontierTrainerEvs.EvFlags.SpAtk) && moves.Any(m => dataT.GetMoveData(m).MoveCategory == MoveData.Type.Special))
+                {
+                    current |= IHasFrontierTrainerEvs.EvFlags.SpAtk;
+                }
+                else
+                {
+                    current = ReplaceEVs(current, nature);
+                }
+            }
+            return current;
+        }
+
+        private IHasFrontierTrainerEvs.EvFlags ReplaceEVs(IHasFrontierTrainerEvs.EvFlags current, Nature nature)
+        {
+
+            if (!current.HasFlag(IHasFrontierTrainerEvs.EvFlags.Speed) && nature.NegativeStatIndex() != PokemonBaseStats.spdStatIndex)
+            {
+                current |= IHasFrontierTrainerEvs.EvFlags.Speed;
+            }
+            else if (!current.HasFlag(IHasFrontierTrainerEvs.EvFlags.HP))
+            {
+                current |= IHasFrontierTrainerEvs.EvFlags.HP;
+            }
+            else if (!current.HasFlag(IHasFrontierTrainerEvs.EvFlags.Def) && !current.HasFlag(IHasFrontierTrainerEvs.EvFlags.SpDef))
+            {
+                current |= rand.RandomBool() ? IHasFrontierTrainerEvs.EvFlags.Def : IHasFrontierTrainerEvs.EvFlags.SpDef;
+            }
+            else if (!current.HasFlag(IHasFrontierTrainerEvs.EvFlags.Def))
+            {
+                current |= IHasFrontierTrainerEvs.EvFlags.Def;
+            }
+            else if (!current.HasFlag(IHasFrontierTrainerEvs.EvFlags.SpDef))
+            {
+                current |= IHasFrontierTrainerEvs.EvFlags.SpDef;
+            }
+            return current;
         }
     }
 }
