@@ -56,7 +56,7 @@ namespace PokemonRandomizer.Backend.Randomization
                     pokemon.Nature = TrainerRandomizer.GetRandomNature(rand, stats);
                     pokemon.moves = movesetGenerator.SmartMoveSet(stats, level, specialMoveSettings);
                     pokemon.Nature = CorrectBadNature(pokemon.moves, pokemon.Nature);
-                    pokemon.EVs = CorrectBadEvs(pokemon.moves, pokemon.EVs, pokemon.Nature);
+                    PostProcessFrontierTrainerEVs(pokemon);
                 }
                 else if (dataT.GetBaseStats(pokemon.species).IsVariant) // If pokemon is variant
                 {
@@ -67,8 +67,36 @@ namespace PokemonRandomizer.Backend.Randomization
                     pokemon.Nature = TrainerRandomizer.GetRandomNature(rand, stats);
                     pokemon.moves = movesetGenerator.SmartMoveSet(stats, level, specialMoveSettings);
                     pokemon.Nature = CorrectBadNature(pokemon.moves, pokemon.Nature);
-                    pokemon.EVs = CorrectBadEvs(pokemon.moves, pokemon.EVs, pokemon.Nature);
+                    PostProcessFrontierTrainerEVs(pokemon);
                 }
+            }
+        }
+
+        private void PostProcessFrontierTrainerEVs(FrontierTrainerPokemon pokemon)
+        {
+            if(pokemon.species == Pokemon.DITTO)
+            {
+                pokemon.EVs = IHasFrontierTrainerEvs.EvFlags.HP | IHasFrontierTrainerEvs.EvFlags.Speed;
+            }
+            else
+            {
+                pokemon.EVs = CorrectBadEvs(pokemon.moves, pokemon.EVs, pokemon.Nature);
+            }
+        }
+
+        private void PostProcessEVs<T>(T pokemon) where T : TrainerPokemon, IHasTrainerPokemonEvs, IHasTrainerPokemonNature
+        {
+            if (pokemon.species == Pokemon.DITTO)
+            {
+                Array.Clear(pokemon.EVs, 0, pokemon.EVs.Length);
+                pokemon.HpEVs = IHasTrainerPokemonEvs.maxUsefulEvValue;
+                pokemon.SpeedEVs = IHasTrainerPokemonEvs.maxUsefulEvValue;
+                pokemon.SpDefenseEVs = IHasTrainerPokemonEvs.leftoverEvs;
+            }
+            else
+            {
+                // TODO: post-process full EVs
+                // pokemon.EVs = CorrectBadEvs(pokemon.moves, pokemon.EVs, pokemon.Nature);
             }
         }
 
@@ -145,6 +173,7 @@ namespace PokemonRandomizer.Backend.Randomization
                     pokemon.Nature = TrainerRandomizer.GetRandomNature(rand, stats);
                     pokemon.moves = movesetGenerator.SmartMoveSet(stats, 100, specialMoveSettings);
                     pokemon.Nature = CorrectBadNature(pokemon.moves, pokemon.Nature);
+                    PostProcessEVs(pokemon);
                 }
                 else if (dataT.GetBaseStats(pokemon.species).IsVariant) // If pokemon is variant
                 {
@@ -153,6 +182,7 @@ namespace PokemonRandomizer.Backend.Randomization
                     pokemon.Nature = TrainerRandomizer.GetRandomNature(rand, stats);
                     pokemon.moves = movesetGenerator.SmartMoveSet(stats, 100, specialMoveSettings);
                     pokemon.Nature = CorrectBadNature(pokemon.moves, pokemon.Nature);
+                    PostProcessEVs(pokemon);
                 }
             }
         }
