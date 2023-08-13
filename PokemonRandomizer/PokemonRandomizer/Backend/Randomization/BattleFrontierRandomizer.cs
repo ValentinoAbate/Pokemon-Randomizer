@@ -55,7 +55,7 @@ namespace PokemonRandomizer.Backend.Randomization
                     var stats = dataT.GetBaseStats(pokemon.species);
                     pokemon.Nature = TrainerRandomizer.GetRandomNature(rand, stats);
                     pokemon.moves = movesetGenerator.SmartMoveSet(stats, level, specialMoveSettings);
-                    pokemon.Nature = CorrectBadNature(pokemon.moves, pokemon.Nature);
+                    PostProcessNature(pokemon);
                     PostProcessFrontierTrainerEVs(pokemon);
                 }
                 else if (dataT.GetBaseStats(pokemon.species).IsVariant) // If pokemon is variant
@@ -66,7 +66,7 @@ namespace PokemonRandomizer.Backend.Randomization
                     var stats = dataT.GetBaseStats(pokemon.species);
                     pokemon.Nature = TrainerRandomizer.GetRandomNature(rand, stats);
                     pokemon.moves = movesetGenerator.SmartMoveSet(stats, level, specialMoveSettings);
-                    pokemon.Nature = CorrectBadNature(pokemon.moves, pokemon.Nature);
+                    PostProcessNature(pokemon);
                     PostProcessFrontierTrainerEVs(pokemon);
                 }
             }
@@ -172,7 +172,7 @@ namespace PokemonRandomizer.Backend.Randomization
                     var stats = dataT.GetBaseStats(pokemon.species);
                     pokemon.Nature = TrainerRandomizer.GetRandomNature(rand, stats);
                     pokemon.moves = movesetGenerator.SmartMoveSet(stats, 100, specialMoveSettings);
-                    pokemon.Nature = CorrectBadNature(pokemon.moves, pokemon.Nature);
+                    PostProcessNature(pokemon);
                     PostProcessEVs(pokemon);
                 }
                 else if (dataT.GetBaseStats(pokemon.species).IsVariant) // If pokemon is variant
@@ -181,9 +181,22 @@ namespace PokemonRandomizer.Backend.Randomization
                     var stats = dataT.GetBaseStats(pokemon.species);
                     pokemon.Nature = TrainerRandomizer.GetRandomNature(rand, stats);
                     pokemon.moves = movesetGenerator.SmartMoveSet(stats, 100, specialMoveSettings);
-                    pokemon.Nature = CorrectBadNature(pokemon.moves, pokemon.Nature);
+                    PostProcessNature(pokemon);
                     PostProcessEVs(pokemon);
                 }
+            }
+        }
+
+        private void PostProcessNature<T>(T pokemon) where T : TrainerPokemon, IHasTrainerPokemonNature
+        {
+            if(pokemon.species == Pokemon.DITTO)
+            {
+                // Technically, TIMID is the best nature, but jolly is also listed to give ditto more variability in the Battle Palace
+                pokemon.Nature = rand.RandomBool() ? Nature.TIMID : Nature.JOLLY;
+            }
+            else
+            {
+                pokemon.Nature = CorrectBadNature(pokemon.moves, pokemon.Nature);
             }
         }
 
