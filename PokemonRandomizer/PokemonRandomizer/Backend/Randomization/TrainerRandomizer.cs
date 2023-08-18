@@ -172,11 +172,21 @@ namespace PokemonRandomizer.Backend.Randomization
             var statWeights = new WeightedSet<int>(PokemonBaseStats.numStats);
             for (int i = 1; i < PokemonBaseStats.numStats; ++i)
             {
+                // Defense and SpDef are completely irrelevant for Shedinja
+                if(pokemon.species == Pokemon.SHEDINJA && i is PokemonBaseStats.defStatIndex or PokemonBaseStats.spDefStatIndex)
+                {
+                    continue;
+                }
                 statWeights.Add(i, MathF.Pow(normalizedStats[i], 3));
             }
             int positiveStat = rand.Choice(statWeights);
             int negativeStat;
-            if(pokemon.EffectiveAttack * 1.6f <= pokemon.SpAttack)
+            if(pokemon.species == Pokemon.SHEDINJA)
+            {
+                // Defense and SpDef are completely irrelevant for Shedinja
+                negativeStat = rand.RandomBool() ? PokemonBaseStats.defStatIndex : PokemonBaseStats.spDefStatIndex;
+            }
+            else if(pokemon.EffectiveAttack * 1.6f <= pokemon.SpAttack)
             {
                 negativeStat = PokemonBaseStats.atkStatIndex;
             }

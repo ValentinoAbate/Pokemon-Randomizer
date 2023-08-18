@@ -74,9 +74,21 @@ namespace PokemonRandomizer.Backend.Randomization
 
         private void PostProcessFrontierTrainerEVs(FrontierTrainerPokemon pokemon)
         {
-            if(pokemon.species == Pokemon.DITTO)
+            if (pokemon.species == Pokemon.DITTO)
             {
                 pokemon.EVs = IHasFrontierTrainerEvs.EvFlags.HP | IHasFrontierTrainerEvs.EvFlags.Speed;
+            }
+            if (pokemon.species == Pokemon.SHEDINJA)
+            {
+                pokemon.EVs = IHasFrontierTrainerEvs.EvFlags.Speed;
+                if (MovesetUtils.HasPhysicalMove(pokemon.moves, dataT))
+                {
+                    pokemon.EVs |= IHasFrontierTrainerEvs.EvFlags.Atk;
+                }
+                if (MovesetUtils.HasSpecialMove(pokemon.moves, dataT))
+                {
+                    pokemon.EVs |= IHasFrontierTrainerEvs.EvFlags.SpAtk;
+                }
             }
             else
             {
@@ -88,15 +100,76 @@ namespace PokemonRandomizer.Backend.Randomization
         {
             if (pokemon.species == Pokemon.DITTO)
             {
-                Array.Clear(pokemon.EVs, 0, pokemon.EVs.Length);
+                pokemon.ClearEvs();
                 pokemon.HpEVs = IHasTrainerPokemonEvs.maxUsefulEvValue;
                 pokemon.SpeedEVs = IHasTrainerPokemonEvs.maxUsefulEvValue;
                 pokemon.SpDefenseEVs = IHasTrainerPokemonEvs.leftoverEvs;
+            }
+            else if (pokemon.species == Pokemon.SHEDINJA)
+            {
+                pokemon.ClearEvs();
+                bool hasPhysicalMoves = MovesetUtils.HasPhysicalMove(pokemon.moves, dataT);
+                bool hasSpecialMoves = MovesetUtils.HasSpecialMove(pokemon.moves, dataT);
+                if(hasPhysicalMoves && hasSpecialMoves) 
+                {
+                    RandomlySplitEvs(pokemon, PokemonBaseStats.spAtkStatIndex, PokemonBaseStats.atkStatIndex, PokemonBaseStats.spdStatIndex); ;
+                }
+                else if (hasPhysicalMoves)
+                {
+                    pokemon.SpeedEVs = IHasTrainerPokemonEvs.maxUsefulEvValue;
+                    pokemon.AttackEVs = IHasTrainerPokemonEvs.maxUsefulEvValue;
+                    pokemon.SpAttackEVs = IHasTrainerPokemonEvs.leftoverEvs;
+                }
+                else if(hasSpecialMoves)
+                {
+                    pokemon.SpeedEVs = IHasTrainerPokemonEvs.maxUsefulEvValue;
+                    pokemon.SpAttackEVs = IHasTrainerPokemonEvs.maxUsefulEvValue;
+                    pokemon.AttackEVs = IHasTrainerPokemonEvs.leftoverEvs;
+                }
+                else
+                {
+                    pokemon.SpeedEVs = IHasTrainerPokemonEvs.maxUsefulEvValue;
+                    pokemon.AttackEVs = (IHasTrainerPokemonEvs.maxUsefulEvValue / 2) + IHasTrainerPokemonEvs.leftoverEvs;
+                    pokemon.SpAttackEVs = IHasTrainerPokemonEvs.maxUsefulEvValue / 2;
+                }
             }
             else
             {
                 // TODO: post-process full EVs
                 // pokemon.EVs = CorrectBadEvs(pokemon.moves, pokemon.EVs, pokemon.Nature);
+            }
+        }
+
+        private void RandomlySplitEvs<T>(T pokemon, params int[] allowedStats) where T : TrainerPokemon, IHasTrainerPokemonEvs
+        {
+            // Calculate remaining EV stat points
+            int alreadyAllocatedEVs = 0;
+            foreach(var ev in pokemon.EVs)
+            {
+                alreadyAllocatedEVs += ev;
+            }
+            int totalStatPointsRemaining = (IHasTrainerPokemonEvs.maxEvs - alreadyAllocatedEVs) / IHasTrainerPokemonEvs.evsPerStatPoint;
+            var availableStats = new List<int>(allowedStats);
+            // Spread the remainder out randomly
+            while (totalStatPointsRemaining > 0 && availableStats.Count > 0)
+            {
+                int statIndex = rand.Choice(availableStats);
+                // Covert Evs -> stat points
+                int currStatPoints = pokemon.EVs[statIndex] / IHasTrainerPokemonEvs.evsPerStatPoint;
+                if (currStatPoints >= IHasTrainerPokemonEvs.maxUsefulEvStatPointValue)
+                {
+                    availableStats.Remove(statIndex);
+                    continue;
+                }
+                // Add additional stat points
+                int addedStatPoints = Math.Min(totalStatPointsRemaining, rand.RandomInt(1, (IHasTrainerPokemonEvs.maxUsefulEvStatPointValue - currStatPoints) + 1));
+                currStatPoints += addedStatPoints;
+                totalStatPointsRemaining -= addedStatPoints;
+                // Remove from available stats if maxed out
+                if (currStatPoints >= IHasTrainerPokemonEvs.maxUsefulEvStatPointValue)
+                    availableStats.Remove(statIndex);
+                // Convert stat points -> Evs
+                pokemon.EVs[statIndex] = (byte)(currStatPoints * IHasTrainerPokemonEvs.evsPerStatPoint);
             }
         }
 

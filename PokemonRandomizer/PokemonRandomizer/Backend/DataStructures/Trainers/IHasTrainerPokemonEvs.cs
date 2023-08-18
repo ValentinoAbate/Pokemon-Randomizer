@@ -11,6 +11,9 @@ namespace PokemonRandomizer.Backend.DataStructures.Trainers
         public const byte maxUsefulEvValue = 252;
         public const int maxEvs = 510;
         public const int leftoverEvs = maxEvs - (maxUsefulEvValue * 2);
+        public const int totalEvStatPoints = maxEvs / evsPerStatPoint;
+        public const int maxUsefulEvStatPointValue = maxUsefulEvValue / evsPerStatPoint;
+        public const int evsPerStatPoint = 4;
         public byte[] EVs { get; set; }
         public byte HpEVs
         {
@@ -41,6 +44,11 @@ namespace PokemonRandomizer.Backend.DataStructures.Trainers
         {
             get => EVs[PokemonBaseStats.spDefStatIndex];
             set => EVs[PokemonBaseStats.spDefStatIndex] = value;
+        }
+
+        public void ClearEvs()
+        {
+            Array.Clear(EVs, 0, EVs.Length);
         }
     }
 }
