@@ -454,9 +454,23 @@ namespace PokemonRandomizer.Backend.Randomization
 
         public void FinishPokemonRandomization(TrainerPokemon pokemon)
         {
+            IHasTrainerPokemonNature trainerPokemonNature = pokemon as IHasTrainerPokemonNature;
+            bool hasNature = trainerPokemonNature != null;
+            if (hasNature)
+            {
+                trainerPokemonNature.Nature = GetRandomNature(rand, dataT.GetBaseStats(pokemon.species));
+            }
             if (pokemon.HasSpecialMoves)
             {
                 pokemon.moves = movesetGenerator.SmartMoveSet(dataT.GetBaseStats(pokemon.species), pokemon.level);
+            }
+            if(hasNature) 
+            {
+                PostProcessNature(trainerPokemonNature, rand, dataT);
+            }
+            if(pokemon is IHasTrainerPokemonEvs trainerPokemonEvs)
+            {
+                PostProcessEvs(trainerPokemonEvs, rand, dataT);
             }
         }
 
@@ -513,16 +527,16 @@ namespace PokemonRandomizer.Backend.Randomization
             return NatureUtils.GetNature(positiveStat, negativeStat);
         }
 
-        public static void PostProcessNature<T>(T pokemon, Random rand, IDataTranslator dataT) where T : TrainerPokemon, IHasTrainerPokemonNature
+        public static void PostProcessNature<T>(T pokemon, Random rand, IDataTranslator dataT) where T : IHasTrainerPokemonNature
         {
-            if (pokemon.species == Pokemon.DITTO)
+            if (pokemon.Species == Pokemon.DITTO)
             {
                 // Technically, TIMID is the best nature, but jolly is also listed to give ditto more variability in the Battle Palace
                 pokemon.Nature = rand.RandomBool() ? Nature.TIMID : Nature.JOLLY;
             }
             else
             {
-                pokemon.Nature = CorrectBadNature(pokemon.moves, pokemon.Nature, dataT);
+                pokemon.Nature = CorrectBadNature(pokemon.Moves, pokemon.Nature, dataT);
             }
         }
 
@@ -584,20 +598,20 @@ namespace PokemonRandomizer.Backend.Randomization
             }
         }
 
-        public static void PostProcessEvs<T>(T pokemon, Random rand, IDataTranslator dataT) where T : TrainerPokemon, IHasTrainerPokemonEvs
+        public static void PostProcessEvs<T>(T pokemon, Random rand, IDataTranslator dataT) where T : IHasTrainerPokemonEvs
         {
-            if (pokemon.species == Pokemon.DITTO)
+            if (pokemon.Species == Pokemon.DITTO)
             {
                 pokemon.ClearEvs();
                 pokemon.HpEVs = IHasTrainerPokemonEvs.maxUsefulEvValue;
                 pokemon.SpeedEVs = IHasTrainerPokemonEvs.maxUsefulEvValue;
                 pokemon.SpDefenseEVs = IHasTrainerPokemonEvs.leftoverEvs;
             }
-            else if (pokemon.species == Pokemon.SHEDINJA)
+            else if (pokemon.Species == Pokemon.SHEDINJA)
             {
                 pokemon.ClearEvs();
-                bool hasPhysicalMoves = MovesetUtils.HasPhysicalMove(pokemon.moves, dataT);
-                bool hasSpecialMoves = MovesetUtils.HasSpecialMove(pokemon.moves, dataT);
+                bool hasPhysicalMoves = MovesetUtils.HasPhysicalMove(pokemon.Moves, dataT);
+                bool hasSpecialMoves = MovesetUtils.HasSpecialMove(pokemon.Moves, dataT);
                 if (hasPhysicalMoves && hasSpecialMoves)
                 {
                     RandomlySplitEvs(pokemon, rand, PokemonBaseStats.spAtkStatIndex, PokemonBaseStats.atkStatIndex, PokemonBaseStats.spdStatIndex); ;
@@ -627,10 +641,10 @@ namespace PokemonRandomizer.Backend.Randomization
             }
         }
 
-        private static void CorrectBadEvs<T>(T pokemon, Random rand, IDataTranslator dataT) where T : TrainerPokemon, IHasTrainerPokemonEvs
+        private static void CorrectBadEvs<T>(T pokemon, Random rand, IDataTranslator dataT) where T : IHasTrainerPokemonEvs
         {
-            bool correctAtkEvs = pokemon.AttackEVs > 0 && !MovesetUtils.HasPhysicalMove(pokemon.moves, dataT);
-            bool correctSpAtkEvs = pokemon.SpAttackEVs > 0 && !MovesetUtils.HasSpecialMove(pokemon.moves, dataT);
+            bool correctAtkEvs = pokemon.AttackEVs > 0 && !MovesetUtils.HasPhysicalMove(pokemon.Moves, dataT);
+            bool correctSpAtkEvs = pokemon.SpAttackEVs > 0 && !MovesetUtils.HasSpecialMove(pokemon.Moves, dataT);
             if (correctAtkEvs && correctSpAtkEvs)
             {
                 pokemon.AttackEVs = 0;
@@ -649,7 +663,7 @@ namespace PokemonRandomizer.Backend.Randomization
             }
         }
 
-        private static void RandomlySplitEvs<T>(T pokemon, Random rand, params int[] allowedStats) where T : TrainerPokemon, IHasTrainerPokemonEvs
+        private static void RandomlySplitEvs<T>(T pokemon, Random rand, params int[] allowedStats) where T : IHasTrainerPokemonEvs
         {
             if (allowedStats.Length <= 0)
                 return;

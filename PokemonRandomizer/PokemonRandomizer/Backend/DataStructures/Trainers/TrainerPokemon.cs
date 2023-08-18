@@ -6,7 +6,7 @@ using PokemonRandomizer.Backend.Utilities;
 
 namespace PokemonRandomizer.Backend.DataStructures.Trainers
 {
-    public class TrainerPokemon
+    public class TrainerPokemon : ITrainerPokemon
     {
         public const int numMoves = 4;
         // Trainer pokemon data types.
@@ -17,6 +17,12 @@ namespace PokemonRandomizer.Backend.DataStructures.Trainers
             HeldItem,
             SpecialMovesAndHeldItem,
         }
+
+        #region ITrainerPokemon implementation
+        public IReadOnlyList<Move> Moves => moves;
+        public Pokemon Species => species;
+        #endregion
+
         public bool HasSpecialMoves => dataType == DataType.SpecialMoves || dataType == DataType.SpecialMovesAndHeldItem;
         public DataType dataType;
         public Pokemon species;
