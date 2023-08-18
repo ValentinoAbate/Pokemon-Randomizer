@@ -63,7 +63,7 @@ namespace PokemonRandomizer.UI.Views
                 stack.Add(new BoundCheckBoxUI("Randomize Catching Tutorial Pokemon / Wally Ace", model.RandomizeWallyAce));
                 stack.Add(new BoundCheckBoxUI("Easy First Rival Battle", model.EasyFirstRivalbattle) { ToolTip = easyRivalBattleTooltip });
                 var berryRand = stack.Add(new RandomChanceUI("Randomize Berry Trees", model.RandomizeBerryTrees, model.BerryTreeRandomizationChance) { ToolTip = "Randomize which berry trees start in the berry tree slots. WARNING: this only works for new save files. Loading a save state of an old save file will bypass the script that sets the starting berry trees." });
-                var berryStack = stack.Add(berryRand.BindEnabled(new StackPanel { Orientation = Orientation.Horizontal }));
+                var berryStack = stack.Add(berryRand.BindEnabled(CreateHorizontalStack()));
                 berryStack.Add(new BoundCheckBoxUI("Ban EV Berries", model.BanEvBerries) { ToolTip = "Prevent EV-Lowering berries from appearing in randomized berry trees" });
                 berryStack.Add(new BoundCheckBoxUI("Ban Pokéblock / Minigame Berries", model.BanMinigameBerries) { ToolTip = "Prevent Pokéblock / Minigame berries from appearing in randomized berry trees" });
                 berryStack.Add(new BoundCheckBoxUI("Remap Berry Trees Global One-To-One", model.RemapBerries) { ToolTip = "If checked, all berry trees of a certain type will randomize to the same new type" });
