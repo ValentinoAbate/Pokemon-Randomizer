@@ -92,8 +92,63 @@ namespace PokemonRandomizer.Backend.Randomization
             }
             else
             {
-                pokemon.EVs = CorrectBadEvs(pokemon.moves, pokemon.EVs, pokemon.Nature);
+                pokemon.EVs = CorrectBadFrontierTrainerEvs(pokemon.moves, pokemon.EVs, pokemon.Nature);
             }
+        }
+
+        private IHasFrontierTrainerEvs.EvFlags CorrectBadFrontierTrainerEvs(IReadOnlyList<Move> moves, IHasFrontierTrainerEvs.EvFlags current, Nature nature)
+        {
+            if (current.HasFlag(IHasFrontierTrainerEvs.EvFlags.SpAtk) && !MovesetUtils.HasSpecialMove(moves, dataT))
+            {
+                current ^= IHasFrontierTrainerEvs.EvFlags.SpAtk;
+                if (!current.HasFlag(IHasFrontierTrainerEvs.EvFlags.Atk) && MovesetUtils.HasPhysicalMove(moves, dataT))
+                {
+                    current |= IHasFrontierTrainerEvs.EvFlags.Atk;
+                }
+                else
+                {
+                    current = ReplaceFrontierTrainerEVs(current, nature);
+                }
+            }
+            if (current.HasFlag(IHasFrontierTrainerEvs.EvFlags.Atk) && !MovesetUtils.HasPhysicalMove(moves, dataT))
+            {
+                current ^= IHasFrontierTrainerEvs.EvFlags.Atk;
+                if (!current.HasFlag(IHasFrontierTrainerEvs.EvFlags.SpAtk) && MovesetUtils.HasSpecialMove(moves, dataT))
+                {
+                    current |= IHasFrontierTrainerEvs.EvFlags.SpAtk;
+                }
+                else
+                {
+                    current = ReplaceFrontierTrainerEVs(current, nature);
+                }
+            }
+            return current;
+        }
+
+        private IHasFrontierTrainerEvs.EvFlags ReplaceFrontierTrainerEVs(IHasFrontierTrainerEvs.EvFlags current, Nature nature)
+        {
+
+            if (!current.HasFlag(IHasFrontierTrainerEvs.EvFlags.Speed) && !nature.ReducesStat(PokemonBaseStats.spdStatIndex))
+            {
+                current |= IHasFrontierTrainerEvs.EvFlags.Speed;
+            }
+            else if (!current.HasFlag(IHasFrontierTrainerEvs.EvFlags.HP))
+            {
+                current |= IHasFrontierTrainerEvs.EvFlags.HP;
+            }
+            else if (!current.HasFlag(IHasFrontierTrainerEvs.EvFlags.Def) && !current.HasFlag(IHasFrontierTrainerEvs.EvFlags.SpDef))
+            {
+                current |= rand.RandomBool() ? IHasFrontierTrainerEvs.EvFlags.Def : IHasFrontierTrainerEvs.EvFlags.SpDef;
+            }
+            else if (!current.HasFlag(IHasFrontierTrainerEvs.EvFlags.Def))
+            {
+                current |= IHasFrontierTrainerEvs.EvFlags.Def;
+            }
+            else if (!current.HasFlag(IHasFrontierTrainerEvs.EvFlags.SpDef))
+            {
+                current |= IHasFrontierTrainerEvs.EvFlags.SpDef;
+            }
+            return current;
         }
 
         private void PostProcessEVs<T>(T pokemon) where T : TrainerPokemon, IHasTrainerPokemonEvs, IHasTrainerPokemonNature
@@ -329,61 +384,6 @@ namespace PokemonRandomizer.Backend.Randomization
             {
                 return NatureUtils.GetNature(newPositiveStat, newNegativeStat);
             }
-        }
-
-        private IHasFrontierTrainerEvs.EvFlags CorrectBadEvs(IReadOnlyList<Move> moves, IHasFrontierTrainerEvs.EvFlags current, Nature nature)
-        {
-            if(current.HasFlag(IHasFrontierTrainerEvs.EvFlags.SpAtk) && !MovesetUtils.HasSpecialMove(moves, dataT))
-            {
-                current ^= IHasFrontierTrainerEvs.EvFlags.SpAtk;
-                if (!current.HasFlag(IHasFrontierTrainerEvs.EvFlags.Atk) && MovesetUtils.HasPhysicalMove(moves, dataT))
-                {
-                    current |= IHasFrontierTrainerEvs.EvFlags.Atk;
-                }
-                else
-                {
-                    current = ReplaceEVs(current, nature);
-                }
-            }
-            if (current.HasFlag(IHasFrontierTrainerEvs.EvFlags.Atk) && !MovesetUtils.HasPhysicalMove(moves, dataT))
-            {
-                current ^= IHasFrontierTrainerEvs.EvFlags.Atk;
-                if (!current.HasFlag(IHasFrontierTrainerEvs.EvFlags.SpAtk) && MovesetUtils.HasSpecialMove(moves, dataT))
-                {
-                    current |= IHasFrontierTrainerEvs.EvFlags.SpAtk;
-                }
-                else
-                {
-                    current = ReplaceEVs(current, nature);
-                }
-            }
-            return current;
-        }
-
-        private IHasFrontierTrainerEvs.EvFlags ReplaceEVs(IHasFrontierTrainerEvs.EvFlags current, Nature nature)
-        {
-
-            if (!current.HasFlag(IHasFrontierTrainerEvs.EvFlags.Speed) && !nature.ReducesStat(PokemonBaseStats.spdStatIndex))
-            {
-                current |= IHasFrontierTrainerEvs.EvFlags.Speed;
-            }
-            else if (!current.HasFlag(IHasFrontierTrainerEvs.EvFlags.HP))
-            {
-                current |= IHasFrontierTrainerEvs.EvFlags.HP;
-            }
-            else if (!current.HasFlag(IHasFrontierTrainerEvs.EvFlags.Def) && !current.HasFlag(IHasFrontierTrainerEvs.EvFlags.SpDef))
-            {
-                current |= rand.RandomBool() ? IHasFrontierTrainerEvs.EvFlags.Def : IHasFrontierTrainerEvs.EvFlags.SpDef;
-            }
-            else if (!current.HasFlag(IHasFrontierTrainerEvs.EvFlags.Def))
-            {
-                current |= IHasFrontierTrainerEvs.EvFlags.Def;
-            }
-            else if (!current.HasFlag(IHasFrontierTrainerEvs.EvFlags.SpDef))
-            {
-                current |= IHasFrontierTrainerEvs.EvFlags.SpDef;
-            }
-            return current;
         }
     }
 }
