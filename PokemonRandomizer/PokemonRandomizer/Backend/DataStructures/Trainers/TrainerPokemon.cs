@@ -19,7 +19,7 @@ namespace PokemonRandomizer.Backend.DataStructures.Trainers
         }
 
         #region ITrainerPokemon implementation
-        public IReadOnlyList<Move> Moves => HasSpecialMoves ? moves : Array.Empty<Move>();
+        public IReadOnlyList<Move> Moves => moves;
         public Pokemon Species => species;
         #endregion
 

@@ -536,25 +536,25 @@ namespace PokemonRandomizer.Backend.Randomization
             }
             else
             {
-                pokemon.Nature = CorrectBadNature(pokemon.Moves, pokemon.Nature, dataT);
+                CorrectBadNature(pokemon, dataT);
             }
         }
 
-        private static Nature CorrectBadNature(IReadOnlyList<Move> moves, Nature currentNature, IDataTranslator dataT)
+        private static void CorrectBadNature(IHasTrainerPokemonNature pokemon, IDataTranslator dataT)
         {
-            if (moves.Count <= 0)
+            if (!pokemon.HasSpecialMoves)
             {
-                return currentNature;
+                return;
             }
-            int currPositiveStat = currentNature.PositiveStatIndex();
-            int currNegativeStat = currentNature.NegativeStatIndex();
+            int currPositiveStat = pokemon.Nature.PositiveStatIndex();
+            int currNegativeStat = pokemon.Nature.NegativeStatIndex();
             int newPositiveStat = -1;
             int newNegativeStat = -1;
 
             if (currPositiveStat == PokemonBaseStats.spAtkStatIndex)
             {
                 // if +special nature and no special moves, change to +atk
-                if (!MovesetUtils.HasSpecialMove(moves, dataT))
+                if (!MovesetUtils.HasSpecialMove(pokemon.Moves, dataT))
                 {
                     newPositiveStat = PokemonBaseStats.atkStatIndex;
                 }
@@ -562,7 +562,7 @@ namespace PokemonRandomizer.Backend.Randomization
             else if (currPositiveStat == PokemonBaseStats.atkStatIndex)
             {
                 // if +atk and no physical moves, change to +special
-                if (!MovesetUtils.HasPhysicalMove(moves, dataT))
+                if (!MovesetUtils.HasPhysicalMove(pokemon.Moves, dataT))
                 {
                     newPositiveStat = PokemonBaseStats.spAtkStatIndex;
                 }
@@ -570,7 +570,7 @@ namespace PokemonRandomizer.Backend.Randomization
             if (currNegativeStat != PokemonBaseStats.atkStatIndex)
             {
                 // if not -atk nature and no physical moves, change to -atk
-                if (!MovesetUtils.HasPhysicalMove(moves, dataT))
+                if (!MovesetUtils.HasPhysicalMove(pokemon.Moves, dataT))
                 {
                     newNegativeStat = PokemonBaseStats.atkStatIndex;
                 }
@@ -578,7 +578,7 @@ namespace PokemonRandomizer.Backend.Randomization
             if (currNegativeStat != PokemonBaseStats.spAtkStatIndex)
             {
                 // if not -special nature and no special moves, change to -special
-                if (!MovesetUtils.HasSpecialMove(moves, dataT))
+                if (!MovesetUtils.HasSpecialMove(pokemon.Moves, dataT))
                 {
                     newNegativeStat = PokemonBaseStats.spAtkStatIndex;
                 }
@@ -589,16 +589,16 @@ namespace PokemonRandomizer.Backend.Randomization
             if (newPositiveStat == -1)
             {
                 if (newNegativeStat == -1)
-                    return currentNature;
-                return NatureUtils.GetNature(currPositiveStat, newNegativeStat);
+                    return;
+                pokemon.Nature = NatureUtils.GetNature(currPositiveStat, newNegativeStat);
             }
             else if (newNegativeStat == -1)
             {
-                return NatureUtils.GetNature(newPositiveStat, currNegativeStat);
+                pokemon.Nature = NatureUtils.GetNature(newPositiveStat, currNegativeStat);
             }
             else
             {
-                return NatureUtils.GetNature(newPositiveStat, newNegativeStat);
+                pokemon.Nature = NatureUtils.GetNature(newPositiveStat, newNegativeStat);
             }
         }
 
@@ -614,7 +614,7 @@ namespace PokemonRandomizer.Backend.Randomization
             else if (pokemon.Species == Pokemon.SHEDINJA)
             {
                 pokemon.ClearEvs();
-                if(pokemon.Moves.Count <= 0)
+                if(!pokemon.HasSpecialMoves)
                 {
                     pokemon.SpeedEVs = IHasTrainerPokemonEvs.maxUsefulEvValue;
                     pokemon.AttackEVs = IHasTrainerPokemonEvs.maxUsefulEvValue;
@@ -656,7 +656,7 @@ namespace PokemonRandomizer.Backend.Randomization
 
         private static void CorrectBadEvs<T>(T pokemon, Random rand, IDataTranslator dataT) where T : IHasTrainerPokemonEvs
         {
-            if (pokemon.Moves.Count <= 0)
+            if (!pokemon.HasSpecialMoves)
                 return;
             bool correctAtkEvs = pokemon.AttackEVs > 0 && !MovesetUtils.HasPhysicalMove(pokemon.Moves, dataT);
             bool correctSpAtkEvs = pokemon.SpAttackEVs > 0 && !MovesetUtils.HasSpecialMove(pokemon.Moves, dataT);
