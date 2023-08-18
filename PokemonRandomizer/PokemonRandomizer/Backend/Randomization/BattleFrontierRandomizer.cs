@@ -210,7 +210,7 @@ namespace PokemonRandomizer.Backend.Randomization
             if (currPositiveStat == PokemonBaseStats.spAtkStatIndex)
             {
                 // if +special nature and no special moves, change to +atk
-                if (!moves.Any(m => dataT.GetMoveData(m).MoveCategory == MoveData.Type.Special))
+                if (!MovesetUtils.HasSpecialMove(moves, dataT))
                 {
                     newPositiveStat = PokemonBaseStats.atkStatIndex;
                 }
@@ -218,7 +218,7 @@ namespace PokemonRandomizer.Backend.Randomization
             else if(currPositiveStat == PokemonBaseStats.atkStatIndex)
             {
                 // if +atk and no physical moves, change to +special
-                if (!moves.Any(m => dataT.GetMoveData(m).MoveCategory == MoveData.Type.Physical))
+                if (!MovesetUtils.HasPhysicalMove(moves, dataT))
                 {
                     newPositiveStat = PokemonBaseStats.spAtkStatIndex;
                 }
@@ -226,7 +226,7 @@ namespace PokemonRandomizer.Backend.Randomization
             if (currNegativeStat != PokemonBaseStats.atkStatIndex)
             {
                 // if not -atk nature and no physical moves, change to -atk
-                if (!moves.Any(m => dataT.GetMoveData(m).MoveCategory == MoveData.Type.Physical))
+                if (!MovesetUtils.HasPhysicalMove(moves, dataT))
                 {
                     newNegativeStat = PokemonBaseStats.atkStatIndex;
                 }
@@ -234,7 +234,7 @@ namespace PokemonRandomizer.Backend.Randomization
             if (currNegativeStat != PokemonBaseStats.spAtkStatIndex)
             {
                 // if not -special nature and no special moves, change to -special
-                if (!moves.Any(m => dataT.GetMoveData(m).MoveCategory == MoveData.Type.Special))
+                if (!MovesetUtils.HasSpecialMove(moves, dataT))
                 {
                     newNegativeStat = PokemonBaseStats.spAtkStatIndex;
                 }
@@ -260,10 +260,10 @@ namespace PokemonRandomizer.Backend.Randomization
 
         private IHasFrontierTrainerEvs.EvFlags CorrectBadEvs(IReadOnlyList<Move> moves, IHasFrontierTrainerEvs.EvFlags current, Nature nature)
         {
-            if(current.HasFlag(IHasFrontierTrainerEvs.EvFlags.SpAtk) && !moves.Any(m => dataT.GetMoveData(m).MoveCategory == MoveData.Type.Special))
+            if(current.HasFlag(IHasFrontierTrainerEvs.EvFlags.SpAtk) && !MovesetUtils.HasSpecialMove(moves, dataT))
             {
                 current ^= IHasFrontierTrainerEvs.EvFlags.SpAtk;
-                if (!current.HasFlag(IHasFrontierTrainerEvs.EvFlags.Atk) && moves.Any(m => dataT.GetMoveData(m).MoveCategory == MoveData.Type.Physical))
+                if (!current.HasFlag(IHasFrontierTrainerEvs.EvFlags.Atk) && MovesetUtils.HasPhysicalMove(moves, dataT))
                 {
                     current |= IHasFrontierTrainerEvs.EvFlags.Atk;
                 }
@@ -272,10 +272,10 @@ namespace PokemonRandomizer.Backend.Randomization
                     current = ReplaceEVs(current, nature);
                 }
             }
-            if (current.HasFlag(IHasFrontierTrainerEvs.EvFlags.Atk) && !moves.Any(m => dataT.GetMoveData(m).MoveCategory == MoveData.Type.Physical))
+            if (current.HasFlag(IHasFrontierTrainerEvs.EvFlags.Atk) && !MovesetUtils.HasPhysicalMove(moves, dataT))
             {
                 current ^= IHasFrontierTrainerEvs.EvFlags.Atk;
-                if (!current.HasFlag(IHasFrontierTrainerEvs.EvFlags.SpAtk) && moves.Any(m => dataT.GetMoveData(m).MoveCategory == MoveData.Type.Special))
+                if (!current.HasFlag(IHasFrontierTrainerEvs.EvFlags.SpAtk) && MovesetUtils.HasSpecialMove(moves, dataT))
                 {
                     current |= IHasFrontierTrainerEvs.EvFlags.SpAtk;
                 }
