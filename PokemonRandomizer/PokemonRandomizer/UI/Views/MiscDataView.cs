@@ -9,7 +9,7 @@ namespace PokemonRandomizer.UI.Views
     public class MiscDataView : DataView<MiscDataModel>
     {
         private const string easyRivalBattleTooltip = "Sets the first rival battle to have level 1 pokemon. Useful for randomized starters (this battle must be cleared in RSE)";
-        private const string evolveWithoutNatDexTooltip = "Allow pokemon to evolve without needing national dex in FRLG";
+        private const string evolveWithoutNatDexTooltip = "Allows pokemon to evolve without needing the national dex in FRLG";
         private const string mewDeoxysObeyTooltip = "FRLG and Emerald have a special check that makes Mew and Deoxys that aren't recieved from events disobey in battle. This fix removes that mechanic";
         private const string enableEventsTooltip = "Allows mystery gift/event events like Southern Island and Birth Island to be accessed without using the the mystery gift/event systems. You will still need to obtain the relevant item and fulfill all other conditions to unlock the event";
         private const string upgradeUnownTooltip = "Give Unown access to every \"Power\" move available (Hidden Power, Nature Power, Secret Power, Cosmic Power, Ancientpower, Superpower, etc.)";
@@ -23,6 +23,7 @@ namespace PokemonRandomizer.UI.Views
         private const string typeEffectivenessModLinkWarning = "\nNote: link battles between two ROMs that have different \"Type Effectiveness Modification\" settings may behave incorrectly";
         private const string updateDOTMovesTooltip = "Updates the moves Wrap, Bind, Fire Spin, Sand Tomb, Whirlpool, and Clamp to their Gen V power, accuracy, and PP" +
             "\nNote: link battles between a ROM that has \"Update Wrap Moves\" applied and one that doesn't may behave incorrectly when using affected moves";
+        private const string fixStevenNaturesTooltip = "Fixes a bug in the Emerald base game that causes Steven's pokemon in the Steven ally battle to not have the correct natures";
         public CompositeCollection MysteryGiftEventItemDropdown => new CompositeCollection()
         {
             new ComboBoxItem() {Content="None", ToolTip="Mystery gift event items such as the Eon Ticket will not be obtainable, except through normal means or another randomizer setting such as the \"Custom PC Potion\" or \"Custom Shop Item\" settings" },
@@ -62,7 +63,7 @@ namespace PokemonRandomizer.UI.Views
                 stack.Add(new BoundCheckBoxUI("Randomize Catching Tutorial Pokemon / Wally Ace", model.RandomizeWallyAce));
                 stack.Add(new BoundCheckBoxUI("Easy First Rival Battle", model.EasyFirstRivalbattle) { ToolTip = easyRivalBattleTooltip });
                 var berryRand = stack.Add(new RandomChanceUI("Randomize Berry Trees", model.RandomizeBerryTrees, model.BerryTreeRandomizationChance) { ToolTip = "Randomize which berry trees start in the berry tree slots. WARNING: this only works for new save files. Loading a save state of an old save file will bypass the script that sets the starting berry trees." });
-                var berryStack = stack.Add(berryRand.BindEnabled(new StackPanel{ Orientation = Orientation.Horizontal }));
+                var berryStack = stack.Add(berryRand.BindEnabled(new StackPanel { Orientation = Orientation.Horizontal }));
                 berryStack.Add(new BoundCheckBoxUI("Ban EV Berries", model.BanEvBerries) { ToolTip = "Prevent EV-Lowering berries from appearing in randomized berry trees" });
                 berryStack.Add(new BoundCheckBoxUI("Ban Pokéblock / Minigame Berries", model.BanMinigameBerries) { ToolTip = "Prevent Pokéblock / Minigame berries from appearing in randomized berry trees" });
                 berryStack.Add(new BoundCheckBoxUI("Remap Berry Trees Global One-To-One", model.RemapBerries) { ToolTip = "If checked, all berry trees of a certain type will randomize to the same new type" });
@@ -72,7 +73,12 @@ namespace PokemonRandomizer.UI.Views
                 stack.Header("Fire Red and Leaf Green Options");
                 stack.Add(new BoundCheckBoxUI("Evolve Without National Dex", model.EvolveWithoutNationalDex) { ToolTip = evolveWithoutNatDexTooltip });
             }
-            if(metadata.IsFireRedOrLeafGreen || metadata.IsEmerald)
+            if (metadata.IsEmerald)
+            {
+                stack.Header("Emerald Options");
+                stack.Add(new BoundCheckBoxUI("Fix Steven Ally Battle Natures", model.FixStevenNatures) { ToolTip = fixStevenNaturesTooltip });
+            }
+            if (metadata.IsFireRedOrLeafGreen || metadata.IsEmerald)
             {
                 stack.Header("Fire Red, Leaf Green, and Emerald Options");
                 stack.Add(new BoundCheckBoxUI("Fix Mew and Deoxys Obedience Issues", model.DeoxysMewObeyFix) { ToolTip = mewDeoxysObeyTooltip });

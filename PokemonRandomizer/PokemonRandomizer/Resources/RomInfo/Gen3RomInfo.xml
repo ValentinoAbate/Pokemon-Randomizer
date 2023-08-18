@@ -204,6 +204,7 @@
 
     <specialBosses names="[Steven]"/>
 	<stevenAllyBattle offset="0x5dd6d0"/>
+	<stevenAllyBattleNatureFix offset="0x165496"/>
 	<teamAqua sprites="[1,6,10,12,13]" spriteKeys="[aquaGruntMasc,aquaGruntFem,aquaAdminMatt,aquaAdminShelley,archie]"/>
 	<teamMagma sprites="[8,26,69,76]" spriteKeys="[magmaGruntMasc,magmaGruntFem,magmaAdminTabitha,maxie]"/>
     

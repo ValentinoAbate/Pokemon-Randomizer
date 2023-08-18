@@ -26,6 +26,9 @@
         public Box<bool> BanMinigameBerries { get; set; } = new Box<bool>(true);
         public Box<bool> RemapBerries { get; set; } = new Box<bool>(true);
 
+        // Emerald Only
+        public Box<bool> FixStevenNatures { get; set; } = new Box<bool>(true);
+
         // FRLG + E Only
         public Box<bool> DeoxysMewObeyFix { get; set; } = new Box<bool>(true);
     }

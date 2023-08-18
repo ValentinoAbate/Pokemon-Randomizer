@@ -527,6 +527,9 @@ namespace PokemonRandomizer
         // RSE Hacks and Tweaks
         public abstract bool EasyFirstRivalBattle { get; }
 
+        // Emerald Hacks and Tweaks
+        public abstract bool FixStevenAllyBattleNatures { get; }
+
         // FRLG + E Hacks and Tweaks
         public abstract bool DeoxysMewObeyFix { get; }
 

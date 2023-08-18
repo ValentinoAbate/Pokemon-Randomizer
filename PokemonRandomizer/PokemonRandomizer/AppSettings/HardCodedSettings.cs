@@ -440,6 +440,9 @@ namespace PokemonRandomizer.AppSettings
         // RSE Hacks and Tweaks
         public override bool EasyFirstRivalBattle => true;
 
+        // Emerald Hacks and Tweaks
+        public override bool FixStevenAllyBattleNatures => true;
+
         // FRLG + E Hacks and Tweaks
         public override bool DeoxysMewObeyFix => true;
 

@@ -539,6 +539,9 @@ namespace PokemonRandomizer.AppSettings
 
         public override bool RandomizeWallyAce => miscData.RandomizeWallyAce;
 
+        // Emerald Hacks and Tweaks
+        public override bool FixStevenAllyBattleNatures => miscData.FixStevenNatures;
+
         // FRLG + E Hacks and Tweaks
         public override bool DeoxysMewObeyFix => miscData.DeoxysMewObeyFix;
 

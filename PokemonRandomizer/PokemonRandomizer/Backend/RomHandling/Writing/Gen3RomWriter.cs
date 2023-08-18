@@ -161,6 +161,10 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
             {
                 ApplyDeoxysMewObeyFix(rom, info);
             }
+            if(settings.FixStevenAllyBattleNatures && metadata.IsEmerald)
+            {
+                ApplyStevenAllyBattleNatureFix(rom, info);
+            }
             // Apply forecast hack if necessary
             if (data.GetBaseStats(Pokemon.CASTFORM).IsVariant)
             {
@@ -346,6 +350,27 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
             }
             int glitchPokemonCheck = ((Gen3Opcodes.cmpRegister | Gen3Opcodes.reg0) << 8) | (0x00);
             rom.WriteUInt16(glitchPokemonCheck);
+        }
+
+        private void ApplyStevenAllyBattleNatureFix(Rom rom, XmlManager info)
+        {
+            if(!info.FindAndSeekOffset(ElementNames.GenIII.steventAllyBattleNatureFix, rom, null, null, IsValidStevenAllyBattleNatureFixOffset))
+            {
+                return;
+            }
+            // set command to
+            // str r3, [sp, #68] (11 9B)
+            // instead of
+            // mov r3, r10
+            // This replaces i with j, fixing the bug (see decomp for more details)
+            // Based on HMA script by Shiny Till Dawn (research by Phoenixbound)
+            rom.WriteByte(0x11);
+            rom.WriteByte(0x9B);
+        }
+
+        private bool IsValidStevenAllyBattleNatureFixOffset(Rom rom, int offset)
+        {
+            return rom.ReadByte(offset) == 0x53 && rom.ReadByte(offset + 1) == 0x46;
         }
 
         private void ApplyDualTypeForecastHack(Rom rom, XmlManager info)
