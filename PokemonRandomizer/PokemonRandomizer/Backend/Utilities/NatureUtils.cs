@@ -7,7 +7,7 @@ namespace PokemonRandomizer.Backend.Utilities
     public static class NatureUtils
     {
         public const int numNatures = 25;
-        public const int neuteralStatIndex = 0;
+        public const int invalidNatureStatIndex = 0;
         private const float positiveNature = 1.1f;
         private const float negativeNature = 0.9f;
 
@@ -33,12 +33,12 @@ namespace PokemonRandomizer.Backend.Utilities
         {
             return nature switch
             {
-                LONELY or ADAMANT or NAUGHTY or BRAVE => atkStatIndex,
-                BOLD or IMPISH or LAX or RELAXED => defStatIndex,
-                TIMID or HASTY or JOLLY or NAIVE => spdStatIndex,
-                MODEST or MILD or RASH or QUIET => spAtkStatIndex,
-                CALM or GENTLE or CAREFUL or SASSY => spDefStatIndex,
-                _ => neuteralStatIndex
+                LONELY or ADAMANT or NAUGHTY or BRAVE or HARDY => atkStatIndex,
+                BOLD or IMPISH or LAX or RELAXED or DOCILE => defStatIndex,
+                TIMID or HASTY or JOLLY or NAIVE or SERIOUS => spdStatIndex,
+                MODEST or MILD or RASH or QUIET or BASHFUL => spAtkStatIndex,
+                CALM or GENTLE or CAREFUL or SASSY or QUIRKY => spDefStatIndex,
+                _ => invalidNatureStatIndex
             };
         }
 
@@ -46,18 +46,28 @@ namespace PokemonRandomizer.Backend.Utilities
         {
             return nature switch
             {
-                BOLD or MODEST or CALM or TIMID => atkStatIndex,
-                LONELY or MILD or GENTLE or HASTY => defStatIndex,
-                BRAVE or RELAXED or QUIET or SASSY => spdStatIndex,
-                ADAMANT or IMPISH or CAREFUL or JOLLY => spAtkStatIndex,
-                NAUGHTY or LAX or RASH or NAIVE => spDefStatIndex,
-                _ => neuteralStatIndex
+                BOLD or MODEST or CALM or TIMID or HARDY => atkStatIndex,
+                LONELY or MILD or GENTLE or HASTY or DOCILE => defStatIndex,
+                BRAVE or RELAXED or QUIET or SASSY or SERIOUS => spdStatIndex,
+                ADAMANT or IMPISH or CAREFUL or JOLLY or BASHFUL => spAtkStatIndex,
+                NAUGHTY or LAX or RASH or NAIVE or QUIRKY => spDefStatIndex,
+                _ => invalidNatureStatIndex
             };
         }
 
         public static bool IsNeuteralNature(this Nature nature) 
         {
             return nature is HARDY or DOCILE or BASHFUL or QUIRKY or SERIOUS;
+        }
+
+        public static bool IncreasesStat(this Nature nature, int statIndex)
+        {
+            return !IsNeuteralNature(nature) && PositiveStatIndex(nature) == statIndex;
+        }
+
+        public static bool ReducesStat(this Nature nature, int statIndex)
+        {
+            return !IsNeuteralNature(nature) && NegativeStatIndex(nature) == statIndex;
         }
 
         public static Nature GetNature(int positiveStatIndex, int negativeStatIndex)

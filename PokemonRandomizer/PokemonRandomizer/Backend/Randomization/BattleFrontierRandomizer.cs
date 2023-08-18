@@ -290,7 +290,7 @@ namespace PokemonRandomizer.Backend.Randomization
         private IHasFrontierTrainerEvs.EvFlags ReplaceEVs(IHasFrontierTrainerEvs.EvFlags current, Nature nature)
         {
 
-            if (!current.HasFlag(IHasFrontierTrainerEvs.EvFlags.Speed) && nature.NegativeStatIndex() != PokemonBaseStats.spdStatIndex)
+            if (!current.HasFlag(IHasFrontierTrainerEvs.EvFlags.Speed) && !nature.ReducesStat(PokemonBaseStats.spdStatIndex))
             {
                 current |= IHasFrontierTrainerEvs.EvFlags.Speed;
             }
