@@ -542,6 +542,10 @@ namespace PokemonRandomizer.Backend.Randomization
 
         private static Nature CorrectBadNature(IReadOnlyList<Move> moves, Nature currentNature, IDataTranslator dataT)
         {
+            if (moves.Count <= 0)
+            {
+                return currentNature;
+            }
             int currPositiveStat = currentNature.PositiveStatIndex();
             int currNegativeStat = currentNature.NegativeStatIndex();
             int newPositiveStat = -1;
@@ -610,29 +614,38 @@ namespace PokemonRandomizer.Backend.Randomization
             else if (pokemon.Species == Pokemon.SHEDINJA)
             {
                 pokemon.ClearEvs();
-                bool hasPhysicalMoves = MovesetUtils.HasPhysicalMove(pokemon.Moves, dataT);
-                bool hasSpecialMoves = MovesetUtils.HasSpecialMove(pokemon.Moves, dataT);
-                if (hasPhysicalMoves && hasSpecialMoves)
-                {
-                    RandomlySplitEvs(pokemon, rand, PokemonBaseStats.spAtkStatIndex, PokemonBaseStats.atkStatIndex, PokemonBaseStats.spdStatIndex); ;
-                }
-                else if (hasPhysicalMoves)
+                if(pokemon.Moves.Count <= 0)
                 {
                     pokemon.SpeedEVs = IHasTrainerPokemonEvs.maxUsefulEvValue;
                     pokemon.AttackEVs = IHasTrainerPokemonEvs.maxUsefulEvValue;
                     pokemon.SpAttackEVs = IHasTrainerPokemonEvs.leftoverEvs;
                 }
-                else if (hasSpecialMoves)
-                {
-                    pokemon.SpeedEVs = IHasTrainerPokemonEvs.maxUsefulEvValue;
-                    pokemon.SpAttackEVs = IHasTrainerPokemonEvs.maxUsefulEvValue;
-                    pokemon.AttackEVs = IHasTrainerPokemonEvs.leftoverEvs;
-                }
                 else
                 {
-                    pokemon.SpeedEVs = IHasTrainerPokemonEvs.maxUsefulEvValue;
-                    pokemon.AttackEVs = (IHasTrainerPokemonEvs.maxUsefulEvValue / 2) + IHasTrainerPokemonEvs.leftoverEvs;
-                    pokemon.SpAttackEVs = IHasTrainerPokemonEvs.maxUsefulEvValue / 2;
+                    bool hasPhysicalMoves = MovesetUtils.HasPhysicalMove(pokemon.Moves, dataT);
+                    bool hasSpecialMoves = MovesetUtils.HasSpecialMove(pokemon.Moves, dataT);
+                    if (hasPhysicalMoves && hasSpecialMoves)
+                    {
+                        RandomlySplitEvs(pokemon, rand, PokemonBaseStats.spAtkStatIndex, PokemonBaseStats.atkStatIndex, PokemonBaseStats.spdStatIndex); ;
+                    }
+                    else if (hasPhysicalMoves)
+                    {
+                        pokemon.SpeedEVs = IHasTrainerPokemonEvs.maxUsefulEvValue;
+                        pokemon.AttackEVs = IHasTrainerPokemonEvs.maxUsefulEvValue;
+                        pokemon.SpAttackEVs = IHasTrainerPokemonEvs.leftoverEvs;
+                    }
+                    else if (hasSpecialMoves)
+                    {
+                        pokemon.SpeedEVs = IHasTrainerPokemonEvs.maxUsefulEvValue;
+                        pokemon.SpAttackEVs = IHasTrainerPokemonEvs.maxUsefulEvValue;
+                        pokemon.AttackEVs = IHasTrainerPokemonEvs.leftoverEvs;
+                    }
+                    else
+                    {
+                        pokemon.SpeedEVs = IHasTrainerPokemonEvs.maxUsefulEvValue;
+                        pokemon.AttackEVs = (IHasTrainerPokemonEvs.maxUsefulEvValue / 2) + IHasTrainerPokemonEvs.leftoverEvs;
+                        pokemon.SpAttackEVs = IHasTrainerPokemonEvs.maxUsefulEvValue / 2;
+                    }
                 }
             }
             else
@@ -643,6 +656,8 @@ namespace PokemonRandomizer.Backend.Randomization
 
         private static void CorrectBadEvs<T>(T pokemon, Random rand, IDataTranslator dataT) where T : IHasTrainerPokemonEvs
         {
+            if (pokemon.Moves.Count <= 0)
+                return;
             bool correctAtkEvs = pokemon.AttackEVs > 0 && !MovesetUtils.HasPhysicalMove(pokemon.Moves, dataT);
             bool correctSpAtkEvs = pokemon.SpAttackEVs > 0 && !MovesetUtils.HasSpecialMove(pokemon.Moves, dataT);
             if (correctAtkEvs && correctSpAtkEvs)
