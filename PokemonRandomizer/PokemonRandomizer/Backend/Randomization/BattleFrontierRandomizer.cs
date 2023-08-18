@@ -12,6 +12,7 @@ namespace PokemonRandomizer.Backend.Randomization
 {
     public class BattleFrontierRandomizer
     {
+        private const int frontierBrainPokemonLevel = 100;
         private readonly IDataTranslator dataT;
         private readonly PkmnRandomizer pokeRand;
         private readonly MovesetGenerator movesetGenerator;
@@ -295,11 +296,11 @@ namespace PokemonRandomizer.Backend.Randomization
             {
                 if (rand.RollSuccess(settings.FrontierBrainPokemonRandChance))
                 {
-                    pokemon.species = pokeRand.RandomPokemon(pokemonSet, pokemon.species, pokemonSettings);
+                    pokemon.species = pokeRand.RandomPokemon(pokemonSet, pokemon.species, pokemonSettings, frontierBrainPokemonLevel);
                     // Generate moveset and Nature
                     var stats = dataT.GetBaseStats(pokemon.species);
                     pokemon.Nature = TrainerRandomizer.GetRandomNature(rand, stats);
-                    pokemon.moves = movesetGenerator.SmartMoveSet(stats, 100, specialMoveSettings);
+                    pokemon.moves = movesetGenerator.SmartMoveSet(stats, frontierBrainPokemonLevel, specialMoveSettings);
                     PostProcessNature(pokemon);
                     PostProcessEvs(pokemon);
                 }
@@ -308,7 +309,7 @@ namespace PokemonRandomizer.Backend.Randomization
                     // Remap variant moves and Nature
                     var stats = dataT.GetBaseStats(pokemon.species);
                     pokemon.Nature = TrainerRandomizer.GetRandomNature(rand, stats);
-                    pokemon.moves = movesetGenerator.SmartMoveSet(stats, 100, specialMoveSettings);
+                    pokemon.moves = movesetGenerator.SmartMoveSet(stats, frontierBrainPokemonLevel, specialMoveSettings);
                     PostProcessNature(pokemon);
                     PostProcessEvs(pokemon);
                 }
