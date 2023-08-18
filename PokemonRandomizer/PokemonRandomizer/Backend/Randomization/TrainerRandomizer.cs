@@ -159,57 +159,6 @@ namespace PokemonRandomizer.Backend.Randomization
             }
         }
 
-        public static Nature GetRandomNature(Random rand, PokemonBaseStats pokemon)
-        {
-            float maxStat = pokemon.stats[1..].Max();
-            var normalizedStats = new float[PokemonBaseStats.numStats];
-            normalizedStats[PokemonBaseStats.hpStatIndex] = 0;
-            normalizedStats[PokemonBaseStats.atkStatIndex] = pokemon.Attack / maxStat;
-            normalizedStats[PokemonBaseStats.defStatIndex] = pokemon.Defense / maxStat;
-            normalizedStats[PokemonBaseStats.spdStatIndex] = pokemon.Speed / maxStat;
-            normalizedStats[PokemonBaseStats.spAtkStatIndex] = pokemon.SpAttack / maxStat;
-            normalizedStats[PokemonBaseStats.spDefStatIndex] = pokemon.SpDefense / maxStat;
-            var statWeights = new WeightedSet<int>(PokemonBaseStats.numStats);
-            for (int i = 1; i < PokemonBaseStats.numStats; ++i)
-            {
-                // Defense and SpDef are completely irrelevant for Shedinja
-                if(pokemon.species == Pokemon.SHEDINJA && i is PokemonBaseStats.defStatIndex or PokemonBaseStats.spDefStatIndex)
-                {
-                    continue;
-                }
-                statWeights.Add(i, MathF.Pow(normalizedStats[i], 3));
-            }
-            int positiveStat = rand.Choice(statWeights);
-            int negativeStat;
-            if(pokemon.species == Pokemon.SHEDINJA)
-            {
-                // Defense and SpDef are completely irrelevant for Shedinja
-                negativeStat = rand.RandomBool() ? PokemonBaseStats.defStatIndex : PokemonBaseStats.spDefStatIndex;
-            }
-            else if(pokemon.EffectiveAttack * 1.6f <= pokemon.SpAttack)
-            {
-                negativeStat = PokemonBaseStats.atkStatIndex;
-            }
-            else if (pokemon.SpAttack * 1.6f <= pokemon.EffectiveAttack)
-            {
-                negativeStat = PokemonBaseStats.spAtkStatIndex;
-            }
-            else if (pokemon.Speed <= (int)(pokemon.BST * 0.1f))
-            {
-                negativeStat = pokemon.Speed;
-            }
-            else
-            {
-                statWeights.Clear();
-                for (int i = 1; i < PokemonBaseStats.numStats; ++i)
-                {
-                    statWeights.Add(i, 1 / MathF.Pow(normalizedStats[i], 3));
-                }
-                negativeStat = rand.Choice(statWeights);
-            }
-            return NatureUtils.GetNature(positiveStat, negativeStat);
-        }
-
 
         public void RandomizeAll(List<Trainer> allBattles, IEnumerable<Pokemon> pokemonSet, TrainerSettings settings)
         {
@@ -510,5 +459,231 @@ namespace PokemonRandomizer.Backend.Randomization
                 pokemon.moves = movesetGenerator.SmartMoveSet(dataT.GetBaseStats(pokemon.species), pokemon.level);
             }
         }
+
+        #region Nature and EV Utility Code
+
+        public static Nature GetRandomNature(Random rand, PokemonBaseStats pokemon)
+        {
+            float maxStat = pokemon.stats[1..].Max();
+            var normalizedStats = new float[PokemonBaseStats.numStats];
+            normalizedStats[PokemonBaseStats.hpStatIndex] = 0;
+            normalizedStats[PokemonBaseStats.atkStatIndex] = pokemon.Attack / maxStat;
+            normalizedStats[PokemonBaseStats.defStatIndex] = pokemon.Defense / maxStat;
+            normalizedStats[PokemonBaseStats.spdStatIndex] = pokemon.Speed / maxStat;
+            normalizedStats[PokemonBaseStats.spAtkStatIndex] = pokemon.SpAttack / maxStat;
+            normalizedStats[PokemonBaseStats.spDefStatIndex] = pokemon.SpDefense / maxStat;
+            var statWeights = new WeightedSet<int>(PokemonBaseStats.numStats);
+            for (int i = 1; i < PokemonBaseStats.numStats; ++i)
+            {
+                // Defense and SpDef are completely irrelevant for Shedinja
+                if (pokemon.species == Pokemon.SHEDINJA && i is PokemonBaseStats.defStatIndex or PokemonBaseStats.spDefStatIndex)
+                {
+                    continue;
+                }
+                statWeights.Add(i, MathF.Pow(normalizedStats[i], 3));
+            }
+            int positiveStat = rand.Choice(statWeights);
+            int negativeStat;
+            if (pokemon.species == Pokemon.SHEDINJA)
+            {
+                // Defense and SpDef are completely irrelevant for Shedinja
+                negativeStat = rand.RandomBool() ? PokemonBaseStats.defStatIndex : PokemonBaseStats.spDefStatIndex;
+            }
+            else if (pokemon.EffectiveAttack * 1.6f <= pokemon.SpAttack)
+            {
+                negativeStat = PokemonBaseStats.atkStatIndex;
+            }
+            else if (pokemon.SpAttack * 1.6f <= pokemon.EffectiveAttack)
+            {
+                negativeStat = PokemonBaseStats.spAtkStatIndex;
+            }
+            else if (pokemon.Speed <= (int)(pokemon.BST * 0.1f))
+            {
+                negativeStat = pokemon.Speed;
+            }
+            else
+            {
+                statWeights.Clear();
+                for (int i = 1; i < PokemonBaseStats.numStats; ++i)
+                {
+                    statWeights.Add(i, 1 / MathF.Pow(normalizedStats[i], 3));
+                }
+                negativeStat = rand.Choice(statWeights);
+            }
+            return NatureUtils.GetNature(positiveStat, negativeStat);
+        }
+
+        public static void PostProcessNature<T>(T pokemon, Random rand, IDataTranslator dataT) where T : TrainerPokemon, IHasTrainerPokemonNature
+        {
+            if (pokemon.species == Pokemon.DITTO)
+            {
+                // Technically, TIMID is the best nature, but jolly is also listed to give ditto more variability in the Battle Palace
+                pokemon.Nature = rand.RandomBool() ? Nature.TIMID : Nature.JOLLY;
+            }
+            else
+            {
+                pokemon.Nature = CorrectBadNature(pokemon.moves, pokemon.Nature, dataT);
+            }
+        }
+
+        private static Nature CorrectBadNature(IReadOnlyList<Move> moves, Nature currentNature, IDataTranslator dataT)
+        {
+            int currPositiveStat = currentNature.PositiveStatIndex();
+            int currNegativeStat = currentNature.NegativeStatIndex();
+            int newPositiveStat = -1;
+            int newNegativeStat = -1;
+
+            if (currPositiveStat == PokemonBaseStats.spAtkStatIndex)
+            {
+                // if +special nature and no special moves, change to +atk
+                if (!MovesetUtils.HasSpecialMove(moves, dataT))
+                {
+                    newPositiveStat = PokemonBaseStats.atkStatIndex;
+                }
+            }
+            else if (currPositiveStat == PokemonBaseStats.atkStatIndex)
+            {
+                // if +atk and no physical moves, change to +special
+                if (!MovesetUtils.HasPhysicalMove(moves, dataT))
+                {
+                    newPositiveStat = PokemonBaseStats.spAtkStatIndex;
+                }
+            }
+            if (currNegativeStat != PokemonBaseStats.atkStatIndex)
+            {
+                // if not -atk nature and no physical moves, change to -atk
+                if (!MovesetUtils.HasPhysicalMove(moves, dataT))
+                {
+                    newNegativeStat = PokemonBaseStats.atkStatIndex;
+                }
+            }
+            if (currNegativeStat != PokemonBaseStats.spAtkStatIndex)
+            {
+                // if not -special nature and no special moves, change to -special
+                if (!MovesetUtils.HasSpecialMove(moves, dataT))
+                {
+                    newNegativeStat = PokemonBaseStats.spAtkStatIndex;
+                }
+            }
+
+            // if -special and no physical moves, change to -atk
+            // if -atk and no special moves, change to -special
+            if (newPositiveStat == -1)
+            {
+                if (newNegativeStat == -1)
+                    return currentNature;
+                return NatureUtils.GetNature(currPositiveStat, newNegativeStat);
+            }
+            else if (newNegativeStat == -1)
+            {
+                return NatureUtils.GetNature(newPositiveStat, currNegativeStat);
+            }
+            else
+            {
+                return NatureUtils.GetNature(newPositiveStat, newNegativeStat);
+            }
+        }
+
+        public static void PostProcessEvs<T>(T pokemon, Random rand, IDataTranslator dataT) where T : TrainerPokemon, IHasTrainerPokemonEvs
+        {
+            if (pokemon.species == Pokemon.DITTO)
+            {
+                pokemon.ClearEvs();
+                pokemon.HpEVs = IHasTrainerPokemonEvs.maxUsefulEvValue;
+                pokemon.SpeedEVs = IHasTrainerPokemonEvs.maxUsefulEvValue;
+                pokemon.SpDefenseEVs = IHasTrainerPokemonEvs.leftoverEvs;
+            }
+            else if (pokemon.species == Pokemon.SHEDINJA)
+            {
+                pokemon.ClearEvs();
+                bool hasPhysicalMoves = MovesetUtils.HasPhysicalMove(pokemon.moves, dataT);
+                bool hasSpecialMoves = MovesetUtils.HasSpecialMove(pokemon.moves, dataT);
+                if (hasPhysicalMoves && hasSpecialMoves)
+                {
+                    RandomlySplitEvs(pokemon, rand, PokemonBaseStats.spAtkStatIndex, PokemonBaseStats.atkStatIndex, PokemonBaseStats.spdStatIndex); ;
+                }
+                else if (hasPhysicalMoves)
+                {
+                    pokemon.SpeedEVs = IHasTrainerPokemonEvs.maxUsefulEvValue;
+                    pokemon.AttackEVs = IHasTrainerPokemonEvs.maxUsefulEvValue;
+                    pokemon.SpAttackEVs = IHasTrainerPokemonEvs.leftoverEvs;
+                }
+                else if (hasSpecialMoves)
+                {
+                    pokemon.SpeedEVs = IHasTrainerPokemonEvs.maxUsefulEvValue;
+                    pokemon.SpAttackEVs = IHasTrainerPokemonEvs.maxUsefulEvValue;
+                    pokemon.AttackEVs = IHasTrainerPokemonEvs.leftoverEvs;
+                }
+                else
+                {
+                    pokemon.SpeedEVs = IHasTrainerPokemonEvs.maxUsefulEvValue;
+                    pokemon.AttackEVs = (IHasTrainerPokemonEvs.maxUsefulEvValue / 2) + IHasTrainerPokemonEvs.leftoverEvs;
+                    pokemon.SpAttackEVs = IHasTrainerPokemonEvs.maxUsefulEvValue / 2;
+                }
+            }
+            else
+            {
+                CorrectBadEvs(pokemon, rand, dataT);
+            }
+        }
+
+        private static void CorrectBadEvs<T>(T pokemon, Random rand, IDataTranslator dataT) where T : TrainerPokemon, IHasTrainerPokemonEvs
+        {
+            bool correctAtkEvs = pokemon.AttackEVs > 0 && !MovesetUtils.HasPhysicalMove(pokemon.moves, dataT);
+            bool correctSpAtkEvs = pokemon.SpAttackEVs > 0 && !MovesetUtils.HasSpecialMove(pokemon.moves, dataT);
+            if (correctAtkEvs && correctSpAtkEvs)
+            {
+                pokemon.AttackEVs = 0;
+                pokemon.SpAttackEVs = 0;
+                RandomlySplitEvs(pokemon, rand, PokemonBaseStats.hpStatIndex, PokemonBaseStats.defStatIndex, PokemonBaseStats.spdStatIndex, PokemonBaseStats.spDefStatIndex);
+            }
+            else if (correctAtkEvs)
+            {
+                pokemon.AttackEVs = 0;
+                RandomlySplitEvs(pokemon, rand, PokemonBaseStats.hpStatIndex, PokemonBaseStats.defStatIndex, PokemonBaseStats.spdStatIndex, PokemonBaseStats.spAtkStatIndex, PokemonBaseStats.spDefStatIndex);
+            }
+            else if (correctSpAtkEvs)
+            {
+                pokemon.SpAttackEVs = 0;
+                RandomlySplitEvs(pokemon, rand,PokemonBaseStats.hpStatIndex, PokemonBaseStats.atkStatIndex, PokemonBaseStats.defStatIndex, PokemonBaseStats.spdStatIndex, PokemonBaseStats.spDefStatIndex);
+            }
+        }
+
+        private static void RandomlySplitEvs<T>(T pokemon, Random rand, params int[] allowedStats) where T : TrainerPokemon, IHasTrainerPokemonEvs
+        {
+            if (allowedStats.Length <= 0)
+                return;
+            // Calculate remaining EV stat points
+            int alreadyAllocatedEVs = 0;
+            foreach (var ev in pokemon.EVs)
+            {
+                alreadyAllocatedEVs += ev;
+            }
+            int totalStatPointsRemaining = (IHasTrainerPokemonEvs.maxEvs - alreadyAllocatedEVs) / IHasTrainerPokemonEvs.evsPerStatPoint;
+            var availableStats = new List<int>(allowedStats);
+            // Spread the remainder out randomly
+            while (totalStatPointsRemaining > 0 && availableStats.Count > 0)
+            {
+                int statIndex = rand.Choice(availableStats);
+                // Covert Evs -> stat points
+                int currStatPoints = pokemon.EVs[statIndex] / IHasTrainerPokemonEvs.evsPerStatPoint;
+                if (currStatPoints >= IHasTrainerPokemonEvs.maxUsefulEvStatPointValue)
+                {
+                    availableStats.Remove(statIndex);
+                    continue;
+                }
+                // Add additional stat points
+                int addedStatPoints = Math.Min(totalStatPointsRemaining, rand.RandomInt(1, (IHasTrainerPokemonEvs.maxUsefulEvStatPointValue - currStatPoints) + 1));
+                currStatPoints += addedStatPoints;
+                totalStatPointsRemaining -= addedStatPoints;
+                // Remove from available stats if maxed out
+                if (currStatPoints >= IHasTrainerPokemonEvs.maxUsefulEvStatPointValue)
+                    availableStats.Remove(statIndex);
+                // Convert stat points -> Evs
+                pokemon.EVs[statIndex] = (byte)(currStatPoints * IHasTrainerPokemonEvs.evsPerStatPoint);
+            }
+        }
+
+        #endregion
     }
 }
