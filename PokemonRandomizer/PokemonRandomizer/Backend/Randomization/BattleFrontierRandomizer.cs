@@ -151,7 +151,7 @@ namespace PokemonRandomizer.Backend.Randomization
             return current;
         }
 
-        private void PostProcessEVs<T>(T pokemon) where T : TrainerPokemon, IHasTrainerPokemonEvs, IHasTrainerPokemonNature
+        private void PostProcessEvs<T>(T pokemon) where T : TrainerPokemon, IHasTrainerPokemonEvs, IHasTrainerPokemonNature
         {
             if (pokemon.species == Pokemon.DITTO)
             {
@@ -301,7 +301,7 @@ namespace PokemonRandomizer.Backend.Randomization
                     pokemon.Nature = TrainerRandomizer.GetRandomNature(rand, stats);
                     pokemon.moves = movesetGenerator.SmartMoveSet(stats, 100, specialMoveSettings);
                     PostProcessNature(pokemon);
-                    PostProcessEVs(pokemon);
+                    PostProcessEvs(pokemon);
                 }
                 else if (dataT.GetBaseStats(pokemon.species).IsVariant) // If pokemon is variant
                 {
@@ -310,7 +310,7 @@ namespace PokemonRandomizer.Backend.Randomization
                     pokemon.Nature = TrainerRandomizer.GetRandomNature(rand, stats);
                     pokemon.moves = movesetGenerator.SmartMoveSet(stats, 100, specialMoveSettings);
                     PostProcessNature(pokemon);
-                    PostProcessEVs(pokemon);
+                    PostProcessEvs(pokemon);
                 }
             }
         }
