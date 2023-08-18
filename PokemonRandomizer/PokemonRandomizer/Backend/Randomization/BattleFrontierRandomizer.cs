@@ -152,7 +152,7 @@ namespace PokemonRandomizer.Backend.Randomization
             return current;
         }
 
-        private void PostProcessEvs<T>(T pokemon) where T : TrainerPokemon, IHasTrainerPokemonEvs, IHasTrainerPokemonNature
+        private void PostProcessEvs<T>(T pokemon) where T : TrainerPokemon, IHasTrainerPokemonEvs
         {
             if (pokemon.species == Pokemon.DITTO)
             {
@@ -191,13 +191,36 @@ namespace PokemonRandomizer.Backend.Randomization
             }
             else
             {
-                // TODO: post-process full EVs
-                // pokemon.EVs = CorrectBadEvs(pokemon.moves, pokemon.EVs, pokemon.Nature);
+                CorrectBadEvs(pokemon);
+            }
+        }
+
+        private void CorrectBadEvs<T>(T pokemon) where T : TrainerPokemon, IHasTrainerPokemonEvs
+        {
+            bool correctAtkEvs = pokemon.AttackEVs > 0 && !MovesetUtils.HasPhysicalMove(pokemon.moves, dataT);
+            bool correctSpAtkEvs = pokemon.SpAttackEVs > 0 && !MovesetUtils.HasSpecialMove(pokemon.moves, dataT);
+            if(correctAtkEvs && correctSpAtkEvs) 
+            {
+                pokemon.AttackEVs = 0;
+                pokemon.SpAttackEVs = 0;
+                RandomlySplitEvs(pokemon, PokemonBaseStats.hpStatIndex, PokemonBaseStats.defStatIndex, PokemonBaseStats.spdStatIndex, PokemonBaseStats.spDefStatIndex);
+            }
+            else if(correctAtkEvs)
+            {
+                pokemon.AttackEVs = 0;
+                RandomlySplitEvs(pokemon, PokemonBaseStats.hpStatIndex, PokemonBaseStats.defStatIndex, PokemonBaseStats.spdStatIndex, PokemonBaseStats.spAtkStatIndex, PokemonBaseStats.spDefStatIndex);
+            }
+            else if(correctSpAtkEvs) 
+            {
+                pokemon.SpAttackEVs = 0;
+                RandomlySplitEvs(pokemon, PokemonBaseStats.hpStatIndex, PokemonBaseStats.atkStatIndex, PokemonBaseStats.defStatIndex, PokemonBaseStats.spdStatIndex, PokemonBaseStats.spDefStatIndex);
             }
         }
 
         private void RandomlySplitEvs<T>(T pokemon, params int[] allowedStats) where T : TrainerPokemon, IHasTrainerPokemonEvs
         {
+            if (allowedStats.Length <= 0)
+                return;
             // Calculate remaining EV stat points
             int alreadyAllocatedEVs = 0;
             foreach(var ev in pokemon.EVs)
