@@ -107,7 +107,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 }
                 else
                 {
-                    current = ReplaceFrontierTrainerEVs(current, nature);
+                    current = ReplaceFrontierTrainerEvs(current, nature);
                 }
             }
             if (current.HasFlag(IHasFrontierTrainerEvs.EvFlags.Atk) && !MovesetUtils.HasPhysicalMove(moves, dataT))
@@ -119,13 +119,13 @@ namespace PokemonRandomizer.Backend.Randomization
                 }
                 else
                 {
-                    current = ReplaceFrontierTrainerEVs(current, nature);
+                    current = ReplaceFrontierTrainerEvs(current, nature);
                 }
             }
             return current;
         }
 
-        private IHasFrontierTrainerEvs.EvFlags ReplaceFrontierTrainerEVs(IHasFrontierTrainerEvs.EvFlags current, Nature nature)
+        private IHasFrontierTrainerEvs.EvFlags ReplaceFrontierTrainerEvs(IHasFrontierTrainerEvs.EvFlags current, Nature nature)
         {
 
             if (!current.HasFlag(IHasFrontierTrainerEvs.EvFlags.Speed) && !nature.ReducesStat(PokemonBaseStats.spdStatIndex))
