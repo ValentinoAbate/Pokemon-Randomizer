@@ -8,7 +8,6 @@ namespace PokemonRandomizer.UI.Views
     using System.Windows;
     using System.Windows.Controls;
     using System.Windows.Data;
-    using static Settings;
     using static Settings.TrainerSettings;
 
     public class TrainerDataView : DataView<TrainerDataModel>
