@@ -17,17 +17,17 @@ namespace PokemonRandomizer.UI.Views
         {
             new ComboBoxItem() {Content="Random", ToolTip="Pokemon in recurring battles will be chosen completely randomly"},
             new ComboBoxItem() {Content="Keep Ace", ToolTip="Recurring battles with a trainer will keep that trainers ace pokemon and evolve it if appropriate"},
-            new ComboBoxItem() {Content="Keep Party", ToolTip="Recurring battles with a trainer will keep the pokemon from the previous battle and evolve them if appropriate. New pokemon will be added if the next battle has a bigger party." },
+            new ComboBoxItem() {Content="Keep Party", ToolTip="Recurring battles with a trainer will keep the pokemon from the previous battle and evolve them if appropriate. New pokemon will be added if the next battle has a bigger party" },
         };
         private static CompositeCollection BattleTypeStrategyDropdown => new CompositeCollection()
         {
             new ComboBoxItem() {Content="Random", ToolTip="Recurring battles with a trainer will have a random battle type"},
-            new ComboBoxItem() {Content="Keep Same Type", ToolTip="Recurring battles with a trainer will keep the same battle type (if the last battle was a double battle, the next one will also be a double battle, etc)."},
+            new ComboBoxItem() {Content="Keep Same Type", ToolTip="Recurring battles with a trainer will keep the same battle type (if the last battle was a double battle, the next one will also be a double battle, etc)"},
         };
 
         private static CompositeCollection MetricDataDropdown => new CompositeCollection()
         {
-            new ComboBoxItem() {Content="Individual Pokemon Type", ToolTip="Each pokemon will be more likely to randomize to a pokemon that has at least one of its original types."},
+            new ComboBoxItem() {Content="Individual Pokemon Type", ToolTip="Each pokemon will be more likely to randomize to a pokemon that has at least one of its original types"},
             new ComboBoxItem() {Content="Party Type", ToolTip="Each pokemon will be be more likely to randomize to a pokemon whose type appears in the trainer's original party, weighted by the number of times that type appears"},
         };
 
