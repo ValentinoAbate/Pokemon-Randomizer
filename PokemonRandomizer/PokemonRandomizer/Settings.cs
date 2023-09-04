@@ -496,8 +496,12 @@ namespace PokemonRandomizer
         public abstract bool FrontierBrainBanLegendaries { get; }
         public abstract bool FrontierBrainKeepLegendaries { get; }
 
-        // Battle Tent Settings
+        // Battle Tent
         public abstract BattleTentRandomizer.Settings GetBattleTentSettings(BattleTent tent);
+
+        // Game Corner
+        public abstract GameCornerRandomizer.RouletteRandomizationOption RouletteWagerOption { get; }
+        public abstract int FixedBaseRouletteWager{ get; }
 
         #endregion
 

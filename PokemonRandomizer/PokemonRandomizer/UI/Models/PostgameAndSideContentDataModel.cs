@@ -10,5 +10,6 @@ namespace PokemonRandomizer.UI.Models
     {
         public BattleFrontierDataModel FrontierData { get; set; } = new BattleFrontierDataModel();
         public BattleTentDataModel BattleTentData { get; set; } = new BattleTentDataModel();
+        public GameCornerDataModel GameCornerData { get; set; } = new GameCornerDataModel();
     }
 }

@@ -1,9 +1,7 @@
 ﻿using PokemonRandomizer.Backend.DataStructures;
-using PokemonRandomizer.Backend.EnumTypes;
 using PokemonRandomizer.UI.Models;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace PokemonRandomizer.UI.Views
 {
@@ -17,6 +15,11 @@ namespace PokemonRandomizer.UI.Views
             {
                 tabs.Add(CreateTabItem("Battle Frontier", new BattleFrontierDataView(model.FrontierData)));
                 tabs.Add(CreateTabItem("Battle Tents", new BattleTentDataView(model.BattleTentData)));
+            }
+            // Later game corner will apply to more games
+            if(metadata.IsEmerald) 
+            {
+                tabs.Add(CreateTabItem("Game Corner", new GameCornerDataView(model.GameCornerData, metadata)));
             }
         }
     }

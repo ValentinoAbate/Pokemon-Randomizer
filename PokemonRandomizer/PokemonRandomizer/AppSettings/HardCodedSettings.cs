@@ -413,8 +413,12 @@ namespace PokemonRandomizer.AppSettings
         public override bool FrontierBrainBanLegendaries => false;
         public override bool FrontierBrainKeepLegendaries => true;
 
-        // Battle Tent Settings
+        // Battle Tent
         public override BattleTentRandomizer.Settings GetBattleTentSettings(BattleTent tent) => new();
+
+        // Game Corner
+        public override GameCornerRandomizer.RouletteRandomizationOption RouletteWagerOption => GameCornerRandomizer.RouletteRandomizationOption.FixedBase;
+        public override int FixedBaseRouletteWager => 8;
 
         #endregion
 

@@ -31,6 +31,7 @@ namespace PokemonRandomizer.AppSettings
         private WeatherDataModel weatherData;
         private BattleFrontierDataModel battleFrontierData;
         private BattleTentDataModel battleTentData;
+        private GameCornerDataModel gameCornerData;
         private MiscDataModel miscData;
 
         public AppSettings(ApplicationDataModel data) : base(data) { }
@@ -55,6 +56,7 @@ namespace PokemonRandomizer.AppSettings
             var frontierAndMinigameData = data.PostgameAndSideContentData;
             battleFrontierData = frontierAndMinigameData.FrontierData;
             battleTentData = frontierAndMinigameData.BattleTentData;
+            gameCornerData = frontierAndMinigameData.GameCornerData;
             miscData = data.MiscData;
         }
 
@@ -490,7 +492,7 @@ namespace PokemonRandomizer.AppSettings
         public override bool FrontierBrainBanLegendaries => battleFrontierData.BanBrainLegendaries;
         public override bool FrontierBrainKeepLegendaries => battleFrontierData.KeepBrainLegendaries;
 
-        // Battle Tent Settings
+        // Battle Tent
         public override BattleTentRandomizer.Settings GetBattleTentSettings(BattleTent tent)
         {
             var settings = new BattleTentRandomizer.Settings() 
@@ -514,6 +516,10 @@ namespace PokemonRandomizer.AppSettings
             }
             return settings;
         }
+
+        // Game Corner
+        public override GameCornerRandomizer.RouletteRandomizationOption RouletteWagerOption => gameCornerData.RouletteOption;
+        public override int FixedBaseRouletteWager => (int)(gameCornerData.RouletteBase.Value);
 
         #endregion
 

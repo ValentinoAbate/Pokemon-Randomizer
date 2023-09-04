@@ -33,6 +33,7 @@ namespace PokemonRandomizer.Backend.Randomization
         private readonly TypeChartRandomizer typeChartRandomizer;
         private readonly BattleFrontierRandomizer battleFrontierRandomizer;
         private readonly BattleTentRandomizer battleTentRandomizer;
+        private readonly GameCornerRandomizer gameCornerRandomizer;
         private readonly RomMetadata metadata;
 
         /// <summary>
@@ -83,6 +84,7 @@ namespace PokemonRandomizer.Backend.Randomization
             typeChartRandomizer = new TypeChartRandomizer();
             battleFrontierRandomizer = new BattleFrontierRandomizer(rand, data, pokeRand, movesetGenerator, evoUtils);
             battleTentRandomizer = new BattleTentRandomizer(battleFrontierRandomizer, itemRand, delayedRandomizationCalls);
+            gameCornerRandomizer = new GameCornerRandomizer(rand);
         }
         // Apply mutations based on program settings.
         public RomData Randomize()
@@ -954,7 +956,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 battleTentRandomizer.RandomizeBattleTent(battleTent, settings.GetBattleTentSettings(battleTent), pokemonSet, items);
             }
 
-            RandomizeGameCorner(data, settings);
+            gameCornerRandomizer.Randomize(data, settings);
 
             #endregion
 
@@ -1118,21 +1120,6 @@ namespace PokemonRandomizer.Backend.Randomization
                         berryTreeCommand.berry = rand.Choice(berries).Item;
                     }
                 }
-            }
-        }
-
-        private void RandomizeGameCorner(RomData data, Settings s)
-        {
-            // WIP, just return for now
-            return;
-            // Randomize Roulette Table Wagers (if applicable)
-            // The wagers are as follows: [leftTableNormal,rightTableNormal,leftTableSpecial,rightTableSpecial]
-            if (data.RouletteWagers.Length > 0)
-            {
-                byte baseWager = 16;
-                data.RouletteWagers[0] = data.RouletteWagers[2] = baseWager;
-                data.RouletteWagers[1] = (byte)Math.Min(baseWager * 3, byte.MaxValue);
-                data.RouletteWagers[3] = (byte)Math.Min(baseWager * 6, byte.MaxValue);
             }
         }
 
