@@ -41,8 +41,7 @@ namespace PokemonRandomizer.UI.Views
         public MiscDataView(MiscDataModel model, RomMetadata metadata)
         {
             // Create stack and add content
-            var stack = CreateStack();
-            Content = stack;
+            var stack = CreateMainStack();
 
             stack.Header(UISkin.Current.HacksAndTweaksHeader);
             stack.Add(new BoundCheckBoxUI("Run Indoors", model.RunIndoors));
