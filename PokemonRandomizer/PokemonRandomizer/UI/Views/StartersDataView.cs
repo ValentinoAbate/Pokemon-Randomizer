@@ -25,7 +25,7 @@ namespace PokemonRandomizer.UI.Views
         {
             // Create stack and add content
             var stack = CreateMainStack();
-            stack.Header("Randomization");
+            stack.Header("Starter Randomization");
 
             // Randomization Strategy CB
             var optionCb = stack.Add(new EnumComboBoxUI<StarterPokemonOption>("Randomization Strategy", StarterOptionDropdown, model.StarterSetting) { ToolTip="The strategy used to select starter pokemon" });

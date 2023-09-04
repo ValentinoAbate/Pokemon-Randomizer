@@ -34,7 +34,7 @@ namespace PokemonRandomizer.UI.Views
         private TabItem CreateGiftPokemonTab(GiftPokemonDataModel model)
         {
             var stack = CreateStack();
-            stack.Header("Randomization");
+            stack.Header("Gift Pokemon Randomization");
             stack.Add(new RandomChanceUI("Randomize Gift Pokemon", model.RandomizeGiftPokemon, model.GiftPokemonRandChance) { ToolTip = giftPokemonTooltip })
                 .BindEnabled(stack.Add(new PokemonSettingsUI(model.GiftSpeciesSettings)));
             stack.Header("Restrictions");
@@ -55,7 +55,7 @@ namespace PokemonRandomizer.UI.Views
         private TabItem CreateStaticPokemonTab(StaticPokemonDataModel model)
         {
             var stack = CreateStack();
-            stack.Header("Randomization");
+            stack.Header("Static Pokemon Randomization");
             var staticRand = stack.Add(new RandomChanceUI("Randomize Static Wild Pokemon", model.RandomizeStatics, model.StaticRandChance) { ToolTip = staticWildTooltip });
             var optionsStack = stack.Add(staticRand.BindEnabled(CreateStack()));
             optionsStack.Add(new PokemonSettingsUI(model.Settings));
