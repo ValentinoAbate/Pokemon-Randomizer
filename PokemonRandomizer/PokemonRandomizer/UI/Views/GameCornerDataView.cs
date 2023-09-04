@@ -25,7 +25,7 @@ namespace PokemonRandomizer.UI.Views
         {
             var stack = CreateMainStack();
             // Roulette
-            if (metadata.IsEmerald)
+            if (metadata.IsRubySapphireOrEmerald)
             {
                 stack.Header("Roulette");
                 var rouletteOption = stack.Add(new EnumComboBoxUI<RouletteRandomizationOption>("Base Wager Randomization Strategy", RouletteOptionDropdown, model.RouletteOption));

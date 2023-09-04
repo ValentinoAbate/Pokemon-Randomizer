@@ -253,7 +253,7 @@ namespace PokemonRandomizer
             TrainerOrgView.Content = new TrainerOrganizationDataView(AppData.TrainerOrgData, metadata);
             ItemsView.Content = new ItemDataView(AppData.ItemData, data.GetAllItemsOrdered(true), metadata);
             // Post game and side content tab (if supported)
-            if (metadata.IsEmerald)
+            if (metadata.IsRubySapphireOrEmerald)
             {
                 PostgameAndSideContentView.Visibility = Visibility.Visible;
                 PostgameAndSideContentView.Content = new PostgameAndSideContentDataView(AppData.PostgameAndSideContentData, metadata);

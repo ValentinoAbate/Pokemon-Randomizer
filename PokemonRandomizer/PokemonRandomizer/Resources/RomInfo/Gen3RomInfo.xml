@@ -216,7 +216,7 @@
     <mapBankPointers offset="0x486578" pointer="0x84AA4"/>
     <maps bankLengths="[57,5,5,6,7,8,9,7,7,14,8,17,10,23,13,15,15,2,2,2,3,1,1,1,108,61,89,2,1,13,1,1,2,1]"/>
 
-	<!-- Battle Frontier and Minigames -->
+	<!-- PostGame and Minigames -->
 
 	<!-- Battle Frontier -->
 	<frontierFacilities num ="7"/>
@@ -350,6 +350,13 @@
 
 	<mapBankPointers pointer="0x053324"/>
 
+	<!-- PostGame and Minigames -->
+
+	<!-- Game Corner -->
+	<rouletteWagers pointer="0x1152D0" offset="0x3f8df0"/>
+	<!--rouletteLowTableFix bgCheckOffset="0x1404F4" setBallCounterCheckOffset="0x143740" startSpinCheckOffset="0x140F80" startSpinAsmOffset="0x140F84" startSpinAsm="[0x23,0x31,0x01,0x20,0x08]"/-->
+	<rouletteWagerTextFix entryWagerDigitsOffset="0x117710" specialWagerDigitsOffset="0x117650" payoutDigitsOffset="0x11679E"/>
+
 	<!-- Item Data -->
 	  
 	<itemDefinitions pointer="0x0A98F0"/>
@@ -427,6 +434,13 @@
 	<!-- Map Data -->
 
 	<mapBankPointers pointer="0x053344"/>
+
+	<!-- PostGame and Minigames -->
+
+	<!-- Game Corner -->
+	<rouletteWagers pointer="0x1152F0" offset="0x3f8e0c"/>
+	  <!-- rouletteLowTableFix bgCheckOffset="0x1404F4" setBallCounterCheckOffset="0x143740" startSpinCheckOffset="0x140F80" startSpinAsmOffset="0x140F84" startSpinAsm="[0x23,0x31,0x01,0x20,0x08]"/-->
+	<rouletteWagerTextFix entryWagerDigitsOffset="0x117730" specialWagerDigitsOffset="0x117670" payoutDigitsOffset="0x1167BE"/>
 
 	<!-- Item Data -->
 

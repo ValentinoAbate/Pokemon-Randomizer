@@ -16,8 +16,7 @@ namespace PokemonRandomizer.UI.Views
                 tabs.Add(CreateTabItem("Battle Frontier", new BattleFrontierDataView(model.FrontierData)));
                 tabs.Add(CreateTabItem("Battle Tents", new BattleTentDataView(model.BattleTentData)));
             }
-            // Later game corner will apply to more games
-            if(metadata.IsEmerald) 
+            if(metadata.IsRubySapphireOrEmerald) 
             {
                 tabs.Add(CreateTabItem("Game Corner", new GameCornerDataView(model.GameCornerData, metadata)));
             }
