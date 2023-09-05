@@ -1288,6 +1288,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
                 return;
             // Update wager checks
             rom.WriteByte(info.HexAttr(ElementNames.GenIII.rouletteLowTableFix, "bgCheckOffset"), lowTableWager);
+            // Fixing the set ball counter check makes it so that left table has the proper empty ball sprite
             rom.WriteByte(info.HexAttr(ElementNames.GenIII.rouletteLowTableFix, "setBallCounterCheckOffset"), lowTableWager);
             rom.WriteByte(info.HexAttr(ElementNames.GenIII.rouletteLowTableFix, "startSpinCheckOffset"), lowTableWager);
             // Fix start spin ASM
