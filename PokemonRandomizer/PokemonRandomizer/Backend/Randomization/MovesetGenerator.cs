@@ -69,6 +69,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 MoveEffect.DamageMoreAtLowHP => 20,// Flail, reversal, etc
                 MoveEffect.FocusPunch => (int)Math.Floor(power / 1.75),
                 MoveEffect.WeatherBall => power * 2,
+                MoveEffect.DamageCannotKill => (int)Math.Floor(power * 0.25),
                 _ => power,
             };
         }
