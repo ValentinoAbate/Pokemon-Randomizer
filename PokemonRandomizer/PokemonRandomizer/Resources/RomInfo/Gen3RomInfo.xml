@@ -439,7 +439,7 @@
 
 	<!-- Game Corner -->
 	<rouletteWagers pointer="0x1152F0" offset="0x3f8e0c"/>
-	<rouletteLowTableFix bgCheckOffset="0x1152D2" setBallCounterCheckOffset="0x11832A" startSpinCheckOffset="0x115D86" startSpinAsmOffset="0x140F84" startSpinAsm="[0x09]"/>
+	<rouletteLowTableFix bgCheckOffset="0x1152D2" setBallCounterCheckOffset="0x11832A" startSpinCheckOffset="0x115D86" startSpinAsmOffset="0x115D8A" startSpinAsm="[0x01,0x20,0x0A,0x1C,0x03,0xE0,0x00,0x90,0x01,0x02,0x00,0x20,0x0A,0x1C,0x23,0x32]"/>
 	<rouletteWagerTextFix entryWagerDigitsOffset="0x117730" specialWagerDigitsOffset="0x117670" payoutDigitsOffset="0x1167BE"/>
 
 	<!-- Item Data -->
