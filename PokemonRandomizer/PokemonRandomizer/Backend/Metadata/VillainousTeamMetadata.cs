@@ -9,13 +9,19 @@ namespace PokemonRandomizer.Backend.Metadata
 {
     public class VillainousTeamMetadata : TrainerOrganizationMetadata
     {
+        public enum SpecialPaletteType
+        {
+            None,
+            Grunt,
+            GymLeader,
+        }
         public override bool IsValid => TeamLeaders.Count > 0;
         public Pokemon TeamLegendary { get; set; } // Currently Unused
         public List<Trainer> TeamLeaders { get; } = new();
         public List<Trainer> TeamAdmins { get; } = new();
         public List<Trainer> TeamGrunts { get; } = new();
         public TrainerThemeData ThemeData { get; set; }
-        public List<(Palette pal, Randomization.VariantPaletteModifier.PaletteData palData, bool isGymLeader)> Palettes { get; } = new();
+        public List<(Palette pal, Randomization.VariantPaletteModifier.PaletteData palData, SpecialPaletteType paletteType)> Palettes { get; } = new();
 
         public PokemonType[] DefaultPrimaryTypes { get; set; }
         public PokemonType[] DefaultSecondaryTypes { get; set; }

@@ -138,9 +138,11 @@ namespace PokemonRandomizer.Backend.Randomization
 
         private void ModifyTeamPalettes(Settings settings, VillainousTeamMetadata team, PokemonType type)
         {
-            foreach (var (palette, paletteData, isGymLeader) in team.Palettes)
+            foreach (var (palette, paletteData, paletteType) in team.Palettes)
             {
-                if (isGymLeader && settings.PriorityThemeCategory != Trainer.Category.TeamLeader)
+                if (paletteType == VillainousTeamMetadata.SpecialPaletteType.GymLeader && settings.PriorityThemeCategory != Trainer.Category.TeamLeader)
+                    continue;
+                if (paletteType == VillainousTeamMetadata.SpecialPaletteType.Grunt && !settings.GruntTheming)
                     continue;
                 paletteModifier.ModifyPalette(palette, paletteData, new PokemonType[] { type });
             }

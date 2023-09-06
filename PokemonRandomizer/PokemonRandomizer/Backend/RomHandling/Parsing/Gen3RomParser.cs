@@ -640,7 +640,16 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
                     }
                     var palette = data.TrainerSprites[spriteNums[i]].FrontPalette;
                     var palData = villaneousTeamPaletteData[palKey];
-                    teamData.TeamData.Palettes.Add((palette, palData, palKey == "giovanni"));
+                    var palType = VillainousTeamMetadata.SpecialPaletteType.None;
+                    if(palKey == "giovanni")
+                    {
+                        palType = VillainousTeamMetadata.SpecialPaletteType.GymLeader;
+                    }
+                    else if(palKey.ToLower().Contains("grunt"))
+                    {
+                        palType = VillainousTeamMetadata.SpecialPaletteType.Grunt;
+                    }
+                    teamData.TeamData.Palettes.Add((palette, palData, palType));
                 }
                 teamData.TeamData.DefaultPrimaryTypes = info.TypeArrayAttr(name, "primaryTypes");
                 teamData.TeamData.DefaultSecondaryTypes = info.TypeArrayAttr(name, "secondaryTypes");
