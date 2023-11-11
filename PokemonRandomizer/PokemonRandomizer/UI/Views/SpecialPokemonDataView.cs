@@ -67,30 +67,39 @@ namespace PokemonRandomizer.UI.Views
 
         private static CompositeCollection TradeIVDropdown => new()
         {
-            new ComboBoxItem() { Content = "Unchanged" },
-            new ComboBoxItem() { Content = "Random", ToolTip = "Pokemon recieved from in-game trades normally have fixed IVs. This option sets them to random values" },
-            new ComboBoxItem() { Content = "Maximum", ToolTip = "Ensure all recieved pokemon have max IVs" },
+            new ComboBoxItem() { Content = "Unchanged", ToolTip="Pokemon recieved from in-game trades will have the same fixed IVs they do in the base game" },
+            new ComboBoxItem() { Content = "Random", ToolTip = "Pokemon recieved from in-game trades will have random IVs, instead of the fixed IVs from the base game" },
+            new ComboBoxItem() { Content = "Maximum", ToolTip = "Pokemon recieved from in-game trades will have max IVs" },
         };
+
+        private const string tradeRequestedPokemonTooltip = "Randomizes the pokemon that in-game trades request from the player";
+        private const string tradeRequestedBanLegendsTooltip = "Ensure that in-game trades never request a legendary pokemon";
+        private const string tradeOfferedPokemonTooltip = "Randomizes the pokemon that in-game trades offer to the player";
+        private const string tradeOfferedBanLegendsTooltip = "Ensure that in-game trades never offer a legendary pokemon";
+        private const string tradeMatchPowerTooltip = "Make it more likely for the pokemon to randomize to one with a similar Base Stat Total, as in-game trades do not have a fixed level";
+        private const string tradeIVDropdownTooltip = "The logic used to modify the fixed IVs of the pokemon recieved from in-game trades";
+        private const string tradeHeldItemRandTooltip = "Randomized the items held by the pokemon recieved from in-game trades" +
+            "\nIf this option is on, all pokemon recieved from in-game trades will have held items (even those that don't in the base game)";
 
         private TabItem CreateTradePokemonTab(InGameTradesDataModel model)
         {
             // Required Pokemon
             var stack = CreateStack();
-            stack.Header("Required Pokemon");
-            var giveRand = stack.Add(new RandomChanceUI("Randomize Pokemon Required by Trade", model.RandomizeTradeGive, model.TradePokemonGiveRandChance));
+            stack.Header("Requested Pokemon");
+            var giveRand = stack.Add(new RandomChanceUI("Randomize Pokemon Requested by Trade", model.RandomizeTradeGive, model.TradePokemonGiveRandChance) { ToolTip = tradeRequestedPokemonTooltip });
             var giveRandStack = stack.Add(giveRand.BindEnabled(CreateStack()));
-            giveRandStack.Add(new BoundCheckBoxUI("Ban Legendaries", model.BanLegendariesGive));
-            giveRandStack.Add(new BoundCheckBoxUI("Match Power", model.TryMatchPowerGive) { ToolTip ="Make it more likely for the pokemon to randomize to one with a similar Base Stat Total, as in-game trades do not have a fixed level"});
+            giveRandStack.Add(new BoundCheckBoxUI("Ban Legendaries", model.BanLegendariesGive, tradeRequestedBanLegendsTooltip));
+            giveRandStack.Add(new BoundCheckBoxUI("Match Power", model.TryMatchPowerGive, tradeMatchPowerTooltip));
 
             // Recieved Pokemon
-            stack.Header("Recieved Pokemon");
-            var recieveRand = stack.Add(new RandomChanceUI("Randomize Pokemon Recieved from Trade", model.RandomizeTradeRecieve, model.TradePokemonRecievedRandChance));
+            stack.Header("Offered Pokemon");
+            var recieveRand = stack.Add(new RandomChanceUI("Randomize Pokemon Offered for Trade", model.RandomizeTradeRecieve, model.TradePokemonRecievedRandChance) { ToolTip = tradeOfferedPokemonTooltip });
             var recieveRandStack = stack.Add(recieveRand.BindEnabled(CreateStack()));
-            recieveRandStack.Add(new BoundCheckBoxUI("Ban Legendaries", model.BanLegendariesRecieve));
-            recieveRandStack.Add(new BoundCheckBoxUI("Match Power", model.TryMatchPowerRecieve) { ToolTip = "Make it more likely for the pokemon to randomize to one with a similar Base Stat Total, as in-game trades do not have a fixed level" });
+            recieveRandStack.Add(new BoundCheckBoxUI("Ban Legendaries", model.BanLegendariesRecieve, tradeOfferedBanLegendsTooltip));
+            recieveRandStack.Add(new BoundCheckBoxUI("Match Power", model.TryMatchPowerRecieve, tradeMatchPowerTooltip));
 
-            stack.Add(new EnumComboBoxUI<Settings.TradePokemonIVSetting>("Recieved Pokemon IVs", TradeIVDropdown, model.IVSetting));
-            stack.Add(new RandomChanceUI("Randomize Held Items", model.RandomizeHeldItems, model.HeldItemRandChance))
+            stack.Add(new EnumComboBoxUI<Settings.TradePokemonIVSetting>("Recieved Pokemon IVs", TradeIVDropdown, model.IVSetting) { ToolTip = tradeIVDropdownTooltip });
+            stack.Add(new RandomChanceUI("Randomize Held Items", model.RandomizeHeldItems, model.HeldItemRandChance) { ToolTip = tradeHeldItemRandTooltip })
                 .BindEnabled(stack.Add(new ItemSettingsUI(model.TradeHeldItemSettings, false)));
 
             return CreateTabItem("In-Game Trades", stack);
