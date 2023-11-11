@@ -78,7 +78,7 @@ namespace PokemonRandomizer.UI.Views
         private const string tradeOfferedBanLegendsTooltip = "Ensure that in-game trades never offer a legendary pokemon";
         private const string tradeMatchPowerTooltip = "Make it more likely for the pokemon to randomize to one with a similar Base Stat Total, as in-game trades do not have a fixed level";
         private const string tradeIVDropdownTooltip = "The logic used to modify the fixed IVs of the pokemon recieved from in-game trades";
-        private const string tradeHeldItemRandTooltip = "Randomized the items held by the pokemon recieved from in-game trades" +
+        private const string tradeHeldItemRandTooltip = "Randomizes the items held by the pokemon recieved from in-game trades" +
             "\nIf this option is on, all pokemon recieved from in-game trades will have held items (even those that don't in the base game)";
 
         private TabItem CreateTradePokemonTab(InGameTradesDataModel model)
