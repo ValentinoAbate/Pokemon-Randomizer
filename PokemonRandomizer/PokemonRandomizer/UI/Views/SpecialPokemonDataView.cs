@@ -59,7 +59,7 @@ namespace PokemonRandomizer.UI.Views
             var staticRand = stack.Add(new RandomChanceUI("Randomize Static Wild Pokemon", model.RandomizeStatics, model.StaticRandChance) { ToolTip = staticWildTooltip });
             var optionsStack = stack.Add(staticRand.BindEnabled(CreateStack()));
             optionsStack.Add(new PokemonSettingsUI(model.Settings));
-            optionsStack.Add(new EnumComboBoxUI<Settings.LegendaryRandSetting>("Legendary Logic", StaticLegendaryOptionDropdown, model.LegendarySetting));
+            optionsStack.Add(new EnumComboBoxUI<Settings.LegendaryRandSetting>("Legendary Logic", StaticLegendaryOptionDropdown, model.LegendarySetting) { ToolTip = "The logic used when randomizing static legendary pokemon" });
             optionsStack.Add(new BoundCheckBoxUI("Remap Static Enounters", model.Remap, "Randomizes all instances of a static wild pokemon to the same new pokemon"));
             optionsStack.Add(new BoundCheckBoxUI("Prevent Duplicates", model.Remap, "Prevents the same new pokemon being chosen twice during static wild pokemon randomization"));
             return CreateTabItem("Static Wild Pokemon", stack);
