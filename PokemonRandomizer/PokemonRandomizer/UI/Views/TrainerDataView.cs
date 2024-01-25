@@ -15,7 +15,7 @@ namespace PokemonRandomizer.UI.Views
         private static CompositeCollection PokemonStrategyDropdown => new CompositeCollection()
         {
             new ComboBoxItem() {Content="Random", ToolTip="Pokemon in recurring battles will be chosen completely randomly"},
-            new ComboBoxItem() {Content="Keep Ace", ToolTip="Recurring battles with a trainer will keep that trainers ace pokemon and evolve it if appropriate"},
+            new ComboBoxItem() {Content="Keep Ace", ToolTip="Recurring battles with a trainer will keep that trainer's ace pokemon and evolve it if appropriate"},
             new ComboBoxItem() {Content="Keep Party", ToolTip="Recurring battles with a trainer will keep the pokemon from the previous battle and evolve them if appropriate. New pokemon will be added if the next battle has a bigger party" },
         };
         private static CompositeCollection BattleTypeStrategyDropdown => new CompositeCollection()
