@@ -80,7 +80,7 @@ namespace PokemonRandomizer.UI.Views
             optionCb.BindVisibility(customStack, (int)DreamTeamSetting.Custom);
 
             var genStack = stack.Add(CreateStack());
-            var useTotalBstCb = genStack.Add(new EnumComboBoxUI<DreamTeamBstTotalOption>("Base Stat Total Limitation", DreamTeamBstOption, model.UseTotalBST) { ToolTip = bstLimitTooltip});
+            var useTotalBstCb = genStack.Add(new EnumComboBoxUI<DreamTeamBstTotalOption>("Base Stat Total Limitation", DreamTeamBstOption, model.UseTotalBST) { ToolTip = bstLimitTooltip });
             useTotalBstCb.BindVisibility(genStack.Add(new BoundSliderUI("Party Base Stat Total Minimum", model.BstTotalLowerBound, false, 50, 1900, 4050)), (int)DreamTeamBstTotalOption.TotalMin);
             useTotalBstCb.BindVisibility(genStack.Add(new BoundSliderUI("Party Base Stat Total Maximum", model.BstTotalUpperBound, false, 50, 1900, 4050)), (int)DreamTeamBstTotalOption.TotalMax);
             useTotalBstCb.BindVisibility(genStack.Add(new BoundSliderUI("Individual Base Stat Total Minimum", model.BstIndividualLowerBound, false, 10, 400, 600)), (int)DreamTeamBstTotalOption.IndividualMin);
