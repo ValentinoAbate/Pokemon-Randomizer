@@ -157,6 +157,11 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
                     rom.WriteBlock(offset, byteData);
                 }
             }
+            // Apply start with national dex hack if supported
+            if (settings.StartWithNationalDex)
+            {
+                ApplyStartWithNationalDexHack(rom, info, metadata);
+            }
             if (settings.DeoxysMewObeyFix && (metadata.IsEmerald || metadata.IsFireRedOrLeafGreen))
             {
                 ApplyDeoxysMewObeyFix(rom, info);
@@ -371,6 +376,35 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
         private bool IsValidStevenAllyBattleNatureFixOffset(Rom rom, int offset)
         {
             return rom.ReadByte(offset) == 0x53 && rom.ReadByte(offset + 1) == 0x46;
+        }
+
+        private void ApplyStartWithNationalDexHack(Rom rom, XmlManager info, RomMetadata metadata)
+        {
+            if (metadata.IsRubySapphireOrEmerald)
+            {
+                if(!info.HasElementWithAttr(ElementNames.startWithNationalDex, AttributeNames.routine))
+                {
+                    return;
+                }
+                if (!info.HasOffset(ElementNames.startWithNationalDexRoutinePointer))
+                {
+                    return;
+                }
+                var nationalDexRoutine = info.ByteArrayAttr(ElementNames.startWithNationalDex, AttributeNames.routine);
+                int newRoutineOffset = rom.WriteInFreeSpace(nationalDexRoutine) ?? Rom.nullPointer;
+                if(newRoutineOffset != Rom.nullPointer)
+                {
+                    rom.WritePointer(info.Offset(ElementNames.startWithNationalDexRoutinePointer), newRoutineOffset);
+                }
+                else
+                {
+                    Logger.main.Error("Failed to write start with national dex routine. Player will start with the regional dex");
+                }
+            }
+            else
+            {
+                // TODO: FRLG support
+            }
         }
 
         private void ApplyDualTypeForecastHack(Rom rom, XmlManager info)

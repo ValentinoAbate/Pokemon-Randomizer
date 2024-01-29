@@ -67,6 +67,8 @@
         public const string textSpeed = "textSpeed";
         public const string firstEncounter = "firstRoute";
         public const string forecastRoutine = "forecastFormChangeRoutine";
+        public const string startWithNationalDex = "startWithNationalDex";
+        public const string startWithNationalDexRoutinePointer = "startWithNationalDexRoutinePointer";
 
         public abstract class GenIII
         {

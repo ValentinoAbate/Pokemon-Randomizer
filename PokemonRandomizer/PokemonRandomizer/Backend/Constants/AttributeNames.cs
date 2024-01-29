@@ -17,5 +17,7 @@
         // Map attribures
         public const string banks = "banks";
         public const string maps = "maps";
+        // ASM attributes
+        public const string routine = "routine";
     }
 }

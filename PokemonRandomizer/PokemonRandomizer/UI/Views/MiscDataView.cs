@@ -24,6 +24,8 @@ namespace PokemonRandomizer.UI.Views
         private const string updateDOTMovesTooltip = "Updates the moves Wrap, Bind, Fire Spin, Sand Tomb, Whirlpool, and Clamp to their Gen V power, accuracy, and PP" +
             "\nNote: link battles between a ROM that has \"Update Wrap Moves\" applied and one that doesn't may behave incorrectly when using affected moves";
         private const string fixStevenNaturesTooltip = "Fixes a bug in the Emerald base game that causes Steven's pokemon in the Steven ally battle to not have the correct natures";
+        private const string startWithNationalDexTooltip = "Start the game with the national pokedex instead of the regional pokedex" +
+            "\nAllows you to check catching areas of national dex pokemon, and allows trading national dex pokemon in Emerald";
         public CompositeCollection MysteryGiftEventItemDropdown => new CompositeCollection()
         {
             new ComboBoxItem() {Content="None", ToolTip="Mystery gift event items such as the Eon Ticket will not be obtainable, except through normal means or another randomizer setting such as the \"Custom PC Potion\" or \"Custom Shop Item\" settings" },
@@ -44,7 +46,12 @@ namespace PokemonRandomizer.UI.Views
             var stack = CreateMainStack();
 
             stack.Header(UISkin.Current.HacksAndTweaksHeader);
-            stack.Add(new BoundCheckBoxUI("Run Indoors", model.RunIndoors));
+            var basicTweaksStack = stack.Add(CreateHorizontalStack());
+            basicTweaksStack.Add(new BoundCheckBoxUI("Run Indoors", model.RunIndoors));
+            if (metadata.IsEmerald)
+            {
+                basicTweaksStack.Add(new BoundCheckBoxUI("Start With National Dex", model.StartWithNationalDex, startWithNationalDexTooltip));
+            }
             stack.Add(new BoundCheckBoxUI("Update Wrap Moves", model.UpdateDOTMoves, updateDOTMovesTooltip));
             var pokemonTweakStack = stack.Add(CreateHorizontalStack());
             pokemonTweakStack.Add(new BoundCheckBoxUI("Upgrade Unown", model.UpgradeUnown, upgradeUnownTooltip));

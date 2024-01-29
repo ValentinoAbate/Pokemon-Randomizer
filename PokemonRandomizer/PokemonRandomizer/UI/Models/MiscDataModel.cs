@@ -8,6 +8,7 @@
         public Box<bool> UpdateDOTMoves { get; set; } = new Box<bool>(false);
         public Box<bool> AddWeatherAbilities { get; set; } = new Box<bool>(false);
         public Box<bool> RunIndoors { get; set; } = new Box<bool>(true);
+        public Box<bool> StartWithNationalDex { get; set; } = new Box<bool>(true);
         public Box<bool> EnableEvents { get; set; } = new Box<bool>(true);
         public Box<Settings.MysteryGiftItemSetting> EventItemSetting { get; set; } = new(Settings.MysteryGiftItemSetting.AllowInRandomization);
         public Box<Backend.Randomization.TypeChartRandomizer.Option> TypeChartSetting { get; set; } = new(Backend.Randomization.TypeChartRandomizer.Option.None);
