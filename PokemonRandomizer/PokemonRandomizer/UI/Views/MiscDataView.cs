@@ -48,7 +48,7 @@ namespace PokemonRandomizer.UI.Views
             stack.Header(UISkin.Current.HacksAndTweaksHeader);
             var basicTweaksStack = stack.Add(CreateHorizontalStack());
             basicTweaksStack.Add(new BoundCheckBoxUI("Run Indoors", model.RunIndoors));
-            if (metadata.IsEmerald)
+            if (metadata.IsRubySapphireOrEmerald)
             {
                 basicTweaksStack.Add(new BoundCheckBoxUI("Start With National Dex", model.StartWithNationalDex, startWithNationalDexTooltip));
             }
