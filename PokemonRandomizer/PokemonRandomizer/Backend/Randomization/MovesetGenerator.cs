@@ -15,6 +15,9 @@ namespace PokemonRandomizer.Backend.Randomization
         private const float needSynergy = 12500;
         private const float preferSynergy = needSynergy / 2;
         private const float weakSynergy = needSynergy / 100;
+        private const float strongAntiSynergy = needSynergy;
+        private const float avoidAntiSynergy = preferSynergy;
+        private const float weakAntiSynergy = weakSynergy;
 
         private readonly IDataTranslator dataT;
         private readonly Random rand;
@@ -257,22 +260,51 @@ namespace PokemonRandomizer.Backend.Randomization
             // Apply synergy metrics
 
             // Calculate Move Synergies
-            var metrics = CalculateMoveSynergyMetrics(ret);
+            var synergyMetrics = new List<Func<Move, float>>();
+            var antiSynergyMetrics = new List<Func<Move, float>>();
+            CalculateMoveSynergyMetrics(ret, availableMoves, synergyMetrics, antiSynergyMetrics);
 
             // Choose fourth move
-            ret[3] = rand.Choice(new WeightedSet<Move>(availableMoves.Keys, m => LevelFactor(m) * MoveSynergyFactor(metrics, m)));
+            ret[3] = rand.Choice(new WeightedSet<Move>(availableMoves.Keys, m => LevelFactor(m) * MoveSynergyFactor(m, synergyMetrics, antiSynergyMetrics)));
 
             //Logger.main.Info($"{pokemon.species.ToDisplayString()} LV {level}: {ret[0].ToDisplayString()}, {ret[1].ToDisplayString()}, {ret[2].ToDisplayString()}, {ret[3].ToDisplayString()}");
             return ret;
         }
 
-        private float MoveSynergyFactor(List<Func<Move, float>> metrics, Move m) => Math.Max(1, metrics.Sum((metric) => metric(m)));
+        private float MoveSynergyFactor(Move m, List<Func<Move, float>> synergyMetrics, List<Func<Move, float>> antiSynergyMetrics)
+        {
+            float amount = 1;
+            if(synergyMetrics.Count > 0)
+            {
+                float sum = 0;
+                foreach (var metric in synergyMetrics)
+                {
+                    sum += metric(m);
+                }
+                if(sum > 0)
+                {
+                    amount *= sum;
+                }
+            }
+            if(antiSynergyMetrics.Count > 0)
+            {
+                float sum = 0;
+                foreach(var metric in antiSynergyMetrics)
+                {
+                    sum += metric(m);
+                }
+                if (sum > 0)
+                {
+                    amount /= sum;
+                }
+            }
+            return amount;
+        }
 
-        private List<Func<Move, float>> CalculateMoveSynergyMetrics(Move[] currentMoves)
+        private void CalculateMoveSynergyMetrics(Move[] currentMoves, IReadOnlyDictionary<Move, int> moveChoices, List<Func<Move, float>> synergyMetrics, List<Func<Move, float>> antiSynergyMetrics)
         {
             var currentMovesProcessed = currentMoves.Where(m => m != Move.None).Select(dataT.GetMoveData);
-            var metrics = new List<Func<Move, float>>();
-            void CalculateMoveSynergy(Func<MoveData, bool> currMovePred, Func<MoveData, bool> moveChoicePred, float intensity, bool applyMultiple = false)
+            void CalculateMoveSynergy(Func<MoveData, bool> currMovePred, Func<MoveData, bool> moveChoicePred, float intensity, bool antiSynergy = false, bool applyMultiple = false)
             {
                 int count = currentMovesProcessed.Count(currMovePred);
                 // If we don't have any moves that need this synergy, return
@@ -281,8 +313,23 @@ namespace PokemonRandomizer.Backend.Randomization
                 // Synergy is already fulfilled, return
                 if (!applyMultiple && currentMovesProcessed.Any(moveChoicePred))
                     return;
-                metrics.Add(m => (moveChoicePred(dataT.GetMoveData(m)) ? intensity : 1) * count);
+                var metricList = antiSynergy ? antiSynergyMetrics : synergyMetrics;
+                metricList.Add(m => moveChoicePred(dataT.GetMoveData(m)) ? intensity * count : 0);
             }
+
+            void MissingMoveSynergy(Func<MoveData, bool> currMovePred, Func<MoveData, bool> moveChoicePred, float intensity, bool antiSynergy = false) 
+            {
+                int count = currentMovesProcessed.Count(currMovePred);
+                // If we already have the necessary combo move, return
+                if (count > 0)
+                    return;
+                if (!moveChoices.Any(kvp => moveChoicePred(dataT.GetMoveData(kvp.Key))))
+                    return;
+                var metricList = antiSynergy ? antiSynergyMetrics : synergyMetrics;
+                metricList.Add(m => moveChoicePred(dataT.GetMoveData(m)) ? intensity : 0);
+            }
+
+            // Move Synergies
 
             // Nightmare or Dream Eater + Sleep move Synergy
             CalculateMoveSynergy(m => m.effect is MoveEffect.DreamEater or MoveEffect.StatusNightmare, m => m.IsSleepStatusMove, needSynergy);
@@ -293,7 +340,7 @@ namespace PokemonRandomizer.Backend.Randomization
             // Spit Up or Swallow + Stockpile Synergy
             CalculateMoveSynergy(m => m.effect is MoveEffect.SpitUp or MoveEffect.Swallow, m => m.effect == MoveEffect.Stockpile, needSynergy);
             // Stockpile + Spit Up or Swallow Synergy
-            CalculateMoveSynergy(m => m.effect == MoveEffect.Stockpile, m => m.effect is MoveEffect.SpitUp or MoveEffect.Swallow, preferSynergy, true);
+            CalculateMoveSynergy(m => m.effect == MoveEffect.Stockpile, m => m.effect is MoveEffect.SpitUp or MoveEffect.Swallow, preferSynergy, false, true);
             // Sun Move + Sun
             CalculateMoveSynergy(m => m.effect is MoveEffect.Solarbeam or MoveEffect.RecoverHpWeather1 or MoveEffect.RecoverHpWeather2 or MoveEffect.RecoverHpWeather3, m => m.effect == MoveEffect.WeatherSun, preferSynergy);
             // Attacking Fire Move + Sun
@@ -303,7 +350,7 @@ namespace PokemonRandomizer.Backend.Randomization
             // Attacking Water Move + Rain
             CalculateMoveSynergy(m => IsAttackMoveOfType(m, PokemonType.WAT), m => m.effect == MoveEffect.WeatherRain, weakSynergy);
             // Weather Ball + Weather (Rain / Sun / Hail)
-            CalculateMoveSynergy(m => m.effect == MoveEffect.WeatherBall, m => m.effect is MoveEffect.WeatherRain or MoveEffect.WeatherSun or MoveEffect.WeatherHail, needSynergy, true);
+            CalculateMoveSynergy(m => m.effect == MoveEffect.WeatherBall, m => m.effect is MoveEffect.WeatherRain or MoveEffect.WeatherSun or MoveEffect.WeatherHail, needSynergy, false, true);
             // Weather Ball + Sandstorm
             CalculateMoveSynergy(m => m.effect == MoveEffect.WeatherBall, m => m.effect == MoveEffect.WeatherSandstorm, weakSynergy);
             // Charge + Attacking Electric Move
@@ -322,7 +369,19 @@ namespace PokemonRandomizer.Backend.Randomization
             CalculateMoveSynergy(m => m.IsVeryLowAccuracy, m => m.effect is MoveEffect.NextMoveAlwaysHits, preferSynergy);
             // Focus Energy + high crit move
             CalculateMoveSynergy(m => m.effect is MoveEffect.StatusCritRateUp, m => m.IsHighCrit, preferSynergy);
-            return metrics;
+
+            // Move Anti-Synergies
+
+            // Stockpile w/out Spit Up or Swallow Antisynergy TODO: Gen IV - lift this restriction or set to weak (stockpile has a standalone effect)
+            MissingMoveSynergy(m => m.effect is MoveEffect.SpitUp or MoveEffect.Swallow, m => m.effect == MoveEffect.Stockpile, strongAntiSynergy, true);
+            // Spit Up or Swallow w/out Stockpile Antisynergy
+            MissingMoveSynergy(m => m.effect == MoveEffect.Stockpile, m => m.effect is MoveEffect.SpitUp or MoveEffect.Swallow, strongAntiSynergy, true);
+            // Lock-on w/out OHKO or low acc move Antisynergy
+            MissingMoveSynergy(m => m.IsVeryLowAccuracy, m => m.effect is MoveEffect.NextMoveAlwaysHits, avoidAntiSynergy, true);
+            // Charge w/out Attacking Electric Move Antisynergy TODO: Gen IV - lift this restiction or set to weak (charge has a standalone effect)
+            MissingMoveSynergy(m => IsAttackMoveOfType(m, PokemonType.ELE), m => m.effect == MoveEffect.Charge, strongAntiSynergy, true);
+            // Nightmare or Dream Eater w/out Sleep move Antisynergy
+            MissingMoveSynergy(m => m.IsSleepStatusMove, m => m.effect is MoveEffect.DreamEater or MoveEffect.StatusNightmare, strongAntiSynergy, true);
         }
         public Move[] LowAttackMoveSet(PokemonBaseStats pokemon, int level, SpecialMoveSettings specialMoveSettings, int maxMoves = 4)
         {
@@ -379,8 +438,11 @@ namespace PokemonRandomizer.Backend.Randomization
             preferredMoves.Clear();
             preferredMoves.AddRange(availableMovesKeys);
             preferredMoves.Multiply(m => LevelWeightScale(availableMoves[m]));
-            var metrics = CalculateMoveSynergyMetrics(ret);
-            preferredMoves.Multiply(m => MoveSynergyFactor(metrics, m));
+            // Calculate Move Synergies
+            var synergyMetrics = new List<Func<Move, float>>();
+            var antiSynergyMetrics = new List<Func<Move, float>>();
+            CalculateMoveSynergyMetrics(ret, availableMoves, synergyMetrics, antiSynergyMetrics);
+            preferredMoves.Multiply(m => MoveSynergyFactor(m, synergyMetrics, antiSynergyMetrics));
             if (firstMoveData.effect is MoveEffect.StatusNightmare)
             {
                 // If nightmare and we don't already have a sleep move, ensure sleep
@@ -456,8 +518,11 @@ namespace PokemonRandomizer.Backend.Randomization
                 }
                 preferredMoves.RemoveIfContains(ret[moveIndex]);
             }
-            var metrics = CalculateMoveSynergyMetrics(ret);
-            preferredMoves.Multiply(m => MoveSynergyFactor(metrics, m));
+            // Calculate Move Synergies
+            var synergyMetrics = new List<Func<Move, float>>();
+            var antiSynergyMetrics = new List<Func<Move, float>>();
+            CalculateMoveSynergyMetrics(ret, availableMoves, synergyMetrics, antiSynergyMetrics);
+            preferredMoves.Multiply(m => MoveSynergyFactor(m, synergyMetrics, antiSynergyMetrics));
             // Choose final move
             ChooseMoveForIndex(ret, moveIndex, preferredMoves, ref availableMoves);
             return ret;
