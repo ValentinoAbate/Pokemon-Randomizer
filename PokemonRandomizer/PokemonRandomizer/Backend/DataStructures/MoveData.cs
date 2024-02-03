@@ -371,7 +371,6 @@ namespace PokemonRandomizer.Backend.DataStructures
                     return Type.Special;
                 return type <= PokemonType.Unknown ? Type.Physical : Type.Special;
             }
-
         }
 
         public MoveData() { }
