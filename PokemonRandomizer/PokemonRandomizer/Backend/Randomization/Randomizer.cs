@@ -972,6 +972,23 @@ namespace PokemonRandomizer.Backend.Randomization
             #region Debugging / Testing
 
             itemRand.LogOccurrences();
+            foreach(var pokemon in data.BattleFrontierTrainerPokemon)
+            {
+                if(pokemon.moves.Any(m => m is Move.DREAM_EATER or Move.NIGHTMARE or Move.STOCKPILE or Move.SPIT_UP or Move.SWALLOW))
+                {
+                    Logger.main.Info($"{pokemon.species.ToDisplayString()}: {string.Join(", ", pokemon.moves)}");
+                }
+            }
+            foreach(var battleTent in data.BattleTents)
+            {
+                foreach(var pokemon in battleTent.Pokemon)
+                {
+                    if (pokemon.moves.Any(m => m is Move.DREAM_EATER or Move.NIGHTMARE or Move.STOCKPILE or Move.SPIT_UP or Move.SWALLOW))
+                    {
+                        Logger.main.Info($"{pokemon.species.ToDisplayString()}: {string.Join(", ", pokemon.moves)}");
+                    }
+                }
+            }
 
             #endregion
 #endif

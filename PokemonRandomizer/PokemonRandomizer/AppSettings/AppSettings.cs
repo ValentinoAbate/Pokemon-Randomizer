@@ -95,7 +95,7 @@ namespace PokemonRandomizer.AppSettings
         {
             get
             {
-                if(Metadata == null)
+                if (Metadata == null)
                 {
                     return new HashSet<Move>();
                 }
@@ -138,7 +138,7 @@ namespace PokemonRandomizer.AppSettings
             {TypeTransformation.DoubleTypeReplacement, 1f},
         };
 
-        public static  WeightedSet<TypeTransformation> DualTypeVariantTransformationDefaultWeights { get; } = new WeightedSet<TypeTransformation>()
+        public static WeightedSet<TypeTransformation> DualTypeVariantTransformationDefaultWeights { get; } = new WeightedSet<TypeTransformation>()
         {
             {TypeTransformation.PrimaryTypeReplacement, 0.35f},
             {TypeTransformation.SecondaryTypeReplacement, 0.5f},
@@ -212,7 +212,7 @@ namespace PokemonRandomizer.AppSettings
         #region Learnsets
 
         public override bool BanSelfdestruct => pokemonData.BanSelfdestruct;
-        public override bool AddMoves => pokemonData.AddMoves;    
+        public override bool AddMoves => pokemonData.AddMoves;
         public override bool DisableAddingHmMoves => pokemonData.DisableAddingHmMoves;
         public override double AddMovesChance => pokemonData.AddMovesChance;
         public override double NumMovesStdDeviation => pokemonData.NumMovesStdDeviation;
@@ -336,7 +336,38 @@ namespace PokemonRandomizer.AppSettings
         #region Wild Pokemon
 
         public override WildEncounterRandomizer.Strategy EncounterStrategy => wildEncounterData.Strategy;
-        public override PokemonSettings EncounterSettings => wildEncounterData.PokemonSettings;
+        private const float encounterBankTypeSharpness = 3;
+        private const float encounterBankTypeFilter = 0.1f;
+        public override PokemonSettings EncounterSettings
+        {
+            get
+            {
+                var baseData = new PokemonSettings(wildEncounterData.PokemonSettings);
+                baseData.Data.Clear();
+                if (wildEncounterData.MatchAreaType)
+                {
+                    baseData.Data.Add(new MetricData(PokemonMetric.typeEncounterSet, 0));
+                }
+                if (wildEncounterData.MatchEncounterType)
+                {
+                    var encounterSlotData = new MetricData(PokemonMetric.typeEncounterBankType, 0, encounterBankTypeSharpness, encounterBankTypeFilter);
+                    encounterSlotData.Flags.Add(EncounterSet.Type.Surf.ToString());
+                    encounterSlotData.Flags.Add(EncounterSet.Type.Fish.ToString());
+                    encounterSlotData.Flags.Add(EncounterSet.Type.RockSmash.ToString());
+                    encounterSlotData.Flags.Add(EncounterSet.Type.Headbutt.ToString());
+                    baseData.Data.Add(encounterSlotData);
+                }
+                if (wildEncounterData.MatchIndividualType)
+                {
+                    baseData.Data.Add(new MetricData(PokemonMetric.typeIndividual, 1));
+                }
+                if (wildEncounterData.MatchPower)
+                {
+                    baseData.Data.Add(new MetricData(PokemonMetric.powerIndividual, 1));
+                }
+                return baseData;
+            }
+        }
 
         #endregion
 
