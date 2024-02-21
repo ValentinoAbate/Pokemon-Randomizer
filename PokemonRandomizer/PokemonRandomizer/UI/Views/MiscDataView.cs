@@ -33,7 +33,7 @@ namespace PokemonRandomizer.UI.Views
         private const string mysteryGiftItemDistributionTooltip = "Controls how mystery gift event items such as the Eon Ticket appear in the game";
         private const string catchingTutWallyAceTooltip = "Randomizes the catching tutorial pokemon and ensures that it becomes Wally's ace pokemon for his first battle" +
             "\nWhether or not Wally will keep his ace pokemon for subsequent battles is controlled by the \"Recurring Trainer Pokemon Randomization Strategy\" setting in the \"Trainers\" tab";
-        private const string typeChartModTooltip = "Applys a modification to the games type relation chart. The updated type chart will be printed in your ROM's info file for reference";
+        private const string typeChartModTooltip = "Applys a modification to the game's type relation chart. The updated type chart will be printed in your ROM's info file for reference";
         private static CompositeCollection MysteryGiftEventItemDropdown => new CompositeCollection()
         {
             new ComboBoxItem() {Content="None", ToolTip="Mystery gift event items such as the Eon Ticket will not be obtainable, except through normal means or another randomizer setting such as the \"Custom PC Potion\" or \"Custom Shop Item\" settings" },
