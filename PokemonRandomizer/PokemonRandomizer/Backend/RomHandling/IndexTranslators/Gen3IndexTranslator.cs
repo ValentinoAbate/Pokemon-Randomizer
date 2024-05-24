@@ -1,9 +1,5 @@
-﻿using PokemonRandomizer.Backend.EnumTypes;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using PokemonRandomizer.Backend.DataStructures;
+using PokemonRandomizer.Backend.EnumTypes;
 
 namespace PokemonRandomizer.Backend.RomHandling.IndexTranslators
 {
@@ -14,6 +10,8 @@ namespace PokemonRandomizer.Backend.RomHandling.IndexTranslators
         public Pokemon InternalIndexToPokemon(int index) => (Pokemon)index;
         public int ItemToInternalIndex(Item item) => (int)item;
         public Item InternalIndexToItem(int index) => (Item)index;
+        public byte HeldItemEffectToInteralIndex(HeldItemEffect effect) => (byte)effect;
+        public HeldItemEffect InternalIndexToHeldItemEffect(int index) => (HeldItemEffect)index;
         public int AbilityToInternalIndex(Ability ability) => (int)ability;
         public Ability InternalIndexToAbility(int index) => (Ability)index;
     }

@@ -18,6 +18,10 @@ namespace PokemonRandomizer.Backend.RomHandling
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected Item InternalIndexToItem(int index) => IndexTranslator.InternalIndexToItem(index);
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected byte HeldItemEffectToInternalIndex(HeldItemEffect effect) => IndexTranslator.HeldItemEffectToInteralIndex(effect);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected HeldItemEffect InternalIndexToHeldItemEffect(int index) => IndexTranslator.InternalIndexToHeldItemEffect(index);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected int AbilityToInternalIndex(Ability ability) => IndexTranslator.AbilityToInternalIndex(ability);
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected Ability InternalIndexToAbility(int index) => IndexTranslator.InternalIndexToAbility(index);

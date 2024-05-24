@@ -884,7 +884,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
                     Name = rom.ReadFixedLengthString(ItemData.nameLength),
                     Item = (Item)rom.ReadUInt16(),
                     Price = rom.ReadUInt16(),
-                    holdEffect = rom.ReadByte(),
+                    HoldEffect = InternalIndexToHeldItemEffect(rom.ReadByte()),
                     param = rom.ReadByte(),
                     descriptionOffset = rom.ReadPointer(),
                     keyItemValue = rom.ReadByte(),

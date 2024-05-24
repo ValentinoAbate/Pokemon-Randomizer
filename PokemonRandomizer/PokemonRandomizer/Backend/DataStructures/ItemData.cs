@@ -43,7 +43,7 @@ namespace PokemonRandomizer.Backend.DataStructures
         public int Price { get; set; }
         public int OriginalPrice { get; set; }
         // Hold effect data
-        public byte holdEffect;
+        public HeldItemEffect HoldEffect { get; set; }
         public byte param;
         public string Description { get; set; }
         public int descriptionOffset;
@@ -89,7 +89,7 @@ namespace PokemonRandomizer.Backend.DataStructures
         {
             other.Name = Name;
             other.Price = Price;
-            other.holdEffect = holdEffect;
+            other.HoldEffect = HoldEffect;
             other.param = param;
             other.Description = Description;
             other.descriptionOffset = descriptionOffset;
@@ -172,7 +172,7 @@ namespace PokemonRandomizer.Backend.DataStructures
             else if (Item.IsBerry())
             {
                 ItemCategories = Categories.Berry;
-                if (holdEffect != 0x00)
+                if (HoldEffect != HeldItemEffect.None)
                 {
                     ItemCategories |= Categories.BattleBerry;
                 }

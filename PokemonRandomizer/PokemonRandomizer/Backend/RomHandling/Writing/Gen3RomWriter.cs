@@ -1023,7 +1023,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
                 rom.WriteFixedLengthString(item.Name, ItemData.nameLength);
                 rom.WriteUInt16((int)item.Item);
                 rom.WriteUInt16(item.Price);
-                rom.WriteByte(item.holdEffect);
+                rom.WriteByte(HeldItemEffectToInternalIndex(item.HoldEffect));
                 rom.WriteByte(item.param);
                 if (item.ReformatDescription)
                 {
