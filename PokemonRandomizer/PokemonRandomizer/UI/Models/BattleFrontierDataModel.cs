@@ -30,5 +30,6 @@ namespace PokemonRandomizer.UI.Models
         public SpecialMoveSettingsUI.SpecialMoveSettingsWrapper BrainSpecialMoveSettings { get; set; } = new(UsageOption.Dynamic, Sources.All);
         public Box<bool> BanBrainLegendaries { get; set; } = new Box<bool>(false);
         public Box<bool> KeepBrainLegendaries { get; set; } = new Box<bool>(true);
+        public Box<bool> RemoveBanlist { get; set; } = new Box<bool>(false);
     }
 }

@@ -21,6 +21,8 @@ namespace PokemonRandomizer.UI.Views
         };
         private const string brainLegendaryBanTooltip = "Prevent legendary pokemon from being randomly chosen as Frontier Brain pokemon" +
             "\nLegendaries can still be chosen as Frontier Brain pokemon when the unrandomized pokemon is legendary and \"Ensure Randomized Legendaries are Legendary\" is selected";
+        private const string removeBanlistTooltip = "Allow restricted legendaries and mythicals to be used in the battle frontier" +
+            "\nLets you even the playing field if the battle frontier trainers are allowed to use legendaries!";
 
 
         public BattleFrontierDataView(BattleFrontierDataModel model)
@@ -39,6 +41,9 @@ namespace PokemonRandomizer.UI.Views
             brainPokemonStack.Add(new SpecialMoveSettingsUI(model.BrainSpecialMoveSettings));
             brainPokemonStack.Add(new BoundCheckBoxUI("Ban Legendaries", model.BanBrainLegendaries, brainLegendaryBanTooltip));
             brainPokemonStack.Add(new BoundCheckBoxUI("Ensure Randomized Legendaries are Legendary", model.KeepBrainLegendaries, "Ensure that legendary Frontier Brain pokemon always randomize to other legendaries"));
+
+            stack.Header("Hacks and Tweaks");
+            stack.Add(new BoundCheckBoxUI("Remove Banlist", model.RemoveBanlist, removeBanlistTooltip));
         }
     }
 }

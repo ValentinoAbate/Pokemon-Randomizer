@@ -229,6 +229,7 @@
 	<frontierTutorMoves1 pointer="0x13AF44" offset="0x5b31f8" num="10" multichoiceTextIndex="9" descriptionTextsPointer="0x13ADB4"/>
 	<frontierTutorMoves2 pointer="0x13AF08" offset="0x5b320c" num="10" multichoiceTextIndex="10" descriptionTextsPointer="0x13AD8C"/>
 	<frontierSudowoodoScript pointer="0x0FDE9C" offset="0x242cfc"/>
+	<frontierBanlist pointer="0x1A3FCC"/>
 	  
 	<!-- Battle Tents -->
 	<battleTents elementNames="[verdanturfBattleTent,fallarborBattleTent,slateportBattleTent]"/>

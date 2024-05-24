@@ -79,6 +79,10 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
             WriteBattleFrontier(rom, data, info, metadata);
             WriteBattleTents(rom, data.BattleTents, info);
             WriteRouletteData(rom, data.RouletteWagers, info);
+            if (settings.RemoveFrontierBanlist)
+            {
+                RemoveFrontierBanlist(rom, info);
+            }
 
             // Hacks and tweaks
 
@@ -1208,6 +1212,16 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
                 return;
             }
             scriptWriter.Write(script, rom, rom.InternalOffset, metadata);
+        }
+
+        private void RemoveFrontierBanlist(Rom rom, XmlManager info)
+        {
+            if (!info.FindAndSeekOffset(ElementNames.GenIII.frontierBanlist, rom))
+            {
+                return;
+            }
+            rom.WriteByte(0xFF);
+            rom.WriteByte(0xFF);
         }
 
         // Battle Tents

@@ -495,6 +495,7 @@ namespace PokemonRandomizer
         public abstract SpecialMoveSettings FrontierBrainSpecialMoveSettings { get; }
         public abstract bool FrontierBrainBanLegendaries { get; }
         public abstract bool FrontierBrainKeepLegendaries { get; }
+        public abstract bool RemoveFrontierBanlist { get; }
 
         // Battle Tent
         public abstract BattleTentRandomizer.Settings GetBattleTentSettings(BattleTent tent);

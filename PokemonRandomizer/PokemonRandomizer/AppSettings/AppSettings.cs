@@ -522,6 +522,7 @@ namespace PokemonRandomizer.AppSettings
         public override SpecialMoveSettings FrontierBrainSpecialMoveSettings => battleFrontierData.BrainSpecialMoveSettings.Settings;
         public override bool FrontierBrainBanLegendaries => battleFrontierData.BanBrainLegendaries;
         public override bool FrontierBrainKeepLegendaries => battleFrontierData.KeepBrainLegendaries;
+        public override bool RemoveFrontierBanlist => battleFrontierData.RemoveBanlist;
 
         // Battle Tent
         public override BattleTentRandomizer.Settings GetBattleTentSettings(BattleTent tent)
