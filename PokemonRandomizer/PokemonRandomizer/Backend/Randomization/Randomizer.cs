@@ -82,7 +82,7 @@ namespace PokemonRandomizer.Backend.Randomization
             trainerOrgRand = new TrainerOrganizationRandomizer(rand, paletteModifier);
             starterRandomizer = new StarterRandomizer(pokeRand);
             typeChartRandomizer = new TypeChartRandomizer();
-            battleFrontierRandomizer = new BattleFrontierRandomizer(rand, data, pokeRand, movesetGenerator, evoUtils);
+            battleFrontierRandomizer = new BattleFrontierRandomizer(rand, data, pokeRand, movesetGenerator, evoUtils, data.BattleFrontierHeldItems);
             battleTentRandomizer = new BattleTentRandomizer(battleFrontierRandomizer, itemRand, delayedRandomizationCalls);
             gameCornerRandomizer = new GameCornerRandomizer(rand);
         }

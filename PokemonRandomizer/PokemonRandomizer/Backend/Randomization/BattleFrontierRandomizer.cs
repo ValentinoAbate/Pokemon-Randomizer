@@ -5,6 +5,7 @@ using PokemonRandomizer.Backend.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using static PokemonRandomizer.Backend.Randomization.WildEncounterRandomizer;
 using static PokemonRandomizer.Settings;
 using static PokemonRandomizer.UI.Models.BattleFrontierDataModel;
 
@@ -18,13 +19,15 @@ namespace PokemonRandomizer.Backend.Randomization
         private readonly MovesetGenerator movesetGenerator;
         private readonly EvolutionUtils evoUtils;
         private readonly Random rand;
-        public BattleFrontierRandomizer(Random rand, IDataTranslator dataT, PkmnRandomizer pokeRand, MovesetGenerator movesetGenerator, EvolutionUtils evoUtils)
+        private readonly List<Item> heldItemList;
+        public BattleFrontierRandomizer(Random rand, IDataTranslator dataT, PkmnRandomizer pokeRand, MovesetGenerator movesetGenerator, EvolutionUtils evoUtils, List<Item> heldItemList)
         {
             this.rand = rand;
             this.dataT = dataT;
             this.pokeRand = pokeRand;
             this.movesetGenerator = movesetGenerator;
             this.evoUtils = evoUtils;
+            this.heldItemList = heldItemList;
         }
 
         public void Randomize(RomData data, Settings settings, IEnumerable<Pokemon> pokemonSet)
@@ -53,24 +56,46 @@ namespace PokemonRandomizer.Backend.Randomization
                     // Randomize Pokemon
                     pokemon.species = pokeRand.RandomPokemon(pokemonSet, pokemon.species, pokemonSettings, level);
                     // Generate moveset and Nature
-                    var stats = dataT.GetBaseStats(pokemon.species);
-                    pokemon.Nature = TrainerRandomizer.GetRandomNature(rand, stats);
-                    pokemon.moves = movesetGenerator.SmartMoveSet(stats, level, specialMoveSettings);
-                    TrainerRandomizer.PostProcessNature(pokemon, rand, dataT);
-                    PostProcessFrontierTrainerEVs(pokemon);
+                    FinishPokemonRandomization(pokemon, level, specialMoveSettings);
                 }
                 else if (dataT.GetBaseStats(pokemon.species).IsVariant) // If pokemon is variant
                 {
                     // Generate equivalent level
                     int level = GetPokemonLevel(pokemon, strategy);
                     // Remap variant moves and Nature
-                    var stats = dataT.GetBaseStats(pokemon.species);
-                    pokemon.Nature = TrainerRandomizer.GetRandomNature(rand, stats);
-                    pokemon.moves = movesetGenerator.SmartMoveSet(stats, level, specialMoveSettings);
-                    TrainerRandomizer.PostProcessNature(pokemon, rand, dataT);
-                    PostProcessFrontierTrainerEVs(pokemon);
+                    FinishPokemonRandomization(pokemon, level, specialMoveSettings);
                 }
             }
+        }
+
+        private void FinishPokemonRandomization(FrontierTrainerPokemon pokemon, int level, SpecialMoveSettings specialMoveSettings)
+        {
+            // Generate moves and nature
+            var stats = dataT.GetBaseStats(pokemon.species);
+            pokemon.Nature = TrainerRandomizer.GetRandomNature(rand, stats);
+            pokemon.moves = movesetGenerator.SmartMoveSet(stats, level, specialMoveSettings, GetHeldItem(pokemon));
+            // Post-process nature and EVs
+            TrainerRandomizer.PostProcessNature(pokemon, rand, dataT);
+            PostProcessFrontierTrainerEVs(pokemon);
+        }
+
+        private Item GetHeldItem(FrontierTrainerPokemon pokemon)
+        {
+            if(pokemon.HeldItemIndex < 0 || pokemon.HeldItemIndex >= heldItemList.Count) 
+            { 
+                return Item.None;
+            }
+            return heldItemList[pokemon.HeldItemIndex];
+        }
+
+        private void SetHeldItem(FrontierTrainerPokemon pokemon, Item item) 
+        {
+            int index = heldItemList.IndexOf(item);
+            if(index == -1)
+            {
+                return;
+            }
+            pokemon.HeldItemIndex = index;
         }
 
         private void PostProcessFrontierTrainerEVs(FrontierTrainerPokemon pokemon)
@@ -222,22 +247,23 @@ namespace PokemonRandomizer.Backend.Randomization
                 {
                     pokemon.species = pokeRand.RandomPokemon(pokemonSet, pokemon.species, pokemonSettings, frontierBrainPokemonLevel);
                     // Generate moveset and Nature
-                    var stats = dataT.GetBaseStats(pokemon.species);
-                    pokemon.Nature = TrainerRandomizer.GetRandomNature(rand, stats);
-                    pokemon.moves = movesetGenerator.SmartMoveSet(stats, frontierBrainPokemonLevel, specialMoveSettings);
-                    TrainerRandomizer.PostProcessNature(pokemon, rand, dataT);
-                    TrainerRandomizer.PostProcessEvs(pokemon, rand, dataT);
+                    FinishFrontTierBrainPokemonRandomization(pokemon, frontierBrainPokemonLevel, specialMoveSettings);
                 }
                 else if (dataT.GetBaseStats(pokemon.species).IsVariant) // If pokemon is variant
                 {
                     // Remap variant moves and Nature
-                    var stats = dataT.GetBaseStats(pokemon.species);
-                    pokemon.Nature = TrainerRandomizer.GetRandomNature(rand, stats);
-                    pokemon.moves = movesetGenerator.SmartMoveSet(stats, frontierBrainPokemonLevel, specialMoveSettings);
-                    TrainerRandomizer.PostProcessNature(pokemon, rand, dataT);
-                    TrainerRandomizer.PostProcessEvs(pokemon, rand, dataT);
+                    FinishFrontTierBrainPokemonRandomization(pokemon, frontierBrainPokemonLevel, specialMoveSettings);
                 }
             }
+        }
+
+        private void FinishFrontTierBrainPokemonRandomization(FrontierBrainTrainerPokemon pokemon, int level, SpecialMoveSettings specialMoveSettings)
+        {
+            var stats = dataT.GetBaseStats(pokemon.species);
+            pokemon.Nature = TrainerRandomizer.GetRandomNature(rand, stats);
+            pokemon.moves = movesetGenerator.SmartMoveSet(stats, level, specialMoveSettings, pokemon.heldItem);
+            TrainerRandomizer.PostProcessNature(pokemon, rand, dataT);
+            TrainerRandomizer.PostProcessEvs(pokemon, rand, dataT);
         }
     }
 }

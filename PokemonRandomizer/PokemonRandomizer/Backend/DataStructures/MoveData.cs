@@ -13,6 +13,7 @@ namespace PokemonRandomizer.Backend.DataStructures
             Physical,
             Special,
             Status,
+            Unknown,
         }
         public enum MoveEffect
         {
@@ -364,11 +365,13 @@ namespace PokemonRandomizer.Backend.DataStructures
         {
             get
             {
-                // Gen III Logic
+                // Gen III Logic - TODO: Gen IV - branch
                 if (power <= 0)
                     return Type.Status;
                 if (move is Move.WEATHER_BALL)
                     return Type.Special;
+                if (move is Move.HIDDEN_POWER)
+                    return Type.Unknown;
                 return type <= PokemonType.Unknown ? Type.Physical : Type.Special;
             }
         }

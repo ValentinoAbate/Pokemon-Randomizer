@@ -77,7 +77,7 @@ namespace PokemonRandomizer.Backend.Randomization
             };
         }
 
-        private float PowerFactorScale(Move m, PokemonBaseStats pokemon)
+        private float PowerFactorScale(Move m, PokemonBaseStats pokemon, Item item)
         {
             var data = dataT.GetMoveData(m);
             float basePower = data.IsCallMove ? 25 : EffectivePower(data);
@@ -88,6 +88,7 @@ namespace PokemonRandomizer.Backend.Randomization
             basePower *= SignatureMoveFactor(data, pokemon);
             basePower *= AccuracyFactor(data, pokemon);
             basePower *= AttackingStatFactor(data, pokemon);
+            basePower *= ItemFactor(data, pokemon, dataT.GetItemData(item));
             return MathF.Pow(basePower, 3);
         }
 
@@ -137,6 +138,39 @@ namespace PokemonRandomizer.Backend.Randomization
             }
         }
 
+        private float ItemFactor(MoveData data, PokemonBaseStats pokemon, ItemData item)
+        {
+            // TODO: Gen IV - update with new held item effects 
+            return item.HoldEffect switch
+            {
+                HeldItemEffect.ChoiceBand => data.MoveCategory == MoveData.Type.Physical ? 1.5f : 1,
+                // Item.Choice_Specs => data.MoveCategory == MoveData.Type.Special ? 1.5f : 1,
+                HeldItemEffect.BoostBugMoves => data.type is PokemonType.BUG ? 1 + (item.param / 100f) : 1,
+                HeldItemEffect.BoostDarkMoves => data.type is PokemonType.DRK ? 1 + (item.param / 100f) : 1,
+                HeldItemEffect.BoostDragonMoves => data.type is PokemonType.DRG ? 1 + (item.param / 100f) : 1,
+                HeldItemEffect.BoostElectricMoves => data.type is PokemonType.ELE ? 1 + (item.param / 100f) : 1,
+                HeldItemEffect.BoostFightingMoves => data.type is PokemonType.FTG ? 1 + (item.param / 100f) : 1,
+                HeldItemEffect.BoostFireMoves => data.type is PokemonType.FIR ? 1 + (item.param / 100f) : 1,
+                HeldItemEffect.BoostFlyingMoves => data.type is PokemonType.FLY ? 1 + (item.param / 100f) : 1,
+                HeldItemEffect.BoostGhostMoves => data.type is PokemonType.GHO ? 1 + (item.param / 100f) : 1,
+                HeldItemEffect.BoostGrassMoves => data.type is PokemonType.GRS ? 1 + (item.param / 100f) : 1,
+                HeldItemEffect.BoostGroundMoves => data.type is PokemonType.GRD ? 1 + (item.param / 100f) : 1,
+                HeldItemEffect.BoostIceMoves => data.type is PokemonType.ICE ? 1 + (item.param / 100f) : 1,
+                HeldItemEffect.BoostNormalMoves => data.type is PokemonType.NRM ? 1 + (item.param / 100f) : 1,
+                HeldItemEffect.BoostPoisonMoves => data.type is PokemonType.PSN ? 1 + (item.param / 100f) : 1,
+                HeldItemEffect.BoostPsychicMoves => data.type is PokemonType.PSY ? 1 + (item.param / 100f) : 1,
+                HeldItemEffect.BoostRockMoves => data.type is PokemonType.RCK ? 1 + (item.param / 100f) : 1,
+                HeldItemEffect.BoostSteelMoves => data.type is PokemonType.STL ? 1 + (item.param / 100f) : 1,
+                HeldItemEffect.BoostWaterMoves => data.type is PokemonType.WAT ? 1 + (item.param / 100f) : 1,
+                HeldItemEffect.ThickClub => data.MoveCategory == MoveData.Type.Physical && pokemon.species is Pokemon.CUBONE or Pokemon.MAROWAK ? 2 : 1,
+                HeldItemEffect.LightBall => data.MoveCategory == MoveData.Type.Special && pokemon.species is Pokemon.PIKACHU ? 2 : 1,
+                HeldItemEffect.SoulDew => data.MoveCategory == MoveData.Type.Special && pokemon.species is Pokemon.LATIAS or Pokemon.LATIOS ? 1.5f : 1,
+                HeldItemEffect.DeepSeaFang => data.MoveCategory == MoveData.Type.Special && pokemon.species is Pokemon.CLAMPERL ? 2 : 1,
+                //Item.Life_Orb => 1.3f,
+                _ => 1,
+            };
+        }
+
         private static float LevelWeightScale(int learnLevel)
         {
             return MathF.Pow(learnLevel, 2);
@@ -152,19 +186,19 @@ namespace PokemonRandomizer.Backend.Randomization
             return !m.IsStatus && m.IsType(t);
         }
 
-        public Move[] SmartMoveSet(PokemonBaseStats pokemon, int level, SpecialMoveSettings specialMoveSettings = null)
+        public Move[] SmartMoveSet(PokemonBaseStats pokemon, int level, SpecialMoveSettings specialMoveSettings = null, Item item = Item.None)
         {
             if (pokemon.species is Pokemon.SHUCKLE or Pokemon.HAPPINY or Pokemon.CHANSEY or Pokemon.BLISSEY or Pokemon.HOPPIP or Pokemon.SKIPLOOM or Pokemon.JUMPLUFF)
             {
-                return LowAttackMoveSet(pokemon, level, specialMoveSettings);
+                return LowAttackMoveSet(pokemon, level, specialMoveSettings, item);
             }
             else if (pokemon.species is Pokemon.LILEEP or Pokemon.CRADILY)
             {
-                return rand.RandomBool() ? LowAttackMoveSet(pokemon, level, specialMoveSettings) : AttackingMoveset(pokemon, level, specialMoveSettings);
+                return rand.RandomBool() ? LowAttackMoveSet(pokemon, level, specialMoveSettings, item) : AttackingMoveset(pokemon, level, specialMoveSettings, item);
             }
             else if (pokemon.species is Pokemon.WYNAUT or Pokemon.WOBBUFFET)
             {
-                return CounterAttackMoveSet(pokemon, level, specialMoveSettings);
+                return CounterAttackMoveSet(pokemon, level, specialMoveSettings, item);
             }
             else if (pokemon.species is Pokemon.SMEARGLE)
             {
@@ -183,24 +217,28 @@ namespace PokemonRandomizer.Backend.Randomization
                 double smeargleSetChance = rand.RandomDouble();
                 if (smeargleSetChance < 0.01)
                 {
-                    return CounterAttackMoveSet(pokemon, level, specialMoveSettings, sketches);
+                    return CounterAttackMoveSet(pokemon, level, specialMoveSettings, item, sketches);
                 }
                 else if(smeargleSetChance < 0.02)
                 {
-                    return AttackingMoveset(pokemon, level, specialMoveSettings, sketches);
+                    return AttackingMoveset(pokemon, level, specialMoveSettings, item, sketches);
                 }
                 else if(smeargleSetChance < 0.07)
                 {
-                    return LowAttackMoveSet(pokemon, level, specialMoveSettings, sketches);
+                    return LowAttackMoveSet(pokemon, level, specialMoveSettings, item, sketches);
                 }
                 else
                 {
-                    return RandomMoveSet(pokemon, level, specialMoveSettings, sketches);
+                    return RandomMoveSet(pokemon, level, specialMoveSettings, item, sketches);
                 }
             }
-            else 
+            else if (item is Item.Choice_Band or Item.Choice_Specs or Item.Choice_Scarf)
             {
-                return AttackingMoveset(pokemon, level, specialMoveSettings);
+                return ChoiceItemMoveset(pokemon, level, specialMoveSettings, item);
+            }
+            else
+            {
+                return AttackingMoveset(pokemon, level, specialMoveSettings, item);
             }
         }
 
@@ -209,7 +247,7 @@ namespace PokemonRandomizer.Backend.Randomization
             return pokemon.IsType(move.type);
         }
 
-        public Move[] AttackingMoveset(PokemonBaseStats pokemon, int level, SpecialMoveSettings specialMoveSettings, int maxMoves = 4)
+        public Move[] AttackingMoveset(PokemonBaseStats pokemon, int level, SpecialMoveSettings specialMoveSettings, Item item, int maxMoves = 4)
         {
             // Initialize move choices
             var availableMoves = AvailableMoves(pokemon, level, specialMoveSettings);
@@ -221,7 +259,7 @@ namespace PokemonRandomizer.Backend.Randomization
             var synergyMetrics = new List<Func<Move, float>>();
             var antiSynergyMetrics = new List<Func<Move, float>>();
 
-            float PowerFactor(Move m) => PowerFactorScale(m, pokemon);
+            float PowerFactor(Move m) => PowerFactorScale(m, pokemon, item);
             float RedundantTypeFactor(Move m)
             {
                 var mType = dataT.GetMoveData(m).type;
@@ -429,7 +467,7 @@ namespace PokemonRandomizer.Backend.Randomization
         private static bool IsStockpile(MoveData m) => m.effect is MoveEffect.Stockpile;
 
 
-        public Move[] LowAttackMoveSet(PokemonBaseStats pokemon, int level, SpecialMoveSettings specialMoveSettings, int maxMoves = 4)
+        public Move[] LowAttackMoveSet(PokemonBaseStats pokemon, int level, SpecialMoveSettings specialMoveSettings, Item item, int maxMoves = 4)
         {
             // Initialize move choices
             var availableMoves = AvailableMoves(pokemon, level, specialMoveSettings);
@@ -512,7 +550,76 @@ namespace PokemonRandomizer.Backend.Randomization
             return ret;
         }
 
-        public Move[] CounterAttackMoveSet(PokemonBaseStats pokemon, int level, SpecialMoveSettings specialMoveSettings, int maxMoves = 4)
+        private float ChoiceItemMovesetFactor(Move m, PokemonBaseStats pokemon, Item item)
+        {
+            var moveData = dataT.GetMoveData(m);
+            if(moveData.effect is MoveEffect.Trick)
+            {
+                return 1f;
+            }
+            if (moveData.IsStatus)
+            {
+                return 0.01f;
+            }
+            if(moveData.effect is MoveEffect.DreamEater or MoveEffect.SpitUp or MoveEffect.DamageFailUnlessAsleepFlinchChance)
+            {
+                return 0.001f;
+            }
+            return PowerFactorScale(m, pokemon, item);
+        }
+
+        public Move[] ChoiceItemMoveset(PokemonBaseStats pokemon, int level, SpecialMoveSettings specialMoveSettings, Item item, int maxMoves = 4)
+        {
+            // Initialize move choices
+            var availableMoves = AvailableMoves(pokemon, level, specialMoveSettings);
+            // Initialize returns
+            var ret = EmptyMoveset();
+            if (availableMoves.Count <= 0)
+                return ret;
+
+            float RedundantTypeFactor(Move m)
+            {
+                var mType = dataT.GetMoveData(m).type;
+                foreach (var m2 in ret)
+                {
+                    if (m2 == Move.None)
+                        continue;
+                    if (mType == dataT.GetMoveData(m2).type)
+                        return 0.25f;
+                }
+                return 1;
+            }
+            float StabBonus(Move m) => IsStab(dataT.GetMoveData(m), pokemon) ? 2f : 1;
+            float LevelFactorSmall(Move e) => MathF.Pow(availableMoves[e], 1.5f);
+            float LevelFactorLog(Move e) => MathF.Max(1, MathF.Log(availableMoves[e]));
+
+
+            // Choose first move - attempt to choose an attack move
+            if (ChooseMoveForIndex(ret, 0, availableMoves.Keys, (m) => ChoiceItemMovesetFactor(m, pokemon, item) * StabBonus(m) * LevelFactorLog(m), ref availableMoves) || maxMoves <= 1)
+            {
+                return ret;
+            }
+
+            // Choose second move - attempt to choose another attack move
+            if (ChooseMoveForIndex(ret, 1, availableMoves.Keys, (m) => ChoiceItemMovesetFactor(m, pokemon, item) * StabBonus(m) * RedundantTypeFactor(m) * LevelFactorLog(m), ref availableMoves) || maxMoves <= 2)
+            {
+                return ret;
+            }
+
+            // Choose third move - Attempt to choose a status move
+            if (ChooseMoveForIndex(ret, 2, availableMoves.Keys, (m) => ChoiceItemMovesetFactor(m, pokemon, item) * StabBonus(m) * RedundantTypeFactor(m) * LevelFactorLog(m), ref availableMoves) || maxMoves <= 3)
+            {
+                return ret;
+            }
+
+            // Choose fourth move
+            ret[3] = rand.Choice(new WeightedSet<Move>(availableMoves.Keys, (m) => ChoiceItemMovesetFactor(m, pokemon, item) * StabBonus(m) * RedundantTypeFactor(m) * LevelFactorSmall(m)));
+
+            Logger.main.Info($"{pokemon.species.ToDisplayString()} LV {level} Item {item.ToDisplayString()}: {ret[0].ToDisplayString()}, {ret[1].ToDisplayString()}, {ret[2].ToDisplayString()}, {ret[3].ToDisplayString()}");
+            return ret;
+        }
+
+        public Move[] CounterAttackMoveSet(PokemonBaseStats pokemon, int level, SpecialMoveSettings specialMoveSettings, Item item, int maxMoves = 4)
         {
             // Initialize move choices
             var availableMoves = AvailableMoves(pokemon, level, specialMoveSettings);
@@ -545,7 +652,7 @@ namespace PokemonRandomizer.Backend.Randomization
             return ret;
         }
 
-        public Move[] RandomMoveSet(PokemonBaseStats pokemon, int level, SpecialMoveSettings specialMoveSettings, int maxMoves = 4)
+        public Move[] RandomMoveSet(PokemonBaseStats pokemon, int level, SpecialMoveSettings specialMoveSettings, Item item, int maxMoves = 4)
         {
             // Initialize move choices
             var availableMoves = AvailableMoves(pokemon, level, specialMoveSettings);
