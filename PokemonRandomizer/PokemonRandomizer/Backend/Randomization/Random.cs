@@ -110,7 +110,7 @@ namespace PokemonRandomizer.Backend.Randomization
         /// <summary> Returns a weighted random choice from the given items and float weights </summary> 
         public T Choice<T>(T[] items, float[] weights)
         {
-            float totalWeight = weights.Aggregate((a, b) => a + b);
+            float totalWeight = weights.Sum();
             float randomNumber = (float)rand.NextDouble() * totalWeight;
             for (int i = 0; i < items.Length; ++i)
             {
@@ -123,7 +123,7 @@ namespace PokemonRandomizer.Backend.Randomization
         /// <summary> Returns a weighted random choice from the given items and float weights </summary> 
         public T Choice<T>(IEnumerable<T> items, IEnumerable<float> weights)
         {
-            float totalWeight = weights.Aggregate((a, b) => a + b);
+            float totalWeight = weights.Sum();
             float randomNumber = (float)rand.NextDouble() * totalWeight;
             var e = weights.GetEnumerator();
             foreach(var item in items)
@@ -139,9 +139,9 @@ namespace PokemonRandomizer.Backend.Randomization
         public T Choice<T>(T[] items, int[] weights, bool isAbsolute)
         {
             // totalWeight is the sum of all weights, or 1 if absolute
-            int totalWeight = isAbsolute ? 100 : weights.Aggregate((a, b) => a + b);
+            int totalWeight = isAbsolute ? 100 : weights.Sum();
 #if DEBUG
-            if (isAbsolute && weights.Aggregate((a, b) => a + b) != 100)
+            if (isAbsolute && weights.Sum() != 100)
                 throw new Exception("Absolute weights do not add up to 100%! Items: " + items.ToString() + " Weights: " + weights.ToString());
 #endif
             int randomNumber = rand.Next(totalWeight);
