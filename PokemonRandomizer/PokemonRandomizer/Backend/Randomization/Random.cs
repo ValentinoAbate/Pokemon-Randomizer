@@ -102,6 +102,23 @@ namespace PokemonRandomizer.Backend.Randomization
             return Choice(items.ToArray());
         }
         /// <summary> Returns a weighted random choice from the given items and float weights </summary> 
+        public T Choice<T>(IEnumerable<KeyValuePair<T, float>> items)
+        {
+            float totalWeight = 0;
+            foreach(var kvp in items)
+            {
+                totalWeight += kvp.Value;
+            }
+            float randomNumber = (float)rand.NextDouble() * totalWeight;
+            foreach(var kvp in items)
+            {
+                if (randomNumber < kvp.Value)
+                    return kvp.Key;
+                randomNumber -= kvp.Value;
+            }
+            throw new Exception("No item chosen");
+        }
+        /// <summary> Returns a weighted random choice from the given items and float weights </summary> 
         public T Choice<T>(IReadOnlyList<T> items, IReadOnlyList<float> weights)
         {
             float totalWeight = weights.Sum();
@@ -146,12 +163,6 @@ namespace PokemonRandomizer.Backend.Randomization
                 randomNumber -= weights[i];
             }
             throw new Exception("No item chosen");
-        }
-        /// <summary> Returns a weighted random choice from the given WeightedSet </summary> 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public T Choice<T>(WeightedSet<T> items)
-        {
-            return Choice(items.Items, items.Weights);
         }
 
         #endregion
