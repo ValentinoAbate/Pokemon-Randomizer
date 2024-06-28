@@ -101,7 +101,7 @@ namespace PokemonRandomizer.Backend.Randomization
             }
             return Choice(items.ToArray());
         }
-        /// <summary> Returns a weighted random choice from the given items and float weights </summary> 
+        /// <summary> Returns a weighted random choice from the given item/weight key value pairs </summary> 
         public T Choice<T>(IEnumerable<KeyValuePair<T, float>> items)
         {
             float totalWeight = 0;
