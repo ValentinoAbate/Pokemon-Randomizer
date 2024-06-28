@@ -6,7 +6,7 @@ using System.Linq;
 namespace PokemonRandomizer.Backend.Randomization
 {
 
-    public class WeightedSet<T> : IEnumerable<KeyValuePair<T, float>>
+    public class WeightedSet<T> : IReadOnlyCollection<KeyValuePair<T, float>>
     {
         public IEnumerable<T> Items { get => items.Keys; }
         public IEnumerable<float> Weights { get => items.Values; }
@@ -28,7 +28,7 @@ namespace PokemonRandomizer.Backend.Randomization
         #region Constructors
         public WeightedSet() { items = new Dictionary<T, float>(); }
         public WeightedSet(int capacity) { items = new Dictionary<T, float>(capacity); }
-        public WeightedSet(IDictionary<T,float> items)
+        public WeightedSet(IReadOnlyDictionary<T,float> items)
         {
             this.items = new Dictionary<T,float>(items);
         }
