@@ -74,21 +74,15 @@ namespace PokemonRandomizer.Backend.Randomization
         #endregion
 
         #region Random Choice from a collection (With options for weighting)
-        /// <summary> Returns an unweighted random choice from the given array </summary> 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public T Choice<T>(T[] items)
-        {
-            return items[rand.Next(0, items.Length)];
-        }
         /// <summary> Returns an unweighted random choice from the given IList </summary> 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public T Choice<T>(IList<T> items)
+        public T Choice<T>(IReadOnlyList<T> items)
         {
             return items[rand.Next(0, items.Count)];
         }
         /// <summary> Returns an unweighted random choice from the given IList </summary> 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public T Choice<T>(IList<T> items, out int selectedIndex)
+        public T Choice<T>(IReadOnlyList<T> items, out int selectedIndex)
         {
             selectedIndex = rand.Next(0, items.Count);
             return items[selectedIndex];
@@ -101,18 +95,18 @@ namespace PokemonRandomizer.Backend.Randomization
             {
                 return default;
             }
-            if(items is IList<T> list)
+            if(items is IReadOnlyList<T> list)
             {
                 return Choice(list);
             }
             return Choice(items.ToArray());
         }
         /// <summary> Returns a weighted random choice from the given items and float weights </summary> 
-        public T Choice<T>(T[] items, float[] weights)
+        public T Choice<T>(IReadOnlyList<T> items, IReadOnlyList<float> weights)
         {
             float totalWeight = weights.Sum();
             float randomNumber = (float)rand.NextDouble() * totalWeight;
-            for (int i = 0; i < items.Length; ++i)
+            for (int i = 0; i < items.Count; ++i)
             {
                 if (randomNumber < weights[i])
                     return items[i];
@@ -136,7 +130,7 @@ namespace PokemonRandomizer.Backend.Randomization
             throw new Exception("No item chosen");
         }
         /// <summary> Returns a weighted random choice from the given items and int weights </summary> 
-        public T Choice<T>(T[] items, int[] weights, bool isAbsolute)
+        public T Choice<T>(IReadOnlyList<T> items, IReadOnlyList<int> weights, bool isAbsolute)
         {
             // totalWeight is the sum of all weights, or 1 if absolute
             int totalWeight = isAbsolute ? 100 : weights.Sum();
@@ -145,7 +139,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 throw new Exception("Absolute weights do not add up to 100%! Items: " + items.ToString() + " Weights: " + weights.ToString());
 #endif
             int randomNumber = rand.Next(totalWeight);
-            for (int i = 0; i < items.Length; ++i)
+            for (int i = 0; i < items.Count; ++i)
             {
                 if (randomNumber < weights[i])
                     return items[i];
