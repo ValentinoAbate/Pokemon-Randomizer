@@ -88,7 +88,10 @@ namespace PokemonRandomizer.Backend.Randomization
             basePower *= SignatureMoveFactor(data, pokemon);
             basePower *= AccuracyFactor(data, pokemon);
             basePower *= AttackingStatFactor(data, pokemon);
-            basePower *= ItemFactor(data, pokemon, dataT.GetItemData(item));
+            if(item != Item.None)
+            {
+                basePower *= ItemFactor(data, pokemon, dataT.GetItemData(item));
+            }
             return MathF.Pow(basePower, 3);
         }
 
