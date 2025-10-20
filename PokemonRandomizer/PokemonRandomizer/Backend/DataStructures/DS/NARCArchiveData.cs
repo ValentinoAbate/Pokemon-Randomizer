@@ -4,7 +4,7 @@ using System.Text;
 
 namespace PokemonRandomizer.Backend.DataStructures.DS
 {
-    // see https://www.romhacking.net/documents/[469]nds_formats.htm#NARC
+    // see https://www.romhacking.net/documents/469/
     // Code adapted from NARCArchive.java from UPR
     public class NARCArchiveData
     {
