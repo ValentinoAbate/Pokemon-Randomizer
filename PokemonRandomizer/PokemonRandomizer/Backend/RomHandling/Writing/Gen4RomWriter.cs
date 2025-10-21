@@ -13,6 +13,12 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
         public override Rom Write(RomData data, Rom originalRom, RomMetadata metadata, XmlManager info, Settings settings)
         {
             var rom = new Rom(originalRom.Length, 0xFF); // Set to all 0xFF?
+
+            // Write ROM header
+            int headerSize = originalRom.ReadUInt32(headerSizeOffset);
+            rom.Seek(0);
+            rom.WriteBlock(originalRom.ReadBlock(0, headerSize));
+
             return rom;
         }
     }
