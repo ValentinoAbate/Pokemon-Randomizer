@@ -56,7 +56,7 @@ namespace PokemonRandomizer.Backend.DataStructures.DS
                 throw new ArgumentException($"No valid NARC file located at {offset:x2}. FATB, FIMG, or FNTB frame not found");
             }
 
-            // Read file offsets and sizes from FATB fram. Actual contents are located in FIMG frame
+            // Read file offsets and sizes from FATB frame. Actual contents are located in FIMG frame
             rom.Seek(fatbFrameOffset);
             int fileCount = rom.ReadUInt32();
             files = new List<(int offset, int length)>(fileCount);
