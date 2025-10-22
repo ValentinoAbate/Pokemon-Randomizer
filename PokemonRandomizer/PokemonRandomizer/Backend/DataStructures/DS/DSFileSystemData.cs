@@ -24,15 +24,16 @@ namespace PokemonRandomizer.Backend.DataStructures.DS
         private readonly Rom decompressedArm9Data;
         private readonly int arm9Offset;
         private readonly int arm9Size;
-        private readonly byte[] arm9Footer;
+        public byte[] Arm9Footer { get; }
 
         public DSFileSystemData(Rom rom)
         {
             rom.Seek(fntOffsetOffset);
             int fntOffset = rom.ReadUInt32();
-            rom.Skip(4); //int fntSize = rom.ReadUInt32();
+            int fntSize = rom.ReadUInt32();
+            // Offset of the file header table
             int fatOffset = rom.ReadUInt32();
-            rom.Skip(4); //int fatSize = rom.ReadUInt32();
+            int fatSize = rom.ReadUInt32();
 
             // Read fnt table data
             rom.Seek(fntOffset + 0x6);
@@ -177,11 +178,11 @@ namespace PokemonRandomizer.Backend.DataStructures.DS
             uint nitroCode = rom.ReadUInt32Full();
             if(nitroCode == nitroFooterSigniture)
             {
-                arm9Footer = rom.ReadBlock(arm9Offset + arm9Size, nitroFooterSize);
+                Arm9Footer = rom.ReadBlock(arm9Offset + arm9Size, nitroFooterSize);
             }
             else
             {
-                arm9Footer = Array.Empty<byte>();
+                Arm9Footer = Array.Empty<byte>();
             }
             // Read compressed data if compressed
             if(rom.TryGetBLZHeaderData(arm9Offset, arm9Size, out _, out int incLength, out _, out _, out _ ) && incLength > 0)
