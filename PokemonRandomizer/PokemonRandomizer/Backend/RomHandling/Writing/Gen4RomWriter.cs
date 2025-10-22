@@ -106,10 +106,17 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
             // Arm7 overlay data
             int originalArm7OverlayOffset = originalRom.ReadUInt32(DSFileSystemData.arm7OverlayOffsetOffset);
             int arm7OverlaySize = originalRom.ReadUInt32(DSFileSystemData.arm7SizeOffset);
+            int arm7OverlayOffset = rom.InternalOffset;
 
-            rom.WriteBlock(originalRom.ReadBlock(originalArm7OverlayOffset, arm7OverlaySize));
+            rom.WriteBlock(arm7OverlayOffset, originalRom.ReadBlock(originalArm7OverlayOffset, arm7OverlaySize));
             
             arm7EndOffset = rom.InternalOffset;
+
+            // Write Arm7 and Arm7 overlay offset to header
+            // No need to write sizes because we are not modifying data
+            rom.WriteUInt32(DSFileSystemData.arm7OffsetOffset, offset);
+            rom.WriteUInt32(DSFileSystemData.arm7OverlayOffsetOffset, arm7OverlayOffset);
+        }
         }
     }
 }
