@@ -30,12 +30,12 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
             rom.WriteBlock(originalRom.ReadBlock(0, headerSize));
 
             // Write Arm9 data at the first aligned location after the header
-            WriteArm9(Align(headerSize), rom, dsFileSystem, data, originalRom, metadata, info, settings, out int arm9EndOffset);
+            WriteArm9(rom, Align(headerSize), dsFileSystem, data, originalRom, metadata, info, settings, out int arm9OverlayTableOffset);
 
             return rom;
         }
 
-        private void WriteArm9(int offset, Rom rom, DSFileSystemData dsFileSystem, RomData data, Rom originalRom, RomMetadata metadata, XmlManager info, Settings settings, out int arm9EndOffset)
+        private void WriteArm9(Rom rom, int offset, DSFileSystemData dsFileSystem, RomData data, Rom originalRom, RomMetadata metadata, XmlManager info, Settings settings, out int arm9EndOffset)
         {
             // Create new arm9 data
             var originalArm9Data = dsFileSystem.GetArm9Data(originalRom, out int arm9Start, out int originalArm9Size);
