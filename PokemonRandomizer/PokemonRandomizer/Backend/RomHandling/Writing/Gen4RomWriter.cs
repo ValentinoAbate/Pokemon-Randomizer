@@ -34,6 +34,9 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
             // Write Arm7 data at the first aligned location after the arm9 overlay table
             WriteArm7(rom, Align(arm9OverlayTableOffset + dsFileSystem.Arm9OverlayTableSize), originalRom, out int arm7EndOffset);
 
+            // Copy banner to new rom at the 1st aligned location after arm7 data
+            WriteBanner(rom, Align(arm7EndOffset), originalRom, out int bannerEndOffset);
+
             return rom;
         }
 
@@ -117,6 +120,15 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
             rom.WriteUInt32(DSFileSystemData.arm7OffsetOffset, offset);
             rom.WriteUInt32(DSFileSystemData.arm7OverlayOffsetOffset, arm7OverlayOffset);
         }
+
+        private void WriteBanner(Rom rom, int offset, Rom originalRom, out int bannerEndOffset)
+        {
+            int originalBannerOffset = originalRom.ReadUInt32(DSFileSystemData.bannerOffsetOffset);
+            rom.WriteBlock(offset, originalRom.ReadBlock(originalBannerOffset, DSFileSystemData.bannerSize));
+            bannerEndOffset = rom.InternalOffset;
+
+            // Write new banner offset to header
+            rom.WriteUInt32(DSFileSystemData.bannerOffsetOffset, offset);
         }
     }
 }
