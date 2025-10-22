@@ -8,17 +8,24 @@ namespace PokemonRandomizer.Backend.DataStructures.DS
     {
         public const int arm9OffsetOffset = 0x20;
         public const int arm9SizeOffset = 0x2C;
+        public const int arm7OffsetOffset = 0x30;
+        public const int arm7SizeOffset = 0x3C;
         private const int fntOffsetOffset = 0x40;
+        private const int arm9OverlayHeaderOffset = 0x50;
+        private const int arm9OverlayDataSize = 32;
+        public const int arm7OverlayOffsetOffset = 0x58;
+        public const int arm7OverlaySizeOffset = 0x5C;
+
         private const char pathSeparator = '/';
         private const int directoryOffset = 0xF000;
         private const int fileHeaderSize = 8;
-        private const int arm9OverlayHeaderOffset = 0x50;
-        private const int arm9OverlayDataSize = 32;
+
         private const uint nitroFooterSigniture = 0xDEC00621;
         private const int nitroFooterSize = 12;
 
         private readonly Dictionary<string, (int offset, int length)> fileData;
         private readonly Dictionary<int, Arm9Overlay> arm9OverlaysByFileID;
+        public int Arm9OverlayTableSize => arm9Overlays.Length * arm9OverlayDataSize;
         private readonly Arm9Overlay[] arm9Overlays;
         public bool Arm9Compressed => decompressedArm9Data != null;
         private readonly Rom decompressedArm9Data;
