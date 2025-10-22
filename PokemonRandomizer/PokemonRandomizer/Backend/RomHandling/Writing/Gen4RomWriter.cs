@@ -1,25 +1,85 @@
-﻿using PokemonRandomizer.Backend.DataStructures;
+﻿using PokemonRandomizer.Backend.Constants;
+using PokemonRandomizer.Backend.DataStructures;
 using PokemonRandomizer.Backend.DataStructures.DS;
+using PokemonRandomizer.Backend.EnumTypes;
 using PokemonRandomizer.Backend.RomHandling.IndexTranslators;
 using PokemonRandomizer.Backend.Utilities;
+using System;
+using System.Collections.Generic;
+using System.Runtime.Intrinsics.Arm;
 
 namespace PokemonRandomizer.Backend.RomHandling.Writing
 {
     public class Gen4RomWriter : DSRomWriter
     {
         private const int headerSizeOffset = 0x84;
+        private const int alignment = 0b0001_1111_1111;
         protected override IIndexTranslator IndexTranslator => Gen4IndexTranslator.Main;
 
         public override Rom Write(RomData data, Rom originalRom, RomMetadata metadata, XmlManager info, Settings settings)
         {
+            // Parse the original NDS file structure
+            var dsFileSystem = new DSFileSystemData(originalRom);
             var rom = new Rom(originalRom.Length, 0xFF); // Set to all 0xFF?
 
-            // Write ROM header
+            // Get Header Size
             int headerSize = originalRom.ReadUInt32(headerSizeOffset);
+            // Copy original header data
             rom.Seek(0);
             rom.WriteBlock(originalRom.ReadBlock(0, headerSize));
 
+            // Write Arm9 data
+            WriteArm9(rom, dsFileSystem, headerSize, data, originalRom, metadata, info, settings, out int arm9Offset, out int arm9Size);
+
             return rom;
+        }
+
+        private void WriteArm9(Rom rom, DSFileSystemData dsFileSystem, int headerSize, RomData data, Rom originalRom, RomMetadata metadata, XmlManager info, Settings settings, out int arm9Offset, out int arm9Size)
+        {
+            // Create new arm9 data
+            var originalArm9Data = dsFileSystem.GetArm9Data(originalRom, out int arm9Start, out int originalArm9Size);
+            var arm9Data = new Rom(originalArm9Data.ReadBlock(arm9Start, originalArm9Size));
+
+            // Write RomData to new arm9 data
+            WriteTmMoves(arm9Data, data, info);
+
+            // Calculate new arm9 offset
+            arm9Offset = (headerSize + alignment) & ~alignment;
+            if (dsFileSystem.Arm9Compressed)
+            {
+                // TODO
+                // compress arm9 data
+                // write new compression header data if needed
+                // Size is compressed size
+                throw new System.NotImplementedException();
+            }
+            else
+            {
+                arm9Size = arm9Data.Length;
+                rom.WriteBlock(arm9Offset, arm9Data.File);
+            }
+
+            // Write new arm9 offset and size to header
+            rom.WriteUInt32(DSFileSystemData.arm9OffsetOffset, arm9Offset);
+            rom.WriteUInt32(DSFileSystemData.arm9SizeOffset, arm9Size);
+        }
+
+        private void WriteTmMoves(Rom arm9, RomData data, XmlManager info)
+        {
+            if (!info.FindAndSeekOffset(ElementNames.tmMoves, arm9))
+            {
+                return;
+            }
+            int numTms = info.Num(ElementNames.tmMoves);
+            int numHms = info.Num(ElementNames.hmMoves);
+            for (int i = 0; i < numTms; ++i)
+            {
+                arm9.WriteUInt16(MoveToInternalIndex(data.GetTmMove(i)));
+            }
+            for (int i = 0; i < numHms; ++i)
+            {
+                arm9.WriteUInt16(MoveToInternalIndex(data.GetTmMove(i)));
+            }
         }
     }
 }
