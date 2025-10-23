@@ -37,6 +37,9 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
             // Copy banner to new rom at the 1st aligned location after arm7 data
             WriteBanner(rom, Align(arm7EndOffset), originalRom, out int bannerEndOffset);
 
+            // Copy filename table (fnt) to new rom at the 1st aligned location after banner
+            WriteFilenameTable(rom, Align(bannerEndOffset), originalRom, out int filenameTableEndOffset);
+
             return rom;
         }
 
@@ -129,6 +132,18 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
 
             // Write new banner offset to header
             rom.WriteUInt32(DSFileSystemData.bannerOffsetOffset, offset);
+        }
+
+        // Writes Filename table (fnt). Doesn't support adding new files for now (just copies from base from)
+        private void WriteFilenameTable(Rom rom, int offset, Rom originalRom, out int filenameTableEndOffset)
+        {
+            int originalFntOffset = originalRom.ReadUInt32(DSFileSystemData.fntOffsetOffset);
+            int fntSize = originalRom.ReadUInt32(DSFileSystemData.fntOffsetOffset);
+
+            rom.WriteBlock(offset, originalRom.ReadBlock(originalFntOffset, fntSize));
+            filenameTableEndOffset = rom.InternalOffset;
+
+            rom.WriteUInt32(DSFileSystemData.fntOffsetOffset, offset);
         }
     }
 }

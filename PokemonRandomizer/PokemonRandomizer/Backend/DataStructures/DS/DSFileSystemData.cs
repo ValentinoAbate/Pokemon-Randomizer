@@ -10,11 +10,14 @@ namespace PokemonRandomizer.Backend.DataStructures.DS
         public const int arm9SizeOffset = 0x2C;
         public const int arm7OffsetOffset = 0x30;
         public const int arm7SizeOffset = 0x3C;
-        private const int fntOffsetOffset = 0x40;
+        public const int fntOffsetOffset = 0x40;
+        public const int fntSizeOffset = 0x44;
         private const int arm9OverlayHeaderOffset = 0x50;
         private const int arm9OverlayDataSize = 32;
         public const int arm7OverlayOffsetOffset = 0x58;
         public const int arm7OverlaySizeOffset = 0x5C;
+        public const int bannerOffsetOffset = 0x68;
+        public const int bannerSize = 0x840;
 
         private const char pathSeparator = '/';
         private const int directoryOffset = 0xF000;
