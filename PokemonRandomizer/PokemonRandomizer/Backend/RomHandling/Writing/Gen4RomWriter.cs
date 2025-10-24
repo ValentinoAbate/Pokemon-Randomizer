@@ -105,6 +105,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
             }
         }
 
+        // TODO: Custom arm9 overlay data
         private void WriteArm9Overlays(Rom rom, int headerTableOffset, int dataStartOffset, DSFileSystemData dsFileSystem, Rom originalRom, out int dataEndOffset)
         {
             int dataOffset = dataStartOffset;
@@ -119,7 +120,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
                 // Write Header
                 rom.Seek(headerTableOffset + (overlay.ID * DSFileSystemData.arm9OverlayHeaderSize));
                 rom.WriteUInt32(overlay.ID);
-                rom.WriteUInt32(overlay.RamAddress); // TODO: How to validate? research
+                rom.WriteUInt32(overlay.RamAddress);
                 rom.WriteUInt32(dataL);
                 rom.WriteUInt32(overlay.BssSize);
                 rom.WriteUInt32(overlay.StaticStart);
