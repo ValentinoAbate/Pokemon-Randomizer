@@ -13,7 +13,7 @@ namespace PokemonRandomizer.Backend.DataStructures.DS
         public const int fntOffsetOffset = 0x40;
         public const int fntSizeOffset = 0x44;
         private const int arm9OverlayHeaderOffset = 0x50;
-        private const int arm9OverlayDataSize = 32;
+        public const int arm9OverlayHeaderSize = 32;
         public const int arm7OverlayOffsetOffset = 0x58;
         public const int arm7OverlaySizeOffset = 0x5C;
         public const int bannerOffsetOffset = 0x68;
@@ -25,10 +25,13 @@ namespace PokemonRandomizer.Backend.DataStructures.DS
 
         private const uint nitroFooterSigniture = 0xDEC00621;
         private const int nitroFooterSize = 12;
-
+        // File Allocation Table size
+        public int FATSize => fileData.Count * fileHeaderSize;
+        private readonly Dictionary<int, string> filenames;
         private readonly Dictionary<string, (int offset, int length)> fileData;
         private readonly Dictionary<int, Arm9Overlay> arm9OverlaysByFileID;
-        public int Arm9OverlayTableSize => arm9Overlays.Length * arm9OverlayDataSize;
+        public int Arm9OverlayTableSize => arm9Overlays.Length * arm9OverlayHeaderSize;
+        public IReadOnlyList<Arm9Overlay> Arm9Overlays => arm9Overlays;
         private readonly Arm9Overlay[] arm9Overlays;
         public bool Arm9Compressed => decompressedArm9Data != null;
         private readonly Rom decompressedArm9Data;
@@ -61,7 +64,7 @@ namespace PokemonRandomizer.Backend.DataStructures.DS
 
             // Get directory and file names
             var directoryNames = new string[dircount];
-            var filenames = new Dictionary<int, string>();
+            filenames = new Dictionary<int, string>();
             var fileDirectories = new Dictionary<int, int>();
             for (int i = 0; i < dircount; i++)
             {
@@ -132,7 +135,7 @@ namespace PokemonRandomizer.Backend.DataStructures.DS
             rom.Seek(arm9OverlayHeaderOffset);
             int arm9OverlayTableOffset = rom.ReadUInt32();
             int arm9OverlayTablesize = rom.ReadUInt32();
-            int arm9OverlayCount = arm9OverlayTablesize / arm9OverlayDataSize;
+            int arm9OverlayCount = arm9OverlayTablesize / arm9OverlayHeaderSize;
 
             // Intialize data
             fileData = new(filenames.Count);
@@ -161,9 +164,8 @@ namespace PokemonRandomizer.Backend.DataStructures.DS
             rom.Seek(arm9OverlayTableOffset);
             for (int i = 0; i < arm9OverlayCount; i++)
             {
-                var overlay = new Arm9Overlay { ID = i };
                 // Read entry data
-                rom.Skip(4);
+                var overlay = new Arm9Overlay { ID = rom.ReadUInt32() };
                 overlay.RamAddress = rom.ReadUInt32();
                 overlay.RamSize = rom.ReadUInt32();
                 overlay.BssSize = rom.ReadUInt32();
@@ -248,6 +250,17 @@ namespace PokemonRandomizer.Backend.DataStructures.DS
 
         }
 
+        public bool GetFile(int id, out int offset, out int fileLength)
+        {
+            if (!filenames.TryGetValue(id, out string filename))
+            {
+                offset = Rom.nullPointer;
+                fileLength = 0;
+                return false;
+            }
+            return GetFile(filename, out offset, out fileLength);
+        }
+
         public bool GetNarcFile(Rom rom, string fullFilename, out NARCArchiveData narc)
         {
             if(!GetFile(fullFilename, out int offset, out int length))
@@ -283,7 +296,7 @@ namespace PokemonRandomizer.Backend.DataStructures.DS
             return new Rom(Array.Empty<byte>());
         }
 
-        private Rom GetOverlayContents(Rom rom, Arm9Overlay overlay, out int startOffset, out int length)
+        public Rom GetOverlayContents(Rom rom, Arm9Overlay overlay, out int startOffset, out int length)
         {
             if (overlay.CompressionFlag <= 0)
             {
