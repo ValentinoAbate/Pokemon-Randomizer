@@ -12,7 +12,7 @@ namespace PokemonRandomizer.Backend.DataStructures.DS
         public const int arm7SizeOffset = 0x3C;
         public const int fntOffsetOffset = 0x40;
         public const int fntSizeOffset = 0x44;
-        private const int arm9OverlayHeaderOffset = 0x50;
+        public const int arm9OverlayHeaderTableOffsetOffset = 0x50;
         public const int arm9OverlayHeaderSize = 32;
         public const int arm7OverlayOffsetOffset = 0x58;
         public const int arm7OverlaySizeOffset = 0x5C;
@@ -132,7 +132,7 @@ namespace PokemonRandomizer.Backend.DataStructures.DS
             }
 
             // arm9 overlays
-            rom.Seek(arm9OverlayHeaderOffset);
+            rom.Seek(arm9OverlayHeaderTableOffsetOffset);
             int arm9OverlayTableOffset = rom.ReadUInt32();
             int arm9OverlayTablesize = rom.ReadUInt32();
             int arm9OverlayCount = arm9OverlayTablesize / arm9OverlayHeaderSize;

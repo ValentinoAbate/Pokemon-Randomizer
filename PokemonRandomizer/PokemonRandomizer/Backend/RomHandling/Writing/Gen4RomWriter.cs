@@ -130,6 +130,8 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
                 rom.WriteByte(0); // Compression flag if compressed
             }
             dataEndOffset = dataOffset;
+            // Write overlay table offest to header
+            rom.WriteUInt32(DSFileSystemData.arm9OverlayHeaderTableOffsetOffset, headerTableOffset);
         }
 
         // For now, this just exactly copies the Arm7 data and overlay data (will modify if Arm7 data needs to be modified)
