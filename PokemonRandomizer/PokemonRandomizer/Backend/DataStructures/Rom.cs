@@ -444,9 +444,9 @@ namespace PokemonRandomizer.Backend.DataStructures
         public int ReadUInt32() => ReadUInt(4);
         /// <summary>Reads a UInt32 (4 bytes) from the given offset WARNING: any value greater than 16 bits will not be read properly </summary>
         public int ReadUInt32(int offset) => ReadUInt(offset, 4);
-        /// <summary>Reads a UInt16 (2 bytes) from the internal offset </summary>
+        /// <summary>Reads a UInt24 (3 bytes) from the internal offset </summary>
         public int ReadUInt24() => ReadUInt(3);
-        /// <summary>Reads a UInt16 (2 bytes) from the Given offset </summary>
+        /// <summary>Reads a UInt24 (3 bytes) from the given offset </summary>
         public int ReadUInt24(int offset) => ReadUInt(offset, 3);
         /// <summary>Reads a UInt16 (2 bytes) from the internal offset </summary>
         public int ReadUInt16() => ReadUInt(2);
@@ -488,6 +488,10 @@ namespace PokemonRandomizer.Backend.DataStructures
         public void WriteUInt32(int value) => WriteUInt(value, 4);
         /// <summary>Writes a Unit32 (4 bytes) to the given offset</summary>
         public void WriteUInt32(int offset, int value) => WriteUInt(offset, value, 4);
+        /// <summary>Writes a UInt24 (3 bytes) to the internal offset </summary>
+        public void WriteUInt24(int value) => WriteUInt(value, 3);
+        /// <summary>Writes a UInt24 (3 bytes) to the given offset </summary>
+        public void WriteUInt24(int offset, int value) => WriteUInt(offset, value, 3);
         /// <summary>Writes a Unit16 (2 bytes) to the internal offset</summary>
         public void WriteUInt16(int value) => WriteUInt(value, 2);
         /// <summary>Writes a Unit16 (2 bytes) to the given</summary>
