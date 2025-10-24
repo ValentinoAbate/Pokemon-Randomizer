@@ -50,6 +50,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
 
         private void WriteArm9(Rom rom, int offset, DSFileSystemData dsFileSystem, RomData data, Rom originalRom, RomMetadata metadata, XmlManager info, Settings settings, out int arm9EndOffset)
         {
+            arm9EndOffset = offset;
             // Create new arm9 data
             var originalArm9Data = dsFileSystem.GetArm9Data(originalRom, out int arm9Start, out int originalArm9Size);
             var arm9Data = new Rom(originalArm9Data.ReadBlock(arm9Start, originalArm9Size));
@@ -71,16 +72,15 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
             {
                 arm9Size = arm9Data.Length;
                 rom.WriteBlock(offset, arm9Data.File);
+                arm9EndOffset += arm9Size;
             }
 
             // Write arm9 footer (if necessary)
             if(dsFileSystem.Arm9Footer.Length > 0)
             {
                 rom.WriteBlock(dsFileSystem.Arm9Footer);
+                arm9EndOffset += dsFileSystem.Arm9Footer.Length;
             }
-
-            // Record end offset
-            arm9EndOffset = rom.InternalOffset;
 
             // Write new arm9 offset and size to header
             rom.WriteUInt32(DSFileSystemData.arm9OffsetOffset, offset);
@@ -116,7 +116,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
                 // TODO: Recompress data?
                 var data = dsFileSystem.GetOverlayContents(originalRom, overlay, out int dataS, out int dataL).ReadBlock(dataS, dataL);
                 rom.WriteBlock(dataOffset, data);
-                dataOffset = rom.InternalOffset;
+                dataOffset += data.Length;
                 // Write Header
                 rom.Seek(headerTableOffset + (overlay.ID * DSFileSystemData.arm9OverlayHeaderSize));
                 rom.WriteUInt32(overlay.ID);
@@ -146,11 +146,11 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
             // Arm7 overlay data
             int originalArm7OverlayOffset = originalRom.ReadUInt32(DSFileSystemData.arm7OverlayOffsetOffset);
             int arm7OverlaySize = originalRom.ReadUInt32(DSFileSystemData.arm7SizeOffset);
-            int arm7OverlayOffset = rom.InternalOffset;
+            int arm7OverlayOffset = offset + arm7Size;
 
             rom.WriteBlock(arm7OverlayOffset, originalRom.ReadBlock(originalArm7OverlayOffset, arm7OverlaySize));
             
-            arm7EndOffset = rom.InternalOffset;
+            arm7EndOffset = arm7OverlayOffset + arm7OverlaySize;
 
             // Write Arm7 and Arm7 overlay offset to header
             // No need to write sizes because we are not modifying data
@@ -162,7 +162,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
         {
             int originalBannerOffset = originalRom.ReadUInt32(DSFileSystemData.bannerOffsetOffset);
             rom.WriteBlock(offset, originalRom.ReadBlock(originalBannerOffset, DSFileSystemData.bannerSize));
-            bannerEndOffset = rom.InternalOffset;
+            bannerEndOffset = offset + DSFileSystemData.bannerSize;
 
             // Write new banner offset to header
             rom.WriteUInt32(DSFileSystemData.bannerOffsetOffset, offset);
@@ -175,7 +175,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
             int fntSize = originalRom.ReadUInt32(DSFileSystemData.fntOffsetOffset);
 
             rom.WriteBlock(offset, originalRom.ReadBlock(originalFntOffset, fntSize));
-            filenameTableEndOffset = rom.InternalOffset;
+            filenameTableEndOffset = offset + fntSize;
 
             rom.WriteUInt32(DSFileSystemData.fntOffsetOffset, offset);
         }
