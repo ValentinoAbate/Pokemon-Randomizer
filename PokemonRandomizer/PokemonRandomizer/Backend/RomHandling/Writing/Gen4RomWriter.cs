@@ -31,7 +31,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
             // Write Arm9 data at the first aligned location after the header
             WriteArm9(rom, Align(headerSize), dsFileSystem, data, originalRom, metadata, info, settings, out int arm9OverlayTableOffset);
 
-            // Write Arm7 data at the first aligned location after the arm9 overlay table
+            // Write Arm7 data at the first aligned location after the arm9 overlay table (arm9 table will be written later)
             WriteArm7(rom, Align(arm9OverlayTableOffset + dsFileSystem.Arm9OverlayTableSize), originalRom, out int arm7EndOffset);
 
             // Copy banner to new rom at the 1st aligned location after arm7 data
@@ -40,6 +40,11 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
             // Copy filename table (fnt) to new rom at the 1st aligned location after banner
             WriteFilenameTable(rom, Align(bannerEndOffset), originalRom, out int filenameTableEndOffset);
 
+            // File allocation table offset
+            int fatOffset = Align(filenameTableEndOffset);
+
+            // Write Arm9 overlay data file arm0 overlay table
+            WriteArm9Overlays(rom, arm9OverlayTableOffset, fatOffset + dsFileSystem.FATSize, dsFileSystem, originalRom, out int arm9OverlayDataEndOffset);
             return rom;
         }
 
@@ -98,6 +103,32 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
             {
                 arm9.WriteUInt16(MoveToInternalIndex(data.GetTmMove(i)));
             }
+        }
+
+        private void WriteArm9Overlays(Rom rom, int headerTableOffset, int dataStartOffset, DSFileSystemData dsFileSystem, Rom originalRom, out int dataEndOffset)
+        {
+            int dataOffset = dataStartOffset;
+            foreach (var overlay in dsFileSystem.Arm9Overlays)
+            {
+                // Write Data
+                dataOffset = Align(dataOffset);
+                // TODO: Recompress data?
+                var data = dsFileSystem.GetOverlayContents(originalRom, overlay, out int dataS, out int dataL).ReadBlock(dataS, dataL);
+                rom.WriteBlock(dataOffset, data);
+                dataOffset = rom.InternalOffset;
+                // Write Header
+                rom.Seek(headerTableOffset + (overlay.ID * DSFileSystemData.arm9OverlayHeaderSize));
+                rom.WriteUInt32(overlay.ID);
+                rom.WriteUInt32(overlay.RamAddress); // TODO: How to validate? research
+                rom.WriteUInt32(dataL);
+                rom.WriteUInt32(overlay.BssSize);
+                rom.WriteUInt32(overlay.StaticStart);
+                rom.WriteUInt32(overlay.StaticEnd);
+                rom.WriteUInt32(overlay.FileID);
+                rom.WriteUInt24(0); // Compressed size if compressed
+                rom.WriteByte(0); // Compression flag if compressed
+            }
+            dataEndOffset = dataOffset;
         }
 
         // For now, this just exactly copies the Arm7 data and overlay data (will modify if Arm7 data needs to be modified)
