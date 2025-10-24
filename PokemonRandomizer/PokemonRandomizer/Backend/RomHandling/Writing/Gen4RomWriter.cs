@@ -45,6 +45,10 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
 
             // Write Arm9 overlay data file arm0 overlay table
             WriteArm9Overlays(rom, arm9OverlayTableOffset, fatOffset + dsFileSystem.FATSize, dsFileSystem, originalRom, out int arm9OverlayDataEndOffset);
+
+            // Write file allocation table and file data
+            WriteFiles(rom, fatOffset, arm9OverlayDataEndOffset, dsFileSystem, originalRom, out _);
+
             return rom;
         }
 
@@ -178,6 +182,27 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
             filenameTableEndOffset = offset + fntSize;
 
             rom.WriteUInt32(DSFileSystemData.fntOffsetOffset, offset);
+        }
+
+        // Write file allocation table (FAT) and files
+        private void WriteFiles(Rom rom, int fatOffset, int dataStartOffset, DSFileSystemData dsFileSystem, Rom originalRom, out int fileDataEndOffset)
+        {
+            int dataOffset = dataStartOffset;
+            for (int i = 0; i < dsFileSystem.FileCount; ++i)
+            {
+                dataOffset = Align(dataOffset);
+                // TODO: custom data handling
+                dsFileSystem.GetFile(i, out int fileOffset, out int fileSize);
+                rom.WriteBlock(dataOffset, originalRom.ReadBlock(fileOffset, fileSize));
+                // Write FAT entry
+                rom.Seek(fatOffset + (i * DSFileSystemData.fileHeaderSize));
+                rom.WriteUInt32(dataOffset);
+                rom.WriteUInt32(fileSize);
+                dataOffset += fileSize;
+            }
+            fileDataEndOffset = dataOffset;
+            rom.WriteUInt32(DSFileSystemData.fatOffsetOffset, fatOffset);
+            // FAT size is not writted because adding additional files is not supported
         }
     }
 }

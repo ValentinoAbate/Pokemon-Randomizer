@@ -12,6 +12,7 @@ namespace PokemonRandomizer.Backend.DataStructures.DS
         public const int arm7SizeOffset = 0x3C;
         public const int fntOffsetOffset = 0x40;
         public const int fntSizeOffset = 0x44;
+        public const int fatOffsetOffset = 0x48;
         public const int arm9OverlayHeaderTableOffsetOffset = 0x50;
         public const int arm9OverlayHeaderSize = 32;
         public const int arm7OverlayOffsetOffset = 0x58;
@@ -21,12 +22,13 @@ namespace PokemonRandomizer.Backend.DataStructures.DS
 
         private const char pathSeparator = '/';
         private const int directoryOffset = 0xF000;
-        private const int fileHeaderSize = 8;
+        public const int fileHeaderSize = 8;
 
         private const uint nitroFooterSigniture = 0xDEC00621;
         private const int nitroFooterSize = 12;
         // File Allocation Table size
         public int FATSize => fileData.Count * fileHeaderSize;
+        public int FileCount => fileData.Count;
         private readonly Dictionary<int, string> filenames;
         private readonly Dictionary<string, (int offset, int length)> fileData;
         private readonly Dictionary<int, Arm9Overlay> arm9OverlaysByFileID;
