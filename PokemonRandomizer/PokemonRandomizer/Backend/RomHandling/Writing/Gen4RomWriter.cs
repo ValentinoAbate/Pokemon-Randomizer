@@ -202,7 +202,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
             }
             fileDataEndOffset = dataOffset;
             rom.WriteUInt32(DSFileSystemData.fatOffsetOffset, fatOffset);
-            // FAT size is not writted because adding additional files is not supported
+            // FAT size is not written because adding additional files is not supported
         }
     }
 }
