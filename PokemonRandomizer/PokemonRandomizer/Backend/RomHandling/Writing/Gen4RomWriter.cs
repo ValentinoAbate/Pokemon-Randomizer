@@ -13,7 +13,9 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
     {
         private const int headerSizeOffset = 0x84;
         private const int alignment = 0b0001_1111_1111;
-        private static int Align(int offset) => (offset + alignment) & ~alignment;
+        private const int applicationEndAlignment = 0b0011;
+        private static int Align(int offset) => Align(offset, alignment);
+        private static int Align(int offset, int alignment) => (offset + alignment) & ~alignment;
         protected override IIndexTranslator IndexTranslator => Gen4IndexTranslator.Main;
 
         public override Rom Write(RomData data, Rom originalRom, RomMetadata metadata, XmlManager info, Settings settings)
@@ -47,7 +49,9 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
             WriteArm9Overlays(rom, arm9OverlayTableOffset, fatOffset + dsFileSystem.FATSize, dsFileSystem, originalRom, out int arm9OverlayDataEndOffset);
 
             // Write file allocation table and file data
-            WriteFiles(rom, fatOffset, arm9OverlayDataEndOffset, dsFileSystem, originalRom, out _);
+            WriteFiles(rom, fatOffset, arm9OverlayDataEndOffset, dsFileSystem, originalRom, out int fileEndOffset);
+
+            WriteApplicationEnd(rom, fileEndOffset, out int applicationEndOffset);
 
             return rom;
         }
@@ -203,6 +207,17 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
             fileDataEndOffset = dataOffset;
             rom.WriteUInt32(DSFileSystemData.fatOffsetOffset, fatOffset);
             // FAT size is not written because adding additional files is not supported
+        }
+
+        private void WriteApplicationEnd(Rom rom, int fileEndOffset, out int applicationEndOffset)
+        {
+            applicationEndOffset = Align(fileEndOffset, applicationEndAlignment);
+            // Mark end of file if needed
+            if(applicationEndOffset != fileEndOffset)
+            {
+                rom.WriteByte(applicationEndOffset - 1, 0x00);
+            }
+            rom.WriteUInt32(DSFileSystemData.applicationEndOffsetOffset, applicationEndOffset);
         }
     }
 }
