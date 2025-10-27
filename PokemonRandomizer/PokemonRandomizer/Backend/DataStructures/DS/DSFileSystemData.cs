@@ -6,6 +6,8 @@ namespace PokemonRandomizer.Backend.DataStructures.DS
 {
     public class DSFileSystemData
     {
+        // DS Header
+        public const int deviceCapacityOffset = 0x14;
         public const int arm9OffsetOffset = 0x20;
         public const int arm9SizeOffset = 0x2C;
         public const int arm7OffsetOffset = 0x30;

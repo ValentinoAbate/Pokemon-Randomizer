@@ -53,6 +53,8 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
 
             WriteApplicationEnd(rom, fileEndOffset, out int applicationEndOffset);
 
+            WriteDeviceCapacity(rom, applicationEndOffset);
+
             return rom;
         }
 
@@ -218,6 +220,21 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
                 rom.WriteByte(applicationEndOffset - 1, 0x00);
             }
             rom.WriteUInt32(DSFileSystemData.applicationEndOffsetOffset, applicationEndOffset);
+        }
+
+        private void WriteDeviceCapacity(Rom rom, int romSize)
+        {
+            // Device capacity = 128kb * (2^x) where x is the byte at 0x14
+            // x should be the smallest value such that device capacity >= romSize
+            const int kb128 = 131072;
+            for (byte x = 0; x <= byte.MaxValue; x++)
+            {
+                if((kb128 * Math.Pow(2, x)) >= romSize)
+                {
+                    rom.WriteByte(DSFileSystemData.deviceCapacityOffset, x);
+                    return;
+                }
+            }
         }
     }
 }
