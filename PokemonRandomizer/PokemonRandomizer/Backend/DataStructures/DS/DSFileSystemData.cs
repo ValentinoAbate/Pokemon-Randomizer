@@ -32,7 +32,7 @@ namespace PokemonRandomizer.Backend.DataStructures.DS
         // File Allocation Table size
         public int FATSize => fileData.Count * fileHeaderSize;
         public int FileCount => fileData.Count;
-        private readonly Dictionary<int, string> filenames;
+        private readonly Dictionary<int, string> filePaths;
         private readonly Dictionary<string, (int offset, int length)> fileData;
         private readonly Dictionary<int, Arm9Overlay> arm9OverlaysByFileID;
         public int Arm9OverlayTableSize => arm9Overlays.Length * arm9OverlayHeaderSize;
@@ -69,7 +69,7 @@ namespace PokemonRandomizer.Backend.DataStructures.DS
 
             // Get directory and file names
             var directoryNames = new string[dircount];
-            filenames = new Dictionary<int, string>();
+            var filenames = new Dictionary<int, string>();
             var fileDirectories = new Dictionary<int, int>();
             for (int i = 0; i < dircount; i++)
             {
@@ -148,6 +148,7 @@ namespace PokemonRandomizer.Backend.DataStructures.DS
             arm9Overlays = new Arm9Overlay[arm9OverlayCount];
 
             // parse files
+            filePaths = new Dictionary<int, string>(filenames.Count);
             foreach (var kvp in filenames)
             {
                 int fileID = kvp.Key;
@@ -162,7 +163,7 @@ namespace PokemonRandomizer.Backend.DataStructures.DS
                 rom.Seek(fatOffset + (fileID * fileHeaderSize));
                 int start = rom.ReadUInt32();
                 int end = rom.ReadUInt32();
-                AddFile(fullFilename, start, end - start);
+                AddFile(fullFilename, start, end - start, fileID);
             }
 
             // parse overlays
@@ -208,11 +209,12 @@ namespace PokemonRandomizer.Backend.DataStructures.DS
             }
         }
 
-        private void AddFile(string fullFilename, int offset, int length)
+        private void AddFile(string fullFilename, int offset, int length, int fileID)
         {
             if(fileData.ContainsKey(fullFilename))
                 return;
             fileData.Add(fullFilename, (offset, length));
+            filePaths.Add(fileID, fullFilename);
         }
 
         private void AddArm9Overlay(int index, int fileID, Arm9Overlay entry)
@@ -257,7 +259,7 @@ namespace PokemonRandomizer.Backend.DataStructures.DS
 
         public bool GetFile(int id, out int offset, out int fileLength)
         {
-            if (!filenames.TryGetValue(id, out string filename))
+            if (!filePaths.TryGetValue(id, out string filename))
             {
                 offset = Rom.nullPointer;
                 fileLength = 0;

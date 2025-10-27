@@ -194,11 +194,12 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
         private void WriteFiles(Rom rom, int fatOffset, int dataStartOffset, DSFileSystemData dsFileSystem, Rom originalRom, out int fileDataEndOffset)
         {
             int dataOffset = dataStartOffset;
+            int firstFileID = dsFileSystem.Arm9Overlays.Count;
             for (int i = 0; i < dsFileSystem.FileCount; ++i)
             {
                 dataOffset = Align(dataOffset);
                 // TODO: custom data handling
-                dsFileSystem.GetFile(i, out int fileOffset, out int fileSize);
+                dsFileSystem.GetFile(i + firstFileID, out int fileOffset, out int fileSize);
                 rom.WriteBlock(dataOffset, originalRom.ReadBlock(fileOffset, fileSize));
                 // Write FAT entry
                 rom.Seek(fatOffset + (i * DSFileSystemData.fileHeaderSize));
