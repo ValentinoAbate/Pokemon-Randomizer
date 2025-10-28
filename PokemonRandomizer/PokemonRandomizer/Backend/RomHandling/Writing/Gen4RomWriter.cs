@@ -111,34 +111,6 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
             }
         }
 
-        // TODO: Custom arm9 overlay data
-        private void WriteArm9Overlays(Rom rom, int headerTableOffset, int dataStartOffset, DSFileSystemData dsFileSystem, Rom originalRom, out int dataEndOffset)
-        {
-            int dataOffset = dataStartOffset;
-            foreach (var overlay in dsFileSystem.Arm9Overlays)
-            {
-                // Write Data
-                dataOffset = Align(dataOffset);
-                // TODO: Recompress data?
-                var data = dsFileSystem.GetOverlayContents(originalRom, overlay, out int dataS, out int dataL).ReadBlock(dataS, dataL);
-                rom.WriteBlock(dataOffset, data);
-                dataOffset += data.Length;
-                // Write Header
-                rom.Seek(headerTableOffset + (overlay.ID * DSFileSystemData.arm9OverlayHeaderSize));
-                rom.WriteUInt32(overlay.ID);
-                rom.WriteUInt32(overlay.RamAddress);
-                rom.WriteUInt32(dataL);
-                rom.WriteUInt32(overlay.BssSize);
-                rom.WriteUInt32(overlay.StaticStart);
-                rom.WriteUInt32(overlay.StaticEnd);
-                rom.WriteUInt32(overlay.FileID);
-                rom.WriteUInt24(0); // Compressed size if compressed
-                rom.WriteByte(0); // Compression flag if compressed
-            }
-            dataEndOffset = dataOffset;
-
-        }
-
         // For now, this just exactly copies the Arm7 data and overlay data (will modify if Arm7 data needs to be modified)
         private void WriteArm7(Rom rom, int offset, Rom originalRom, out int arm7EndOffset)
         {
