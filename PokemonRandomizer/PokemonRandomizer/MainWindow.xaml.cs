@@ -330,12 +330,27 @@ namespace PokemonRandomizer
         private byte[] GetRandomizedRom(string seed)
         {
             var randomizedData = Randomize(seed);
-            if(Metadata.Gen == Generation.III)
+            if(TryGetRomWriter(out var writer))
             {
-                var writer = new Gen3RomWriter();
                 return writer.Write(randomizedData, Rom, Metadata, RomInfo, AppSettings).File;
             }
             throw new Exception($"Attempting to write randomized data to Rom of unsupported generation (Gen {Metadata.Gen})");
+        }
+
+        private bool TryGetRomWriter(out RomWriter romWriter)
+        {
+            if (Metadata.Gen == Generation.III)
+            {
+                romWriter = new Gen3RomWriter();
+                return true;
+            }
+            else if(Metadata.Gen == Generation.IV)
+            {
+                romWriter = new Gen4RomWriter();
+                return true;
+            }
+            romWriter = null;
+            return false;
         }
 
         #region INotifyPropertyChanged Implementation
@@ -521,18 +536,16 @@ namespace PokemonRandomizer
 
         private void SaveCleanROM(object sender, RoutedEventArgs e)
         {
-            if (Metadata.Gen == Generation.III)
+            if(TryGetRomWriter(out var writer))
             {
-                var writer = new Gen3RomWriter();
                 WriteRom(() => writer.Write(RomData, Rom, Metadata, RomInfo, cleanSettings).File, "Saving Clean Rom...");
             }
         }
-
+        
         private void SaveCleanROMAndDiff(object sender, RoutedEventArgs e)
         {
-            if (Metadata.Gen == Generation.III)
+            if(TryGetRomWriter(out var writer))
             {
-                var writer = new Gen3RomWriter();
                 Rom rom2 = null;
                 byte[] WriteClean()
                 {
