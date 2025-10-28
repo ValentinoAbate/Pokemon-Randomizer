@@ -219,7 +219,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
                 // Write FAT entry
                 rom.Seek(fatOffset + (i * DSFileSystemData.fileHeaderSize));
                 rom.WriteUInt32(dataOffset);
-                rom.WriteUInt32(fileSize);
+                rom.WriteUInt32(dataOffset + fileSize);
                 dataOffset += fileSize;
             }
             fileDataEndOffset = dataOffset;
