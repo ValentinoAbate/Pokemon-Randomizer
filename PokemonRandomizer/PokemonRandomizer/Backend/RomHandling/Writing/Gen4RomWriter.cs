@@ -86,7 +86,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
             // Write arm9 footer (if necessary)
             if(dsFileSystem.Arm9Footer.Length > 0)
             {
-                rom.WriteBlock(dsFileSystem.Arm9Footer);
+                rom.WriteBlock(arm9EndOffset, dsFileSystem.Arm9Footer);
                 arm9EndOffset += dsFileSystem.Arm9Footer.Length;
             }
 
