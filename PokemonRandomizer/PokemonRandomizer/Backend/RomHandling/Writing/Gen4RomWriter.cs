@@ -1,7 +1,6 @@
 ﻿using PokemonRandomizer.Backend.Constants;
 using PokemonRandomizer.Backend.DataStructures;
 using PokemonRandomizer.Backend.DataStructures.DS;
-using PokemonRandomizer.Backend.EnumTypes;
 using PokemonRandomizer.Backend.RomHandling.IndexTranslators;
 using PokemonRandomizer.Backend.Utilities;
 using System;
@@ -45,11 +44,8 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
             // File allocation table offset
             int fatOffset = Align(filenameTableEndOffset);
 
-            // Write Arm9 overlay data file arm0 overlay table
-            WriteArm9Overlays(rom, arm9OverlayTableOffset, fatOffset + dsFileSystem.FATSize, dsFileSystem, originalRom, out int arm9OverlayDataEndOffset);
-
             // Write file allocation table and file data
-            WriteFiles(rom, fatOffset, arm9OverlayDataEndOffset, dsFileSystem, originalRom, out int fileEndOffset);
+            WriteFiles(rom, fatOffset, arm9OverlayTableOffset, dsFileSystem, originalRom, out int fileEndOffset);
 
             WriteApplicationEnd(rom, fileEndOffset, out int applicationEndOffset);
 
@@ -140,8 +136,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
                 rom.WriteByte(0); // Compression flag if compressed
             }
             dataEndOffset = dataOffset;
-            // Write overlay table offest to header
-            rom.WriteUInt32(DSFileSystemData.arm9OverlayHeaderTableOffsetOffset, headerTableOffset);
+
         }
 
         // For now, this just exactly copies the Arm7 data and overlay data (will modify if Arm7 data needs to be modified)
@@ -190,17 +185,37 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
             rom.WriteUInt32(DSFileSystemData.fntOffsetOffset, offset);
         }
 
-        // Write file allocation table (FAT) and files
-        private void WriteFiles(Rom rom, int fatOffset, int dataStartOffset, DSFileSystemData dsFileSystem, Rom originalRom, out int fileDataEndOffset)
+        // Write file allocation table (FAT) and files (including arm9 overlays)
+        private void WriteFiles(Rom rom, int fatOffset, int arm9OverlayTableOffset, DSFileSystemData dsFileSystem, Rom originalRom, out int fileDataEndOffset)
         {
-            int dataOffset = dataStartOffset;
-            int firstFileID = dsFileSystem.Arm9Overlays.Count;
+            int dataOffset = fatOffset + dsFileSystem.FATSize;
             for (int i = 0; i < dsFileSystem.FileCount; ++i)
             {
                 dataOffset = Align(dataOffset);
-                // TODO: custom data handling
-                dsFileSystem.GetFile(i + firstFileID, out int fileOffset, out int fileSize);
-                rom.WriteBlock(dataOffset, originalRom.ReadBlock(fileOffset, fileSize));
+                int fileSize;
+                if (dsFileSystem.TryGetArm9OverlayByFileID(i, out Arm9Overlay overlay)) 
+                {
+                    // TODO: Custom Data
+                    // TODO: Recompress data?
+                    var data = dsFileSystem.GetOverlayContents(originalRom, overlay, out int fileStart, out fileSize).ReadBlock(fileStart, fileSize);
+                    rom.WriteBlock(dataOffset, data);
+                    // Write Header
+                    rom.Seek(arm9OverlayTableOffset + (overlay.ID * DSFileSystemData.arm9OverlayHeaderSize));
+                    rom.WriteUInt32(overlay.ID);
+                    rom.WriteUInt32(overlay.RamAddress);
+                    rom.WriteUInt32(fileSize);
+                    rom.WriteUInt32(overlay.BssSize);
+                    rom.WriteUInt32(overlay.StaticStart);
+                    rom.WriteUInt32(overlay.StaticEnd);
+                    rom.WriteUInt32(overlay.FileID);
+                    rom.WriteUInt24(0); // Compressed size if compressed
+                    rom.WriteByte(0); // Compression flag if compressed
+                }
+                else if(dsFileSystem.GetFile(i, out int fileOffset, out fileSize))
+                {
+                    // TODO: custom data handling
+                    rom.WriteBlock(dataOffset, originalRom.ReadBlock(fileOffset, fileSize));
+                }
                 // Write FAT entry
                 rom.Seek(fatOffset + (i * DSFileSystemData.fileHeaderSize));
                 rom.WriteUInt32(dataOffset);
@@ -208,8 +223,12 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
                 dataOffset += fileSize;
             }
             fileDataEndOffset = dataOffset;
+
+            // Write FAT offset to header (FAT size is not written because adding additional files is not supported)
             rom.WriteUInt32(DSFileSystemData.fatOffsetOffset, fatOffset);
-            // FAT size is not written because adding additional files is not supported
+            
+            // Write arm9 overlay table offset to header
+            rom.WriteUInt32(DSFileSystemData.arm9OverlayHeaderTableOffsetOffset, arm9OverlayTableOffset);
         }
 
         private void WriteApplicationEnd(Rom rom, int fileEndOffset, out int applicationEndOffset)
