@@ -50,8 +50,11 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
                 Logger.main.Info(line);
             }
 
-
+#if !DEBUG
             throw new NotImplementedException("Gen IV Rom parsing not supported");
+#else
+            return data;
+#endif
         }
 
         private void DefineTypes(RomData data)
