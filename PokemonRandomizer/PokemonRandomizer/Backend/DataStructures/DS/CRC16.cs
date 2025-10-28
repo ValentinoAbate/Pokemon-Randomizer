@@ -30,14 +30,14 @@
 
         private const uint mask = 0xFF;
 
-        public static short Calculate(byte[] data, int offset, int length)
+        public static uint Calculate(byte[] data)
         {
             uint crc = 0xFFFF;
-            for (int i = 0; i < length; i++)
+            for (int i = 0; i < data.Length; i++)
             {
-                crc = ((crc >> 8) ^ table[(crc ^ data[i + offset]) & mask]);
+                crc = ((crc >> 8) ^ table[(crc ^ data[i]) & mask]);
             }
-            return (short)crc;
+            return (crc & 0xFFFF);
         }
     }
 }

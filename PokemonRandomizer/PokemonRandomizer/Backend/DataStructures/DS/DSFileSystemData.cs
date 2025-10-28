@@ -21,6 +21,7 @@ namespace PokemonRandomizer.Backend.DataStructures.DS
         public const int arm7OverlaySizeOffset = 0x5C;
         public const int bannerOffsetOffset = 0x68;
         public const int applicationEndOffsetOffset = 0x80;
+        public const int crcOffset = 0x15E;
         public const int bannerSize = 0x840;
 
         private const char pathSeparator = '/';

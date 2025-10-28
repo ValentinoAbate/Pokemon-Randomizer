@@ -51,6 +51,9 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
 
             WriteDeviceCapacity(rom, applicationEndOffset);
 
+            // Write Header CRC Checksum
+            rom.WriteUInt16(DSFileSystemData.crcOffset, (int)CRC16.Calculate(rom.ReadBlock(0, DSFileSystemData.crcOffset)));
+
             return rom;
         }
 
