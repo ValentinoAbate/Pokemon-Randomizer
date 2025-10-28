@@ -26,8 +26,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
             // Get Header Size
             int headerSize = originalRom.ReadUInt32(headerSizeOffset);
             // Copy original header data
-            rom.Seek(0);
-            rom.WriteBlock(originalRom.ReadBlock(0, headerSize));
+            rom.WriteBlock(0, originalRom.ReadBlock(0, headerSize));
 
             // Write Arm9 data at the first aligned location after the header
             WriteArm9(rom, Align(headerSize), dsFileSystem, data, originalRom, metadata, info, settings, out int arm9OverlayTableOffset);
