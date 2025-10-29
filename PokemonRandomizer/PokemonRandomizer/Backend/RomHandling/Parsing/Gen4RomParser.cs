@@ -280,7 +280,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
             return tmMoves;
         }
 
-        private List<Pokemon> ReadStarters(Rom rom, DSFileSystemData dsFileSytem, XmlManager info, RomMetadata metadata)
+        private List<Pokemon> ReadStarters(Rom rom, DSFileSystemData dsFileSystem, XmlManager info, RomMetadata metadata)
         {
             if (metadata.IsHGSS)
             {
@@ -293,7 +293,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
             }
             int overlayId = info.Overlay(ElementNames.starterPokemon);
             int offset = info.Offset(ElementNames.starterPokemon);
-            var overlay = dsFileSytem.GetArm9OverlayData(rom, overlayId, out int overlayStart, out _);
+            var overlay = dsFileSystem.GetArm9OverlayData(rom, overlayId, out int overlayStart, out _);
             overlay.Seek(overlayStart + offset);
             
             var starters = new List<Pokemon>(3);
