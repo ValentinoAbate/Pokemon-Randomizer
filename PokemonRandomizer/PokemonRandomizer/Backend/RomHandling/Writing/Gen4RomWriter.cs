@@ -27,6 +27,8 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
             // Write override data to files (by file ID)
             var fileOverrides = new Dictionary<int, Rom>();
 
+            WriteStarters(data, originalRom, dsFileSystem, metadata, info, fileOverrides);
+
             // Do actual writing to output rom
             var rom = new Rom(originalRom.Length, 0xFF); // Set to all 0xFF?
 
@@ -61,6 +63,41 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
             rom.WriteUInt16(DSFileSystemData.crcOffset, (int)CRC16.Calculate(rom.ReadBlock(0, DSFileSystemData.crcOffset)));
 
             return rom;
+        }
+
+        private void WriteStarters(RomData data, Rom originalRom, DSFileSystemData dsFileSystem, RomMetadata metadata, XmlManager info, Dictionary<int, Rom> fileOverrides)
+        {
+            if (!info.HasElement(ElementNames.starterPokemon))
+            {
+                return;
+            }
+            if (metadata.IsHGSS)
+            {
+                //TODO
+                return;
+            }
+            int overlayId = info.Overlay(ElementNames.starterPokemon);
+            int offset = info.Offset(ElementNames.starterPokemon);
+            var overlay = GetOverrideOverlay(overlayId, originalRom, dsFileSystem, fileOverrides);
+            overlay.Seek(offset);
+            foreach (var starter in data.Starters)
+            {
+                overlay.WriteUInt16(PokemonToInternalIndex(starter));
+                overlay.Skip(2);
+            }
+            // TODO: Fix rival scripts
+            // TODO: Fix starter picking screen
+        }
+
+        private Rom GetOverrideOverlay(int overlayId, Rom originalRom, DSFileSystemData dsFileSystem, Dictionary<int, Rom> fileOverrides)
+        {
+            if (!fileOverrides.TryGetValue(overlayId, out var overlay))
+            {
+                var originalOverlay = dsFileSystem.GetArm9OverlayData(originalRom, overlayId, out int overlayStart, out int overlaySize);
+                overlay = new Rom(originalOverlay.ReadBlock(overlayStart, overlaySize));
+                fileOverrides.Add(overlayId, overlay);
+            }
+            return overlay;
         }
 
         private void WriteArm9(Rom rom, int offset, DSFileSystemData dsFileSystem, RomData data, Rom originalRom, RomMetadata metadata, XmlManager info, Settings settings, out int arm9EndOffset)
