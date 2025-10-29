@@ -45,6 +45,8 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
             ReadMoveTutorCompatibility(pokemon, rom, dsFileSystem, info, metadata);
             data.Pokemon = pokemon;
 
+            data.Starters = ReadStarters(rom, dsFileSystem, info, metadata);
+
             // DEBUG: Read in the item data
             data.ItemData = new List<ItemData>();
 
@@ -276,6 +278,31 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
                 hmMoves[i] = InternalIndexToMove(arm9.ReadUInt16());
             }
             return tmMoves;
+        }
+
+        private List<Pokemon> ReadStarters(Rom rom, DSFileSystemData dsFileSytem, XmlManager info, RomMetadata metadata)
+        {
+            if (metadata.IsHGSS)
+            {
+                //TODO
+                return new List<Pokemon>();
+            }
+            if (!info.HasElement(ElementNames.starterPokemon))
+            {
+                return new List<Pokemon>();
+            }
+            int overlayId = info.Overlay(ElementNames.starterPokemon);
+            int offset = info.Offset(ElementNames.starterPokemon);
+            var overlay = dsFileSytem.GetArm9OverlayData(rom, overlayId, out int overlayStart, out _);
+            overlay.Seek(overlayStart + offset);
+            
+            var starters = new List<Pokemon>(3);
+            starters.Add(InternalIndexToPokemon(overlay.ReadUInt16()));
+            overlay.Skip(2);
+            starters.Add(InternalIndexToPokemon(overlay.ReadUInt16()));
+            overlay.Skip(2);
+            starters.Add(InternalIndexToPokemon(overlay.ReadUInt16()));
+            return starters;
         }
     }
 }

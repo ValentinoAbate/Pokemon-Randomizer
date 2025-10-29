@@ -42,6 +42,7 @@
 		<moveTutorMoves overlay="5" offset="0x2FF64" num="38" size="12"/>
 		<moveTutorCompat overlay="5" size="5" offset="0x3012C"/>
 		<eggMoves overlay ="5" offset="0x2921A"/>
+		<starterPokemon overlay ="78" offset="0x1BC0"/>
 		<text filePath="msgdata/pl_msg.narc"/>
 
 		<!-- Text Offsets -->
@@ -62,6 +63,7 @@
 
 		<inheritFrom>dppConstants</inheritFrom>
 		<eggMoves overlay ="5" offset="0x20660"/>
+		<starterPokemon overlay ="64" offset="0x1B88"/>
 		<text filePath="msgdata/msg.narc"/>
 	</dpConstants>
 
