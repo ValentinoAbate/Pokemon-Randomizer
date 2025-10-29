@@ -1,10 +1,12 @@
 ﻿using PokemonRandomizer.Backend.Constants;
 using PokemonRandomizer.Backend.DataStructures;
 using PokemonRandomizer.Backend.DataStructures.DS;
+using PokemonRandomizer.Backend.EnumTypes;
 using PokemonRandomizer.Backend.RomHandling.IndexTranslators;
 using PokemonRandomizer.Backend.Utilities;
 using System;
 using System.Collections.Generic;
+using System.Runtime.Intrinsics.Arm;
 
 namespace PokemonRandomizer.Backend.RomHandling.Writing
 {
@@ -21,6 +23,11 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
         {
             // Parse the original NDS file structure
             var dsFileSystem = new DSFileSystemData(originalRom);
+            
+            // Write override data to files (by file ID)
+            var fileOverrides = new Dictionary<int, Rom>();
+
+            // Do actual writing to output rom
             var rom = new Rom(originalRom.Length, 0xFF); // Set to all 0xFF?
 
             // Get Header Size
@@ -44,7 +51,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
             int fatOffset = Align(filenameTableEndOffset);
 
             // Write file allocation table and file data
-            WriteFiles(rom, fatOffset, arm9OverlayTableOffset, dsFileSystem, originalRom, out int fileEndOffset);
+            WriteFiles(fileOverrides, rom, fatOffset, arm9OverlayTableOffset, dsFileSystem, originalRom, out int fileEndOffset);
 
             WriteApplicationEnd(rom, fileEndOffset, out int applicationEndOffset);
 
@@ -160,7 +167,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
         }
 
         // Write file allocation table (FAT) and files (including arm9 overlays)
-        private void WriteFiles(Rom rom, int fatOffset, int arm9OverlayTableOffset, DSFileSystemData dsFileSystem, Rom originalRom, out int fileDataEndOffset)
+        private void WriteFiles(Dictionary<int, Rom> fileOverrides, Rom rom, int fatOffset, int arm9OverlayTableOffset, DSFileSystemData dsFileSystem, Rom originalRom, out int fileDataEndOffset)
         {
             int dataOffset = fatOffset + dsFileSystem.FATSize;
             for (int i = 0; i < dsFileSystem.FileCount; ++i)
@@ -168,10 +175,18 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
                 dataOffset = Align(dataOffset);
                 int fileSize;
                 if (dsFileSystem.TryGetArm9OverlayByFileID(i, out Arm9Overlay overlay)) 
-                {
-                    // TODO: Custom Data
+                {  
+                    byte[] data;
+                    if(fileOverrides.TryGetValue(i, out var overrideData))
+                    {
+                        data = overrideData.File;
+                        fileSize = data.Length;
+                    }
+                    else
+                    {
+                        data = dsFileSystem.GetOverlayContents(originalRom, overlay, out int fileStart, out fileSize).ReadBlock(fileStart, fileSize);
+                    }
                     // TODO: Recompress data?
-                    var data = dsFileSystem.GetOverlayContents(originalRom, overlay, out int fileStart, out fileSize).ReadBlock(fileStart, fileSize);
                     rom.WriteBlock(dataOffset, data);
                     // Write Header
                     rom.Seek(arm9OverlayTableOffset + (overlay.ID * DSFileSystemData.arm9OverlayHeaderSize));
@@ -185,9 +200,13 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
                     rom.WriteUInt24(0); // Compressed size if compressed
                     rom.WriteByte(0); // Compression flag if compressed
                 }
+                else if(fileOverrides.TryGetValue(i, out var fileOverride))
+                {
+                    rom.WriteBlock(fileOverride.File);
+                    fileSize = fileOverride.Length;
+                }
                 else if(dsFileSystem.GetFile(i, out int fileOffset, out fileSize))
                 {
-                    // TODO: custom data handling
                     rom.WriteBlock(dataOffset, originalRom.ReadBlock(fileOffset, fileSize));
                 }
                 // Write FAT entry
