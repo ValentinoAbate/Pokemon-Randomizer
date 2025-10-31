@@ -25,7 +25,6 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
             // TM, HM, and MT Moves
             data.TMMoves = ReadTmMoves(rom, dsFileSystem, info, out data.HMMoves);
             data.TutorMoves = ReadMoveTutorMoves(rom, dsFileSystem, info);
-            Logger.main.Info(string.Join(", ", data.TutorMoves));
             // Pokemon Base Stats
             var pokemon = ReadPokemonBaseStats(rom, dsFileSystem, info);
             // Egg Moves
