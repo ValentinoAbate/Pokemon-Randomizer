@@ -43,6 +43,7 @@
 		<moveTutorCompat overlay="5" size="5" offset="0x3012C"/>
 		<eggMoves overlay ="5" offset="0x2921A"/>
 		<starterPokemon overlay ="78" offset="0x1BC0"/>
+		<typeEffectiveness overlay ="16" offset="0x33B94"/>
 		<text filePath="msgdata/pl_msg.narc"/>
 
 		<!-- Text Offsets -->
@@ -64,6 +65,7 @@
 		<inheritFrom>dppConstants</inheritFrom>
 		<eggMoves overlay ="5" offset="0x20660"/>
 		<starterPokemon overlay ="64" offset="0x1B88"/>
+		<typeEffectiveness overlay ="11" offset="0x30DB8"/>
 		<text filePath="msgdata/msg.narc"/>
 	</dpConstants>
 
@@ -122,6 +124,7 @@
 		<eggMoves filePath ="a/2/2/9" offset="0x3C"/>
 		<trainerBattles filePath="a/0/5/5"/>
 		<trainerPokemon filePath="a/0/5/6"/>
+		<typeEffectiveness overlay ="12" offset="0x353BC"/>
 		<text filePath="a/0/2/7"/>
 	</hgssConstants>
 

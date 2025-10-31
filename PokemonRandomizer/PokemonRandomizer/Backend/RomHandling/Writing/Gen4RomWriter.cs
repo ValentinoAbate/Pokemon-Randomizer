@@ -28,6 +28,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
             var fileOverrides = new Dictionary<int, Rom>();
 
             WriteStarters(data, originalRom, dsFileSystem, metadata, info, fileOverrides);
+            WriteTypeEffectivenessData(data, originalRom, dsFileSystem, info, fileOverrides);
 
             // Do actual writing to output rom
             var rom = new Rom(originalRom.Length, 0xFF); // Set to all 0xFF?
@@ -87,6 +88,19 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
             }
             // TODO: Fix rival scripts
             // TODO: Fix starter picking screen
+        }
+
+        private void WriteTypeEffectivenessData(RomData data, Rom originalRom, DSFileSystemData dsFileSystem, XmlManager info, Dictionary<int, Rom> fileOverrides)
+        {
+            if (!info.HasElement(ElementNames.typeEffectiveness))
+            {
+                return;
+            }
+            int overlayId = info.Overlay(ElementNames.typeEffectiveness);
+            int offset = info.Offset(ElementNames.typeEffectiveness);
+            var overlay = GetOverrideOverlay(overlayId, originalRom, dsFileSystem, fileOverrides);
+            var typeData = TypeEffectivenessChartToByteArray(data.TypeDefinitions);
+            overlay.WriteBlock(offset, typeData);
         }
 
         private Rom GetOverrideOverlay(int overlayId, Rom originalRom, DSFileSystemData dsFileSystem, Dictionary<int, Rom> fileOverrides)

@@ -103,5 +103,27 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
             }
             rom.LoadOffset();
         }
+
+        protected TypeEffectivenessChart ReadTypeEffectivenessChart(Rom rom)
+        {
+            var ret = new TypeEffectivenessChart();
+            bool ignoreAfterForesight = false;
+            // Run until the end of structure sequence (0xff 0xff 0x00)
+            while (rom.Peek() != 0xff)
+            {
+                // Skip the ignoreAfterForesight separator (0xfe 0xfe 0x00)
+                if (rom.Peek() == 0xfe)
+                {
+                    ignoreAfterForesight = true;
+                    rom.Skip(3);
+                }
+                PokemonType attackingType = (PokemonType)rom.ReadByte();
+                PokemonType defendingType = (PokemonType)rom.ReadByte();
+                TypeEffectiveness ae = (TypeEffectiveness)rom.ReadByte();
+                ret.Add(attackingType, defendingType, ae, ignoreAfterForesight);
+            }
+            ret.InitCount = ret.Count;
+            return ret;
+        }
     }
 }

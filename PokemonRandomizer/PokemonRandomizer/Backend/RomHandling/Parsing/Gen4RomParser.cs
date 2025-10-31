@@ -45,6 +45,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
             data.Pokemon = pokemon;
 
             data.Starters = ReadStarters(rom, dsFileSystem, info, metadata);
+            data.TypeDefinitions = ReadTypeEffectivenessData(rom, dsFileSystem, info);
 
             // DEBUG: Read in the item data
             data.ItemData = new List<ItemData>();
@@ -286,14 +287,10 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
                 //TODO
                 return new List<Pokemon>();
             }
-            if (!info.HasElement(ElementNames.starterPokemon))
+            if (!TryGetOverlay(ElementNames.starterPokemon, rom, dsFileSystem, info, out Rom overlay))
             {
                 return new List<Pokemon>();
             }
-            int overlayId = info.Overlay(ElementNames.starterPokemon);
-            int offset = info.Offset(ElementNames.starterPokemon);
-            var overlay = dsFileSystem.GetArm9OverlayData(rom, overlayId, out int overlayStart, out _);
-            overlay.Seek(overlayStart + offset);
             
             var starters = new List<Pokemon>(3);
             starters.Add(InternalIndexToPokemon(overlay.ReadUInt16()));
@@ -302,6 +299,33 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
             overlay.Skip(2);
             starters.Add(InternalIndexToPokemon(overlay.ReadUInt16()));
             return starters;
+        }
+
+        private TypeEffectivenessChart ReadTypeEffectivenessData(Rom rom, DSFileSystemData dsFileSystem, XmlManager info)
+        {
+            if (!TryGetOverlay(ElementNames.typeEffectiveness, rom, dsFileSystem, info, out Rom overlay))
+            {
+                return new TypeEffectivenessChart();
+            }
+
+            return ReadTypeEffectivenessChart(overlay);
+        }
+
+        private bool TryGetOverlay(string elementName, Rom rom, DSFileSystemData dsFileSystem, XmlManager info, out Rom overlay)
+        {
+            if (!info.HasElement(elementName))
+            {
+                overlay = null;
+                return false;
+            }
+            int overlayId = info.Overlay(elementName);
+            int offset = info.Offset(elementName);
+            if (dsFileSystem.TryGetArm9OverlayData(rom, overlayId, out int overlayStart, out _, out overlay))
+            {
+                overlay.Seek(overlayStart + offset);
+                return true;
+            }
+            return false;
         }
     }
 }

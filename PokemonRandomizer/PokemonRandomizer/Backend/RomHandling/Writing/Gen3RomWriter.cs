@@ -759,29 +759,13 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
             {
                 return;
             }
-            #region Convert TypeChart to byte[]
-            var typeData = new List<byte>(typeDefinitions.Count * 3 + TypeEffectivenessChart.separatorSequence.Length + TypeEffectivenessChart.endSequence.Length);
-            foreach (var (typePair, effectiveness) in typeDefinitions.TypeRelations)
-            {
-                typeData.Add((byte)typePair.attackingType);
-                typeData.Add((byte)typePair.defendingType);
-                typeData.Add((byte)effectiveness);
-            }
-            typeData.AddRange(TypeEffectivenessChart.separatorSequence);
-            foreach (var (typePair, effectiveness) in typeDefinitions.IgnoreAfterForesight)
-            {
-                typeData.Add((byte)typePair.attackingType);
-                typeData.Add((byte)typePair.defendingType);
-                typeData.Add((byte)effectiveness);
-            }
-            typeData.AddRange(TypeEffectivenessChart.endSequence);
-            #endregion
+            var typeData = TypeEffectivenessChartToByteArray(typeDefinitions);
 
             #region Write to File
             //Move and Repoint if necessary
             if (typeDefinitions.Count > typeDefinitions.InitCount)
             {
-                int? newOffset = rom.WriteInFreeSpace(typeData.ToArray());
+                int? newOffset = rom.WriteInFreeSpace(typeData);
                 if (newOffset.HasValue)
                 {
                     repoints.Add(typeDefinitionOffset, newOffset.Value);
@@ -789,7 +773,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
             }
             else
             {
-                rom.WriteBlock(typeDefinitionOffset, typeData.ToArray());
+                rom.WriteBlock(typeDefinitionOffset, typeData);
             }
             #endregion
         }

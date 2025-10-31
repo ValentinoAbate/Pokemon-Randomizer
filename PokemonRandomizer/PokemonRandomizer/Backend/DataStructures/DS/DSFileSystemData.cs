@@ -293,6 +293,12 @@ namespace PokemonRandomizer.Backend.DataStructures.DS
             return new Rom(Array.Empty<byte>());
         }
 
+        public bool TryGetArm9OverlayData(Rom rom, int overlayIndex, out int startOffset, out int length, out Rom overlay)
+        {
+            overlay = GetArm9OverlayData(rom, overlayIndex, out startOffset, out length);
+            return overlay.Length > 0;
+        }
+
         public bool TryGetArm9OverlayDataByFileID(Rom rom, int fileID, out Rom overlayRom, out int startOffset, out int length)
         {
             if (arm9OverlaysByFileID.TryGetValue(fileID, out Arm9Overlay overlay))
