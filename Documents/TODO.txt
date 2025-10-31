@@ -163,6 +163,8 @@ GEN IV  ////////////////////////////////////////////////////////////////////////
 - Test DPPlt form specifier
 - Test if form specifier works in HGSS
 - Test gender and ability override in HGSS
+- Basic tests
+ - Type chart writing
 
 // TODO (Parity w/ Gen III)
 
@@ -170,7 +172,6 @@ GEN IV  ////////////////////////////////////////////////////////////////////////
 	- Trainer names
 	- Trainer class names
 - Wild encounters
-- Type definitions
 - Move data
 - Item data
 	- Mystery gift item markup
@@ -186,6 +187,7 @@ GEN IV  ////////////////////////////////////////////////////////////////////////
 - Ally multibattles
 - Nat dex order
 - Maps
+	- Weather
 - Pickup items
 - In game trades
 - Rival remap
