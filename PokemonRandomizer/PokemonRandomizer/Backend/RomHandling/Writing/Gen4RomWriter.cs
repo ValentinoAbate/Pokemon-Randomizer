@@ -27,6 +27,8 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
             // Write override data to files (by file ID)
             var fileOverrides = new Dictionary<int, Rom>();
 
+            WriteMoveTutorMoves(data, originalRom, dsFileSystem, info, fileOverrides);
+
             WriteStarters(data, originalRom, dsFileSystem, metadata, info, fileOverrides);
             WriteTypeEffectivenessData(data, originalRom, dsFileSystem, info, fileOverrides);
 
@@ -66,6 +68,20 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
             return rom;
         }
 
+        private void WriteMoveTutorMoves(RomData data, Rom originalRom, DSFileSystemData dsFileSystem, XmlManager info, Dictionary<int, Rom> fileOverrides)
+        {
+            if(!TryGetOverrideOverlay(ElementNames.tutorMoves, originalRom, dsFileSystem, info, fileOverrides, out Rom overlay))
+            {
+                return;
+            }
+            int skip = Math.Max(0, info.Size(ElementNames.tutorMoves) - 2);
+            foreach(var move in data.TutorMoves)
+            {
+                overlay.WriteUInt16(MoveToInternalIndex(move));
+                overlay.Skip(skip);
+            }
+        }
+
         private void WriteStarters(RomData data, Rom originalRom, DSFileSystemData dsFileSystem, RomMetadata metadata, XmlManager info, Dictionary<int, Rom> fileOverrides)
         {
             if (!info.HasElement(ElementNames.starterPokemon))
@@ -101,6 +117,18 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
             var overlay = GetOverrideOverlay(overlayId, originalRom, dsFileSystem, fileOverrides);
             var typeData = TypeEffectivenessChartToByteArray(data.TypeDefinitions);
             overlay.WriteBlock(offset, typeData);
+        }
+
+        private bool TryGetOverrideOverlay(string elementName, Rom originalRom, DSFileSystemData dsFileSystem, XmlManager info, Dictionary<int, Rom> fileOverrides, out Rom overlay)
+        {
+            if (!info.HasElement(elementName))
+            {
+                overlay = null;
+                return false;
+            }
+            int overlayId = info.Overlay(elementName);
+            overlay = GetOverrideOverlay(overlayId, originalRom, dsFileSystem, fileOverrides);
+            return info.FindAndSeekOffset(elementName, overlay);
         }
 
         private Rom GetOverrideOverlay(int overlayId, Rom originalRom, DSFileSystemData dsFileSystem, Dictionary<int, Rom> fileOverrides)
