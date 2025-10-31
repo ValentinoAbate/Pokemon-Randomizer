@@ -194,17 +194,15 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
             var moves = new Move[num];
             int skip = Math.Max(0, info.Size(ElementNames.tutorMoves) - 2);
             // Get overlay data
-            var overlayData = dsFileSystem.GetArm9OverlayData(rom, info.Overlay(ElementNames.tutorMoves), out int startOffset, out _);
-            if (overlayData.Length <= 0)
+            if(!TryGetOverlay(ElementNames.tutorMoves, rom, dsFileSystem, info, out Rom overlay))
             {
                 return Array.Empty<Move>();
             }
-            // Go to offset
-            overlayData.Seek(startOffset + info.FindOffset(ElementNames.tutorMoves, rom));
+            // Read moves
             for (int i = 0; i < num; ++i)
             {
-                moves[i] = InternalIndexToMove(overlayData.ReadUInt16());
-                overlayData.Skip(skip);
+                moves[i] = InternalIndexToMove(overlay.ReadUInt16());
+                overlay.Skip(skip);
             }
             return moves;
         }
@@ -319,7 +317,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
                 return false;
             }
             int overlayId = info.Overlay(elementName);
-            int offset = info.Offset(elementName);
+            int offset = info.FindOffset(elementName, rom);
             if (dsFileSystem.TryGetArm9OverlayData(rom, overlayId, out int overlayStart, out _, out overlay))
             {
                 overlay.Seek(overlayStart + offset);
