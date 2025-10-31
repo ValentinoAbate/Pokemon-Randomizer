@@ -186,6 +186,9 @@ GEN IV  ////////////////////////////////////////////////////////////////////////
 	- Give pokemon
 	- Set weather
 - PC Potion
+- Starters
+	- Rival fixes
+	- Selection screen text/image fixes
 - Berry Trees
 - Pokemon Names
 - Ally multibattles
