@@ -175,8 +175,9 @@ GEN IV  ////////////////////////////////////////////////////////////////////////
 
 // TODO (Parity w/ Gen III)
 
+NEXT: Move Data
+
 - Trainer pokemon
-	- Writing
 	- HG/SS special attributes (gender + ability)
 	- Form specifier
 - Text parsing / decompression / decryption
@@ -210,7 +211,6 @@ GEN IV  ////////////////////////////////////////////////////////////////////////
 - Palette markup
 
 - General ROM writing
-	- NARC recompilation
 	- BLZ compression
 
 // New to Gen IV
