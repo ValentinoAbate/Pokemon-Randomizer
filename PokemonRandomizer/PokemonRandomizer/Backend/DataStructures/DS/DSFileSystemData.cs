@@ -34,7 +34,7 @@ namespace PokemonRandomizer.Backend.DataStructures.DS
         public int FATSize => FileCount * fileHeaderSize;
         public int FileCount => fileData.Count + arm9Overlays.Length;
         private readonly Dictionary<int, string> filePaths;
-        private readonly Dictionary<string, (int offset, int length)> fileData;
+        private readonly Dictionary<string, (int offset, int length, int id)> fileData;
         private readonly Dictionary<int, Arm9Overlay> arm9OverlaysByFileID;
         public int Arm9OverlayTableSize => arm9Overlays.Length * arm9OverlayHeaderSize;
         public IReadOnlyList<Arm9Overlay> Arm9Overlays => arm9Overlays;
@@ -214,7 +214,7 @@ namespace PokemonRandomizer.Backend.DataStructures.DS
         {
             if(fileData.ContainsKey(fullFilename))
                 return;
-            fileData.Add(fullFilename, (offset, length));
+            fileData.Add(fullFilename, (offset, length, fileID));
             filePaths.Add(fileID, fullFilename);
         }
 
@@ -236,7 +236,7 @@ namespace PokemonRandomizer.Backend.DataStructures.DS
         {
             if (fileData.ContainsKey(fullFilename))
             {
-                var (offset, length) = fileData[fullFilename];
+                var (offset, length, _) = fileData[fullFilename];
                 rom.Seek(offset);
                 fileLength = length;
                 return true;
@@ -245,17 +245,17 @@ namespace PokemonRandomizer.Backend.DataStructures.DS
             return false;
         }
 
-        public bool GetFile(string fullFilename, out int offset, out int fileLength)
+        public bool GetFile(string fullFilename, out int offset, out int fileLength, out int fileId)
         {
             if (string.IsNullOrEmpty(fullFilename) || !fileData.ContainsKey(fullFilename))
             {
                 offset = Rom.nullPointer;
                 fileLength = 0;
+                fileId = 0;
                 return false;
             }
-            (offset, fileLength) = fileData[fullFilename];
+            (offset, fileLength, fileId) = fileData[fullFilename];
             return true;
-
         }
 
         public bool GetFile(int id, out int offset, out int fileLength)
@@ -266,17 +266,17 @@ namespace PokemonRandomizer.Backend.DataStructures.DS
                 fileLength = 0;
                 return false;
             }
-            return GetFile(filename, out offset, out fileLength);
+            return GetFile(filename, out offset, out fileLength, out _);
         }
 
         public bool GetNarcFile(Rom rom, string fullFilename, out NARCArchiveData narc)
         {
-            if(!GetFile(fullFilename, out int offset, out int length))
+            if(!GetFile(fullFilename, out int offset, out int length, out int fileId))
             {
                 narc = null;
                 return false;
             }
-            narc = new NARCArchiveData(rom, offset, length);
+            narc = new NARCArchiveData(rom, offset, length, fileId);
             return true;
         }
 

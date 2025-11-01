@@ -36,7 +36,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
             }
             else if (info.HasElementWithAttr(ElementNames.eggMoves, XmlManager.pathAttr))
             {
-                if (dsFileSystem.GetFile(info.Path(ElementNames.eggMoves), out int startOffset, out _))
+                if (dsFileSystem.GetFile(info.Path(ElementNames.eggMoves), out int startOffset, out _, out _))
                 {
                     ReadEggMoves(rom, startOffset + info.Offset(ElementNames.eggMoves), info, pokemon);
                 }
@@ -221,7 +221,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
             Rom mtCompat;
             if (metadata.IsHGSS)
             {
-                if (!dsFileSystem.GetFile(info.Path(ElementNames.tutorCompat), out int offset, out _))
+                if (!dsFileSystem.GetFile(info.Path(ElementNames.tutorCompat), out int offset, out _, out _))
                 {
                     Logger.main.Error($"Error reading Move Tutor Compatibility. Can't find compatiblity file");
                     foreach (var p in pokemon)

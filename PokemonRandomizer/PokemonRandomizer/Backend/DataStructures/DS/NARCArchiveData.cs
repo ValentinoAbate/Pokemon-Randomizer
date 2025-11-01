@@ -59,15 +59,22 @@ namespace PokemonRandomizer.Backend.DataStructures.DS
     public class NARCArchiveData : DSFile
     {
         private const string fatbIdentifier = "FATB";
+        private static readonly byte[] fatbIdHex = new byte[]{ 0x42,0x54,0x41,0x46 };
         private const string fimgIdentifier = "FIMG";
+        private static readonly byte[] fimgIdHex = new byte[] { 0x47, 0x4D, 0x49, 0x46 };
         private const string fntbIdentifier = "FNTB";
+        private static readonly byte[] fntbIdHex = new byte[] { 0x42, 0x54, 0x4E, 0x46 };
         private const int fntbFilenameDataStartOffset = 0x08;
         private const int sectionHeaderSize = 8;
         public int FileCount => files.Count;
         private readonly List<string> fileNames;
         private readonly List<(int offset, int length)> files;
-        public NARCArchiveData(Rom rom, int offset, int length)
+        public int FileId { get; }
+        public int OriginalOffset { get; }
+        public NARCArchiveData(Rom rom, int offset, int length, int fileId)
         {
+            FileId = fileId;
+            OriginalOffset = offset;
             int fatbOffset = Rom.nullPointer;
             int fimgOffset = Rom.nullPointer;
             int fntbOffset = Rom.nullPointer;
@@ -136,6 +143,93 @@ namespace PokemonRandomizer.Backend.DataStructures.DS
             {
                 fileNames = new List<string>();
             }
+        }
+
+        public Rom WriteToFile(Rom originalRom, IReadOnlyList<Rom> fileOverrides)
+        {
+            int newFileCount = Math.Max(FileCount, fileOverrides.Count);
+            // Calculate FATB size
+            int fatbSize = sectionHeaderSize + 4 + (newFileCount * 8); // fileCount + fileHeader * file count
+            int fntSize = sectionHeaderSize + fntbFilenameDataStartOffset;
+            //foreach(var fileName in fileNames) // Don't actually know how to write filenames yet
+            //{
+            //    fntSize += (1 + fileName.Length);
+            //}
+            // Calculate FIMG size
+            int fimgSize = sectionHeaderSize;
+            for (int i = 0; i < newFileCount; i++)
+            {
+                if(i < fileOverrides.Count && fileOverrides[i] != null)
+                {
+                    fimgSize += fileOverrides[i].Length;
+                }
+                else if(i < files.Count)
+                {
+                    fimgSize += files[i].length;
+                }
+            }
+            int totalSize = headerSize + fatbSize + fntSize + fimgSize;
+            var file = new Rom(totalSize, 0x00);
+
+            // Wrtie Nitro header
+
+            // Copy original header
+            file.Copy(originalRom, OriginalOffset, headerSize);
+            // Write total size to header
+            file.WriteUInt32(headerSectionSizeOffset, totalSize);
+
+            // Write FATB
+
+            file.WriteBlock(fatbIdHex);
+            file.WriteUInt32(fatbSize);
+            file.WriteUInt32(newFileCount);
+            int fatbDataOffset = file.InternalOffset;
+            file.Skip(newFileCount * 8); // Write actual offsets later when writing FIMG
+
+            // Write FNTB
+
+            file.WriteBlock(fntbIdHex);
+            file.WriteUInt32(fntSize);
+            // Not sure how to write filenames yet, just write empty header
+            file.WriteUInt32(0x04); 
+            file.WriteUInt16(0x00);
+            file.WriteUInt16(0x01);
+
+            // Write FIMG
+            file.WriteBlock(fimgIdHex);
+            file.WriteUInt32(fimgSize);
+
+            int fimgStartOffset = file.InternalOffset;
+            // Write actual file information
+            for (int i = 0; i < newFileCount; i++)
+            {
+                int startOffset = file.InternalOffset - fimgStartOffset;
+
+                // Write file contents and record size
+                int fileSize;
+                if (i < fileOverrides.Count && fileOverrides[i] != null)
+                {
+                    var fileOverride = fileOverrides[i];
+                    fileSize = fileOverride.Length;
+                    file.Copy(fileOverride);
+                }
+                else if (i < files.Count)
+                {
+                    fileSize = files[i].length;
+                    file.Copy(originalRom, files[i].offset, fileSize);
+                }
+                else
+                {
+                    continue;
+                }
+                
+                // Write FATB entry
+                file.SaveAndSeekOffset(fatbDataOffset + (i * 8));
+                file.WriteUInt32(startOffset);
+                file.WriteUInt32(startOffset + fileSize);
+                file.LoadOffset();
+            }
+            return file;
         }
 
         public bool GetFile(int fileIndex, out int offset, out int length, out string name)
