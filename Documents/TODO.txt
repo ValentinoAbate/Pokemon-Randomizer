@@ -166,12 +166,18 @@ GEN IV  ////////////////////////////////////////////////////////////////////////
 - Test DPPlt form specifier
 - Test if form specifier works in HGSS
 - Test gender and ability override in HGSS
+- Test double battle detection in DPPHGSS
 - Basic tests
  - Type chart writing
  - Tutor move writing
+ - Trainer writing
 
 // TODO (Parity w/ Gen III)
 
+- Trainer pokemon
+	- Writing
+	- HG/SS special attributes (gender + ability)
+	- Form specifier
 - Text parsing / decompression / decryption
 	- Trainer names
 	- Trainer class names
@@ -212,6 +218,8 @@ GEN IV  ////////////////////////////////////////////////////////////////////////
 - Rock smash item randomization (HGSS)
 - Fling randomization
 - Natural gift randomization
+- Platinum ability selection hack?
+- Trainer pokemon capsule information (P/HGSS)
 
 CLEANUP /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

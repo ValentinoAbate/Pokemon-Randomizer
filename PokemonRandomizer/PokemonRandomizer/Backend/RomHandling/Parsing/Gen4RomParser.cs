@@ -1,6 +1,7 @@
 ﻿using PokemonRandomizer.Backend.Constants;
 using PokemonRandomizer.Backend.DataStructures;
 using PokemonRandomizer.Backend.DataStructures.DS;
+using PokemonRandomizer.Backend.DataStructures.Trainers;
 using PokemonRandomizer.Backend.EnumTypes;
 using PokemonRandomizer.Backend.RomHandling.IndexTranslators;
 using PokemonRandomizer.Backend.Utilities;
@@ -45,6 +46,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
             data.Pokemon = pokemon;
 
             data.Starters = ReadStarters(rom, dsFileSystem, info, metadata);
+            data.Trainers = ReadTrainers(rom, dsFileSystem, info, metadata);//, data.TrainerClasses, data.TrainerSprites);
             data.TypeDefinitions = ReadTypeEffectivenessData(rom, dsFileSystem, info);
 
             // DEBUG: Read in the item data
@@ -297,6 +299,74 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
             overlay.Skip(2);
             starters.Add(InternalIndexToPokemon(overlay.ReadUInt16()));
             return starters;
+        }
+
+        private List<BasicTrainer> ReadTrainers(Rom rom, DSFileSystemData dsFileSystem, XmlManager info, RomMetadata metadata)
+        {
+            if (!dsFileSystem.GetNarcFile(rom, info.Path(ElementNames.trainerBattles), out var trainerNarc))
+            {
+                return new List<BasicTrainer>();
+            }
+
+            if (!dsFileSystem.GetNarcFile(rom, info.Path(ElementNames.GenIV.trainerPokemon), out var trainerPokemonNarc))
+            {
+                return new List<BasicTrainer>();
+            }
+            var trainers = new List<BasicTrainer>(trainerNarc.FileCount);
+            for (int i = 0; i < trainerNarc.FileCount; i++)
+            {
+                if (!trainerNarc.GetFile(i, out int trainerOffset, out _, out _))
+                {
+                    continue;
+                }
+                rom.Seek(trainerOffset);
+                var trainer = new BasicTrainer();
+                var dataType = (TrainerPokemon.DataType)rom.ReadByte();
+                trainer.trainerClass = rom.ReadByte();
+                rom.Skip(1); // not sure what is here
+                int numPokemon = rom.ReadByte();
+                for (int itemInd = 0; itemInd < 4; ++itemInd)
+                {
+                    trainer.useItems[itemInd] = InternalIndexToItem(rom.ReadUInt16());
+                }
+                // Read AI flags
+                trainer.AIFlags = new BitArray(new int[] { rom.ReadUInt32() });
+                trainer.IsDoubleBattle = rom.ReadUInt32() == 2;
+
+                if(!trainerPokemonNarc.GetFile(i, out int trainerPokemonOffset, out _, out _))
+                {
+                    continue;
+                }
+                rom.Seek(trainerPokemonOffset);
+                trainer.PokemonData = new Trainer.TrainerPokemonData(dataType, numPokemon);
+                for (int pokemonInd = 0; pokemonInd < numPokemon; ++pokemonInd)
+                {
+                    var pokemon = new TrainerPokemon();
+                    pokemon.dataType = dataType;
+                    pokemon.IVLevel = rom.ReadByte();
+                    rom.Skip(); // Gender/ability index on HGSS, 2nd byte of IVLevel for plat (see volkner's Electivire weirdness)
+                    pokemon.level = rom.ReadUInt16();
+                    int pokemonInfo = rom.ReadUInt16();
+                    pokemon.species = InternalIndexToPokemon(pokemonInfo & 0b0000_0011_1111_1111);
+                    int form = (pokemonInfo & 0b1111_1100_0000_0000) >> 10;
+                    if (dataType is TrainerPokemon.DataType.HeldItem or TrainerPokemon.DataType.SpecialMovesAndHeldItem)
+                    {
+                        pokemon.heldItem = InternalIndexToItem(rom.ReadUInt16());
+                    }
+                    if (dataType is TrainerPokemon.DataType.SpecialMoves or TrainerPokemon.DataType.SpecialMovesAndHeldItem)
+                    {
+                        for (int moveInd = 0; moveInd < TrainerPokemon.numMoves; ++moveInd)
+                            pokemon.moves[moveInd] = InternalIndexToMove(rom.ReadUInt16());
+                    }
+                    if(metadata.IsHGSS || metadata.IsPlatinum)
+                    {
+                        rom.Skip(2); // Capsule seal info: rom.ReadUint16() (contains info on the ball seal - not present in DP)
+                    }
+                    trainer.PokemonData.Pokemon.Add(pokemon);
+                }
+                trainers.Add(trainer);
+            }
+            return trainers;
         }
 
         private TypeEffectivenessChart ReadTypeEffectivenessData(Rom rom, DSFileSystemData dsFileSystem, XmlManager info)
