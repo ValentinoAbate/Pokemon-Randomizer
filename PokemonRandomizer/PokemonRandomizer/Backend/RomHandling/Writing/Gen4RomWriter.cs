@@ -371,7 +371,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
                 }
                 else if(fileOverrides.TryGetValue(i, out var fileOverride))
                 {
-                    rom.WriteBlock(fileOverride.File);
+                    rom.WriteBlock(dataOffset, fileOverride.File);
                     fileSize = fileOverride.Length;
                 }
                 else if(dsFileSystem.GetFile(i, out int fileOffset, out fileSize))
