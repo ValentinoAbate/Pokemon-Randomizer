@@ -323,7 +323,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
                 var trainer = new BasicTrainer();
                 var dataType = (TrainerPokemon.DataType)rom.ReadByte();
                 trainer.trainerClass = rom.ReadByte();
-                rom.Skip(1); // not sure what is here
+                rom.Skip(); // not sure what is here
                 int numPokemon = rom.ReadByte();
                 for (int itemInd = 0; itemInd < 4; ++itemInd)
                 {
