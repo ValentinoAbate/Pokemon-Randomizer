@@ -1,12 +1,12 @@
 ﻿using PokemonRandomizer.Backend.Constants;
 using PokemonRandomizer.Backend.DataStructures;
 using PokemonRandomizer.Backend.DataStructures.DS;
-using PokemonRandomizer.Backend.EnumTypes;
+using PokemonRandomizer.Backend.DataStructures.Trainers;
 using PokemonRandomizer.Backend.RomHandling.IndexTranslators;
 using PokemonRandomizer.Backend.Utilities;
 using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.Intrinsics.Arm;
 
 namespace PokemonRandomizer.Backend.RomHandling.Writing
 {
@@ -30,6 +30,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
             WriteMoveTutorMoves(data, originalRom, dsFileSystem, info, fileOverrides);
 
             WriteStarters(data, originalRom, dsFileSystem, metadata, info, fileOverrides);
+            WriteTrainers(data, originalRom, dsFileSystem, metadata, info, fileOverrides);
             WriteTypeEffectivenessData(data, originalRom, dsFileSystem, info, fileOverrides);
 
             // Do actual writing to output rom
@@ -104,6 +105,95 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
             }
             // TODO: Fix rival scripts
             // TODO: Fix starter picking screen
+        }
+
+        private void WriteTrainers(RomData data, Rom originalRom, DSFileSystemData dsFileSystem, RomMetadata metadata, XmlManager info, Dictionary<int, Rom> fileOverrides)
+        {
+            if (!dsFileSystem.GetNarcFile(originalRom, info.Path(ElementNames.trainerBattles), out var trainerNarc))
+            {
+                return;
+            }
+            if (!dsFileSystem.GetNarcFile(originalRom, info.Path(ElementNames.GenIV.trainerPokemon), out var trainerPokemonNarc))
+            {
+                return;
+            }
+            int numTrainers = data.Trainers.Count;
+            var trainerFileOverrides = new List<Rom>(numTrainers);
+            var trainerPokemonOverrides = new List<Rom>(numTrainers);
+            var trainers = new List<BasicTrainer>(numTrainers);
+            bool isPlatinumOrHGSS = metadata.IsPlatinum || metadata.IsHGSS;
+            for (int i = 0; i < numTrainers; i++)
+            {
+                var trainer = data.Trainers[i];
+
+                // Trainer Data
+                var trainerData = new Rom(20, 0x00);
+
+                // Copy original data if available
+                if (trainerNarc.GetFile(i, out int originalTrainerDataOffset, out int originalTrainerDataLength, out _))
+                {
+                    trainerData.Copy(originalRom, originalTrainerDataOffset, originalTrainerDataLength);
+                    trainerData.Seek(0);
+                }
+
+                // Write custom data
+                trainerData.WriteByte((byte)trainer.DataType);
+                trainerData.WriteByte(trainer.trainerClass);
+                trainerData.Skip();
+                trainerData.WriteByte(trainer.Pokemon.Count);
+                for (int itemInd = 0; itemInd < 4; ++itemInd)
+                {
+                    trainerData.WriteUInt16(ItemToInternalIndex(trainer.useItems[itemInd]));
+                }
+                byte[] aiBytes = new byte[4];
+                trainer.AIFlags.CopyTo(aiBytes, 0);
+                trainerData.WriteBlock(aiBytes);
+                trainerData.WriteUInt32((byte)(trainer.IsDoubleBattle ? 0x02 : 0x00));
+                trainerFileOverrides.Add(trainerData);
+
+                // Trainer Pokemon
+
+                int pokemonSize = trainer.DataType switch 
+                { 
+                    TrainerPokemon.DataType.Basic => 6,
+                    TrainerPokemon.DataType.HeldItem => 8,
+                    TrainerPokemon.DataType.SpecialMoves => 14,
+                    TrainerPokemon.DataType.SpecialMovesAndHeldItem => 16,
+                    _ => throw new ArgumentException($"Improper pokemon data type detected: {trainer.ToString()} ({trainer.DataType.ToDisplayString()})")
+                };
+                if (isPlatinumOrHGSS)
+                {
+                    pokemonSize += 2;
+                }
+
+                var pokemonData = new Rom(pokemonSize * trainer.Pokemon.Count, 0x00);
+                foreach(var pokemon in trainer.Pokemon)
+                {
+                    pokemonData.WriteByte(pokemon.IVLevel);
+                    pokemonData.Skip(); // TODO: Gender/ability index on HGSS, 2nd byte of IVLevel for plat (see volkner's Electivire weirdness)
+                    pokemonData.WriteUInt16(pokemon.level);
+                    pokemonData.WriteUInt16(PokemonToInternalIndex(pokemon.species));
+                    // TODO: form specifier
+                    if (pokemon.dataType is TrainerPokemon.DataType.HeldItem or TrainerPokemon.DataType.SpecialMovesAndHeldItem)
+                    {
+                        pokemonData.WriteUInt16(ItemToInternalIndex(pokemon.heldItem));
+                    }
+                    if (pokemon.dataType is TrainerPokemon.DataType.SpecialMoves or TrainerPokemon.DataType.SpecialMovesAndHeldItem)
+                    {
+                        foreach(var move in pokemon.moves)
+                        {
+                            pokemonData.WriteUInt16(MoveToInternalIndex(move));
+                        }
+                    }
+                    if (isPlatinumOrHGSS)
+                    {
+                        pokemonData.Skip(2); // Capsule seal info: rom.ReadUint16() (contains info on the ball seal - not present in DP)
+                    }
+                }
+                trainerPokemonOverrides.Add(pokemonData);
+            }
+            fileOverrides.Add(trainerNarc.FileId, trainerNarc.WriteToFile(originalRom, trainerFileOverrides));
+            fileOverrides.Add(trainerPokemonNarc.FileId, trainerPokemonNarc.WriteToFile(originalRom, trainerPokemonOverrides));
         }
 
         private void WriteTypeEffectivenessData(RomData data, Rom originalRom, DSFileSystemData dsFileSystem, XmlManager info, Dictionary<int, Rom> fileOverrides)

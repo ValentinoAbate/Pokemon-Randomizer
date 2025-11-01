@@ -167,6 +167,8 @@ GEN IV  ////////////////////////////////////////////////////////////////////////
 - Test if form specifier works in HGSS
 - Test gender and ability override in HGSS
 - Test double battle detection in DPPHGSS
+- Test if double battle toggle works in DPPHGSS
+	- I've heard setting a battle to be double can crash the game
 - Basic tests
  - Type chart writing
  - Tutor move writing
