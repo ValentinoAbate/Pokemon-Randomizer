@@ -234,6 +234,7 @@ CLEANUP ////////////////////////////////////////////////////////////////////////
 - Allow moveset generator to modify movesets in place instead of returning new arrays (save on GC)
 - SLUDGE, ERUPTION, NATURE POWER, ICE BALL, HEAT WAVE, SWEET KISS, SAND-ATTACK, WATER SPORT frontier move tutor desc overflow
 - Change find from prefix to only find first instance since that is all that is used
+- Move "Rom" class functions into a class that can operate on arbitrary collections of bytes
 
 FIXES ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

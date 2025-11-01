@@ -64,9 +64,11 @@ namespace PokemonRandomizer.Backend.DataStructures
         /// <summary> Initilize an Empty Rom with a given length </summary>
         public Rom(int length, byte freeSpaceByte, int searchStartOffset = 0) : this(new byte[length], freeSpaceByte, searchStartOffset, false) { }
         /// <summary>Reads a byte from the internal offset</summary>
-        public byte WriteByte(byte value) => File[InternalOffset++] = value;
+        public void WriteByte(byte value) => File[InternalOffset++] = value;
         /// <summary>Reads a byte from the internal offset</summary>
-        public byte WriteByte(int offset, byte value) => File[offset] = value;
+        public void WriteByte(int offset, byte value) => File[offset] = value;
+        public void WriteByte(int value) => File[InternalOffset++] = (byte)value;
+        public void WriteByte(int offset, int value) => File[offset] = (byte)value;
         public void ReadBlock(ref byte[] destinationArray, int destinationIndex, int length)
         {
             Array.Copy(File, InternalOffset, destinationArray, destinationIndex, length);
@@ -120,6 +122,26 @@ namespace PokemonRandomizer.Backend.DataStructures
         {
             WriteRepeating(InternalOffset, value, length);
             InternalOffset += length;
+        }
+
+        public void Copy(Rom other, int destinationOffset)
+        {
+            WriteBlock(destinationOffset, other.File);
+        }
+
+        public void Copy(Rom other)
+        {
+            WriteBlock(other.File);
+        }
+
+        public void Copy(Rom other, int sourceOffset, int destinationOffset, int length)
+        {
+            WriteBlock(destinationOffset, other.ReadBlock(sourceOffset, length));
+        }
+
+        public void Copy(Rom other, int sourceOffset, int length)
+        {
+            WriteBlock(other.ReadBlock(sourceOffset, length));
         }
 
         #region Free Space and Hacking Utils
