@@ -246,5 +246,15 @@ namespace PokemonRandomizer.Backend.DataStructures.DS
             length = fileData.length;
             return true;
         }
+
+        public bool SeekFile(Rom rom, int fileIndex)
+        {
+            if(GetFile(fileIndex, out int offset, out _, out _))
+            {
+                rom.Seek(offset);
+                return true;
+            }
+            return false;
+        }
     }
 }

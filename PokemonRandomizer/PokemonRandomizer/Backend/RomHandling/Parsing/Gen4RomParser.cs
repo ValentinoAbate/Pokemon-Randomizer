@@ -280,6 +280,37 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
             return tmMoves;
         }
 
+        private List<MoveData> ReadMoves(Rom rom, DSFileSystemData dsFileSystem, XmlManager info)
+        {
+            if(!dsFileSystem.GetNarcFile(rom, info.Path(ElementNames.moveData), out var moveDataNarc))
+            {
+                return new List<MoveData>();
+            }
+            var moves = new List<MoveData>(moveDataNarc.FileCount);
+            for (int i = 0; i < moveDataNarc.FileCount; ++i)
+            {
+                moveDataNarc.SeekFile(rom, i);
+                var move = new MoveData
+                {
+                    move = InternalIndexToMove(i),
+                    effect = InternalIndexToMoveEffect(rom.ReadUInt16()),
+                    MoveCategory = (MoveData.Type)rom.ReadByte(),
+                    power = rom.ReadByte(),
+                    type = (PokemonType)rom.ReadByte(),
+                    accuracy = rom.ReadByte(),
+                    pp = rom.ReadByte(),
+                    effectChance = rom.ReadByte(),
+                    targets = (MoveData.Targets)rom.ReadUInt16(),
+                    priority = rom.ReadByte(),
+                    flags = new BitArray(new byte[] { rom.ReadByte() }),
+                };
+                // struct { u8 unkC; u8 contestType; u16 unk_E; 
+                rom.Skip(4); // Skip contest data for now
+                moves.Add(move);
+            }
+            return moves;
+        }
+
         private List<Pokemon> ReadStarters(Rom rom, DSFileSystemData dsFileSystem, XmlManager info, RomMetadata metadata)
         {
             if (metadata.IsHGSS)
@@ -315,11 +346,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
             var trainers = new List<BasicTrainer>(trainerNarc.FileCount);
             for (int i = 0; i < trainerNarc.FileCount; i++)
             {
-                if (!trainerNarc.GetFile(i, out int trainerOffset, out _, out _))
-                {
-                    continue;
-                }
-                rom.Seek(trainerOffset);
+                trainerNarc.SeekFile(rom, i);
                 var trainer = new BasicTrainer();
                 var dataType = (TrainerPokemon.DataType)rom.ReadByte();
                 trainer.trainerClass = rom.ReadByte();
@@ -333,11 +360,10 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
                 trainer.AIFlags = new BitArray(new int[] { rom.ReadUInt32() });
                 trainer.IsDoubleBattle = rom.ReadUInt32() == 2;
 
-                if(!trainerPokemonNarc.GetFile(i, out int trainerPokemonOffset, out _, out _))
+                if(!trainerPokemonNarc.SeekFile(rom, i))
                 {
                     continue;
                 }
-                rom.Seek(trainerPokemonOffset);
                 trainer.PokemonData = new Trainer.TrainerPokemonData(dataType, numPokemon);
                 for (int pokemonInd = 0; pokemonInd < numPokemon; ++pokemonInd)
                 {

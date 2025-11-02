@@ -1,4 +1,5 @@
-﻿using PokemonRandomizer.Backend.EnumTypes;
+﻿using PokemonRandomizer.Backend.DataStructures;
+using PokemonRandomizer.Backend.EnumTypes;
 using PokemonRandomizer.Backend.RomHandling.IndexTranslators;
 using System.Runtime.CompilerServices;
 
@@ -29,6 +30,10 @@ namespace PokemonRandomizer.Backend.RomHandling
         protected int MoveToInternalIndex(Move move) => IndexTranslator.MoveToInternalIndex(move);
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected Move InternalIndexToMove(int index) => IndexTranslator.InternalIndexToMove(index);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected int MoveEffectToInternalIndex(MoveData.MoveEffect moveEffect) => IndexTranslator.MoveEffectToInternalIndex(moveEffect);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected MoveData.MoveEffect InternalIndexToMoveEffect(int index) => IndexTranslator.InternalIndexToMoveEffect(index);
         #endregion
     }
 }

@@ -14,6 +14,7 @@ namespace PokemonRandomizer.Backend.DataStructures
             Special,
             Status,
             Unknown,
+            TypeDependent,
         }
         public enum MoveEffect
         {
@@ -365,16 +366,25 @@ namespace PokemonRandomizer.Backend.DataStructures
         {
             get
             {
-                // Gen III Logic - TODO: Gen IV - branch
-                if (power <= 0)
-                    return Type.Status;
-                if (move is Move.WEATHER_BALL)
-                    return Type.Special;
-                if (move is Move.HIDDEN_POWER)
-                    return Type.Unknown;
-                return type <= PokemonType.Unknown ? Type.Physical : Type.Special;
+                // Logic fog Gens I-III where move category is dependent on move type
+                if(category == Type.TypeDependent)
+                {
+                    if (power <= 0)
+                        return Type.Status;
+                    if (move is Move.WEATHER_BALL)
+                        return Type.Special;
+                    if (move is Move.HIDDEN_POWER)
+                        return Type.Unknown;
+                    return type <= PokemonType.Unknown ? Type.Physical : Type.Special;
+                }
+                return category;
+            }
+            set
+            {
+                category = value;
             }
         }
+        private Type category = Type.TypeDependent;
 
         public MoveData() { }
 

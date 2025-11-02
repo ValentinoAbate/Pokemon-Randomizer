@@ -185,6 +185,14 @@ NEXT: Move Data
 	- Trainer class names
 - Wild encounters
 - Move data
+	- Writing
+	- Contest data reading / writing
+	- Move effect enum compatibility
+	- Target enum compatibility
+	- what are last 3 move data?
+	- Info: 468 (Special): P100, E:Damage, TSelectedTarget
+	- Info: 469 (Special): P100, E:Damage, TSelectedTarget
+	- Info: 470 (Special): P100, E:Damage, TSelectedTarget
 - Item data
 	- Mystery gift item markup
 - Trainer class data
@@ -236,6 +244,7 @@ CLEANUP ////////////////////////////////////////////////////////////////////////
 - SLUDGE, ERUPTION, NATURE POWER, ICE BALL, HEAT WAVE, SWEET KISS, SAND-ATTACK, WATER SPORT frontier move tutor desc overflow
 - Change find from prefix to only find first instance since that is all that is used
 - Move "Rom" class functions into a class that can operate on arbitrary collections of bytes
+- Make priority field of move data actually be parsed as a signed byte
 
 FIXES ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
