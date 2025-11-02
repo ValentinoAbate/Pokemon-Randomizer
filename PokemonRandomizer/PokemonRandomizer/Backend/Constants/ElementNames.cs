@@ -41,6 +41,7 @@
         public const string trades = "trades";
         public const string setBerryTreeScript = "setBerryTreeScript";
         public const string typeEffectiveness = "typeEffectiveness";
+        public const string wildPokemon = "wildPokemon";
 
         // Trainer metadata
         public const string gymLeaders = "gymLeaders";

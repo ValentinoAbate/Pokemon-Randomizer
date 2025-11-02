@@ -779,7 +779,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
         }
         private void WriteEncounters(RomData romData, Rom rom, XmlManager info)
         {
-            if (!info.FindAndSeekOffset("wildPokemon", rom))
+            if (!info.FindAndSeekOffset(ElementNames.wildPokemon, rom))
                 return;
             var encounterIter = romData.Encounters.GetEnumerator();
             // Iterate until the ending marker (0xff, 0xff)

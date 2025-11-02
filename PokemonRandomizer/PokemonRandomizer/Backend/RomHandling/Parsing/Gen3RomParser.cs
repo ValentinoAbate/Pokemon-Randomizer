@@ -759,17 +759,16 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
         // Read encounters
         private List<EncounterSet> ReadEncounters(Rom rom, XmlManager info)
         {
-            const string wildPokemonElt = "wildPokemon";
             var encounters = new List<EncounterSet>();
             // Seek data offset or return early if not found
-            if (!info.FindAndSeekOffset(wildPokemonElt, rom))
+            if (!info.FindAndSeekOffset(ElementNames.wildPokemon, rom))
                 return encounters;
 
             // Get encounter slot sizes
-            int grassSlots = info.IntAttr(wildPokemonElt, "grassSlots");
-            int surfSlots = info.IntAttr(wildPokemonElt, "surfSlots");
-            int rockSmashSlots = info.IntAttr(wildPokemonElt, "rockSmashSlots");
-            int fishSlots = info.IntAttr(wildPokemonElt, "fishSlots");
+            int grassSlots = info.IntAttr(ElementNames.wildPokemon, "grassSlots");
+            int surfSlots = info.IntAttr(ElementNames.wildPokemon, "surfSlots");
+            int rockSmashSlots = info.IntAttr(ElementNames.wildPokemon, "rockSmashSlots");
+            int fishSlots = info.IntAttr(ElementNames.wildPokemon, "fishSlots");
 
             // Iterate until the ending marker (0xff, 0xff)
             while (rom.Peek() != 0xff || rom.Peek(1) != 0xff)
