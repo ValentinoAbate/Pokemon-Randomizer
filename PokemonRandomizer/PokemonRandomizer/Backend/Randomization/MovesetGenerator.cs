@@ -556,7 +556,7 @@ namespace PokemonRandomizer.Backend.Randomization
         private float ChoiceItemMovesetFactor(Move m, PokemonBaseStats pokemon, Item item)
         {
             var moveData = dataT.GetMoveData(m);
-            if(moveData.effect is MoveEffect.Trick)
+            if(moveData.effect is MoveEffect.SwapItems)
             {
                 return 1f;
             }
@@ -868,7 +868,7 @@ namespace PokemonRandomizer.Backend.Randomization
             {
                 weight = 75;
             }
-            else if (moveData.effect is MoveEffect.EvadePlus1AndVulnerable)
+            else if (moveData.effect is MoveEffect.EvadePlus1AndMinimize)
             {
                 weight = 60;
             }
@@ -924,7 +924,7 @@ namespace PokemonRandomizer.Backend.Randomization
             {
                 weight = 25;
             }
-            else if (moveData.effect is MoveEffect.Snatch or MoveEffect.Trick)
+            else if (moveData.effect is MoveEffect.Snatch or MoveEffect.SwapItems)
             {
                 weight = 10;
             }

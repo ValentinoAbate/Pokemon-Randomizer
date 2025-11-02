@@ -57,7 +57,7 @@ namespace PokemonRandomizer.Backend.DataStructures
             TriAttack,
             Rest,
             OneHitKill,
-            RazorWind,
+            ChargeTurn,
             HalfHp,
             FlatDamage40,
             DoTTrap,
@@ -96,7 +96,7 @@ namespace PokemonRandomizer.Backend.DataStructures
             SkyAttack,
             DamageConfuseChance,
             DamageTwoHitPoisonChance,
-            DamagePriorityLastAlwaysHit,
+            DamagePriorityNeg1AlwaysHit,
             Substitute,
             DamageTiredAfterUse,
             Rage,
@@ -125,7 +125,7 @@ namespace PokemonRandomizer.Backend.DataStructures
             DamageStealHeldItem,
             Trap,
             StatusNightmare,
-            EvadePlus1AndVulnerable,
+            EvadePlus1AndMinimize,
             Curse,
             Protect = 111,
             Spikes,
@@ -133,7 +133,7 @@ namespace PokemonRandomizer.Backend.DataStructures
             PerishSong,
             WeatherSandstorm,
             Endure,
-            MultiTurnBuildup,
+            MultiTurnBuildup, // Rollout, Ice Ball
             StatusConfuseAtkPlus2,
             FuryCutter,
             Attract,
@@ -145,7 +145,7 @@ namespace PokemonRandomizer.Backend.DataStructures
             Magnitude,
             BatonPass,
             Pursuit,
-            ClearField,
+            DamageRemoveHazardsAndBinding, // Rapid Spin
             FlatDamage20,
             RecoverHpWeather1 = 132,
             RecoverHpWeather2,
@@ -162,17 +162,17 @@ namespace PokemonRandomizer.Backend.DataStructures
             SkullBash,
             DamageHitSky2xFlinchChance,
             DamageHitUnderground2x,
-            DelayedAttack,
+            FutureAttack,
             DamageHitSky2x,
-            DamageFlinchChanceHitVulnerable2x,
+            DamageFlinchChanceHitMinimized2x,
             Solarbeam,
             Thunder,
             Teleport,
             MultiHitPartyMembers,
-            DamageSpendTurnInSkyOrUnderground,
+            DamageSpendTurnInSkyOrUnderground, // Gen 3: Fly, Dive, Bounce, and Dig
             DefPlus1AndPrepForRoll,
             Softboiled,
-            DamagePriorityFlinchChance,
+            DamagePriorityFlinchChance1stTurnOnly, // Fake out
             Uproar,
             Stockpile,
             SpitUp,
@@ -190,7 +190,7 @@ namespace PokemonRandomizer.Backend.DataStructures
             Charge,
             Taunt,
             HelpingHand,
-            Trick,
+            SwapItems,
             RolePlay,
             Wish,
             Assist,
@@ -227,7 +227,72 @@ namespace PokemonRandomizer.Backend.DataStructures
             SpAtkSpDefPlus1,
             DragonDance,
             Camouflage,
-            //See Move effects.txt
+            Roost,
+            Gravity,
+            MiracleEye, // Remove dark immunity and ignore ACC
+            WakeupSlap,
+            DamageSpdMinus1, // Hammer arm
+            DamageMoreLowerSpeed,
+            HealingWish,
+            DamageDoubleIfTargetBelowHalfHp,
+            NaturalGift,
+            Feint,
+            DamageEatBerry,
+            Tailwind,
+            RandomStatPlus2,
+            MetalBurst,
+            DamageThenSwitchOut,
+            DamageDefSpDefMinus1, // Close Combat, etc.
+            DamageDoubleIfAfterTarget, // Payback
+            DamageDoubleIfTargetAlreadyHit, // Assurance
+            Embargo,
+            Fling,
+            TransferStatus,
+            DamageHigherWhenLowPP,
+            HealBlock,
+            DamageMoreIfTargetHighHp,
+            SwapAtkDef,
+            SupressAbility,
+            LuckyChant,
+            MeFirst,
+            CopyCat,
+            SwapAtkSpAtkChanges,
+            SwapDefSpDefChanges,
+            DamageTargetStatUpDependent,
+            DamageFailIfNotLastMove,
+            SetAbilityToInsomnia,
+            DamageHitFirstIfTargetAttacking, // Sucker punch
+            ToxicSpikes,
+            SwapStatChanges,
+            RestoreHpEveryTurn,
+            MagnetRise,
+            DamageRecoilOneThirdBurnChanceThaw,
+            Struggle,
+            DamageSpendTurnUnderwater,
+            DamageSpendTurnUnderground,
+            DamageHitUnderwater2x,
+            ClearFieldEvadeMinus1,
+            TrickRoom,
+            Blizzard,
+            DoTTrapHitUnderwater2x,
+            DamageRecoilOneThirdParalyzeChance,
+            DamageSpendTurnInSkyParalyzeChance,
+            SpAtkMinus2OppositeGender = 265,
+            StealthRock,
+            Chatter,
+            Judgement,
+            DamageRecoilOneHalf,
+            LunarDance,
+            DamageSpAtkMinus2Chance,
+            DamageSpendTurnInShadowRealm,
+            DamageFlinchBurnChance,
+            DamageFlinchFreezeChance,
+            DamageFlinchParalyzeChance,
+            DamageSpAtkPlus1Chance,
+
+            ChargeTurnHighCrit, // Razor wind (Gen IV+)
+            EvadePlus2AndMinimize, // Minimize (Gen IV+)
+            DamageSpendTurnInSky, // Fly (Gen IV+)
         }
         public enum Targets
         {
@@ -311,19 +376,19 @@ namespace PokemonRandomizer.Backend.DataStructures
 
         public bool IsFlatDamage => effect is MoveEffect.FlatDamageLevel or MoveEffect.FlatDamage20 or MoveEffect.FlatDamage40 or MoveEffect.VaryingDamageLevel;
 
-        public bool IsCounterAttack => effect is MoveEffect.Counter or MoveEffect.MirrorCoat or MoveEffect.MirrorMove or MoveEffect.Endeavor or MoveEffect.Bide; // Gen IV, add metal burst
+        public bool IsCounterAttack => effect is MoveEffect.Counter or MoveEffect.MirrorCoat or MoveEffect.MirrorMove or MoveEffect.Endeavor or MoveEffect.Bide or MoveEffect.MetalBurst;
 
         public bool IsSelfdestruct => effect == MoveEffect.Selfdestruct;
 
-        public bool IsCallMove => effect is MoveEffect.Metronome or MoveEffect.NaturePower or MoveEffect.Assist;
+        public bool IsCallMove => effect is MoveEffect.Metronome or MoveEffect.NaturePower or MoveEffect.Assist or MoveEffect.CopyCat or MoveEffect.MeFirst or MoveEffect.MirrorMove;
 
         public bool IsSleepStatusMove => effect is MoveEffect.StatusSleep or MoveEffect.Yawn;
 
-        public bool IsTrappingMove => effect is MoveEffect.Trap or MoveEffect.DoTTrap;
+        public bool IsTrappingMove => effect is MoveEffect.Trap or MoveEffect.DoTTrap or MoveEffect.DoTTrapHitUnderwater2x;
 
-        public bool IsHighCrit => effect is MoveEffect.DamageHighCrit or MoveEffect.DamageHighCritPoisonChance or MoveEffect.DamageHighCritBurnChance or MoveEffect.SkyAttack; // Gen 3 (Razor wind doesn't have high crit in Gen III apparently)
+        public bool IsHighCrit => effect is MoveEffect.DamageHighCrit or MoveEffect.DamageHighCritPoisonChance or MoveEffect.DamageHighCritBurnChance or MoveEffect.SkyAttack or MoveEffect.ChargeTurnHighCrit;
 
-        public bool IsTwoTurnAttack => effect is MoveEffect.DelayedAttack or MoveEffect.SkullBash or MoveEffect.RazorWind or MoveEffect.SkyAttack or MoveEffect.Solarbeam;
+        public bool IsTwoTurnAttack => effect is MoveEffect.FutureAttack or MoveEffect.SkullBash or MoveEffect.ChargeTurn or MoveEffect.SkyAttack or MoveEffect.Solarbeam or MoveEffect.ChargeTurnHighCrit;
 
         public bool IsVeryLowAccuracy => accuracy > 0 && accuracy <= 50; // 0 accuracy moves always hit
 
