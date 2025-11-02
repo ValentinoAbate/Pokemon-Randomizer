@@ -368,15 +368,15 @@ namespace PokemonRandomizer.Backend.DataStructures
         public bool AffectedByKingRock { get => flags[5]; }    // 5 - This move is affected by the effects of King's Rock. The flinch effect is considered an additional effect for the purposes of Shield Dust, but not Serene Grace
         public BitArray flags;
 
-        public bool AffectedByStab => !IsStatus && !IsOneHitKO && !IsFlatDamage;
+        public bool AffectedByStab => AffectedByAttackingStat && effect is not MoveEffect.FutureAttack; // Gen 5: future attacks do use STAB
 
         public bool AffectedByAttackingStat => !IsStatus && !IsOneHitKO && !IsFlatDamage && !IsCounterAttack;
 
         public bool IsOneHitKO => effect == MoveEffect.OneHitKill;
 
-        public bool IsFlatDamage => effect is MoveEffect.FlatDamageLevel or MoveEffect.FlatDamage20 or MoveEffect.FlatDamage40 or MoveEffect.VaryingDamageLevel;
+        public bool IsFlatDamage => effect is MoveEffect.FlatDamageLevel or MoveEffect.FlatDamage20 or MoveEffect.FlatDamage40 or MoveEffect.VaryingDamageLevel or MoveEffect.Endeavor;
 
-        public bool IsCounterAttack => effect is MoveEffect.Counter or MoveEffect.MirrorCoat or MoveEffect.MirrorMove or MoveEffect.Endeavor or MoveEffect.Bide or MoveEffect.MetalBurst;
+        public bool IsCounterAttack => effect is MoveEffect.Counter or MoveEffect.MirrorCoat or MoveEffect.Bide or MoveEffect.MetalBurst;
 
         public bool IsSelfdestruct => effect == MoveEffect.Selfdestruct;
 
@@ -384,11 +384,15 @@ namespace PokemonRandomizer.Backend.DataStructures
 
         public bool IsSleepStatusMove => effect is MoveEffect.StatusSleep or MoveEffect.Yawn;
 
-        public bool IsTrappingMove => effect is MoveEffect.Trap or MoveEffect.DoTTrap or MoveEffect.DoTTrapHitUnderwater2x;
+        public bool IsTrappingMove => effect is MoveEffect.Trap || IsDoTTrap;
+
+        public bool IsDoTTrap => effect is MoveEffect.DoTTrap or MoveEffect.DoTTrapHitUnderwater2x;
 
         public bool IsHighCrit => effect is MoveEffect.DamageHighCrit or MoveEffect.DamageHighCritPoisonChance or MoveEffect.DamageHighCritBurnChance or MoveEffect.SkyAttack or MoveEffect.ChargeTurnHighCrit;
 
-        public bool IsTwoTurnAttack => effect is MoveEffect.FutureAttack or MoveEffect.SkullBash or MoveEffect.ChargeTurn or MoveEffect.SkyAttack or MoveEffect.Solarbeam or MoveEffect.ChargeTurnHighCrit;
+        public bool IsMultiTurnAttack => effect is MoveEffect.FutureAttack || IsTwoTurnAttack;
+
+        public bool IsTwoTurnAttack => effect is MoveEffect.SkullBash or MoveEffect.ChargeTurn or MoveEffect.SkyAttack or MoveEffect.Solarbeam or MoveEffect.ChargeTurnHighCrit;
 
         public bool IsVeryLowAccuracy => accuracy > 0 && accuracy <= 50; // 0 accuracy moves always hit
 
@@ -396,7 +400,7 @@ namespace PokemonRandomizer.Backend.DataStructures
         {
             get
             {
-                if (IsTwoTurnAttack)
+                if (IsMultiTurnAttack)
                 {
                     return (int)Math.Floor(power * 0.75);
                 }

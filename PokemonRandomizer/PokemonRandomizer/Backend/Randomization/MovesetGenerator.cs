@@ -50,7 +50,7 @@ namespace PokemonRandomizer.Backend.Randomization
         private static float EffectivePower(MoveData data)
         {
             int power = data.power;
-            if (data.IsTwoTurnAttack)
+            if (data.IsMultiTurnAttack)
             {
                 return (int)Math.Floor(power * 0.75);
             }
@@ -61,7 +61,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 MoveEffect.DamageThreeConsecutiveHits => 47,
                 MoveEffect.Selfdestruct => (int)Math.Floor(power / 2.75),
                 MoveEffect.Magnitude => 71,
-                MoveEffect.DamageTiredAfterUse => (int)Math.Floor(power / 1.75),
+                MoveEffect.DamageTiredAfterUse => (int)Math.Floor(power / 1.75), // TODO: Truant exception?
                 MoveEffect.DamageWeightBased => 40,
                 MoveEffect.FlatDamage20 => 45,
                 MoveEffect.FlatDamage40 => 65,
@@ -81,7 +81,7 @@ namespace PokemonRandomizer.Backend.Randomization
         {
             var data = dataT.GetMoveData(m);
             float basePower = data.IsCallMove ? 25 : EffectivePower(data);
-            if (data.AffectedByStab && IsStab(data, pokemon))
+            if (data.AffectedByStab && IsSameType(data, pokemon))
             {
                 basePower *= 1.5f;
             }
@@ -245,7 +245,7 @@ namespace PokemonRandomizer.Backend.Randomization
             }
         }
 
-        private static bool IsStab(MoveData move, PokemonBaseStats pokemon)
+        private static bool IsSameType(MoveData move, PokemonBaseStats pokemon)
         {
             return pokemon.IsType(move.type);
         }
@@ -275,7 +275,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 }
                 return 1;
             }
-            float StabBonus(Move m) => IsStab(dataT.GetMoveData(m), pokemon) ? 2f : 1;
+            float SameTypeBonus(Move m) => IsSameType(dataT.GetMoveData(m), pokemon) ? 2f : 1;
             float LevelFactor(Move e) => MathF.Pow(availableMoves[e], 2);
             float LevelFactorSmall(Move e) => MathF.Pow(availableMoves[e], 1.5f);
             float LevelFactorLog(Move e) => MathF.Max(1, MathF.Log(availableMoves[e]));
@@ -284,7 +284,7 @@ namespace PokemonRandomizer.Backend.Randomization
             CalculateMoveSynergyMetrics(ret, availableMoves, synergyMetrics, antiSynergyMetrics);
 
             // Choose first move - attempt to choose an attack move
-            if (ChooseMoveForIndex(ret, 0, GetAttackMoves(availableMoves), (m) => PowerFactor(m) * StabBonus(m) * LevelFactorLog(m) * MoveSynergyFactor(m, synergyMetrics, antiSynergyMetrics), ref availableMoves) || maxMoves <= 1)
+            if (ChooseMoveForIndex(ret, 0, GetAttackMoves(availableMoves), (m) => PowerFactor(m) * SameTypeBonus(m) * LevelFactorLog(m) * MoveSynergyFactor(m, synergyMetrics, antiSynergyMetrics), ref availableMoves) || maxMoves <= 1)
             {
                 return ret;
             }
@@ -295,7 +295,7 @@ namespace PokemonRandomizer.Backend.Randomization
             CalculateMoveSynergyMetrics(ret, availableMoves, synergyMetrics, antiSynergyMetrics);
 
             // Choose second move - attempt to choose another attack move
-            if (ChooseMoveForIndex(ret, 1, GetAttackMoves(availableMoves), (m) => PowerFactor(m) * StabBonus(m) * RedundantTypeFactor(m) * LevelFactorLog(m) * MoveSynergyFactor(m, synergyMetrics, antiSynergyMetrics), ref availableMoves) || maxMoves <= 2)
+            if (ChooseMoveForIndex(ret, 1, GetAttackMoves(availableMoves), (m) => PowerFactor(m) * SameTypeBonus(m) * RedundantTypeFactor(m) * LevelFactorLog(m) * MoveSynergyFactor(m, synergyMetrics, antiSynergyMetrics), ref availableMoves) || maxMoves <= 2)
             {
                 return ret;
             }
@@ -592,31 +592,31 @@ namespace PokemonRandomizer.Backend.Randomization
                 }
                 return 1;
             }
-            float StabBonus(Move m) => IsStab(dataT.GetMoveData(m), pokemon) ? 2f : 1;
+            float SameTypeBonus(Move m) => IsSameType(dataT.GetMoveData(m), pokemon) ? 2f : 1;
             float LevelFactorSmall(Move e) => MathF.Pow(availableMoves[e], 1.5f);
             float LevelFactorLog(Move e) => MathF.Max(1, MathF.Log(availableMoves[e]));
 
 
             // Choose first move - attempt to choose an attack move
-            if (ChooseMoveForIndex(ret, 0, availableMoves.Keys, (m) => ChoiceItemMovesetFactor(m, pokemon, item) * StabBonus(m) * LevelFactorLog(m), ref availableMoves) || maxMoves <= 1)
+            if (ChooseMoveForIndex(ret, 0, availableMoves.Keys, (m) => ChoiceItemMovesetFactor(m, pokemon, item) * SameTypeBonus(m) * LevelFactorLog(m), ref availableMoves) || maxMoves <= 1)
             {
                 return ret;
             }
 
             // Choose second move - attempt to choose another attack move
-            if (ChooseMoveForIndex(ret, 1, availableMoves.Keys, (m) => ChoiceItemMovesetFactor(m, pokemon, item) * StabBonus(m) * RedundantTypeFactor(m) * LevelFactorLog(m), ref availableMoves) || maxMoves <= 2)
+            if (ChooseMoveForIndex(ret, 1, availableMoves.Keys, (m) => ChoiceItemMovesetFactor(m, pokemon, item) * SameTypeBonus(m) * RedundantTypeFactor(m) * LevelFactorLog(m), ref availableMoves) || maxMoves <= 2)
             {
                 return ret;
             }
 
             // Choose third move - Attempt to choose a status move
-            if (ChooseMoveForIndex(ret, 2, availableMoves.Keys, (m) => ChoiceItemMovesetFactor(m, pokemon, item) * StabBonus(m) * RedundantTypeFactor(m) * LevelFactorLog(m), ref availableMoves) || maxMoves <= 3)
+            if (ChooseMoveForIndex(ret, 2, availableMoves.Keys, (m) => ChoiceItemMovesetFactor(m, pokemon, item) * SameTypeBonus(m) * RedundantTypeFactor(m) * LevelFactorLog(m), ref availableMoves) || maxMoves <= 3)
             {
                 return ret;
             }
 
             // Choose fourth move
-            ret[3] = rand.Choice(new WeightedSet<Move>(availableMoves.Keys, (m) => ChoiceItemMovesetFactor(m, pokemon, item) * StabBonus(m) * RedundantTypeFactor(m) * LevelFactorSmall(m)));
+            ret[3] = rand.Choice(new WeightedSet<Move>(availableMoves.Keys, (m) => ChoiceItemMovesetFactor(m, pokemon, item) * SameTypeBonus(m) * RedundantTypeFactor(m) * LevelFactorSmall(m)));
 
             Logger.main.Info($"{pokemon.species.ToDisplayString()} LV {level} Item {item.ToDisplayString()}: {ret[0].ToDisplayString()}, {ret[1].ToDisplayString()}, {ret[2].ToDisplayString()}, {ret[3].ToDisplayString()}");
             return ret;
@@ -783,20 +783,20 @@ namespace PokemonRandomizer.Backend.Randomization
             else if (EffectivePower(moveData) > 0) // Normal Attacking Moves
             { 
                 weight = (EffectivePower(moveData) * lowAttackingStatPowerModifier) / Math.Max(choiceCount * 0.1f, 1f);
-                if (moveData.effect is MoveEffect.DoTTrap)
+                if (moveData.IsDoTTrap)
                 {
                     weight += 75; 
                 }
             }
             if (moveData.IsType(pokemon))
             {
-                if (moveData.AffectedByStab && moveData.effect is not MoveEffect.DoTTrap)
+                if (moveData.AffectedByStab && !moveData.IsDoTTrap)
                 {
                     weight *= 1.5f;
                 }
                 else if (pokemon.IsType(PokemonType.NRM))
                 {
-                    if(moveData.effect is MoveEffect.DoTTrap)
+                    if(moveData.IsDoTTrap)
                     {
                         weight *= 1.5f;
                     }
