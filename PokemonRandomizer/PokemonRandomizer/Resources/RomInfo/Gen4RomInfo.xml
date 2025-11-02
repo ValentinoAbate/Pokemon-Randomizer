@@ -39,6 +39,8 @@
 
 		<inheritFrom>dppConstants</inheritFrom>
 		<pokemonBaseStats filePath="poketool/personal/pl_personal.narc"/>
+		<moveData filePath="poketool/waza/pl_waza_tbl.narc"/>
+		<wildPokemon filePath="fielddata/encountdata/pl_enc_data.narc"/>
 		<moveTutorMoves overlay="5" offset="0x2FF64" num="38" size="12"/>
 		<moveTutorCompat overlay="5" size="5" offset="0x3012C"/>
 		<eggMoves overlay ="5" offset="0x2921A"/>
@@ -63,6 +65,7 @@
 		<!-- Metadata -->
 
 		<inheritFrom>dppConstants</inheritFrom>
+		<moveData filePath="poketool/waza/waza_tbl.narc"/>
 		<eggMoves overlay ="5" offset="0x20660"/>
 		<starterPokemon overlay ="64" offset="0x1B88"/>
 		<typeEffectiveness overlay ="11" offset="0x30DB8"/>
@@ -76,6 +79,7 @@
 
 		<inheritFrom>dpConstants</inheritFrom>
 		<pokemonBaseStats filePath="poketool/personal/personal.narc"/>
+		<wildPokemon filePath="fielddata/encountdata/d_enc_data.narc"/>
 		
 		<!-- Text Offsets -->
 		<pokemonNames offset="362" extra="true"/>
@@ -99,6 +103,7 @@
 
 		<inheritFrom>ADAE0</inheritFrom>
 		<pokemonBaseStats filePath="poketool/personal_pearl/personal.narc"/>
+		<wildPokemon filePath="fielddata/encountdata/p_enc_data.narc"/>
 
 	</APAE0>
 	<APAE5>
@@ -117,6 +122,7 @@
 		<pokemonBaseStats filePath="a/0/0/2"/>
 		<movesets filePath="a/0/3/3"/>
 		<evolutions filePath="a/0/3/4"/>
+		<moveData filePath="a/0/1/1"/>
 		<tmMoves prefix="0x1E003200"/>
 		<moveTutorMoves overlay="1" offset="0x23AE0" num="51" size="4"/>
 		<moveTutorCompat filePath="fielddata/wazaoshie/waza_oshie.bin" size="8" offset="0x00"/>
@@ -135,6 +141,8 @@
 		<!-- Metadata -->
 
 		<inheritFrom>hgssConstants</inheritFrom>
+		
+		<wildPokemon filePath="a/0/3/7"/>
 
 		<!-- Text Offsets -->
 		<pokemonNames offset="237" extra="true"/>
@@ -152,6 +160,8 @@
 		<!-- Metadata -->
 
 		<inheritFrom>IPKE0</inheritFrom>
+
+		<wildPokemon filePath="a/1/3/6"/>
 
 	</IPGE0>
 	
