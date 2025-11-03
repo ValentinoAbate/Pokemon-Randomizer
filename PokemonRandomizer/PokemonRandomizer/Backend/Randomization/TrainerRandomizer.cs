@@ -136,6 +136,10 @@ namespace PokemonRandomizer.Backend.Randomization
 
         private void AddBonusPokemon(Trainer trainer)
         {
+            if (trainer.Pokemon.Count <= 0)
+            {
+                return;
+            }
             int bonusPokemon = numBonusPokemon(trainer.TrainerCategory);
             if(bonusPokemon <= 0)
             {
