@@ -77,7 +77,10 @@ namespace PokemonRandomizer.Backend.DataStructures
                 }
                 foreach (var kvp in SpecialTrainers)
                 {
-                    yield return kvp.Value;
+                    foreach(var trainer in kvp.Value)
+                    {
+                        yield return trainer;
+                    }
                 }
             }
         }
