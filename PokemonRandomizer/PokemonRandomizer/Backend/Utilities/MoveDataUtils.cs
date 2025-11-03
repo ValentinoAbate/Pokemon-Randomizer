@@ -7,13 +7,7 @@ namespace PokemonRandomizer.Backend.Utilities
     {
         static MoveDataUtils()
         {
-            moveEffectToGenIVInternal = new Dictionary<MoveEffect, int>(genIVInternalToMoveEffect.Length);
-            for (int i = 0; i < genIVInternalToMoveEffect.Length; ++i)
-            {
-                if (moveEffectToGenIVInternal.ContainsKey(genIVInternalToMoveEffect[i]))
-                    continue;
-                moveEffectToGenIVInternal.Add(genIVInternalToMoveEffect[i], i);
-            }
+            moveEffectToGenIVInternal = ReverseLookupUtils.BuildReverseLookup(genIVInternalToMoveEffect);
         }
         private static readonly MoveEffect[] genIVInternalToMoveEffect = new MoveEffect[]
         {

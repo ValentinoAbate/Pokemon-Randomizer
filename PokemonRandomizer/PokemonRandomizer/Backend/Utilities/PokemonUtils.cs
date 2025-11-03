@@ -11,11 +11,7 @@ namespace PokemonRandomizer.Backend.Utilities
     {
         static PokemonUtils()
         {
-            pokemonToGenIVInternal = new Dictionary<Pokemon, int>(genIVInternalToPokemon.Length);
-            for (int i = 0; i < genIVInternalToPokemon.Length; ++i)
-            {
-                pokemonToGenIVInternal.Add(genIVInternalToPokemon[i], i);
-            }
+            pokemonToGenIVInternal = ReverseLookupUtils.BuildReverseLookup(genIVInternalToPokemon);
         }
         public static bool IsBaby(this Pokemon species) => babyPokemon.Contains(species);
         private static readonly HashSet<Pokemon> babyPokemon = new HashSet<Pokemon>

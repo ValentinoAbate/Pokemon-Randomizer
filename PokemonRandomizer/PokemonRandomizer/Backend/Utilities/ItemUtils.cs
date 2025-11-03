@@ -10,13 +10,7 @@ namespace PokemonRandomizer.Backend.Utilities
     {
         static ItemUtils()
         {
-            itemToGenIVInternal = new Dictionary<Item, int>(genIVInternalToItem.Length);
-            for (int i = 0; i < genIVInternalToItem.Length; ++i)
-            {
-                if (itemToGenIVInternal.ContainsKey(genIVInternalToItem[i]))
-                    continue;
-                itemToGenIVInternal.Add(genIVInternalToItem[i], i);
-            }
+            itemToGenIVInternal = ReverseLookupUtils.BuildReverseLookup(genIVInternalToItem);
         }
         private static readonly HashSet<Item> mail = new HashSet<Item>
         {
