@@ -34,6 +34,10 @@ namespace PokemonRandomizer.Backend.RomHandling
         protected int MoveEffectToInternalIndex(MoveData.MoveEffect moveEffect) => IndexTranslator.MoveEffectToInternalIndex(moveEffect);
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected MoveData.MoveEffect InternalIndexToMoveEffect(int index) => IndexTranslator.InternalIndexToMoveEffect(index);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected int MoveTargetsToInternalIndex(MoveData.Targets targets) => IndexTranslator.MoveTargetsToInternalIndex(targets);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        protected MoveData.Targets InternalIndexToMoveTargets(int index) => IndexTranslator.InternalIndexToMoveTargets(index);
         #endregion
     }
 }

@@ -306,5 +306,47 @@ namespace PokemonRandomizer.Backend.Utilities
         {
             return moveEffectToGenIVInternal[effect];
         }
+
+        public static Targets Gen4InternalToMoveTargets(int gen4InternalIndex)
+        {
+            return gen4InternalIndex switch
+            {
+                0 => Targets.Target,
+                1 => Targets.Special,
+                2 => Targets.RandomOpponent,
+                4 => Targets.BothOpponents,
+                8 => Targets.OpponentsAndAlly,
+                16 => Targets.User,
+                32 => Targets.UserField,
+                64 => Targets.Field,
+                128 => Targets.OpponentField,
+                256 => Targets.Ally,
+                512 => Targets.UserOrAlly,
+                1024 => Targets.TargetMeFirst,
+                32768 => Targets.All,
+                _ => Targets.Unused,
+            };
+        }
+
+        public static int MoveTargetsToGen4Internal(Targets moveTargets)
+        {
+            return moveTargets switch
+            {
+                Targets.Target => 0,
+                Targets.Special => 1,
+                Targets.RandomOpponent => 2,
+                Targets.BothOpponents => 4,
+                Targets.OpponentsAndAlly => 8,
+                Targets.User => 16,
+                Targets.UserField => 32,
+                Targets.Field => 64,
+                Targets.OpponentField => 128,
+                Targets.Ally => 256,
+                Targets.UserOrAlly => 512,
+                Targets.TargetMeFirst => 1024,
+                Targets.All => 32768,
+                _ => 0,
+            };
+        }
     }
 }

@@ -18,5 +18,7 @@ namespace PokemonRandomizer.Backend.RomHandling.IndexTranslators
         public Ability InternalIndexToAbility(int index) => AbilityUtils.PostGen3InternalToAbility(index);
         public int MoveEffectToInternalIndex(MoveData.MoveEffect effect) => MoveDataUtils.MoveEffectToGen4Internal(effect);
         public MoveData.MoveEffect InternalIndexToMoveEffect(int index) => MoveDataUtils.Gen4InternalToMoveEffect(index);
+        public int MoveTargetsToInternalIndex(MoveData.Targets targets) => MoveDataUtils.MoveTargetsToGen4Internal(targets);
+        public MoveData.Targets InternalIndexToMoveTargets(int index) => MoveDataUtils.Gen4InternalToMoveTargets(index);
     }
 }

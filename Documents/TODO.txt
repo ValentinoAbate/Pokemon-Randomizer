@@ -172,6 +172,8 @@ GEN IV  ////////////////////////////////////////////////////////////////////////
  - Type chart writing
  - Tutor move writing
  - Trainer writing
+- Test Unused move effects
+- Test unused target patterns
 
 // TODO (Parity w/ Gen III)
 
@@ -187,8 +189,6 @@ NEXT: Move Data
 - Move data
 	- Writing
 	- Contest data reading / writing
-	- Move effect enum compatibility
-	- Target enum compatibility
 	- what are last 3 move data?
 	- Info: 468 (Special): P100, E:Damage, TSelectedTarget
 	- Info: 469 (Special): P100, E:Damage, TSelectedTarget

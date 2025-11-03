@@ -308,7 +308,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
                     accuracy = rom.ReadByte(),
                     pp = rom.ReadByte(),
                     effectChance = rom.ReadByte(),
-                    targets = (MoveData.Targets)rom.ReadUInt16(),
+                    targets = InternalIndexToMoveTargets(rom.ReadUInt16()),
                     priority = rom.ReadByte(),
                     flags = new BitArray(new byte[] { rom.ReadByte() }),
                 };

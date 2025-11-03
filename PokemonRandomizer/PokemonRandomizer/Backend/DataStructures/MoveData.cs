@@ -296,14 +296,20 @@ namespace PokemonRandomizer.Backend.DataStructures
         }
         public enum Targets
         {
-            SelectedTarget = 0,
+            Target = 0,
             Special = 1, // Specific to certain attacks (counter is enemy, metronone could hit anything)
             Unused = 2,
-            Random = 4,
-            BothEnemies = 8,
-            Self = 16,
-            EnemiesAndPartner = 32,
+            RandomOpponent = 4,
+            BothOpponents = 8,
+            User = 16,
+            OpponentsAndAlly = 32,
             OpponentField = 64, // For moves like spikes
+            UserField,
+            Field,
+            Ally,
+            UserOrAlly,
+            TargetMeFirst,
+            All,
         }
 
         private static readonly Dictionary<Move, PokemonType[]> moveTypeOverrides = new Dictionary<Move, PokemonType[]>()
