@@ -6,12 +6,15 @@ using PokemonRandomizer.Backend.Utilities;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace PokemonRandomizer.Backend.DataStructures
 {
     public class RomData : IDataTranslator
     {
+        private static int ComparePokemonByNationalDexOrder(PokemonBaseStats p1, PokemonBaseStats p2)
+        {
+            return p1.NationalDexIndex.CompareTo(p2.NationalDexIndex);
+        }
         // A metrics database calculated from the input ROM data (the base game if the rom being loaded is normal)
         public RomMetrics Metrics { get; private set; }
         public string Seed { get; set; }
@@ -41,15 +44,22 @@ namespace PokemonRandomizer.Backend.DataStructures
                 }
                 // Refresh the national dex order
                 PokemonNationalDexOrder = Pokemon.ToArray();
-                Array.Sort(PokemonNationalDexOrder, (x, y) => x.NationalDexIndex.CompareTo(y.NationalDexIndex));
+                Array.Sort(PokemonNationalDexOrder, ComparePokemonByNationalDexOrder);
                 // Link the evolutions and egg moves
                 LinkEvolutions();
                 LinkEggMoves();
                 LinkOriginalMoveLearns();
-                // Set any necessary original values
-                Pokemon.ForEach(p => p.SetOriginalValues());
-                // Set up the names
-                PokemonNames = PokemonNationalDexOrder.Select(p => p.Name).ToArray();
+
+                // Post-process
+                PokemonNames = new string[PokemonNationalDexOrder.Length];
+                for(int i = 0; i < PokemonNationalDexOrder.Length; i++)
+                {
+                    var p = PokemonNationalDexOrder[i];
+                    // Log name
+                    PokemonNames[i] = p.Name;
+                    // Set any necessary original values
+                    p.SetOriginalValues();
+                }
             }
         }
         public string[] PokemonNames { get; private set; }
@@ -57,7 +67,20 @@ namespace PokemonRandomizer.Backend.DataStructures
         private Dictionary<Pokemon, PokemonBaseStats> PokemonLookup { get; } = new(0);
         public List<TrainerClass> TrainerClasses { get; set; }
         public List<TrainerSprite> TrainerSprites { get; set; }
-        public IEnumerable<Trainer> AllTrainers => Trainers.Concat(SpecialTrainers.SelectMany(kvp => kvp.Value));
+        public IEnumerable<Trainer> AllTrainers
+        {
+            get
+            {
+                foreach(var trainer in Trainers)
+                {
+                    yield return trainer;
+                }
+                foreach (var kvp in SpecialTrainers)
+                {
+                    yield return kvp.Value;
+                }
+            }
+        }
         public List<BasicTrainer> Trainers { get; set; }
         public Dictionary<string, List<Trainer>> SpecialTrainers { get; } = new();
 
