@@ -177,7 +177,7 @@ GEN IV  ////////////////////////////////////////////////////////////////////////
 
 // TODO (Parity w/ Gen III)
 
-NEXT: Move Data
+NEXT: Double Battle Fix, then Trainer names / class names
 
 - Trainer pokemon
 	- HG/SS special attributes (gender + ability)
@@ -228,6 +228,7 @@ NEXT: Move Data
 - Natural gift randomization
 - Platinum ability selection hack?
 - Trainer pokemon capsule information (P/HGSS)
+- Trainer double battle fix (normal trainers)
 
 CLEANUP /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -253,6 +254,7 @@ FIXES //////////////////////////////////////////////////////////////////////////
 - Potentially: write catching tut on emerald has some differences from clean ROMs (see diff9)
 - Fix professor Oak's aides for National Dex mode:
 	- https://www.reddit.com/r/PokemonROMhacks/comments/ew7bl3/fire_red_prof_oak_aides_check_national_dex/
+- If rival battle 1 has a bonus pokemon and the game is set to all doubles, you can can get forced into a glitch
 
 DUMB IDEA CORNER ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
