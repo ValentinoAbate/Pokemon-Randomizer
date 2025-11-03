@@ -312,7 +312,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
                     priority = rom.ReadByte(),
                     flags = new BitArray(new byte[] { rom.ReadByte() }),
                 };
-                // struct { u8 unkC; u8 contestType; u16 unk_E; 
+                // struct { u8 unkC; u8 contestType; u16 unk_E }; 
                 rom.Skip(4); // Skip contest data for now
                 moves.Add(move);
             }
