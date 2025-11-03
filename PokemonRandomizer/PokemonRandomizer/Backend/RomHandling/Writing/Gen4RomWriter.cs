@@ -120,7 +120,6 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
             int numTrainers = data.Trainers.Count;
             var trainerFileOverrides = new List<Rom>(numTrainers);
             var trainerPokemonOverrides = new List<Rom>(numTrainers);
-            var trainers = new List<BasicTrainer>(numTrainers);
             bool isPlatinumOrHGSS = metadata.IsPlatinum || metadata.IsHGSS;
             for (int i = 0; i < numTrainers; i++)
             {
