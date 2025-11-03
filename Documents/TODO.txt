@@ -171,7 +171,7 @@ GEN IV  ////////////////////////////////////////////////////////////////////////
 - Basic tests
  - Type chart writing
  - Tutor move writing
- - Trainer writing
+ - Trainer writing (HGSS/DP)
 - Test Unused move effects
 - Test unused target patterns
 
@@ -187,7 +187,6 @@ NEXT: Move Data
 	- Trainer class names
 - Wild encounters
 - Move data
-	- Writing
 	- Contest data reading / writing
 	- what are last 3 move data?
 	- Info: 468 (Special): P100, E:Damage, TSelectedTarget

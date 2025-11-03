@@ -29,6 +29,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
 
             WriteMoveTutorMoves(data, originalRom, dsFileSystem, info, fileOverrides);
 
+            WriteMoves(data, originalRom, dsFileSystem, info, fileOverrides);
             WriteStarters(data, originalRom, dsFileSystem, metadata, info, fileOverrides);
             WriteTrainers(data, originalRom, dsFileSystem, metadata, info, fileOverrides);
             WriteTypeEffectivenessData(data, originalRom, dsFileSystem, info, fileOverrides);
@@ -81,6 +82,48 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
                 overlay.WriteUInt16(MoveToInternalIndex(move));
                 overlay.Skip(skip);
             }
+        }
+
+        private void WriteMoves(RomData data, Rom originalRom, DSFileSystemData dsFileSystem, XmlManager info, Dictionary<int, Rom> fileOverrides)
+        {
+            if (!dsFileSystem.GetNarcFile(originalRom, info.Path(ElementNames.moveData), out var moveDataNarc))
+            {
+                return;
+            }
+            int numMoves = data.MoveData.Count;
+            var moveFileOverrides = new List<Rom>(numMoves);
+            byte[] flagsBuffer = new byte[1];
+            for (int i = 0; i < numMoves; i++)
+            {
+                var move = data.MoveData[i];
+
+                // Trainer Data
+                var moveData = new Rom(16, 0x00);
+
+                // Copy original data if available
+                if (moveDataNarc.GetFile(i, out int originalMoveDataOffset, out int originalMoveDataLength, out _))
+                {
+                    moveData.Copy(originalRom, originalMoveDataOffset, originalMoveDataLength);
+                    moveData.Seek(0);
+                }
+
+                moveData.WriteUInt16(MoveEffectToInternalIndex(move.effect));
+                moveData.WriteByte((byte)move.MoveCategory);
+                moveData.WriteByte(move.power);
+                moveData.WriteByte((byte)move.type);
+                moveData.WriteByte(move.accuracy);
+                moveData.WriteByte(move.pp);
+                moveData.WriteByte(move.effectChance);
+                moveData.WriteUInt16(MoveTargetsToInternalIndex(move.targets));
+                moveData.WriteByte(move.priority);
+                // Write flags
+                move.flags.CopyTo(flagsBuffer, 0);
+                moveData.WriteByte(flagsBuffer[0]);
+                moveData.Skip(4); // Skip contest data for now
+
+                moveFileOverrides.Add(moveData);
+            }
+            fileOverrides.Add(moveDataNarc.FileId, moveDataNarc.WriteToFile(originalRom, moveFileOverrides));
         }
 
         private void WriteStarters(RomData data, Rom originalRom, DSFileSystemData dsFileSystem, RomMetadata metadata, XmlManager info, Dictionary<int, Rom> fileOverrides)
