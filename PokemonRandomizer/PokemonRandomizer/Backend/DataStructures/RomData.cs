@@ -71,7 +71,19 @@ namespace PokemonRandomizer.Backend.DataStructures
         #endregion
 
         public TypeEffectivenessChart TypeDefinitions { get; set; }
-        public IEnumerable<Map> Maps => MapBanks.SelectMany(bank => bank);
+        public IEnumerable<Map> Maps
+        {
+            get
+            {
+                foreach(var bank in MapBanks)
+                {
+                    foreach(var map in bank)
+                    {
+                        yield return map;
+                    }
+                }
+            }
+        }
         public Map[][] MapBanks { get; set; }
         public List<EncounterSet> Encounters { get; set; }
         // Used in dream team application
