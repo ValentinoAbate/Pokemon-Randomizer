@@ -21,7 +21,7 @@ namespace PokemonRandomizer.UI.Views
             "\nVulpix, Ninetales, and Torkoal all gain Drought as a secondary ability" +
             "\nNote: link battles between a ROM that has \"Distribute Weather Abilities\" applied and one that doesn't that include affected pokemon may behave incorrectly";
         private const string typeEffectivenessModLinkWarning = "\nNote: link battles between two ROMs that have different \"Type Effectiveness Modification\" settings may behave incorrectly";
-        private const string updateDOTMovesTooltip = "Updates the moves Wrap, Bind, Fire Spin, Sand Tomb, Whirlpool, and Clamp to their Gen V power, accuracy, and PP" +
+        private const string updateDOTMovesTooltip = "Updates the moves Wrap, Bind, Fire Spin, Sand Tomb, Whirlpool, Clamp, and Magma Storm to their Gen V power, accuracy, and PP" +
             "\nNote: link battles between a ROM that has \"Update Wrap Moves\" applied and one that doesn't may behave incorrectly when using affected moves";
         private const string fixStevenNaturesTooltip = "Fixes a bug in the Emerald base game that causes Steven's pokemon in the Steven ally battle to not have the correct natures";
         private const string startWithNationalDexTooltip = "Start the game with the national pokedex instead of the regional pokedex" +

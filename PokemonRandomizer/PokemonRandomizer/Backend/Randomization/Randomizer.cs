@@ -156,6 +156,11 @@ namespace PokemonRandomizer.Backend.Randomization
                 var clamp = data.GetMoveData(Move.CLAMP);
                 clamp.pp = 15;
                 clamp.accuracy = 85;
+                // Magma Storm 70 -> 75 ACC
+                if(metadata.Gen == Generation.IV)
+                {
+                    data.GetMoveData(Move.MAGMA_STORM).accuracy = 75;
+                }
             }
 
             #endregion
