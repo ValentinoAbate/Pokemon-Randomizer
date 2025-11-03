@@ -145,6 +145,14 @@ namespace PokemonRandomizer.Backend.DataStructures.DS
             }
         }
 
+        public Rom WriteToFile(Rom originalRom, Rom overrideFile, int overrideFileId)
+        {
+            // TODO: something better than this lol
+            var overrides = new Rom[overrideFileId + 1];
+            overrides[overrideFileId] = overrideFile;
+            return WriteToFile(originalRom, overrides);
+        }
+
         public Rom WriteToFile(Rom originalRom, IReadOnlyList<Rom> fileOverrides)
         {
             int newFileCount = Math.Max(FileCount, fileOverrides.Count);

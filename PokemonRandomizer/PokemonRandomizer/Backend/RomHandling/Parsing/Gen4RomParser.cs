@@ -405,6 +405,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
                     }
                     trainer.PokemonData.Pokemon.Add(pokemon);
                 }
+                trainer.SetOriginalValues();
                 trainers.Add(trainer);
             }
             return trainers;

@@ -25,6 +25,7 @@ namespace PokemonRandomizer.Backend.DataStructures.Trainers
         public override string Name { get; set; }
         public Item[] useItems = new Item[4];
         public override bool IsDoubleBattle { get; set; }
+        public bool OriginallyDoubleBattle { get; private set; }
         #region AI script flag documentation (Gen III)
         // Reference: https://www.pokecommunity.com/showthread.php?t=333767 (thanks Knizz and DaniilS) (may be partially incorrect)
         // Reference: https://github.com/pret/pokeemerald/blob/master/data/battle_ai_scripts.s (Thanks DizzyEggg et al.)
@@ -68,5 +69,11 @@ namespace PokemonRandomizer.Backend.DataStructures.Trainers
         // Flag 31     - AI_FirstBattle                    Run if at low hp (not used for trainers, unused)
         #endregion
         public BitArray AIFlags { get; set; }
+
+        public override void SetOriginalValues()
+        {
+            base.SetOriginalValues();
+            OriginallyDoubleBattle = IsDoubleBattle;
+        }
     }
 }

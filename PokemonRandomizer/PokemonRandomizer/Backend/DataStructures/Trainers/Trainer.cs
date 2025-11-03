@@ -62,6 +62,8 @@ namespace PokemonRandomizer.Backend.DataStructures.Trainers
             }
         }
 
+        public virtual void SetOriginalValues() { }
+
         public override string ToString()
         {
             return $"{Class} {Name} ({TrainerCategory})";

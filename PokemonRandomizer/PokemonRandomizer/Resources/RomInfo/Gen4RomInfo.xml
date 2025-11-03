@@ -18,6 +18,7 @@
 		<tmMoves num="92" size="2"/>
 		<hmMoves num="8" size="2"/>
 		<eggMoves pokemonSigniture="0x4E20"/>
+		<doubleBattleFix trainerEndFileId="4" trainerEndFileEndTextBoxOffset="0xD8"/>
 	</constants>
 	
 
@@ -30,6 +31,7 @@
 		<tmMoves prefix="0xD100D200D300D400"/>
 		<trainerBattles filePath="poketool/trainer/trdata.narc"/>
 		<trainerPokemon filePath="poketool/trainer/trpoke.narc"/>
+		<doubleBattleFix filePath="battle/skill/sub_seq.narc"/>
 	</dppConstants>
 
 	<!-- Platinum Rom Info -->
@@ -57,6 +59,8 @@
 		<abilityNames offset="610"/>
 		<itemNames offset="392"/>
 		<itemDescriptions offset="391"/>
+
+		<doubleBattleFix prefix="0x022919D90221214205" flagReturnPrefix="0x08B5092139F0C6FF" walkingPrefix1="0x16B00020F8BD1498" walkingPrefix2="0xC4FE16B00120F8BD" textBoxPrefix="0xF6F792FCF6F7ACFC"/>
 	</CPUE0>
 
 	<!-- Diamond / Pearl Constants -->
@@ -70,6 +74,7 @@
 		<starterPokemon overlay ="64" offset="0x1B88"/>
 		<typeEffectiveness overlay ="11" offset="0x30DB8"/>
 		<text filePath="msgdata/msg.narc"/>
+		<doubleBattleFix prefix="0x022912D90221214201" flagReturnPrefix="0x08B5092131F020FB" walkingPrefix1="0x16B00020F8BD1498" walkingPrefix2="0x36FB16B00120F8BD" textBoxPrefix="0xF7F71AFEF7F734FE"/>
 	</dpConstants>
 
 	<!-- Diamond / Pearl Rom Info -->
@@ -132,6 +137,8 @@
 		<trainerPokemon filePath="a/0/5/6"/>
 		<typeEffectiveness overlay ="12" offset="0x353BC"/>
 		<text filePath="a/0/2/7"/>
+
+		<doubleBattleFix prefix="0x2C2815D00221214201" filePath="a/0/0/1" flagReturnPrefix="0x08B5092132F0B4FF" walkingPrefix1="0x16B00020F8BD1498" walkingPrefix2="0x9CFE16B00120F8BD" textBoxPrefix="0xF6F794FEF6F7AEFE"/>
 	</hgssConstants>
 
 	<!-- HGSS Rom Info -->

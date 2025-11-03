@@ -70,6 +70,7 @@
         public const string forecastRoutine = "forecastFormChangeRoutine";
         public const string startWithNationalDex = "startWithNationalDex";
         public const string startWithNationalDexRoutinePointer = "startWithNationalDexRoutinePointer";
+        public const string doubleBattleFix = "doubleBattleFix";
 
         public abstract class GenIII
         {

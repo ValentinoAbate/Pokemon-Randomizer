@@ -12,6 +12,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
 {
     public class Gen4RomWriter : DSRomWriter
     {
+        private const string doubleBattleFixFailureMessage = "Double battle settings were enabled but double battle fix failed. Please retry without battle type randomization";
         private const int headerSizeOffset = 0x84;
         private const int alignment = 0b0001_1111_1111;
         private const int applicationEndAlignment = 0b0011;
@@ -43,7 +44,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
             rom.WriteBlock(0, originalRom.ReadBlock(0, headerSize));
 
             // Write Arm9 data at the first aligned location after the header
-            WriteArm9(rom, Align(headerSize), dsFileSystem, data, originalRom, metadata, info, settings, out int arm9OverlayTableOffset);
+            WriteArm9(rom, Align(headerSize), dsFileSystem, data, originalRom, metadata, info, fileOverrides, settings, out int arm9OverlayTableOffset);
 
             // Write Arm7 data at the first aligned location after the arm9 overlay table (arm9 table will be written later)
             WriteArm7(rom, Align(arm9OverlayTableOffset + dsFileSystem.Arm9OverlayTableSize), originalRom, out int arm7EndOffset);
@@ -190,7 +191,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
                 byte[] aiBytes = new byte[4];
                 trainer.AIFlags.CopyTo(aiBytes, 0);
                 trainerData.WriteBlock(aiBytes);
-                trainerData.WriteUInt32((byte)(trainer.IsDoubleBattle ? 0x02 : 0x00));
+                trainerData.WriteUInt32((byte)(trainer.IsDoubleBattle ? (trainer.OriginallyDoubleBattle ? 0x02 : 0x03) : 0x00));
                 trainerFileOverrides.Add(trainerData);
 
                 // Trainer Pokemon
@@ -274,7 +275,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
             return overlay;
         }
 
-        private void WriteArm9(Rom rom, int offset, DSFileSystemData dsFileSystem, RomData data, Rom originalRom, RomMetadata metadata, XmlManager info, Settings settings, out int arm9EndOffset)
+        private void WriteArm9(Rom rom, int offset, DSFileSystemData dsFileSystem, RomData data, Rom originalRom, RomMetadata metadata, XmlManager info, Dictionary<int, Rom> fileOverrides, Settings settings, out int arm9EndOffset)
         {
             arm9EndOffset = offset;
             // Create new arm9 data
@@ -283,6 +284,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
 
             // Write RomData to new arm9 data
             WriteTmMoves(arm9Data, data, info);
+            FixDoubleBattles(arm9Data, originalRom, dsFileSystem, info, fileOverrides, settings);
 
             // Write arm9 data
             int arm9Size;
@@ -329,6 +331,73 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
             {
                 arm9.WriteUInt16(MoveToInternalIndex(data.GetTmMove(i)));
             }
+        }
+
+        // Code ported from universal pokemon randomizer ZX under the terms of the GPL-3
+        // https://github.com/Ajarmar/universal-pokemon-randomizer-zx
+        // Original code by Ajarmar and tom-overton!
+        //
+        // Explanation, modified from comment in original code:
+        // In Gen 4, the game prioritizes showing the special double battle intro over almost any
+        // other kind of intro. Since the trainer music is tied to the intro, this results in the
+        // vast majority of "special" trainers losing their intro and music in double battle mode.
+        // To fix this, the below code patches the executable to skip the case for the special
+        // double battle intro (by changing a beq to an unconditional branch); this slightly breaks
+        // battles that are double battles in the original game, but the trade-off is worth it.
+        //
+        // Then, also patch various subroutines that control the "Trainer Eye" event and text boxes
+        // related to this in order to make double battles work on all trainers
+        private void FixDoubleBattles(Rom arm9, Rom originalRom, DSFileSystemData dsFileSystem, XmlManager info, Dictionary<int, Rom> fileOverrides, Settings settings)
+        {
+            // Return if fix not needed (don't apply to avoid side-effects)
+            if (!settings.RandomizeTrainerBattleType || settings.DoubleBattleChance <= 0)
+                return;
+            if (!info.FindAndSeekOffset(ElementNames.doubleBattleFix, arm9))
+            {
+                throw new NotSupportedException(doubleBattleFixFailureMessage);
+            }
+            arm9.WriteByte(0xE0);
+
+            // After getting the double battle flag, return immediately instead of
+            // converting it to a 1 for non-zero values/0 for zero
+            arm9.Seek(arm9.FindFromPrefix(info.Attr(ElementNames.doubleBattleFix, "flagReturnPrefix")));
+            arm9.WriteUInt16(0xBD08);
+
+            // Instead of doing "double trainer walk" for nonzero values, do it only for
+            // value == 2
+            arm9.Seek(arm9.FindFromPrefix(info.Attr(ElementNames.doubleBattleFix, "walkingPrefix1")));
+            arm9.WriteByte(0x2); // cmp r0, #0x2
+            arm9.Skip(2);
+            arm9.WriteByte(0xD0); // beq DOUBLE_TRAINER_WALK
+
+            // Instead of checking if the value was exactly 1 after checking that it was
+            // nonzero, check that it's 2 again lol
+            arm9.Seek(arm9.FindFromPrefix(info.Attr(ElementNames.doubleBattleFix, "walkingPrefix2")));
+            arm9.WriteByte(0x2);
+
+            // Once again, compare a value to 2 instead of just checking that it's nonzero
+            arm9.Seek(arm9.FindFromPrefix(info.Attr(ElementNames.doubleBattleFix, "textBoxPrefix")));
+            arm9.WriteUInt16(0x46C0);
+            arm9.WriteUInt16(0x2802);
+            arm9.Skip();
+            arm9.WriteByte(0xD0);
+
+            // This NARC has some data that controls how text boxes are handled at the end of a trainer battle.
+            if (!dsFileSystem.GetNarcFile(originalRom, info.Path(ElementNames.doubleBattleFix), out var battleSkillSubSeqNarc))
+            {
+                throw new NotSupportedException(doubleBattleFixFailureMessage);
+            }
+            int trainerEndFileId = info.IntAttr(ElementNames.doubleBattleFix, "trainerEndFileId");
+            battleSkillSubSeqNarc.GetFile(trainerEndFileId, out int trainerEndFileOffset, out int trainerEndFileLength, out _);
+            // Copy Original File
+            var trainerEndOverrideFile = new Rom(originalRom.ReadBlock(trainerEndFileOffset, trainerEndFileLength));
+            // Changing this byte from 4 -> 0 makes it check if the "double battle" flag is
+            // exactly 2 instead of checking "flag & 2", which makes the single trainer double battles use the
+            // single battle handling (since we set their flag to 3 instead of 2)
+            trainerEndOverrideFile.Seek(info.HexAttr(ElementNames.doubleBattleFix, "trainerEndFileEndTextBoxOffset"));
+            trainerEndOverrideFile.WriteByte(0x00);
+            // Write file override
+            fileOverrides.Add(battleSkillSubSeqNarc.FileId, battleSkillSubSeqNarc.WriteToFile(originalRom, trainerEndOverrideFile, trainerEndFileId));
         }
 
         // For now, this just exactly copies the Arm7 data and overlay data (will modify if Arm7 data needs to be modified)
