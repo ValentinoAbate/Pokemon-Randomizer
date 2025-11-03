@@ -61,6 +61,8 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
             data.ItemData = new List<ItemData>();
             data.Trades = new List<InGameTrade>();
             data.MapBanks = Array.Empty<Map[]>();
+            // Calculate the balance metrics from the loaded data
+            data.CalculateMetrics();
 
 #if !DEBUG
             throw new NotImplementedException("Gen IV Rom parsing not supported");
