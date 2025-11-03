@@ -61,6 +61,8 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
             data.ItemData = new List<ItemData>();
             data.Trades = new List<InGameTrade>();
             data.MapBanks = Array.Empty<Map[]>();
+            data.Encounters = new List<EncounterSet>();
+
             // Calculate the balance metrics from the loaded data
             data.CalculateMetrics();
 
@@ -371,6 +373,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
                 // Read AI flags
                 trainer.AIFlags = new BitArray(new int[] { rom.ReadUInt32() });
                 trainer.IsDoubleBattle = rom.ReadUInt32() == 2;
+                trainer.Name = numPokemon > 0 ? i.ToString() : string.Empty; // TODO: remove when actual names are ready
 
                 if(!trainerPokemonNarc.SeekFile(rom, i))
                 {
