@@ -59,6 +59,8 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
 
             // DEBUG: Read in the item data
             data.ItemData = new List<ItemData>();
+            data.Trades = new List<InGameTrade>();
+            data.MapBanks = Array.Empty<Map[]>();
 
 #if !DEBUG
             throw new NotImplementedException("Gen IV Rom parsing not supported");
