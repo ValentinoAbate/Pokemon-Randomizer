@@ -329,7 +329,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
             }
             for (int i = 0; i < numHms; ++i)
             {
-                arm9.WriteUInt16(MoveToInternalIndex(data.GetTmMove(i)));
+                arm9.WriteUInt16(MoveToInternalIndex(data.GetHmMove(i)));
             }
         }
 
