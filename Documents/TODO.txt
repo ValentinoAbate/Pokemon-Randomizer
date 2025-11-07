@@ -177,7 +177,7 @@ GEN IV  ////////////////////////////////////////////////////////////////////////
 
 // TODO (Parity w/ Gen III)
 
-NEXT: Double Battle Fix, then Trainer names / class names
+NEXT: Trainer names / class names
 
 - Trainer pokemon
 	- HG/SS special attributes (gender + ability)
