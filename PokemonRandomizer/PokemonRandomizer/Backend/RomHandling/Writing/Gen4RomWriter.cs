@@ -236,7 +236,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
 
                 moveFileOverrides.Add(moveData);
             }
-            fileOverrides.Add(moveDataNarc.FileId, moveDataNarc.WriteToFile(originalRom, moveFileOverrides));
+            WriteNarcOverride(originalRom, moveDataNarc, moveFileOverrides, fileOverrides);
         }
 
         private void WriteStarters(RomData data, Rom originalRom, DSFileSystemData dsFileSystem, RomMetadata metadata, XmlManager info, Dictionary<int, Rom> fileOverrides)
@@ -347,8 +347,8 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
                 }
                 trainerPokemonOverrides.Add(pokemonData);
             }
-            fileOverrides.Add(trainerNarc.FileId, trainerNarc.WriteToFile(originalRom, trainerFileOverrides));
-            fileOverrides.Add(trainerPokemonNarc.FileId, trainerPokemonNarc.WriteToFile(originalRom, trainerPokemonOverrides));
+            WriteNarcOverride(originalRom, trainerNarc, trainerFileOverrides, fileOverrides);
+            WriteNarcOverride(originalRom, trainerPokemonNarc, trainerPokemonOverrides, fileOverrides);
         }
 
         private void WriteTypeEffectivenessData(RomData data, Rom originalRom, DSFileSystemData dsFileSystem, XmlManager info, Dictionary<int, Rom> fileOverrides)
@@ -390,6 +390,11 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
         private void WriteNarcOverride(Rom originalRom, NARCArchiveData narc, IReadOnlyList<Rom> overrideFiles, Dictionary<int, Rom> fileOverrides)
         {
             fileOverrides.Add(narc.FileId, narc.WriteToFile(originalRom, overrideFiles));
+        }
+
+        private void WriteNarcOverride(Rom originalRom, NARCArchiveData narc, Rom overrideFile, int overrideFileId, Dictionary<int, Rom> fileOverrides)
+        {
+            fileOverrides.Add(narc.FileId, narc.WriteToFile(originalRom, overrideFile, overrideFileId));
         }
 
         private void WriteArm9(Rom rom, int offset, DSFileSystemData dsFileSystem, RomData data, Rom originalRom, RomMetadata metadata, XmlManager info, Dictionary<int, Rom> fileOverrides, Settings settings, out int arm9EndOffset)
@@ -514,7 +519,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
             trainerEndOverrideFile.Seek(info.HexAttr(ElementNames.doubleBattleFix, "trainerEndFileEndTextBoxOffset"));
             trainerEndOverrideFile.WriteByte(0x00);
             // Write file override
-            fileOverrides.Add(battleSkillSubSeqNarc.FileId, battleSkillSubSeqNarc.WriteToFile(originalRom, trainerEndOverrideFile, trainerEndFileId));
+            WriteNarcOverride(originalRom, battleSkillSubSeqNarc, trainerEndOverrideFile, trainerEndFileId, fileOverrides);
         }
 
         // For now, this just exactly copies the Arm7 data and overlay data (will modify if Arm7 data needs to be modified)
