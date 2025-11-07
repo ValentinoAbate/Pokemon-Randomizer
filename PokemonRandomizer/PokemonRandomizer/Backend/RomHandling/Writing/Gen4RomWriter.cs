@@ -16,6 +16,8 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
         private const int headerSizeOffset = 0x84;
         private const int alignment = 0b0001_1111_1111;
         private const int applicationEndAlignment = 0b0011;
+        // TmHm Compat is in the same Narc file as the rest of the base stats
+        const int baseStatsTmHmCompatOffset = 28;
         private static int Align(int offset) => Align(offset, alignment);
         private static int Align(int offset, int alignment) => (offset + alignment) & ~alignment;
         protected override IIndexTranslator IndexTranslator => Gen4IndexTranslator.Main;
@@ -30,6 +32,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
 
             WriteMoveTutorMoves(data, originalRom, dsFileSystem, info, fileOverrides);
 
+            WritePokemonBaseStats(data, originalRom, dsFileSystem, info, fileOverrides);
             WriteMoves(data, originalRom, dsFileSystem, info, fileOverrides);
             WriteStarters(data, originalRom, dsFileSystem, metadata, info, fileOverrides);
             WriteTrainers(data, originalRom, dsFileSystem, metadata, info, fileOverrides);
@@ -69,6 +72,115 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
             rom.WriteUInt16(DSFileSystemData.crcOffset, (int)CRC16.Calculate(rom.ReadBlock(0, DSFileSystemData.crcOffset)));
 
             return rom;
+        }
+
+        private void WritePokemonBaseStats(RomData data, Rom originalRom, DSFileSystemData dsFileSystem, XmlManager info, Dictionary<int, Rom> fileOverrides)
+        {
+            if (!dsFileSystem.GetNarcFile(originalRom, info.Path(ElementNames.pokemonBaseStats), out var pokemonNARC))
+            {
+                return;
+            }
+            if (!dsFileSystem.GetNarcFile(originalRom, info.Path(ElementNames.movesets), out var learnsetNARC))
+            {
+                return;
+            }
+            if (!dsFileSystem.GetNarcFile(originalRom, info.Path(ElementNames.evolutions), out var evolutionsNARC))
+            {
+                return;
+            }
+            int evolutionsPerPokemon = info.IntAttr(ElementNames.evolutions, AttributeNames.evolutionsPerPokemon);
+            int evolutionPadding = info.Padding(ElementNames.evolutions);
+            int numTms = info.Num(ElementNames.tmMoves);
+            int numHms = info.Num(ElementNames.hmMoves);
+            int[] tmHmCompatBuffer = new int[numTms + numHms];
+            int numPokemon = data.Pokemon.Count + 1;
+            var pokemonFileOverrides = new Rom[numPokemon];
+            var learnsetFileOverrides = new Rom[numPokemon];
+            var evolutionFileOverrides = new Rom[numPokemon];
+            for (int i = 1; i < numPokemon; ++i)
+            {
+                var pokemon = data.Pokemon[i - 1];
+
+                // Write Base Stats
+                var pokemonFile = new Rom(44);
+                if (pokemonNARC.GetFile(i, out int pokemonOffset, out int pokemonFileLength, out _))
+                {
+                    pokemonFile.Copy(originalRom, pokemonOffset, 0, pokemonFileLength);
+                }
+                WritePokemonBaseStatsSingle(pokemonFile, pokemon);
+                WriteTmHmCompat(pokemonFile, baseStatsTmHmCompatOffset, pokemon, ref tmHmCompatBuffer);
+                pokemonFileOverrides[i] = pokemonFile;
+
+                // Write LearnSet
+                int numMoves = pokemon.learnSet.Count;
+                // LearnSet size = numMoves * moveEntrySize + 2 (terminator), + 2 if even # of moves (padding to 4-align)
+                var learnSetFile = new Rom(numMoves * 2 + (numMoves % 2 == 0 ? 4 : 2));
+                WriteLearnSet(learnSetFile, pokemon.learnSet, 0);
+                learnsetFileOverrides[i] = learnSetFile;
+
+                // Write Evolutions
+                var evolutionFile = new Rom(44);
+                WriteEvolutions(evolutionFile, 0, pokemon);
+                evolutionFileOverrides[i] = evolutionFile;
+            }
+            WriteNarcOverride(originalRom, pokemonNARC, pokemonFileOverrides, fileOverrides);
+            WriteNarcOverride(originalRom, learnsetNARC, learnsetFileOverrides, fileOverrides);
+            WriteNarcOverride(originalRom, evolutionsNARC, evolutionFileOverrides, fileOverrides);
+        }
+
+        private void WriteEvolutions(Rom rom, int offset, PokemonBaseStats pokemon)
+        {
+            rom.Seek(offset);
+            foreach(var evo in pokemon.evolvesTo)
+            {
+                rom.WriteUInt16((int)evo.Type);
+                if (evo.EvolvesWithItem)
+                {
+                    rom.WriteUInt16(ItemToInternalIndex(evo.ItemParamater));
+                }
+                else if (evo.EvolvesWithMove)
+                {
+                    rom.WriteUInt16(MoveToInternalIndex(evo.MoveParameter));
+                }
+                else if (evo.EvolvesWithPokemon)
+                {
+                    rom.WriteUInt16(PokemonToInternalIndex(evo.PokemonParameter));
+                }
+                else
+                {
+                    rom.WriteUInt16(evo.IntParameter);
+                }
+                rom.WriteUInt16(PokemonToInternalIndex(evo.Pokemon));
+            }
+        }
+
+        private void WritePokemonBaseStatsSingle(Rom pokemonFile, PokemonBaseStats pokemon)
+        {
+            // Seek the offset of the pokemon base stats data structure
+            pokemonFile.Seek(0);
+            // fill in stats (hp/at/df/sp/sa/sd)
+            pokemonFile.WriteBlock(pokemon.stats);
+            // fill in types
+            pokemonFile.WriteByte((byte)pokemon.types[0]);
+            pokemonFile.WriteByte((byte)pokemon.types[1]);
+            pokemonFile.WriteByte(pokemon.catchRate);
+            pokemonFile.WriteByte(pokemon.baseExpYield);
+            // fill in ev yields (stored in the first 12 bits of data[10-11])
+            pokemonFile.WriteBits(2, pokemon.evYields);
+            pokemonFile.WriteUInt16(ItemToInternalIndex(pokemon.heldItems[0]));
+            pokemonFile.WriteUInt16(ItemToInternalIndex(pokemon.heldItems[1]));
+            pokemonFile.WriteByte(pokemon.genderRatio);
+            pokemonFile.WriteByte(pokemon.eggCycles);
+            pokemonFile.WriteByte(pokemon.baseFriendship);
+            pokemonFile.WriteByte((byte)pokemon.growthType);
+            // fill in egg groups
+            pokemonFile.WriteByte((byte)pokemon.eggGroups[0]);
+            pokemonFile.WriteByte((byte)pokemon.eggGroups[1]);
+            // fill in abilities
+            pokemonFile.WriteByte(AbilityToInternalIndex(pokemon.abilities[0]));
+            pokemonFile.WriteByte(AbilityToInternalIndex(pokemon.abilities[1]));
+            pokemonFile.WriteByte(pokemon.safariZoneRunRate);
+            pokemonFile.WriteByte((byte)(((byte)pokemon.searchColor << 1) + Convert.ToByte(pokemon.flip)));
         }
 
         private void WriteMoveTutorMoves(RomData data, Rom originalRom, DSFileSystemData dsFileSystem, XmlManager info, Dictionary<int, Rom> fileOverrides)
@@ -273,6 +385,11 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
                 fileOverrides.Add(overlayId, overlay);
             }
             return overlay;
+        }
+
+        private void WriteNarcOverride(Rom originalRom, NARCArchiveData narc, IReadOnlyList<Rom> overrideFiles, Dictionary<int, Rom> fileOverrides)
+        {
+            fileOverrides.Add(narc.FileId, narc.WriteToFile(originalRom, overrideFiles));
         }
 
         private void WriteArm9(Rom rom, int offset, DSFileSystemData dsFileSystem, RomData data, Rom originalRom, RomMetadata metadata, XmlManager info, Dictionary<int, Rom> fileOverrides, Settings settings, out int arm9EndOffset)

@@ -8,7 +8,7 @@ namespace PokemonRandomizer.Backend
 {
     public class LearnSet : IEnumerable<LearnSet.Entry>
     {
-        public const int MaxMoves = 25;
+        public int MaxMoves { get; }
 
         public int Count => items.Count;
 
@@ -16,13 +16,15 @@ namespace PokemonRandomizer.Backend
 
         private readonly List<Entry> items;
 
-        public LearnSet()
+        public LearnSet(int maxMoves)
         {
+            MaxMoves = maxMoves;
             items = new List<Entry>(MaxMoves);
         }
 
         public LearnSet(LearnSet toCopy)
         {
+            MaxMoves = toCopy.MaxMoves;
             items = new List<Entry>(toCopy.items.Count);
             foreach(var item in toCopy.items)
             {

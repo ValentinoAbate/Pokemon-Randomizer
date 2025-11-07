@@ -62,7 +62,7 @@ namespace PokemonRandomizer.Backend.DataStructures
         /// <summary> Initilize a new Rom as a copy of an extant one </summary>
         public Rom(Rom toCopy) : this(toCopy.File, toCopy.FreeSpaceByte, toCopy.SearchStartOffset, true) { }
         /// <summary> Initilize an Empty Rom with a given length </summary>
-        public Rom(int length, byte freeSpaceByte, int searchStartOffset = 0) : this(new byte[length], freeSpaceByte, searchStartOffset, false) { }
+        public Rom(int length, byte freeSpaceByte = 0x00, int searchStartOffset = 0) : this(new byte[length], freeSpaceByte, searchStartOffset, false) { }
         /// <summary>Reads a byte from the internal offset</summary>
         public void WriteByte(byte value) => File[InternalOffset++] = value;
         /// <summary>Reads a byte from the internal offset</summary>

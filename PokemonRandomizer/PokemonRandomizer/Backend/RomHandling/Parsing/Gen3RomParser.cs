@@ -18,6 +18,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
 {
     public class Gen3RomParser : RomParser
     {
+        private const int maxMovesPerLearnset = 25;
         protected override IIndexTranslator IndexTranslator => Gen3IndexTranslator.Main;
 
         private readonly Gen3ScriptParser scriptParser;
@@ -252,7 +253,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
                 // Read name
                 pkmn.Name = namesOffset != Rom.nullPointer ? rom.ReadFixedLengthString(namesOffset + i * nameLength, nameLength) : pkmn.species.ToDisplayString();
                 // Read Learn Set
-                ReadLearnSet(rom, rom.ReadPointer(movesetTableOffset + (Rom.pointerSize * i)), out pkmn.learnSet);
+                ReadLearnSet(rom, rom.ReadPointer(movesetTableOffset + (Rom.pointerSize * i)), maxMovesPerLearnset, out pkmn.learnSet);
                 // Read Tm/Hm/Mt compat
                 ReadTMHMCompat(rom, tmHmCompatOffset + i * tmHmSize, numTms, numHms, tmHmSize, out pkmn.TMCompat, out pkmn.HMCompat);
                 ReadTutorCompat(rom, tutorCompatOffset + i * tutorSize, numTutorMoves, tutorSize, out pkmn.moveTutorCompat);

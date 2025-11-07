@@ -13,9 +13,9 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
         public abstract RomData Parse(Rom rom, RomMetadata metadata, XmlManager info);
 
         // Read the attacks starting at offset (returns the index after completion)
-        protected void ReadLearnSet(Rom rom, int offset, out LearnSet moves)
+        protected void ReadLearnSet(Rom rom, int offset, int maxMoves, out LearnSet moves)
         {
-            moves = new LearnSet();
+            moves = new LearnSet(maxMoves);
             rom.SaveAndSeekOffset(offset);
             byte curr = rom.ReadByte();
             byte next = rom.ReadByte();

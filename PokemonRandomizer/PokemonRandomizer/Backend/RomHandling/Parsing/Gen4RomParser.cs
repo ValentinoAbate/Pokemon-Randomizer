@@ -14,6 +14,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
 {
     public class Gen4RomParser : DSRomParser
     {
+        private const int maxMovesPerLearnset = 20;
         protected override IIndexTranslator IndexTranslator => Gen4IndexTranslator.Main;
         public override RomData Parse(Rom rom, RomMetadata metadata, XmlManager info)
         {
@@ -114,7 +115,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
                 // Read Learnset
                 if (learnsetNARC.GetFile(i, out int learnsetOffset, out _, out _))
                 {
-                    ReadLearnSet(rom, learnsetOffset, out newPokemon.learnSet);
+                    ReadLearnSet(rom, learnsetOffset, maxMovesPerLearnset, out newPokemon.learnSet);
                 }
                 else
                 {

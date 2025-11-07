@@ -571,6 +571,8 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
             if (tmHmCompatOffset == Rom.nullPointer)
                 return;
             int tmHmSize = info.Size(ElementNames.tmHmCompat);
+            int numTms = info.Num(ElementNames.tmMoves);
+            int numHms = info.Num(ElementNames.hmMoves);
             // Setup Move Tutor Compat offset
             int tutorCompatOffset = info.FindOffset(ElementNames.tutorCompat, rom);
             int tutorSize = 0;
@@ -590,6 +592,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
             #endregion
             int skipNum = info.IntAttr(ElementNames.pokemonBaseStats, "skip");
             int skipAt = info.IntAttr(ElementNames.pokemonBaseStats, "skipAt");
+            int[] tmHmCompatBuffer = new int[numTms + numHms];
             // Main writing loop
             for (int i = 1; i <= info.Num(ElementNames.pokemonBaseStats); i++)
             {
@@ -602,7 +605,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
                 int learnsetPointerOffset = movesetTableOffset + (i * Rom.pointerSize);
                 if (stats.learnSet.Count == stats.OriginalLearnset.Count)
                 {
-                    WriteAttacks(rom, stats.learnSet, rom.ReadPointer(learnsetPointerOffset));
+                    WriteLearnSet(rom, stats.learnSet, rom.ReadPointer(learnsetPointerOffset));
                 }
                 else // Relocate Moveset
                 {
@@ -610,14 +613,14 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
                     if (newLearnsetOffset.HasValue)
                     {
                         rom.WritePointer(learnsetPointerOffset, newLearnsetOffset.Value);
-                        WriteAttacks(rom, stats.learnSet, newLearnsetOffset.Value);
+                        WriteLearnSet(rom, stats.learnSet, newLearnsetOffset.Value);
                     }
                     else
                     {
                         Logger.main.Error($"Failed to write learnset for {stats.Name} in free space. Learnset data for {stats.Name} will not be written");
                     }
                 }
-                WriteTMHMCompat(stats, tmHmCompatOffset + i * tmHmSize, rom);
+                WriteTmHmCompat(rom, tmHmCompatOffset + i * tmHmSize, stats, ref tmHmCompatBuffer);
                 WriteTutorCompat(stats, tutorCompatOffset + i * tutorSize, rom);
                 WriteEvolutions(stats, evolutionOffset + i * evolutionSize, rom);
                 WritePokemonPalettes(stats, normalPaletteOffset + i * pokemonPaletteSize, shinyPaletteOffset + i * pokemonPaletteSize, rom);
@@ -652,35 +655,6 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
             rom.LoadOffset();
         }
 
-        // Write the attacks starting at offset (returns the index after completion)
-        private void WriteAttacks(Rom rom, LearnSet moves, int offset)
-        {
-            rom.SaveAndSeekOffset(offset);
-            foreach (var move in moves)
-            {
-                // Write the first byte of the move
-                rom.WriteByte((byte)move.move);
-                // if the move number is over 255, the last bit of the learn level byte is set to 1
-                if ((int)move.move > 255)
-                {
-                    rom.WriteByte((byte)(move.learnLvl * 2 + 1));
-                }
-                else
-                {
-                    rom.WriteByte((byte)(move.learnLvl * 2));
-                }
-            }
-            rom.WriteRepeating(0xff, 2); // Terminator (0xFFFF)
-            rom.LoadOffset();
-        }
-        private void WriteTMHMCompat(PokemonBaseStats pokemon, int offset, Rom rom)
-        {
-            bool[] tmValues = new bool[pokemon.TMCompat.Count];
-            bool[] hmValues = new bool[pokemon.HMCompat.Count];
-            pokemon.TMCompat.CopyTo(tmValues, 0);
-            pokemon.HMCompat.CopyTo(hmValues, 0);
-            rom.WriteBits(offset, 1, tmValues.Concat(hmValues).Select((b) => b ? 1 : 0).ToArray());
-        }
         private void WriteTutorCompat(PokemonBaseStats pokemon, int offset, Rom rom)
         {
             if (pokemon.moveTutorCompat.Count <= 0)
