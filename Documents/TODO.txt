@@ -228,7 +228,6 @@ NEXT: Double Battle Fix, then Trainer names / class names
 - Natural gift randomization
 - Platinum ability selection hack?
 - Trainer pokemon capsule information (P/HGSS)
-- Trainer double battle fix (normal trainers)
 
 CLEANUP /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
