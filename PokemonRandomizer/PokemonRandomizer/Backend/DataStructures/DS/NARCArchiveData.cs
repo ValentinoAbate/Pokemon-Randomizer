@@ -177,7 +177,7 @@ namespace PokemonRandomizer.Backend.DataStructures.DS
                 }
             }
             int totalSize = headerSize + fatbSize + fntSize + fimgSize;
-            var file = new Rom(totalSize, 0x00);
+            var file = new Rom(totalSize);
 
             // Wrtie Nitro header
 

@@ -211,7 +211,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
                 var move = data.MoveData[i];
 
                 // Trainer Data
-                var moveData = new Rom(16, 0x00);
+                var moveData = new Rom(16);
 
                 // Copy original data if available
                 if (moveDataNarc.GetFile(i, out int originalMoveDataOffset, out int originalMoveDataLength, out _))
@@ -282,7 +282,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
                 var trainer = data.Trainers[i];
 
                 // Trainer Data
-                var trainerData = new Rom(20, 0x00);
+                var trainerData = new Rom(20);
 
                 // Copy original data if available
                 if (trainerNarc.GetFile(i, out int originalTrainerDataOffset, out int originalTrainerDataLength, out _))
@@ -321,7 +321,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
                     pokemonSize += 2;
                 }
 
-                var pokemonData = new Rom(pokemonSize * trainer.Pokemon.Count, 0x00);
+                var pokemonData = new Rom(pokemonSize * trainer.Pokemon.Count);
                 foreach(var pokemon in trainer.Pokemon)
                 {
                     pokemonData.WriteByte(pokemon.IVLevel);
