@@ -26,6 +26,14 @@ namespace PokemonRandomizer.Backend.Utilities
             Pokemon.PICHU,
             Pokemon.TYROGUE,
             Pokemon.WYNAUT,
+            Pokemon.BUDEW,
+            Pokemon.CHINGLING,
+            Pokemon.BONSLY,
+            Pokemon.MIME_JR,
+            Pokemon.HAPPINY,
+            Pokemon.MUNCHLAX,
+            Pokemon.MANTYKE,
+            // I don't consider riolu a baby pokemon. TODO: add setting to consider riolu baby
         };
         public static bool IsLegendary(this Pokemon species) => legendaries.Contains(species);
         private static readonly HashSet<Pokemon> legendaries = new HashSet<Pokemon>
@@ -48,9 +56,28 @@ namespace PokemonRandomizer.Backend.Utilities
             Pokemon.GROUDON,
             Pokemon.RAYQUAZA,
             Pokemon.DEOXYS,
+            Pokemon.DEOXYS_ATK,
+            Pokemon.DEOXYS_DEF,
+            Pokemon.DEOXYS_SPEED,
             Pokemon.JIRACHI,
             Pokemon.LATIAS,
             Pokemon.LATIOS,
+            Pokemon.UXIE,
+            Pokemon.MESPRIT,
+            Pokemon.AZELF,
+            Pokemon.DIALGA,
+            Pokemon.PALKIA,
+            Pokemon.HEATRAN,
+            Pokemon.REGIGIGAS,
+            Pokemon.GIRATINA,
+            Pokemon.GIRATINA_ORIGIN,
+            Pokemon.CRESSELIA,
+            Pokemon.PHIONE,
+            Pokemon.MANAPHY,
+            Pokemon.DARKRAI,
+            Pokemon.SHAYMIN,
+            Pokemon.SHAYMIN_SKY,
+            Pokemon.ARCEUS
         };
         public static bool IsFossil(this Pokemon species) => fossilPokemon.Contains(species);
         private static readonly HashSet<Pokemon> fossilPokemon = new HashSet<Pokemon>
@@ -64,6 +91,10 @@ namespace PokemonRandomizer.Backend.Utilities
             Pokemon.CRADILY,
             Pokemon.ANORITH,
             Pokemon.ARMALDO,
+            Pokemon.CRANIDOS,
+            Pokemon.RAMPARDOS,
+            Pokemon.SHIELDON,
+            Pokemon.BASTIODON,
         };
 
         private static readonly Pokemon[] genIVInternalToPokemon =
@@ -507,7 +538,7 @@ namespace PokemonRandomizer.Backend.Utilities
             Pokemon.BRONZOR,
             Pokemon.BRONZONG,
             Pokemon.BONSLY,
-            Pokemon.MIME,
+            Pokemon.MIME_JR,
             Pokemon.HAPPINY,
             Pokemon.CHATOT,
             Pokemon.SPIRITOMB,

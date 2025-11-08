@@ -91,7 +91,7 @@ namespace PokemonRandomizer.Backend.EnumTypes
         BRONZOR,
         BRONZONG,
         BONSLY,
-        MIME,
+        MIME_JR,
         HAPPINY,
         CHATOT,
         SPIRITOMB,
