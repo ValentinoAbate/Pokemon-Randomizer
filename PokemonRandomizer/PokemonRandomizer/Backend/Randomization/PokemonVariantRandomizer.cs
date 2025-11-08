@@ -1000,8 +1000,8 @@ namespace PokemonRandomizer.Backend.Randomization
             }
             foreach (var kvp in moveReplacements)
             {
-                // Dont apply replacement for moves that have multiple override typings if we are still a valid type
-                // For example, poisonpowder doesn need to be replaced if oddish becomes grass/fire, and harden doesn't need to be place if metapod becomes rock
+                // Don't apply replacement for moves that have multiple override typings if we are still a valid type
+                // For example, poisonpowder doesn need to be replaced if oddish becomes grass/fire, and harden doesn't need to be replaced if metapod becomes rock
                 if (dataT.GetMoveData(kvp.Key).IsType(pokemon))
                 {
                     continue;
