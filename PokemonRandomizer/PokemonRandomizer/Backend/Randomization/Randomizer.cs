@@ -282,6 +282,10 @@ namespace PokemonRandomizer.Backend.Randomization
             {
                 UpgradeCastform();
             }
+            if (settings.UpdateRotomApplianceTypes)
+            {
+                UpdateRotomApplianceTypes();
+            }
             if (settings.DistributeWeatherAbilities)
             {
                 DistributeWeatherAbilities();
@@ -1250,6 +1254,30 @@ namespace PokemonRandomizer.Backend.Randomization
             learnset.Add(Move.SOLARBEAM, 35);
             learnset.Add(Move.BLIZZARD, 35);
             // Gen5+: hurricane
+        }
+
+        private void UpdateRotomApplianceTypes()
+        {
+            if(data.TryGetBaseStats(Pokemon.ROTOM_HEAT, out var rotomHeatStats))
+            {
+                rotomHeatStats.SecondaryType = PokemonType.FIR;
+            }
+            if(data.TryGetBaseStats(Pokemon.ROTOM_WASH, out var rotomWashStats))
+            {
+                rotomWashStats.SecondaryType = PokemonType.WAT;
+            }
+            if (data.TryGetBaseStats(Pokemon.ROTOM_FROST, out var rotomFrostStats))
+            {
+                rotomFrostStats.SecondaryType = PokemonType.ICE;
+            }
+            if (data.TryGetBaseStats(Pokemon.ROTOM_FAN, out var rotomFanStats))
+            {
+                rotomFanStats.SecondaryType = PokemonType.FLY;
+            }
+            if (data.TryGetBaseStats(Pokemon.ROTOM_MOW, out var rotomMowStats))
+            {
+                rotomMowStats.SecondaryType = PokemonType.GRS;
+            }
         }
 
         private void DistributeWeatherAbilities()

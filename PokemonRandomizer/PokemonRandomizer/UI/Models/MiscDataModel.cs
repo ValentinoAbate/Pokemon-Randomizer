@@ -5,6 +5,7 @@
     {
         public Box<bool> UpgradeUnown { get; set; } = new Box<bool>(false);
         public Box<bool> UpgradeCastform { get; set; } = new Box<bool>(false);
+        public Box<bool> UpdateRotomApplianceTypes { get; set; } = new Box<bool>(false);
         public Box<bool> UpdateDOTMoves { get; set; } = new Box<bool>(false);
         public Box<bool> AddWeatherAbilities { get; set; } = new Box<bool>(false);
         public Box<bool> RunIndoors { get; set; } = new Box<bool>(true);

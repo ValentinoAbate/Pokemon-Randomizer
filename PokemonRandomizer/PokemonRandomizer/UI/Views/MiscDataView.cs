@@ -15,6 +15,7 @@ namespace PokemonRandomizer.UI.Views
         private const string upgradeUnownTooltip = "Give Unown access to every \"Power\" move available (Hidden Power, Nature Power, Secret Power, Cosmic Power, Ancientpower, Superpower, etc.)";
         private const string upgradeCastformTooltip = "Give Castform earlier access to Weather Ball, and give it access to Sandstorm, Thunder, Blizzard, and Solarbeam by level-up" +
             "\nThis allows Castform to retain access to important weather-related moves even when TMs are randomized and use these moves in NPC movesets";
+        private const string updateRotomAppliancesTooltip = "Updates Rotom so its secondary type changes with its appliance form as it does in Gen V+";
         private const string addWeatherAbilitiesTooltup = "Distribute Drizzle and Drought to the pokemon that can have them as of Gen VII+" +
             "\nPelliper gains Drizzle as a secondary ability, and Wingull gets Rain Dish as a secondary ability (so that you can tell what ability it will have when evolved)" +
             "\nPolitoed gains Drizzle as a secondary ability, replacing Damp" +
@@ -64,6 +65,10 @@ namespace PokemonRandomizer.UI.Views
             var pokemonTweakStack = stack.Add(CreateHorizontalStack());
             pokemonTweakStack.Add(new BoundCheckBoxUI("Upgrade Unown", model.UpgradeUnown, upgradeUnownTooltip));
             pokemonTweakStack.Add(new BoundCheckBoxUI("Upgrade Castform", model.UpgradeCastform, upgradeCastformTooltip));
+            if(metadata.IsPlatinum || metadata.IsHGSS)
+            {
+                pokemonTweakStack.Add(new BoundCheckBoxUI("Update Rotom Appliance Types", model.UpdateRotomApplianceTypes, updateRotomAppliancesTooltip));
+            }
             stack.Add(new BoundCheckBoxUI("Distribute Weather Abilities", model.AddWeatherAbilities, addWeatherAbilitiesTooltup));
             var enableEventsCb = stack.Add(new BoundCheckBoxUI("Enable Mystery Gift Events", model.EnableEvents, enableEventsTooltip));
             stack.Add(enableEventsCb.BindEnabled(new EnumComboBoxUI<Settings.MysteryGiftItemSetting>("Mystery Gift Event Item Acquisition", MysteryGiftEventItemDropdown, model.EventItemSetting) { ToolTip = mysteryGiftItemDistributionTooltip } ));

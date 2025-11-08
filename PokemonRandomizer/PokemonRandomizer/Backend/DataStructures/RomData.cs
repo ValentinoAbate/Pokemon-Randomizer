@@ -194,7 +194,7 @@ namespace PokemonRandomizer.Backend.DataStructures
         public Dictionary<string, List<string>> RandomizationResults { get; } = new Dictionary<string, List<string>>();
 
         public List<PokemonType> Types { get; } = new(20);
-
+        public bool TryGetBaseStats(Pokemon p, out PokemonBaseStats stats) => PokemonLookup.TryGetValue(p, out stats);
         public PokemonBaseStats GetBaseStats(Pokemon p) => PokemonLookup[p];
         public MoveData GetMoveData(Move m) => MoveDataLookup[m];
         public Move GetTmMove(int index) => index >= 0 && index < TMMoves.Length ? TMMoves[index] : Move.None;

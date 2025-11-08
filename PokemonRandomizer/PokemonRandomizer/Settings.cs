@@ -538,6 +538,9 @@ namespace PokemonRandomizer
         // FRLG + E Hacks and Tweaks
         public abstract bool DeoxysMewObeyFix { get; }
 
+        // HGSS + Platinum Hacks and Tweaks
+        public abstract bool UpdateRotomApplianceTypes { get; }
+
         // Randomizer Settings
         public abstract bool CountRelicanthAsFossil { get; }
 

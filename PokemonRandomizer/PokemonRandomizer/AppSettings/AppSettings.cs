@@ -584,6 +584,9 @@ namespace PokemonRandomizer.AppSettings
         // FRLG + E Hacks and Tweaks
         public override bool DeoxysMewObeyFix => miscData.DeoxysMewObeyFix;
 
+        // HGSS + Platinum Hacks and Tweaks
+        public override bool UpdateRotomApplianceTypes => miscData.UpdateRotomApplianceTypes;
+
         // Randomizer Settings
         public override bool CountRelicanthAsFossil => miscData.CountRelicanthAsFossil;
 
