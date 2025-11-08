@@ -732,8 +732,12 @@ namespace PokemonRandomizer.Backend.Randomization
             Pokemon.BELDUM,
             Pokemon.MAGIKARP,
             Pokemon.FEEBAS,
+            Pokemon.CLAMPERL,
             Pokemon.TYROGUE,
-            Pokemon.ABRA
+            Pokemon.ABRA,
+            Pokemon.COMBEE,
+            Pokemon.BURMY,
+            Pokemon.KRICKETOT,
         };
 
         private bool IsAttackingMoveOfType(LearnSet.Entry entry, PokemonType type, int minPower = 0, int maxPower = 0xFF)
