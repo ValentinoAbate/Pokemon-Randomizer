@@ -48,11 +48,6 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
 
             // Move Data
             data.MoveData = ReadMoves(rom, dsFileSystem, info);
-            foreach (var move in data.MoveData)
-            {
-                Logger.main.Info($"{move} ({move.MoveCategory}): P{move.power}, E:{move.effect} ({(int)move.effect}), T{move.targets} ({(int)move.targets})");
-            }
-
 
             data.Starters = ReadStarters(rom, dsFileSystem, info, metadata);
             data.Trainers = ReadTrainers(rom, dsFileSystem, info, metadata);//, data.TrainerClasses, data.TrainerSprites);
