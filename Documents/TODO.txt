@@ -248,6 +248,7 @@ CLEANUP ////////////////////////////////////////////////////////////////////////
 - Change find from prefix to only find first instance since that is all that is used
 - Move "Rom" class functions into a class that can operate on arbitrary collections of bytes
 - Make priority field of move data actually be parsed as a signed byte
+- Variant rand: optimize "gained types" as a pokemon can only gain 1 type at max
 
 FIXES ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
