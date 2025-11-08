@@ -1,17 +1,17 @@
-﻿using PokemonRandomizer.Backend.DataStructures;
+﻿using PokemonRandomizer.Backend.Constants;
+using PokemonRandomizer.Backend.DataStructures;
+using PokemonRandomizer.Backend.DataStructures.Scripts;
+using PokemonRandomizer.Backend.DataStructures.Trainers;
 using PokemonRandomizer.Backend.EnumTypes;
+using PokemonRandomizer.Backend.Metadata;
+using PokemonRandomizer.Backend.RomHandling.IndexTranslators;
 using PokemonRandomizer.Backend.Utilities;
 using PokemonRandomizer.Backend.Utilities.Debug;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System;
-using PokemonRandomizer.Backend.DataStructures.Scripts;
-using PokemonRandomizer.Backend.Metadata;
 using static PokemonRandomizer.Backend.DataStructures.MoveData;
-using PokemonRandomizer.Backend.Constants;
-using PokemonRandomizer.Backend.RomHandling.IndexTranslators;
-using PokemonRandomizer.Backend.DataStructures.Trainers;
 using static PokemonRandomizer.Backend.Randomization.VariantPaletteModifier;
 
 namespace PokemonRandomizer.Backend.RomHandling.Parsing
@@ -778,37 +778,29 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
                 int map = rom.ReadByte();
                 // Idk what the next two bytes are
                 rom.Skip(2);
-                int grassPtr = rom.ReadPointer();
-                int surfPtr = rom.ReadPointer();
-                int rockSmashPtr = rom.ReadPointer();
-                int fishPtr = rom.ReadPointer();
+                int grassOffset = rom.ReadPointer();
+                int surfOffset = rom.ReadPointer();
+                int rockSmashOffset = rom.ReadPointer();
+                int fishOffset = rom.ReadPointer();
                 // Save the internal offset before chasing pointers
                 rom.SaveOffset();
 
                 #region Load the actual Encounter sets for this area
-                if (grassPtr > 0 && grassPtr < rom.Length)
+                if (grassOffset > 0 && grassOffset < rom.Length)
                 {
-                    var grassPokemon = new EncounterSet(EncounterSet.Type.Grass, bank, map, rom, grassPtr, grassSlots);
-                    encounters.Add(grassPokemon);
-                    // TODO: Log in map
+                    encounters.Add(ReadEncounterSet(EncounterSet.Type.Grass, bank, map, rom, grassOffset, grassSlots));
                 }
-                if (surfPtr > 0 && surfPtr < rom.Length)
+                if (surfOffset > 0 && surfOffset < rom.Length)
                 {
-                    var surfPokemon = new EncounterSet(EncounterSet.Type.Surf, bank, map, rom, surfPtr, surfSlots);
-                    encounters.Add(surfPokemon);
-                    // TODO: Log in map
+                    encounters.Add(ReadEncounterSet(EncounterSet.Type.Surf, bank, map, rom, surfOffset, surfSlots));
                 }
-                if (rockSmashPtr > 0 && rockSmashPtr < rom.Length)
+                if (rockSmashOffset > 0 && rockSmashOffset < rom.Length)
                 {
-                    var rockSmashPokemon = new EncounterSet(EncounterSet.Type.RockSmash, bank, map, rom, rockSmashPtr, rockSmashSlots);
-                    encounters.Add(rockSmashPokemon);
-                    // TODO: Log in map
+                    encounters.Add(ReadEncounterSet(EncounterSet.Type.RockSmash, bank, map, rom, rockSmashOffset, rockSmashSlots));
                 }
-                if (fishPtr > 0 && fishPtr < rom.Length)
+                if (fishOffset > 0 && fishOffset < rom.Length)
                 {
-                    var fishPokemon = new EncounterSet(EncounterSet.Type.Fish, bank, map, rom, fishPtr, fishSlots);
-                    encounters.Add(fishPokemon);
-                    // TODO: Log in map
+                    encounters.Add(ReadEncounterSet(EncounterSet.Type.Fish, bank, map, rom, fishOffset, fishSlots));
                 }
                 #endregion
 
@@ -817,6 +809,26 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
             }
 
             return encounters;
+        }
+
+        private EncounterSet ReadEncounterSet(EncounterSet.Type type, int bank, int map, Rom rom, int offset, int num)
+        {
+            rom.Seek(offset);
+            int encounterRate = rom.ReadByte();
+            // Idk what the next 3 bytes are
+            rom.Skip(3);
+            // Get the pointer to the actual data
+            rom.Seek(rom.ReadPointer());
+            // Read actual pokemon
+            var encounters = new List<Encounter>(num);
+            for (int i = 0; i < num; ++i)
+            {
+                int level = rom.ReadByte();
+                int maxLevel = rom.ReadByte();
+                Pokemon pokemon = InternalIndexToPokemon(rom.ReadUInt16());
+                encounters.Add(new Encounter(pokemon, level, maxLevel));
+            }
+            return new EncounterSet(encounters, type, encounterRate, bank, map);
         }
 
         private EncounterSet FindFirstEncounter(IEnumerable<EncounterSet> encounters, XmlManager info)

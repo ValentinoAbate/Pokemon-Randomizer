@@ -21,26 +21,13 @@ namespace PokemonRandomizer.Backend.DataStructures
         public int bank;
         public int map;
 
-        public EncounterSet(Type type, int bank, int map, Rom rom, int offset, int num)
+        public EncounterSet(List<Encounter> encounters, Type type, int encounterRate, int bank, int map)
         {
-            encounters = new List<Encounter>();
+            this.encounters = encounters;
             this.type = type;
+            this.encounterRate = encounterRate;
             this.bank = bank;
             this.map = map;
-            rom.Seek(offset);
-            encounterRate = rom.ReadByte();
-            // Idk what the next 3 bytes are
-            rom.Skip(3);
-            // Get the pointer to the actual data
-            rom.Seek(rom.ReadPointer());
-            // Read actual pokemon
-            for (int i = 0; i < num; ++i)
-            {
-                int level = rom.ReadByte();
-                int maxLevel = rom.ReadByte();
-                Pokemon pokemon = (Pokemon)rom.ReadUInt16();
-                encounters.Add(new Encounter(pokemon, level, maxLevel));
-            }
         }
 
         public override string ToString()
