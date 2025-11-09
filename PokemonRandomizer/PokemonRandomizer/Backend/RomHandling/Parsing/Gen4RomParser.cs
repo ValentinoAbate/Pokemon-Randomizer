@@ -52,6 +52,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
             data.Starters = ReadStarters(rom, dsFileSystem, info, metadata);
             data.Trainers = ReadTrainers(rom, dsFileSystem, info, metadata);//, data.TrainerClasses, data.TrainerSprites);
             data.TypeDefinitions = ReadTypeEffectivenessData(rom, dsFileSystem, info);
+            data.Encounters = ReadEncounters(rom, dsFileSystem, info, metadata);
 
             // DEBUG: Read in the item data
             data.ItemData = new List<ItemData>();
@@ -415,6 +416,104 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
             }
 
             return ReadTypeEffectivenessChart(overlay);
+        }
+
+        private List<EncounterSet> ReadEncounters(Rom rom, DSFileSystemData dsFileSystem, XmlManager info, RomMetadata metadata)
+        {
+            if(!dsFileSystem.GetNarcFile(rom, info.Path(ElementNames.wildPokemon), out var encounterNarc))
+            {
+                return new List<EncounterSet>();
+            }
+            var encounters = new List<EncounterSet>(encounterNarc.FileCount);
+
+            if (metadata.IsHGSS)
+            {
+                throw new System.NotImplementedException();
+            }
+            else // DPPT
+            {
+                // Get encounter slot sizes
+                const int grassSlots = 12;
+                const int waterSlots = 5;
+                const int radarSlots = 4;
+                const int swarmSlots = 2;
+                const int timedSlots = 2;
+                const int dualSlots = 2;
+                const int encounterRatesFormsCount = 5;
+
+                // The special encounters (radar, swarm, day/night, and dual-slot)
+                // are mapped to specific slots in the grass encounters
+                //  Slot  |  Mapping  | Encounter Chance    | Notes
+                // ---------------------------------------------
+                //   0-1  |   Swarm   | 20% each slot (40%) |
+                //   2-3  | Day/Night | 10% each slot (20%) | Base encounters are for Morning, not day
+                //   4-5  |   Radar   | 10% each slot (20%) | Radar also overrides 11-12
+                //   6-7  |   None    | 5% each slot (10%)  |
+                //   8-9  | Dual-Slot | 4% each slot (8%)   |
+                //  10-11 |   Radar   | 1% each slot (2%)   | 
+                foreach (var (offset, _) in encounterNarc.Files)
+                {
+                    rom.Seek(offset);
+                    // Read grass encounters
+                    encounters.Add(ReadDPPTEncounters(rom, EncounterSet.Type.Grass, grassSlots, false));
+                    var swarmPokemon = ReadDDPTSpecialEncounterPokemon(rom, swarmSlots);
+                    var dayPokemon = ReadDDPTSpecialEncounterPokemon(rom, timedSlots); 
+                    var nightPokemon = ReadDDPTSpecialEncounterPokemon(rom, timedSlots);
+                    var radarPokemon = ReadDDPTSpecialEncounterPokemon(rom, radarSlots);
+                    var encounterRatesForms = new List<int>(encounterRatesFormsCount);
+                    for (var i = 0; i < encounterRatesFormsCount; i++) 
+                    {
+                        encounterRatesForms.Add(rom.ReadUInt32());
+                    }
+                    int unownTableID = rom.ReadUInt32();
+                    var rubyPokemon = ReadDDPTSpecialEncounterPokemon(rom, dualSlots);
+                    var sapphirePokemon = ReadDDPTSpecialEncounterPokemon(rom, dualSlots);
+                    var emeraldPokemon = ReadDDPTSpecialEncounterPokemon(rom, dualSlots);
+                    var fireRedPokemon = ReadDDPTSpecialEncounterPokemon(rom, dualSlots);
+                    var leafGreenPokemon = ReadDDPTSpecialEncounterPokemon(rom, dualSlots);
+                    encounters.Add(ReadDPPTEncounters(rom, EncounterSet.Type.Surf, waterSlots, true));
+                    rom.Skip(44);
+                    encounters.Add(ReadDPPTEncounters(rom, EncounterSet.Type.FishOldRod, waterSlots, true));
+                    encounters.Add(ReadDPPTEncounters(rom, EncounterSet.Type.FishGoodRod, waterSlots, true));
+                    encounters.Add(ReadDPPTEncounters(rom, EncounterSet.Type.FishSuperRod, waterSlots, true));
+                }
+            }
+            return encounters;
+        }
+
+        private List<Pokemon> ReadDDPTSpecialEncounterPokemon(Rom rom, int num)
+        {
+            var pokemon = new List<Pokemon>(num);
+            for (var i = 0; i < num; i++)
+            {
+                pokemon.Add(InternalIndexToPokemon(rom.ReadUInt32()));
+            }
+            return pokemon;
+        }
+
+        private EncounterSet ReadDPPTEncounters(Rom rom, EncounterSet.Type type, int numSlots, bool hasLevelRange)
+        {
+            var encounters = new List<Encounter>(numSlots);
+            int encounterRate = rom.ReadUInt32();
+            for (var i = 0; i < numSlots; i++) 
+            {
+                int level;
+                int maxLevel;
+                if (hasLevelRange)
+                {
+                    maxLevel = rom.ReadByte();
+                    level = rom.ReadByte();
+                    rom.Skip(2);
+                }
+                else
+                {
+                    level = maxLevel = rom.ReadByte();
+                    rom.Skip(3);
+                }
+                var species = InternalIndexToPokemon(rom.ReadUInt32());
+                encounters.Add(new Encounter(species, level, maxLevel));
+            }
+            return new EncounterSet(encounters, type, encounterRate, 0, 0);
         }
 
         private bool TryGetOverlay(string elementName, Rom rom, DSFileSystemData dsFileSystem, XmlManager info, out Rom overlay)

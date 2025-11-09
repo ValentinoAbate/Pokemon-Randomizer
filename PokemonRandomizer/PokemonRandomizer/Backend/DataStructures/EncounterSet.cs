@@ -14,6 +14,9 @@ namespace PokemonRandomizer.Backend.DataStructures
             Fish,
             RockSmash,
             Headbutt,
+            FishOldRod,
+            FishGoodRod,
+            FishSuperRod,
         }
         public Type type;
         public List<Encounter> encounters;
