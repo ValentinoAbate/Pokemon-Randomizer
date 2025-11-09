@@ -232,6 +232,8 @@ NEXT: Trainer names / class names
 - Trainer pokemon capsule information (P/HGSS)
 - Consider riolu baby pokemon (Gen IV+) default false
 - Consider Rotom legendary (Gen IV+) default false
+- Partner trainer double battle compat
+	- need to be set to ignore
 
 CLEANUP /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
