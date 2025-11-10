@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace PokemonRandomizer.Backend.DataStructures
 {
@@ -54,6 +55,8 @@ namespace PokemonRandomizer.Backend.DataStructures
             string ret = $"{MapName}: ";
             foreach(var encounterSet in EncounterSets)
             {
+                if (!encounterSet.RealEncounters.Any())
+                    continue;
                 ret += $"\n {encounterSet}";
             }
             return ret;

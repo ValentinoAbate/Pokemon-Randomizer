@@ -146,6 +146,8 @@ FEATURES ///////////////////////////////////////////////////////////////////////
 		- Parse multichoice menu text
 	- Move tutor text:
 		- Replace with move and move description
+- Wild pokemon multi-map area remapping
+ - For area based remappings, remap across multiple maps with the same name
 - UI:
 	- ROM / Randomizer info readout. Add to the randomizer tab and make the top part "settings"
 		- Name / Code of opened rom

@@ -45,6 +45,8 @@ namespace PokemonRandomizer.Backend.Utilities
 
             GeneratePokemonInfo(data, ref lines);
 
+            GenerateWildPokemonInfo(data, ref lines);
+
             return lines.ToArray();
 
         }
@@ -124,7 +126,7 @@ namespace PokemonRandomizer.Backend.Utilities
             }
         }
 
-        private void GeneratePokemonInfo(RomData data, ref List<string> lines)
+        private static void GeneratePokemonInfo(RomData data, ref List<string> lines)
         {
             Header(ref lines, "Pokémon Info");
             lines.Add("Pkmn Name      |  HP  AT  DF  SP  SA  SD   |    EV Yields   | Type(s) |  Ability 1     | Ability 2     | Held Item 1   | Held Item 2   | ");
@@ -178,6 +180,48 @@ namespace PokemonRandomizer.Backend.Utilities
                 }
             }
             return str.Length > 0 ? str.ToString() : none;
+        }
+
+        private static void GenerateWildPokemonInfo(RomData data, ref List<string> lines)
+        {
+            Header(ref lines, "Wild Pokemon Info");
+            var sortedData = new List<MapEncounterData>(data.EncounterData);
+            sortedData.Sort((d1, d2) => d1.MapName.CompareTo(d2.MapName));
+            foreach(var encounterData in sortedData)
+            {
+                SubHeader(ref lines, encounterData.MapName);
+                foreach (var encounterSet in encounterData.EncounterSets)
+                {
+                    if (!encounterSet.RealEncounters.Any())
+                        continue;
+                    string ret = $"{EncounterTypeDisplayName(encounterSet.type)}: ";
+                    // TODO: Encounter Percentages
+                    foreach (var enc in encounterSet.RealEncounters)
+                    {
+                        ret += $"{enc}, ";
+                    }
+                    lines.Add(ret.TrimEnd(' ', ','));
+                }
+            }
+        }
+
+        private static string EncounterTypeDisplayName(EncounterSet.Type type)
+        {
+            return type switch
+            {
+                EncounterSet.Type.Grass => "Walk",
+                EncounterSet.Type.RockSmash => "Rock Smash",
+                EncounterSet.Type.FishOldRod => "Fish (Old Rod)",
+                EncounterSet.Type.FishGoodRod => "Fish (Good Rod)",
+                EncounterSet.Type.FishSuperRod => "Fish (Super Rod",
+                EncounterSet.Type.DualSlotRuby => "Dual-Slot (Ruby)",
+                EncounterSet.Type.DualSlotSapphire => "Dual-Slot (Sapphire)",
+                EncounterSet.Type.DualSlotEmerald => "Dual-Slot (Emerald)",
+                EncounterSet.Type.DualSlotFireRed => "Dual-Slot (Fire Red)",
+                EncounterSet.Type.DualSlotLeafGreen => "Dual-Slot (Leaf Green)",
+                EncounterSet.Type.PokeRadar => "Poke Radar",
+                _ => type.ToString(),
+            };
         }
 
         private static string EnumArray<T>(IEnumerable<T> input) where T : System.Enum

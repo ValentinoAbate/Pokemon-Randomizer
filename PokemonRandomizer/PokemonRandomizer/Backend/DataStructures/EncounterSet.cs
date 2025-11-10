@@ -1,5 +1,4 @@
-﻿using PokemonRandomizer.Backend.EnumTypes;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 
 namespace PokemonRandomizer.Backend.DataStructures
@@ -56,7 +55,7 @@ namespace PokemonRandomizer.Backend.DataStructures
         public override string ToString()
         {
             string ret = $"{type}: ";
-            foreach (var enc in encounters)
+            foreach (var enc in RealEncounters)
             {
                 ret += $"{enc}, ";
             }
