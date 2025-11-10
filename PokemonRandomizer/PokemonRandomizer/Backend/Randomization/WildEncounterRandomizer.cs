@@ -14,6 +14,7 @@ namespace PokemonRandomizer.Backend.Randomization
         {
             Unchanged, // May want to replace with a different guard later
             Individual,
+            SetOneToOne,
             AreaOneToOne,
             GlobalOneToOne,
         }
@@ -52,12 +53,28 @@ namespace PokemonRandomizer.Backend.Randomization
                     }
                 }
             }
+            else if (strategy == Strategy.SetOneToOne)
+            {
+                var mapping = new Dictionary<Pokemon, Pokemon>();
+                foreach (var data in encounterData)
+                {
+                    foreach (var set in data.EncounterSets)
+                    {
+                        // Create the mapping
+                        mapping.Clear();
+                        MapEncounterSet(mapping, set, true, pokemonSet, settings);
+                        // Remap
+                        RemapEncounter(set, mapping, settings);
+                    }
+                }
+            }
             else if (strategy == Strategy.AreaOneToOne)
             {
+                var mapping = new Dictionary<Pokemon, Pokemon>();
                 foreach (var data in encounterData)
                 {
                     // Create the mapping
-                    var mapping = new Dictionary<Pokemon, Pokemon>(data.RealEncounterCount);
+                    mapping.Clear();
                     MapEncounterSets(mapping, data, true, pokemonSet, settings);
                     // Remap
                     foreach (var set in data.EncounterSets)
@@ -93,17 +110,22 @@ namespace PokemonRandomizer.Backend.Randomization
             // Remap the encounters
             foreach (var set in data.EncounterSets)
             {
-                foreach (var enc in set.RealEncounters)
-                {
-                    if (mapping.ContainsKey(enc.Pokemon))
-                        continue;
-                    // Encounter wide type occurence data
-                    var typeOccurence = typeOccurenceOverride ?? EncounterTypeOccurence(set);
-                    // Create metrics
-                    var metrics = CreateMetrics(pokemonSet, enc.Pokemon, useEncounterSetType ? set.type : EncounterSet.Type.None, typeOccurence, settings.Data);
-                    // Choose pokemon
-                    mapping.Add(enc.Pokemon, pokeRand.RandomPokemon(pokemonSet, enc.Pokemon, metrics, settings));
-                }
+                MapEncounterSet(mapping, set, useEncounterSetType, pokemonSet, settings, typeOccurenceOverride);
+            }
+        }
+
+        private void MapEncounterSet(Dictionary<Pokemon, Pokemon> mapping, EncounterSet set, bool useEncounterSetType, IEnumerable<Pokemon> pokemonSet, PokemonSettings settings, WeightedSet<PokemonType> typeOccurenceOverride = null)
+        {
+            foreach (var enc in set.RealEncounters)
+            {
+                if (mapping.ContainsKey(enc.Pokemon))
+                    continue;
+                // Encounter wide type occurence data
+                var typeOccurence = typeOccurenceOverride ?? EncounterTypeOccurence(set);
+                // Create metrics
+                var metrics = CreateMetrics(pokemonSet, enc.Pokemon, useEncounterSetType ? set.type : EncounterSet.Type.None, typeOccurence, settings.Data);
+                // Choose pokemon
+                mapping.Add(enc.Pokemon, pokeRand.RandomPokemon(pokemonSet, enc.Pokemon, metrics, settings));
             }
         }
 

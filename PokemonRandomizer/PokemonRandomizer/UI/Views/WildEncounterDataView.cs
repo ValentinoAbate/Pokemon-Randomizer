@@ -13,7 +13,9 @@ namespace PokemonRandomizer.UI.Views
         {
             new ComboBoxItem() { Content="Unchanged", ToolTip="Wild pokemon will be left as they are in the base game"},
             new ComboBoxItem() { Content="Individual", ToolTip="Each encounter slot in each area becomes a new pokemon" },
-            new ComboBoxItem() { Content="Area 1-1", ToolTip="All instances of a specific pokemon in each area become the same new pokemon (Recommended)" },
+            new ComboBoxItem() { Content="Encounter Set 1-1", ToolTip="All instances of a specific pokemon in a specific encounter type (walking, fishing, surfing, etc.) in each area become the same new pokemon (Recommended)" +
+                "\nFor example, in an area where Geodude can be encountered by walking and Rock Smash, the walking and Rock Smash Geodude encounter slots may be randomized to different pokemon."},
+            new ComboBoxItem() { Content="Area 1-1", ToolTip="All instances of a specific pokemon (regardless of encounter type) in each area become the same new pokemon (Recommended)"},
             new ComboBoxItem() { Content="Global 1-1", ToolTip="All instances of a specific pokemon in the wild become the same new pokemon" },
         };
         private const string matchAreaTypeTooltip = "Random wild pokemon will be more likely to match the types of pokemon that appear in the area they are chosen for" +
