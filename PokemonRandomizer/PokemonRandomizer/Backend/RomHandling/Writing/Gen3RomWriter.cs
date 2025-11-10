@@ -755,57 +755,43 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
         {
             if (!info.FindAndSeekOffset(ElementNames.wildPokemon, rom))
                 return;
-            var encounterIter = romData.Encounters.GetEnumerator();
+            var encounterIter = romData.EncounterData.GetEnumerator();
             // Iterate until the ending marker (0xff, 0xff)
             while (rom.Peek() != 0xff || rom.Peek(1) != 0xff)
             {
                 // skip bank, map, and padding
                 rom.Skip(4);
-                int grassPtr = rom.ReadPointer();
-                int surfPtr = rom.ReadPointer();
-                int rockSmashPtr = rom.ReadPointer();
-                int fishPtr = rom.ReadPointer();
+                int grassOffset = rom.ReadPointer();
+                int surfOffset = rom.ReadPointer();
+                int rockSmashOffset = rom.ReadPointer();
+                int fishOffset = rom.ReadPointer();
                 // Save the internal offset before chasing pointers
                 rom.SaveOffset();
 
-                #region Load the actual Encounter sets for this area
-                if (grassPtr > 0 && grassPtr < rom.Length)
-                {
-                    encounterIter.MoveNext();
-                    WriteEncounterSet(encounterIter.Current, rom, grassPtr);
-                }
-                if (surfPtr > 0 && surfPtr < rom.Length)
-                {
-                    encounterIter.MoveNext();
-                    WriteEncounterSet(encounterIter.Current, rom, surfPtr);
-                }
-                if (rockSmashPtr > 0 && rockSmashPtr < rom.Length)
-                {
-                    encounterIter.MoveNext();
-                    WriteEncounterSet(encounterIter.Current, rom, rockSmashPtr);
-                }
-                if (fishPtr > 0 && fishPtr < rom.Length)
-                {
-                    encounterIter.MoveNext();
-                    WriteEncounterSet(encounterIter.Current, rom, fishPtr);
-                }
-                #endregion
+                encounterIter.MoveNext();
+                var encounterData = encounterIter.Current;
+                WriteEncounterSet(encounterData, EncounterSet.Type.Grass, rom, grassOffset);
+                WriteEncounterSet(encounterData, EncounterSet.Type.Surf, rom, surfOffset);
+                WriteEncounterSet(encounterData, EncounterSet.Type.RockSmash, rom, rockSmashOffset);
+                WriteEncounterSet(encounterData, EncounterSet.Type.Fish, rom, fishOffset);
 
                 // Load the saved offset to check the next header
                 rom.LoadOffset();
             }
         }
-        private void WriteEncounterSet(EncounterSet set, Rom rom, int offset)
+        private static void WriteEncounterSet(MapEncounterData encounterData, EncounterSet.Type type, Rom rom, int offset)
         {
+            if (offset < 0 || offset >= rom.Length || !encounterData.TryGetEncounterSet(type, out var set))
+                return;
             rom.Seek(offset);
             rom.WriteByte((byte)set.encounterRate);
             rom.Skip(3);
             rom.Seek(rom.ReadPointer());
             foreach (var encounter in set)
             {
-                rom.WriteByte((byte)encounter.level);
-                rom.WriteByte((byte)encounter.maxLevel);
-                rom.WriteUInt16((int)encounter.pokemon);
+                rom.WriteByte((byte)encounter.Level);
+                rom.WriteByte((byte)encounter.MaxLevel);
+                rom.WriteUInt16((int)encounter.Pokemon);
             }
         }
 

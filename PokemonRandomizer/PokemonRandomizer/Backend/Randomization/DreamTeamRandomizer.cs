@@ -142,7 +142,7 @@ namespace PokemonRandomizer.Backend.Randomization
         {
             for(int i = 0; i < encounterSet.encounters.Count; ++i)
             {
-                encounterSet.encounters[i].pokemon = team[i % team.Length];
+                encounterSet.encounters[i].Pokemon = team[i % team.Length];
             }
         }
 

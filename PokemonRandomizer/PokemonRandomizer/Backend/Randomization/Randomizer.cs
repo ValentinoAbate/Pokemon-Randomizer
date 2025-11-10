@@ -631,7 +631,7 @@ namespace PokemonRandomizer.Backend.Randomization
 
             #region Wild Encounters
 
-            encounterRand.RandomizeEncounters(pokemonSet, data.Encounters, settings.EncounterSettings, settings.EncounterStrategy);
+            encounterRand.RandomizeEncounters(pokemonSet, data.EncounterData, settings.EncounterSettings, settings.EncounterStrategy);
 
             // Apply dream team to first encounter if desired
             if(settings.DreamTeamOption != Settings.DreamTeamSetting.None && data.FirstEncounterSet != null)

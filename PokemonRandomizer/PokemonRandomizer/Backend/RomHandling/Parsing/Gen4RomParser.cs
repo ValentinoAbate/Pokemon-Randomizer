@@ -52,13 +52,13 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
             data.Starters = ReadStarters(rom, dsFileSystem, info, metadata);
             data.Trainers = ReadTrainers(rom, dsFileSystem, info, metadata);//, data.TrainerClasses, data.TrainerSprites);
             data.TypeDefinitions = ReadTypeEffectivenessData(rom, dsFileSystem, info);
-            data.Encounters = ReadEncounters(rom, dsFileSystem, info, metadata);
+            data.MapBanks = Array.Empty<Map[]>(); // TODO: Map reading
+            data.EncounterData = ReadEncounters(rom, dsFileSystem, info, metadata);
 
             // DEBUG: Read in the item data
             data.ItemData = new List<ItemData>();
             data.Trades = new List<InGameTrade>();
-            data.MapBanks = Array.Empty<Map[]>();
-            data.Encounters = new List<EncounterSet>();
+
 
             // Calculate the balance metrics from the loaded data
             data.CalculateMetrics();
@@ -418,13 +418,13 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
             return ReadTypeEffectivenessChart(overlay);
         }
 
-        private List<EncounterSet> ReadEncounters(Rom rom, DSFileSystemData dsFileSystem, XmlManager info, RomMetadata metadata)
+        private List<MapEncounterData> ReadEncounters(Rom rom, DSFileSystemData dsFileSystem, XmlManager info, RomMetadata metadata)
         {
             if(!dsFileSystem.GetNarcFile(rom, info.Path(ElementNames.wildPokemon), out var encounterNarc))
             {
-                return new List<EncounterSet>();
+                return new List<MapEncounterData>();
             }
-            var encounters = new List<EncounterSet>(encounterNarc.FileCount);
+            var encounterData = new List<MapEncounterData>(encounterNarc.FileCount);
 
             if (metadata.IsHGSS)
             {
@@ -453,9 +453,11 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
                 //  10-11 |   Radar   | 1% each slot (2%)   | 
                 foreach (var (offset, _) in encounterNarc.Files)
                 {
+                    var data = new MapEncounterData(null);  // TODO map name
                     rom.Seek(offset);
                     // Read grass encounters
-                    encounters.Add(ReadDPPTEncounters(rom, EncounterSet.Type.Grass, grassSlots, false));
+                    var grassEncounters = ReadDPPTEncounters(rom, EncounterSet.Type.Grass, grassSlots, false);
+                    data.AddEncounterSet(grassEncounters);
                     var swarmPokemon = ReadDDPTSpecialEncounterPokemon(rom, swarmSlots);
                     var dayPokemon = ReadDDPTSpecialEncounterPokemon(rom, timedSlots); 
                     var nightPokemon = ReadDDPTSpecialEncounterPokemon(rom, timedSlots);
@@ -471,14 +473,15 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
                     var emeraldPokemon = ReadDDPTSpecialEncounterPokemon(rom, dualSlots);
                     var fireRedPokemon = ReadDDPTSpecialEncounterPokemon(rom, dualSlots);
                     var leafGreenPokemon = ReadDDPTSpecialEncounterPokemon(rom, dualSlots);
-                    encounters.Add(ReadDPPTEncounters(rom, EncounterSet.Type.Surf, waterSlots, true));
+                    data.AddEncounterSet(ReadDPPTEncounters(rom, EncounterSet.Type.Surf, waterSlots, true));
                     rom.Skip(44);
-                    encounters.Add(ReadDPPTEncounters(rom, EncounterSet.Type.FishOldRod, waterSlots, true));
-                    encounters.Add(ReadDPPTEncounters(rom, EncounterSet.Type.FishGoodRod, waterSlots, true));
-                    encounters.Add(ReadDPPTEncounters(rom, EncounterSet.Type.FishSuperRod, waterSlots, true));
+                    data.AddEncounterSet(ReadDPPTEncounters(rom, EncounterSet.Type.FishOldRod, waterSlots, true));
+                    data.AddEncounterSet(ReadDPPTEncounters(rom, EncounterSet.Type.FishGoodRod, waterSlots, true));
+                    data.AddEncounterSet(ReadDPPTEncounters(rom, EncounterSet.Type.FishSuperRod, waterSlots, true));
+                    encounterData.Add(data);
                 }
             }
-            return encounters;
+            return encounterData;
         }
 
         private List<Pokemon> ReadDDPTSpecialEncounterPokemon(Rom rom, int num)
@@ -513,7 +516,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
                 var species = InternalIndexToPokemon(rom.ReadUInt32());
                 encounters.Add(new Encounter(species, level, maxLevel));
             }
-            return new EncounterSet(encounters, type, encounterRate, 0, 0);
+            return new EncounterSet(encounters, type, encounterRate);
         }
 
         private bool TryGetOverlay(string elementName, Rom rom, DSFileSystemData dsFileSystem, XmlManager info, out Rom overlay)

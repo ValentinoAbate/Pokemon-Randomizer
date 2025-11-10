@@ -91,8 +91,8 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
             data.TypeDefinitions = ReadTypeEffectivenessData(rom, info);
             // Read in the map data
             data.MapBanks = mapParser.ReadMapBanks(rom, info, metadata);
-            data.Encounters = ReadEncounters(rom, info);
-            data.FirstEncounterSet = FindFirstEncounter(data.Encounters, info);
+            data.EncounterData = ReadEncounters(rom, info, data.MapBanks, out var firstEncounterSet);
+            data.FirstEncounterSet = firstEncounterSet;
             // Read in the item data
             data.ItemData = ReadItemData(rom, info, metadata, data.MysteryGiftEventItems);
             // Read in the pickup items
@@ -758,18 +758,32 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
         }
 
         // Read encounters
-        private List<EncounterSet> ReadEncounters(Rom rom, XmlManager info)
+        private List<MapEncounterData> ReadEncounters(Rom rom, XmlManager info, Map[][] mapBanks, out EncounterSet firstEncounter)
         {
-            var encounters = new List<EncounterSet>();
+            var encounterData = new List<MapEncounterData>();
+            firstEncounter = null;
             // Seek data offset or return early if not found
             if (!info.FindAndSeekOffset(ElementNames.wildPokemon, rom))
-                return encounters;
+            {
+                return encounterData;
+            }
 
             // Get encounter slot sizes
             int grassSlots = info.IntAttr(ElementNames.wildPokemon, "grassSlots");
             int surfSlots = info.IntAttr(ElementNames.wildPokemon, "surfSlots");
             int rockSmashSlots = info.IntAttr(ElementNames.wildPokemon, "rockSmashSlots");
             int fishSlots = info.IntAttr(ElementNames.wildPokemon, "fishSlots");
+
+            int firstEncounterBank, firstEncounterMap;
+            if (info.HasElementWithAttrs(ElementNames.firstEncounter, AttributeNames.bank, AttributeNames.map))
+            {
+                firstEncounterBank = info.IntAttr(ElementNames.firstEncounter, AttributeNames.bank);
+                firstEncounterMap = info.IntAttr(ElementNames.firstEncounter, AttributeNames.map);
+            }
+            else
+            {
+                firstEncounterBank = firstEncounterMap = -1;
+            }
 
             // Iterate until the ending marker (0xff, 0xff)
             while (rom.Peek() != 0xff || rom.Peek(1) != 0xff)
@@ -785,33 +799,52 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
                 // Save the internal offset before chasing pointers
                 rom.SaveOffset();
 
-                #region Load the actual Encounter sets for this area
+                string mapName = GetMapFromBanks(mapBanks, bank, map)?.Name;
+                var data = new MapEncounterData(mapName);
+
+                // Load the actual Encounter sets for this area
                 if (grassOffset > 0 && grassOffset < rom.Length)
                 {
-                    encounters.Add(ReadEncounterSet(EncounterSet.Type.Grass, bank, map, rom, grassOffset, grassSlots));
+                    var grassEnc = ReadEncounterSet(EncounterSet.Type.Grass, rom, grassOffset, grassSlots);
+                    data.AddEncounterSet(grassEnc);
+                    if (bank == firstEncounterBank && map == firstEncounterMap)
+                    {
+                        firstEncounter = grassEnc;
+                    }
                 }
                 if (surfOffset > 0 && surfOffset < rom.Length)
                 {
-                    encounters.Add(ReadEncounterSet(EncounterSet.Type.Surf, bank, map, rom, surfOffset, surfSlots));
+                    data.AddEncounterSet(ReadEncounterSet(EncounterSet.Type.Surf, rom, surfOffset, surfSlots));
                 }
                 if (rockSmashOffset > 0 && rockSmashOffset < rom.Length)
                 {
-                    encounters.Add(ReadEncounterSet(EncounterSet.Type.RockSmash, bank, map, rom, rockSmashOffset, rockSmashSlots));
+                    data.AddEncounterSet(ReadEncounterSet(EncounterSet.Type.RockSmash, rom, rockSmashOffset, rockSmashSlots));
                 }
                 if (fishOffset > 0 && fishOffset < rom.Length)
                 {
-                    encounters.Add(ReadEncounterSet(EncounterSet.Type.Fish, bank, map, rom, fishOffset, fishSlots));
+                    data.AddEncounterSet(ReadEncounterSet(EncounterSet.Type.Fish, rom, fishOffset, fishSlots));
                 }
-                #endregion
+
+                encounterData.Add(data);
 
                 // Load the saved offset to check the next header
                 rom.LoadOffset();
             }
 
-            return encounters;
+            return encounterData;
         }
 
-        private EncounterSet ReadEncounterSet(EncounterSet.Type type, int bank, int map, Rom rom, int offset, int num)
+        private Map GetMapFromBanks(Map[][] mapBanks, int bank, int map)
+        {
+            if (bank < 0 || bank >= mapBanks.Length || map < 0)
+                return null;
+            var mapBank = mapBanks[bank];
+            if (map >= mapBank.Length)
+                return null;
+            return mapBank[map];
+        }
+
+        private EncounterSet ReadEncounterSet(EncounterSet.Type type, Rom rom, int offset, int num)
         {
             rom.Seek(offset);
             int encounterRate = rom.ReadByte();
@@ -828,34 +861,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
                 Pokemon pokemon = InternalIndexToPokemon(rom.ReadUInt16());
                 encounters.Add(new Encounter(pokemon, level, maxLevel));
             }
-            return new EncounterSet(encounters, type, encounterRate, bank, map);
-        }
-
-        private EncounterSet FindFirstEncounter(IEnumerable<EncounterSet> encounters, XmlManager info)
-        {
-            if (!info.HasElement(ElementNames.firstEncounter))
-            {
-                // TODO: log
-                return null;
-            }
-            if (!info.HasElementWithAttr(ElementNames.firstEncounter, "map"))
-            {
-                // TODO: log
-                return null;
-            }
-            if (!info.HasElementWithAttr(ElementNames.firstEncounter, "bank"))
-            {
-                // TODO: log
-                return null;
-            }
-            int map = info.IntAttr(ElementNames.firstEncounter, "map");
-            int bank = info.IntAttr(ElementNames.firstEncounter, "bank");
-            foreach (var encounter in encounters)
-            {
-                if (encounter.map == map && encounter.bank == bank && encounter.type == EncounterSet.Type.Grass)
-                    return encounter;
-            }
-            return null;
+            return new EncounterSet(encounters, type, encounterRate);
         }
 
         // Read Type Effectiveness data

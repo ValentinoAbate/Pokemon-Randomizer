@@ -1,12 +1,9 @@
-﻿using System;
+﻿using PokemonRandomizer.Backend.EnumTypes;
+using PokemonRandomizer.Backend.Randomization;
+using PokemonRandomizer.Statistics;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using PokemonRandomizer.Backend.EnumTypes;
-using PokemonRandomizer.Backend.Randomization;
-using PokemonRandomizer.Backend.Utilities;
-using PokemonRandomizer.Statistics;
 
 namespace PokemonRandomizer.Backend.DataStructures
 {
@@ -135,16 +132,16 @@ namespace PokemonRandomizer.Backend.DataStructures
                 }
             }
 
-            foreach(var encounter in data.Encounters)
+            foreach (var encounterSet in data.Encounters)
             {
-                if (!EncounterSlotTypeOccurence.ContainsKey(encounter.type))
+                if (!EncounterSlotTypeOccurence.ContainsKey(encounterSet.type))
                 {
-                    EncounterSlotTypeOccurence.Add(encounter.type, new WeightedSet<PokemonType>(16));
+                    EncounterSlotTypeOccurence.Add(encounterSet.type, new WeightedSet<PokemonType>(16));
                 }
-                var set = EncounterSlotTypeOccurence[encounter.type];
-                foreach(var enc in encounter)
+                var set = EncounterSlotTypeOccurence[encounterSet.type];
+                foreach (var enc in encounterSet.RealEncounters)
                 {
-                    var pData = data.GetBaseStats(enc.pokemon);
+                    var pData = data.GetBaseStats(enc.Pokemon);
                     set.Add(pData.PrimaryType);
                     if (!pData.IsSingleTyped)
                     {

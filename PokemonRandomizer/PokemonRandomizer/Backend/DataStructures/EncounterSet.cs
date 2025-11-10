@@ -17,25 +17,50 @@ namespace PokemonRandomizer.Backend.DataStructures
             FishOldRod,
             FishGoodRod,
             FishSuperRod,
+            // Special encounters
+            DualSlotRuby,
+            DualSlotSapphire,
+            DualSlotEmerald,
+            DualSlotFireRed,
+            DualSlotLeafGreen,
+            PokeRadar,
+            Day,
+            Night,
+            Swarm,
         }
         public Type type;
         public List<Encounter> encounters;
         public int encounterRate;
-        public int bank;
-        public int map;
 
-        public EncounterSet(List<Encounter> encounters, Type type, int encounterRate, int bank, int map)
+        public IEnumerable<Encounter> RealEncounters
+        {
+            get
+            {
+                foreach (var encounter in encounters)
+                {
+                    if (encounter.IsReal)
+                    {
+                        yield return encounter;
+                    }
+                }
+            }
+        }
+
+        public EncounterSet(List<Encounter> encounters, Type type, int encounterRate)
         {
             this.encounters = encounters;
             this.type = type;
             this.encounterRate = encounterRate;
-            this.bank = bank;
-            this.map = map;
         }
 
         public override string ToString()
         {
-            return bank + ", " + map + ": " + type;
+            string ret = $"{type}: ";
+            foreach (var enc in encounters)
+            {
+                ret += $"{enc}, ";
+            }
+            return ret.TrimEnd(' ', ',');
         }
 
         public IEnumerator<Encounter> GetEnumerator()

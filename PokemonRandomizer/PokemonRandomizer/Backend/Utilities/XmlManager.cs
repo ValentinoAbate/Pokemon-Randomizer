@@ -326,6 +326,19 @@ namespace PokemonRandomizer.Backend.Utilities
             return Attr(element, attribute) != null;
         }
 
+        public bool HasElementWithAttrs(string element, params string[] attrs)
+        {
+            var elt = Element(element);
+            if(elt == null)
+                return false;
+            foreach(var attr in attrs)
+            {
+                if (elt.Attribute(attr) == null)
+                    return false;
+            }
+            return true;
+        }
+
         public string Attr(string element, string attribute)
         {
             return Element(element)?.Attribute(attribute)?.Value;

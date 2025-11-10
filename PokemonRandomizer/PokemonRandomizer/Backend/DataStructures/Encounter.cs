@@ -5,18 +5,23 @@ namespace PokemonRandomizer.Backend.DataStructures
 {
     public class Encounter
     {
-        public Pokemon pokemon;
-        public int level;
-        public int maxLevel;
+        public virtual Pokemon Pokemon { get; set; }
+        public virtual int Level { get; set; }
+        public virtual int MaxLevel { get; set; }
+        public virtual bool IsReal => Pokemon != Pokemon.None;
         public Encounter(Pokemon pokemon, int level, int maxLevel)
         {
-            this.pokemon = pokemon;
-            this.level = level;
-            this.maxLevel = maxLevel;
+            Pokemon = pokemon;
+            Level = level;
+            MaxLevel = maxLevel;
+        }
+        protected Encounter()
+        {
+
         }
         public override string ToString()
         {
-            return pokemon.ToDisplayString() + " Lv" + (level == maxLevel ? level.ToString() : level + "-" + maxLevel);
+            return Pokemon.ToDisplayString() + " Lv" + (Level == MaxLevel ? Level.ToString() : Level + "-" + MaxLevel);
         }
     }
 }

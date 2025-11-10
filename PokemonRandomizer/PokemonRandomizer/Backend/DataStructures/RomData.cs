@@ -111,7 +111,22 @@ namespace PokemonRandomizer.Backend.DataStructures
             }
         }
         public Map[][] MapBanks { get; set; }
-        public List<EncounterSet> Encounters { get; set; }
+        public List<MapEncounterData> EncounterData { get; set; }
+        public IEnumerable <EncounterSet> Encounters
+        {
+            get
+            {
+                foreach(var encounterData in EncounterData)
+                {
+                    foreach(var encounterSet in encounterData.EncounterSets)
+                    {
+                        if (encounterSet.encounterRate <= 0)
+                            continue;
+                        yield return encounterSet;
+                    }
+                }
+            }
+        }
         // Used in dream team application
         public EncounterSet FirstEncounterSet { get; set; }
         private List<MoveData> moveData;
