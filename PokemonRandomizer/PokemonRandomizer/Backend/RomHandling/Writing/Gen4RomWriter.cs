@@ -37,6 +37,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
             WriteStarters(data, originalRom, dsFileSystem, metadata, info, fileOverrides);
             WriteTrainers(data, originalRom, dsFileSystem, metadata, info, fileOverrides);
             WriteTypeEffectivenessData(data, originalRom, dsFileSystem, info, fileOverrides);
+            WriteEncounters(data, originalRom, dsFileSystem, metadata, info, fileOverrides);
 
             // Do actual writing to output rom
             var rom = new Rom(originalRom.Length, 0xFF); // Set to all 0xFF?
@@ -362,6 +363,90 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
             var overlay = GetOverrideOverlay(overlayId, originalRom, dsFileSystem, fileOverrides);
             var typeData = TypeEffectivenessChartToByteArray(data.TypeDefinitions);
             overlay.WriteBlock(offset, typeData);
+        }
+
+        private void WriteEncounters(RomData data, Rom originalRom, DSFileSystemData dsFileSystem, RomMetadata metadata, XmlManager info, Dictionary<int, Rom> fileOverrides)
+        {
+            if (!dsFileSystem.GetNarcFile(originalRom, info.Path(ElementNames.wildPokemon), out var encounterNarc))
+            {
+                return;
+            }
+            var encounterFileOverrides = new List<Rom>(encounterNarc.FileCount);
+
+            if (metadata.IsHGSS)
+            {
+                throw new System.NotImplementedException();
+            }
+            else
+            {
+                for (int i = 0; i < encounterNarc.FileCount; i++)
+                {
+                    encounterNarc.GetFile(i, out int offset, out int length, out _);
+                    // Create file and copy original data
+                    var encounterFile = new Rom(length);
+                    encounterFile.Copy(originalRom, offset, 0, length);
+
+                    var encounterData = data.EncounterData[i];
+
+                    WriteDPPTEncounters(encounterFile, encounterData, EncounterSet.Type.Grass);
+                    WriteDDPTSpecialEncounters(encounterFile, encounterData, EncounterSet.Type.Swarm);
+                    WriteDDPTSpecialEncounters(encounterFile, encounterData, EncounterSet.Type.Day);
+                    WriteDDPTSpecialEncounters(encounterFile, encounterData, EncounterSet.Type.Night);
+                    WriteDDPTSpecialEncounters(encounterFile, encounterData, EncounterSet.Type.PokeRadar);
+                    encounterFile.Skip(24); // TODO: unknown ID and encounterRatesForms
+                    WriteDDPTSpecialEncounters(encounterFile, encounterData, EncounterSet.Type.DualSlotRuby);
+                    WriteDDPTSpecialEncounters(encounterFile, encounterData, EncounterSet.Type.DualSlotSapphire);
+                    WriteDDPTSpecialEncounters(encounterFile, encounterData, EncounterSet.Type.DualSlotEmerald);
+                    WriteDDPTSpecialEncounters(encounterFile, encounterData, EncounterSet.Type.DualSlotFireRed);
+                    WriteDDPTSpecialEncounters(encounterFile, encounterData, EncounterSet.Type.DualSlotLeafGreen);
+                    WriteDPPTEncounters(originalRom, encounterData, EncounterSet.Type.Surf);
+                    encounterFile.Skip(44);
+                    WriteDPPTEncounters(originalRom, encounterData, EncounterSet.Type.FishOldRod);
+                    WriteDPPTEncounters(originalRom, encounterData, EncounterSet.Type.FishGoodRod);
+                    WriteDPPTEncounters(originalRom, encounterData, EncounterSet.Type.FishSuperRod);
+                    encounterFileOverrides.Add(encounterFile);
+                }
+            }
+
+            WriteNarcOverride(originalRom, encounterNarc, encounterFileOverrides, fileOverrides);
+        }
+
+        private void WriteDPPTEncounters(Rom rom, MapEncounterData data, EncounterSet.Type type)
+        {
+            if(!data.TryGetEncounterSet(type, out var set))
+            {
+                rom.Skip(4 + (set.Count * 8));
+                return;
+            }
+            int encounterRate = rom.ReadUInt32();
+            rom.WriteUInt32(set.encounterRate);
+            foreach(var enc in set)
+            {
+                rom.WriteByte(enc.MaxLevel);
+                if (enc.Level != enc.MaxLevel)
+                {
+                    rom.WriteByte(enc.Level);
+                    rom.Skip(2);
+                }
+                else
+                {
+                    rom.Skip(3);
+                }
+                rom.WriteUInt32(PokemonToInternalIndex(enc.Pokemon));
+            }
+        }
+
+        private void WriteDDPTSpecialEncounters(Rom rom, MapEncounterData data, EncounterSet.Type type)
+        {
+            if (!data.TryGetEncounterSet(type, out var set))
+            {
+                rom.Skip(set.Count * 4);
+                return;
+            }
+            foreach (var enc in set)
+            {
+                rom.WriteUInt32(PokemonToInternalIndex(enc.Pokemon));
+            }
         }
 
         private bool TryGetOverrideOverlay(string elementName, Rom originalRom, DSFileSystemData dsFileSystem, XmlManager info, Dictionary<int, Rom> fileOverrides, out Rom overlay)
