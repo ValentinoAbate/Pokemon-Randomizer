@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace PokemonRandomizer.Backend.DataStructures
 {
-    public class EncounterSet : IEnumerable<Encounter>
+    public class EncounterSet : IReadOnlyList<Encounter>
     {
         public enum Type
         {
@@ -27,9 +27,8 @@ namespace PokemonRandomizer.Backend.DataStructures
             Night,
             Swarm,
         }
-        public Type type;
-        public List<Encounter> encounters;
-        public int encounterRate;
+
+        public int Count => encounters.Count;
 
         public IEnumerable<Encounter> RealEncounters
         {
@@ -44,6 +43,12 @@ namespace PokemonRandomizer.Backend.DataStructures
                 }
             }
         }
+
+        public Encounter this[int index] => encounters[index];
+
+        public Type type;
+        public List<Encounter> encounters;
+        public int encounterRate;
 
         public EncounterSet(List<Encounter> encounters, Type type, int encounterRate)
         {
