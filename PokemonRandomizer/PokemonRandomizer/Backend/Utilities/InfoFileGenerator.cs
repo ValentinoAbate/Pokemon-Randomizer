@@ -213,7 +213,7 @@ namespace PokemonRandomizer.Backend.Utilities
                 EncounterSet.Type.RockSmash => "Rock Smash",
                 EncounterSet.Type.FishOldRod => "Fish (Old Rod)",
                 EncounterSet.Type.FishGoodRod => "Fish (Good Rod)",
-                EncounterSet.Type.FishSuperRod => "Fish (Super Rod",
+                EncounterSet.Type.FishSuperRod => "Fish (Super Rod)",
                 EncounterSet.Type.DualSlotRuby => "Dual-Slot (Ruby)",
                 EncounterSet.Type.DualSlotSapphire => "Dual-Slot (Sapphire)",
                 EncounterSet.Type.DualSlotEmerald => "Dual-Slot (Emerald)",
