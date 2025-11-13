@@ -418,7 +418,8 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
             return ReadTypeEffectivenessChart(overlay);
         }
 
-        private static readonly int[] swarmSlotMapping = new int[] { 0, 1 };
+        private static readonly int[] soundsSlotMapping = new int[] { 0, 1 };
+        private static readonly int[] dpptSwarmSlotMapping = new int[] { 0, 1 };
         private static readonly int[] dayNightSlotMapping = new int[] { 2, 3 };
         private static readonly int[] radarSlotMapping = new int[] { 4, 5, 10, 11 };
         private static readonly int[] dualSlotMapping = new int[] { 8, 9 };
@@ -429,18 +430,100 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
             {
                 return new List<MapEncounterData>();
             }
-            var encounterData = new List<MapEncounterData>(encounterNarc.FileCount);
 
+            // Get encounter slot sizes
+            const int grassSlots = 12;
+            const int waterSlots = 5;
+            const int rockSmashSlots = 2;
+            const int encounterRatesFormsCount = 5;
+            var encounterData = new List<MapEncounterData>(encounterNarc.FileCount);
             if (metadata.IsHGSS)
             {
-                throw new System.NotImplementedException();
+                // The special encounters (sounds, swarm)
+                // are mapped to specific slots in the grass encounters
+                //  Slot  |  Mapping  | Encounter Chance    | Notes
+                // ---------------------------------------------
+                //   0-1  |   Sounds  | 20% each slot (40%) | Swarm might override these also instead of 2-5, need more reasearch
+                //   2-3  |   Swarm   | 10% each slot (20%) |
+                //   4-5  |   Swarm   | 10% each slot (20%) |
+                //   6-7  |   None    | 5% each slot (10%)  |
+                //   8-9  |   None    | 4% each slot (8%)   |
+                //  10-11 |   None    | 1% each slot (2%)   | 
+                foreach (var (offset, _) in encounterNarc.Files)
+                {
+                    var data = new MapEncounterData(null);  // TODO map name
+                    rom.Seek(offset);
+                    int grassEncRate = rom.ReadByte();
+                    int surfEncRate = rom.ReadByte();
+                    int rockSmashEncRate = rom.ReadByte();
+                    int oldRodEncRate = rom.ReadByte();
+                    int goodRodEncRate = rom.ReadByte();
+                    int superRodEncRate = rom.ReadByte();
+                    rom.Skip(2);
+                    var grassLevels = rom.ReadBlock(grassSlots);
+
+                    // Read Morning Encounters
+                    var morningEncounters = new List<Encounter>(grassSlots);
+                    for (int i = 0; i < grassSlots; ++i)
+                    {
+                        var pokemon = InternalIndexToPokemon(rom.ReadUInt16());
+                        morningEncounters.Add(new Encounter(pokemon, grassLevels[i]));
+                    }
+                    var grassEncounters = new EncounterSet(morningEncounters, EncounterSet.Type.Grass, grassEncRate);
+                    data.AddEncounterSet(grassEncounters);
+
+                    // Read Day Encounters
+                    var dayEncounters = new List<Encounter>(grassSlots);
+                    for (int i = 0; i < grassSlots; ++i)
+                    {
+                        dayEncounters.Add(new EncounterOverride(morningEncounters[i], InternalIndexToPokemon(rom.ReadUInt16())));
+                    }
+                    data.AddEncounterSet(new EncounterSet(dayEncounters, EncounterSet.Type.Day, grassEncRate));
+
+                    // Read Night Encounters
+                    var nightEncounters = new List<Encounter>(grassSlots);
+                    for (int i = 0; i < grassSlots; ++i)
+                    {
+                        nightEncounters.Add(new EncounterOverride(morningEncounters[i], InternalIndexToPokemon(rom.ReadUInt16())));
+                    }
+                    data.AddEncounterSet(new EncounterSet(nightEncounters, EncounterSet.Type.Night, grassEncRate));
+
+                    data.AddEncounterSet(ReadHGSSSpecialEncounters(rom, EncounterSet.Type.SoundsHoenn, soundsSlotMapping, grassEncounters));
+                    data.AddEncounterSet(ReadHGSSSpecialEncounters(rom, EncounterSet.Type.SoundsSinnoh, soundsSlotMapping, grassEncounters));
+                    var surfEncounters = ReadHGSSEncounters(rom, waterSlots, EncounterSet.Type.Surf, surfEncRate);
+                    data.AddEncounterSet(surfEncounters);
+                    data.AddEncounterSet(ReadHGSSEncounters(rom, rockSmashSlots, EncounterSet.Type.RockSmash, rockSmashEncRate));
+                    var oldRodEncounters = ReadHGSSEncounters(rom, waterSlots, EncounterSet.Type.FishOldRod, oldRodEncRate);
+                    data.AddEncounterSet(oldRodEncounters);
+                    var goodRodEncounters = ReadHGSSEncounters(rom, waterSlots, EncounterSet.Type.FishGoodRod, goodRodEncRate);
+                    data.AddEncounterSet(goodRodEncounters);
+                    var superRodEncounters = ReadHGSSEncounters(rom, waterSlots, EncounterSet.Type.FishSuperRod, superRodEncRate);
+                    data.AddEncounterSet(superRodEncounters);
+                    var swarmEncounters = new List<Encounter>(3)
+                    {
+                        new EncounterOverride(grassEncounters[0], InternalIndexToPokemon(rom.ReadUInt16())),
+                        new EncounterOverride(surfEncounters[0], InternalIndexToPokemon(rom.ReadUInt16())),
+                    };
+                    data.AddEncounterSet(new EncounterSet(swarmEncounters, EncounterSet.Type.Swarm, grassEncRate));
+                    var nightFishEncounters = new List<Encounter>(1) 
+                    {
+                        // Night fishing overrides slots on multiple fishing types (super rod slot 1, and good rod slot 3)
+                        // Not sure how to handle this yet, may need to link those encounters
+                        // Also not sure this is totally corrext, re-examine with map names
+                        new EncounterOverride(goodRodEncounters[3], InternalIndexToPokemon(rom.ReadUInt16())),
+                    };
+                    // Fish swarm is 3rd swarm, and overrides slots on all 3 fishing types
+                    // 15% old rod, 65 % good rod, and 100% super rod (from bulbapedia)
+                    // Not sure how to handle this yet, may need to link those encounters
+                    // Also not sure this is totally corrext, re-examine with map names
+                    swarmEncounters.Add(new EncounterOverride(oldRodEncounters[0], InternalIndexToPokemon(rom.ReadUInt16())));
+                    data.AddEncounterSet(new EncounterSet(nightFishEncounters, EncounterSet.Type.NightFish, superRodEncRate));
+                    encounterData.Add(data);
+                }
             }
             else // DPPT
             {
-                // Get encounter slot sizes
-                const int grassSlots = 12;
-                const int waterSlots = 5;
-                const int encounterRatesFormsCount = 5;
+
 
                 // The special encounters (radar, swarm, day/night, and dual-slot)
                 // are mapped to specific slots in the grass encounters
@@ -459,12 +542,12 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
                     // Read grass encounters
                     var grassEncounters = ReadDPPTEncounters(rom, EncounterSet.Type.Grass, grassSlots, false);
                     data.AddEncounterSet(grassEncounters);
-                    data.AddEncounterSet(ReadDDPTSpecialEncounters(rom, EncounterSet.Type.Swarm, swarmSlotMapping, grassEncounters));
-                    data.AddEncounterSet(ReadDDPTSpecialEncounters(rom, EncounterSet.Type.Day, dayNightSlotMapping, grassEncounters)); 
+                    data.AddEncounterSet(ReadDDPTSpecialEncounters(rom, EncounterSet.Type.Swarm, dpptSwarmSlotMapping, grassEncounters));
+                    data.AddEncounterSet(ReadDDPTSpecialEncounters(rom, EncounterSet.Type.Day, dayNightSlotMapping, grassEncounters));
                     data.AddEncounterSet(ReadDDPTSpecialEncounters(rom, EncounterSet.Type.Night, dayNightSlotMapping, grassEncounters));
                     data.AddEncounterSet(ReadDDPTSpecialEncounters(rom, EncounterSet.Type.PokeRadar, radarSlotMapping, grassEncounters));
                     var encounterRatesForms = new List<int>(encounterRatesFormsCount);
-                    for (var i = 0; i < encounterRatesFormsCount; i++) 
+                    for (var i = 0; i < encounterRatesFormsCount; i++)
                     {
                         encounterRatesForms.Add(rom.ReadUInt32());
                     }
@@ -483,6 +566,30 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
                 }
             }
             return encounterData;
+        }
+
+        private EncounterSet ReadHGSSEncounters(Rom rom, int num, EncounterSet.Type type, int encounterRate)
+        {
+            var encounters = new List<Encounter>(num);
+            for (var i = 0; i < num; i++)
+            {
+                int levelMin = rom.ReadByte();
+                int levelMax = rom.ReadByte();
+                var pokemon = InternalIndexToPokemon(rom.ReadUInt16());
+                encounters.Add(new Encounter(pokemon, levelMin, levelMax));
+            }
+            return new EncounterSet(encounters, type, num);
+        }
+
+        private EncounterSet ReadHGSSSpecialEncounters(Rom rom, EncounterSet.Type type, int[] slotMapping, EncounterSet grassEncounters)
+        {
+            var encounters = new List<Encounter>(slotMapping.Length);
+            for (var i = 0; i < slotMapping.Length; i++)
+            {
+                var pokemon = InternalIndexToPokemon(rom.ReadUInt16());
+                encounters.Add(new EncounterOverride(grassEncounters[slotMapping[i]], pokemon));
+            }
+            return new EncounterSet(encounters, type, grassEncounters.encounterRate);
         }
 
         private EncounterSet ReadDDPTSpecialEncounters(Rom rom, EncounterSet.Type type, int[] slotMapping, EncounterSet grassEncounters)

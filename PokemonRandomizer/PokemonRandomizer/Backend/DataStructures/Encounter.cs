@@ -9,6 +9,11 @@ namespace PokemonRandomizer.Backend.DataStructures
         public virtual int Level { get; set; }
         public virtual int MaxLevel { get; set; }
         public virtual bool IsReal => Pokemon != Pokemon.None;
+
+        public Encounter(Pokemon pokemon, int level) : this(pokemon, level, level)
+        {
+
+        }
         public Encounter(Pokemon pokemon, int level, int maxLevel)
         {
             Pokemon = pokemon;

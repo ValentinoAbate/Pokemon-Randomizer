@@ -26,6 +26,9 @@ namespace PokemonRandomizer.Backend.DataStructures
             Day,
             Night,
             Swarm,
+            SoundsHoenn,
+            SoundsSinnoh,
+            NightFish,
         }
 
         public int Count => encounters.Count;
