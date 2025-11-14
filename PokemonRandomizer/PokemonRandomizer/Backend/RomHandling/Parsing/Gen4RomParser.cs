@@ -465,7 +465,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
                     int oldRodEncRate = rom.ReadByte();
                     int goodRodEncRate = rom.ReadByte();
                     int superRodEncRate = rom.ReadByte();
-                    rom.Skip(2);
+                    rom.Skip(2); // Padding
                     var grassLevels = rom.ReadBlock(grassSlots);
 
                     // Read Morning Encounters
