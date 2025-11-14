@@ -418,7 +418,6 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
                 rom.Skip(4 + (set.Count * 8));
                 return;
             }
-            int encounterRate = rom.ReadUInt32();
             rom.WriteUInt32(set.encounterRate);
             foreach(var enc in set)
             {
