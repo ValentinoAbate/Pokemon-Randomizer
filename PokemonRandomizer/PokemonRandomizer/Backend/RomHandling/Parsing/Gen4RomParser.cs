@@ -441,14 +441,20 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
             {
                 // The special encounters (sounds, swarm)
                 // are mapped to specific slots in the grass encounters
+                //               Grass Encounters
                 //  Slot  |  Mapping  | Encounter Chance    | Notes
                 // ---------------------------------------------
-                //   0-1  |   Sounds  | 20% each slot (40%) | Swarm might override these also instead of 2-5, need more reasearch
-                //   2-3  |   Swarm   | 10% each slot (20%) |
-                //   4-5  |   Swarm   | 10% each slot (20%) |
+                //   0-1  |   Swarm   | 20% each slot (40%) |
+                //   2-3  |  Sounds 1 | 10% each slot (20%) | First pokemon in active sounds (Hoenn or Sinnoh)
+                //   4-5  |  Sounds 2 | 10% each slot (20%) | Second pokemon in active sounds (Hoenn or Sinnoh)
                 //   6-7  |   None    | 5% each slot (10%)  |
                 //   8-9  |   None    | 4% each slot (8%)   |
                 //  10-11 |   None    | 1% each slot (2%)   | 
+                // Fishing encounter %s: 40%, 30%, 15%, 10%, 5%
+                // Swarm override: 15% old rod (slot 2), 65 % good rod (slots 0,2,3), and 100% super rod (all slots)
+                // Night fishing overrides slots on multiple fishing types (super rod slot 1, and good rod slot 3)
+                // Surfing encounter %s: 60%, 30%, 5%, 4%, 1%
+                // Swarm override: 60% (slot 0)
                 foreach (var (offset, _) in encounterNarc.Files)
                 {
                     var data = new MapEncounterData(null);  // TODO map name
@@ -508,14 +514,11 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
                     var nightFishEncounters = new List<Encounter>(1) 
                     {
                         // Night fishing overrides slots on multiple fishing types (super rod slot 1, and good rod slot 3)
-                        // Not sure how to handle this yet, may need to link those encounters
-                        // Also not sure this is totally corrext, re-examine with map names
+                        // TODO: Not sure how to handle this yet, may need to link those encounters
                         new EncounterOverride(goodRodEncounters[3], InternalIndexToPokemon(rom.ReadUInt16())),
                     };
-                    // Fish swarm is 3rd swarm, and overrides slots on all 3 fishing types
-                    // 15% old rod, 65 % good rod, and 100% super rod (from bulbapedia)
-                    // Not sure how to handle this yet, may need to link those encounters
-                    // Also not sure this is totally corrext, re-examine with map names
+                    // Fish swarm is 3rd swarm, and overrides slots on all 3 fishing types (old rod slot 2, good rod (slots 0,2,3), super rod all slots)
+                    // TODO: Not sure how to handle this yet, may need to link those encounters
                     swarmEncounters.Add(new EncounterOverride(oldRodEncounters[0], InternalIndexToPokemon(rom.ReadUInt16())));
                     data.AddEncounterSet(new EncounterSet(nightFishEncounters, EncounterSet.Type.NightFish, superRodEncRate));
                     encounterData.Add(data);
@@ -523,10 +526,9 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
             }
             else // DPPT
             {
-
-
                 // The special encounters (radar, swarm, day/night, and dual-slot)
                 // are mapped to specific slots in the grass encounters
+                //               Grass Encounters
                 //  Slot  |  Mapping  | Encounter Chance    | Notes
                 // ---------------------------------------------
                 //   0-1  |   Swarm   | 20% each slot (40%) |
@@ -535,6 +537,9 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
                 //   6-7  |   None    | 5% each slot (10%)  |
                 //   8-9  | Dual-Slot | 4% each slot (8%)   |
                 //  10-11 |   Radar   | 1% each slot (2%)   | 
+                // Surfing encounter (old rod) %s: 60%, 30%, 5%, 4%, 1%
+                // Fishing encounter (good/super rod) %s: 40%, 40%, 15%, 4%, 1%
+                // Surfing encounter %s: 60%, 30%, 5%, 4%, 1%
                 foreach (var (offset, _) in encounterNarc.Files)
                 {
                     var data = new MapEncounterData(null);  // TODO map name
