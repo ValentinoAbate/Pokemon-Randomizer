@@ -375,7 +375,37 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
 
             if (metadata.IsHGSS)
             {
-                throw new System.NotImplementedException();
+                for (int i = 0; i < encounterNarc.FileCount; i++)
+                {
+                    encounterNarc.GetFile(i, out int offset, out int length, out _);
+                    // Create file and copy original data
+                    var encounterFile = new Rom(length);
+                    encounterFile.Copy(originalRom, offset, 0, length);
+
+                    var encounterData = data.EncounterData[i];
+                    bool success = true;
+                    success &= encounterData.TryGetEncounterSet(EncounterSet.Type.Grass, out var grassEncounters);
+                    success &= encounterData.TryGetEncounterSet(EncounterSet.Type.Surf, out var surfEncounters);
+                    success &= encounterData.TryGetEncounterSet(EncounterSet.Type.RockSmash, out var rockSmashEncounters);
+                    success &= encounterData.TryGetEncounterSet(EncounterSet.Type.FishOldRod, out var oldRodEncounters);
+                    success &= encounterData.TryGetEncounterSet(EncounterSet.Type.FishGoodRod, out var goodRodEncounters);
+                    success &= encounterData.TryGetEncounterSet(EncounterSet.Type.FishSuperRod, out var superRodEncounters);
+                    if (!success)
+                    {
+                        encounterFileOverrides.Add(null);
+                        continue;
+                    }
+                    // Write encounter rates
+                    encounterFile.WriteByte(grassEncounters.encounterRate);
+                    encounterFile.WriteByte(surfEncounters.encounterRate);
+                    encounterFile.WriteByte(rockSmashEncounters.encounterRate);
+                    encounterFile.WriteByte(oldRodEncounters.encounterRate);
+                    encounterFile.WriteByte(goodRodEncounters.encounterRate);
+                    encounterFile.WriteByte(superRodEncounters.encounterRate);
+                    encounterFile.Skip(2); // Padding
+
+                    encounterFileOverrides.Add(encounterFile);
+                }
             }
             else
             {
