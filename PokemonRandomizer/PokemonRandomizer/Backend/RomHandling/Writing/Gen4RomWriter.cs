@@ -385,16 +385,23 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
                     var encounterData = data.EncounterData[i];
                     bool success = true;
                     success &= encounterData.TryGetEncounterSet(EncounterSet.Type.Grass, out var grassEncounters);
+                    success &= encounterData.TryGetEncounterSet(EncounterSet.Type.Day, out var dayEncounters);
+                    success &= encounterData.TryGetEncounterSet(EncounterSet.Type.Night, out var nightEncounters);
+                    success &= encounterData.TryGetEncounterSet(EncounterSet.Type.SoundsHoenn, out var hoennSoundsEncounters);
+                    success &= encounterData.TryGetEncounterSet(EncounterSet.Type.SoundsSinnoh, out var sinnohSoundsEncounters);
                     success &= encounterData.TryGetEncounterSet(EncounterSet.Type.Surf, out var surfEncounters);
                     success &= encounterData.TryGetEncounterSet(EncounterSet.Type.RockSmash, out var rockSmashEncounters);
                     success &= encounterData.TryGetEncounterSet(EncounterSet.Type.FishOldRod, out var oldRodEncounters);
                     success &= encounterData.TryGetEncounterSet(EncounterSet.Type.FishGoodRod, out var goodRodEncounters);
                     success &= encounterData.TryGetEncounterSet(EncounterSet.Type.FishSuperRod, out var superRodEncounters);
+                    success &= encounterData.TryGetEncounterSet(EncounterSet.Type.Swarm, out var swarmEncounters);
+                    success &= encounterData.TryGetEncounterSet(EncounterSet.Type.NightFish, out var nightFishEncounters);
                     if (!success)
                     {
                         encounterFileOverrides.Add(null);
                         continue;
                     }
+
                     // Write encounter rates
                     encounterFile.WriteByte(grassEncounters.encounterRate);
                     encounterFile.WriteByte(surfEncounters.encounterRate);
@@ -404,6 +411,30 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
                     encounterFile.WriteByte(superRodEncounters.encounterRate);
                     encounterFile.Skip(2); // Padding
 
+                    // Write grass encounter levels
+                    foreach(var enc in grassEncounters)
+                    {
+                        encounterFile.WriteByte(enc.Level);
+                    }
+                    // Write grass encounter pokemon (Morning/Day/Night)
+                    WriteHGSSEncounterPokemon(encounterFile, grassEncounters);
+                    WriteHGSSEncounterPokemon(encounterFile, dayEncounters);
+                    WriteHGSSEncounterPokemon(encounterFile, nightEncounters);
+                    // Write sounds pokemon
+                    WriteHGSSEncounterPokemon(encounterFile, hoennSoundsEncounters);
+                    WriteHGSSEncounterPokemon(encounterFile, sinnohSoundsEncounters);
+                    // Write rock smash and surf encounters
+                    WriteHGSSEncounters(encounterFile, surfEncounters);
+                    WriteHGSSEncounters(encounterFile, rockSmashEncounters);
+                    // Write normal fishing encounters
+                    WriteHGSSEncounters(encounterFile, oldRodEncounters);
+                    WriteHGSSEncounters(encounterFile, goodRodEncounters);
+                    WriteHGSSEncounters(encounterFile, superRodEncounters);
+                    // Write swarm and night fishing encounters
+                    encounterFile.WriteUInt16(PokemonToInternalIndex(swarmEncounters[0].Pokemon));
+                    encounterFile.WriteUInt16(PokemonToInternalIndex(swarmEncounters[1].Pokemon));
+                    encounterFile.WriteUInt16(PokemonToInternalIndex(nightFishEncounters[0].Pokemon));
+                    encounterFile.WriteUInt16(PokemonToInternalIndex(swarmEncounters[2].Pokemon));
                     encounterFileOverrides.Add(encounterFile);
                 }
             }
@@ -439,6 +470,24 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
             }
 
             WriteNarcOverride(originalRom, encounterNarc, encounterFileOverrides, fileOverrides);
+        }
+
+        private void WriteHGSSEncounters(Rom rom, EncounterSet set)
+        {
+            foreach(var enc in set)
+            {
+                rom.WriteByte(enc.Level);
+                rom.WriteByte(enc.MaxLevel);
+                rom.WriteUInt16(PokemonToInternalIndex(enc.Pokemon));
+            }
+        }
+
+        private void WriteHGSSEncounterPokemon(Rom rom, EncounterSet set)
+        {
+            foreach(var enc in set)
+            {
+                rom.WriteUInt16(PokemonToInternalIndex(enc.Pokemon));
+            }
         }
 
         private void WriteDPPTEncounters(Rom rom, MapEncounterData data, EncounterSet.Type type)
