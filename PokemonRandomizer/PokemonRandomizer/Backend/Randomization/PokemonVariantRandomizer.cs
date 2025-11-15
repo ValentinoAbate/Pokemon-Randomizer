@@ -1559,7 +1559,6 @@ namespace PokemonRandomizer.Backend.Randomization
 
         private void ModifyPalette(PokemonBaseStats pokemon, Settings settings, VariantData data)
         {
-            return;
             var paletteData = GetPaletteData(pokemon.species);
             paletteModifier.ModifyPalette(pokemon.palette, paletteData, data.VariantTypes);
             // Special castform handling.
