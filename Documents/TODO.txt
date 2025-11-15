@@ -181,7 +181,7 @@ GEN IV  ////////////////////////////////////////////////////////////////////////
 
 // TODO (Parity w/ Gen III)
 
-NEXT: Trainer names / class names
+NEXT: Arm9 Recompression (+HGSS rom writing text), then Text parsing: Trainer names / class names
 
 - Trainer pokemon
 	- HG/SS special attributes (gender + ability)
