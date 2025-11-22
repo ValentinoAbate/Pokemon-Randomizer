@@ -8,6 +8,24 @@ namespace PokemonRandomizer.Backend.Compression
     // Based on BLZCoder.java from Dabomstew's Universal Pokemon Randomizer
     // BLZEncoder.java is based on blz.c - Bottom LZ coding for Nintendo GBA/DS (Copyright (C) 2011 CUE)
     // Modified by Valentino Abate under the terms of the GPL
+
+    // BLZ Compression Structure
+    // Uncompressed Data Location: 0 -> uncompressedLength: Uncompressed data (raw)
+    // 
+    // Compressed Data Location: uncompressedLength -> (EOF - HeaderLength): Compressed Data (reversed)
+    // Compression format:
+    // BLZ compressed data is series of blocks of data where is block encodes bytes or sequences with flags
+    // The first byte of the block is the flags (8 bitflags)
+    // If the flag is 0, 1 byte of data is present in that position of the block
+    // If the flag is 1, a run is encoded in that position of the block, with the run length and run offset encoded in 2 bytes
+    // See Decompress function for more info
+    //
+    // Header location: uncompressedLength + CompressedLength -> EOF: Header
+    // Header Format:
+    // Last 4 bytes: Compression gain (uint32)
+    // 5th from last byte: Header length (should be anywhere from 8 to 11 bytes)
+    // 8th from last byte to 6th from last byte: Compressed Length (uint24)
+    // The first 3 bytes are padding (0xFF) if needed to make sure the compressed length is 4-aligned
     public static class BLZ
     {
         private const int minBLZHeaderLength = 0x8;
