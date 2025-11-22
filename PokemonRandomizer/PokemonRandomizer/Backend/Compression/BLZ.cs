@@ -1,4 +1,3 @@
-﻿using PokemonRandomizer.Backend.DataStructures;
 ﻿using PokemonRandomizer.Backend.Utilities;
 using PokemonRandomizer.Backend.Utilities.Debug;
 using System;
@@ -29,16 +28,19 @@ namespace PokemonRandomizer.Backend.Compression
     // The first 3 bytes are padding (0xFF) if needed to make sure the compressed length is 4-aligned
     public static class BLZ
     {
-        private const int minBLZHeaderLength = 0x8;
-        private const int maxBLZHeaderLength = 0xB;
+        private const int minBLZHeaderSize = 0x8;
+        private const int maxBLZHeaderSize = 0xB;
         private const int maxBLZOutputLength = 0xFFFFFF;
         private const int BLZShift = 1;
         private const int BLZMask = 0x80;
         private const int BLZThreshold = 2;
+        private const int minRunLength = 3;
+        private const int maxRunOffset = 0x1002; // max value of a 12 bit number + 3
+        private const int maxRunLength = 0x12; // max value of a 4 bit number + 3
 
         public static bool TryGetBLZHeaderData(byte[] data, int offset, int length, out int headerLength, out int compressionGain, out int compressedLength, out int uncompressedLength, out int outputLength)
         {
-            if (length < minBLZHeaderLength)
+            if (length < minBLZHeaderSize)
             {
                 compressionGain = 0;
                 headerLength = 0;
@@ -52,7 +54,7 @@ namespace PokemonRandomizer.Backend.Compression
             // And its length before compression
             compressionGain = data.ReadUInt32(headerEndOffset - 4);
             headerLength = data.ReadByte(headerEndOffset - 5);
-            if (headerLength > maxBLZHeaderLength || headerLength < minBLZHeaderLength || length < headerLength)
+            if (headerLength > maxBLZHeaderSize || headerLength < minBLZHeaderSize || length < headerLength)
             {
                 compressedLength = 0;
                 uncompressedLength = 0;
@@ -139,6 +141,129 @@ namespace PokemonRandomizer.Backend.Compression
             }
             Array.Reverse(output, uncompressedLength, output.Length - uncompressedLength);
             return output;
+        }
+
+        public static byte[] Compress(byte[] data, int leaveUncompressedSize, int offset = 0, int length = -1)
+        {
+            // If length is not defined, read until end of data
+            if (length < 0)
+            {
+                length = data.Length - offset;
+            }
+
+            // Prepare buffer
+            var buffer = new byte[length + ((length + 7) / 8) + 11];
+
+            // Prepare input (the data to compress)
+            var input = data.ReadBlock(offset + leaveUncompressedSize, length - leaveUncompressedSize);
+            Array.Reverse(input);
+
+            int bufferInd = 0;
+            int inputIndex = 0;
+            int flagsInd = 0;
+            uint mask = 0;
+            while (inputIndex < input.Length)
+            {
+                if ((mask >>= BLZShift) == 0)
+                {
+                    flagsInd = bufferInd++;
+                    buffer[flagsInd] = 0; // no flags yet
+                    mask = BLZMask;
+                }
+                else // Shift to next flag
+                {
+                    buffer[flagsInd] <<= 1;
+                }
+                if (TryFindSequence(input, inputIndex, out int runOffset, out int runLength))
+                {
+                    inputIndex += runLength;
+                    buffer[flagsInd] |= 1; // Set sequence flag
+                    int encodedLength = runLength - minRunLength;
+                    int encodedOffset = runOffset - minRunLength;
+                    buffer[bufferInd++] = (byte)((encodedLength << 4) | (encodedOffset >> 8)); // 4 bits of length, then 4 MSBs of offset
+                    buffer[bufferInd++] = (byte)(encodedOffset & 0xFF); // 8 LSBs of offset
+                }
+                else
+                {
+                    buffer[bufferInd++] = input[inputIndex++]; // Write raw input
+                }
+            }
+            // Move final flags to appropriate positions
+            while (mask > 1)
+            {
+                mask >>= BLZShift;
+                buffer[flagsInd] <<= 1;
+            }
+
+            int compressedSize = bufferInd;
+
+            // Calculate header size
+            int headerIndex = leaveUncompressedSize + compressedSize;
+            // Header padding (if needed)
+            int headerAlign = (4 - (headerIndex & 0x0003)) & 0x0003;
+            int headerSize = minBLZHeaderSize + headerAlign;
+
+            // Write final output
+            var finalOutput = new byte[leaveUncompressedSize + compressedSize + headerSize];
+            
+            // Copy uncompressed data to final output
+            Array.Copy(data, finalOutput, leaveUncompressedSize);
+            
+            // Reverse and then copy compressed data to final output
+            Array.Reverse(buffer, 0, compressedSize);
+            Array.Copy(buffer, 0, finalOutput, leaveUncompressedSize, compressedSize);
+            
+            // Write Header padding (if needed)
+            for (int i = 0; i < headerAlign; ++i)
+            {
+                finalOutput[headerIndex++] = 0xFF;
+            }
+            // Write header
+            finalOutput.WriteUInt24(headerIndex, compressedSize + headerSize);
+            headerIndex += 3;
+            finalOutput[headerIndex++] = (byte)headerSize;
+            int compressionGain = length - (compressedSize + leaveUncompressedSize + headerSize);
+            finalOutput.WriteUInt32(headerIndex, compressionGain);
+            return finalOutput;
+        }
+
+        private static bool TryFindSequence(byte[] input, int inputIndex, out int runOffset, out int runLength)
+        {
+            runOffset = 0;
+            runLength = BLZThreshold; // Ignore any runs of 2 or less bytes (they take up more space when compressed)
+            // Maximum run offest is the maximum storable offset, or the inputIndex, whichever is smaller
+            int maxOffset = Math.Min(maxRunOffset, inputIndex);
+            for (int offset = 3; offset <= maxOffset; offset++)
+            {
+                // Search for sequences at this offset
+                int length = 0;
+                while(length < maxRunLength && length < offset)
+                {
+                    int sequenceIndex = inputIndex + length;
+                    if (sequenceIndex >= input.Length)
+                    {
+                        break;
+                    }
+                    if (input[sequenceIndex] != input[sequenceIndex - offset])
+                    {
+                        break;
+                    }
+                    ++length;
+                }
+                // Prefer closer pos if same length
+                if (length <= runLength)
+                {
+                    continue;
+                }
+                runOffset = offset;
+                runLength = length;
+                // Maximum compressable sequence length, always take
+                if (runLength == maxRunLength)
+                {
+                    return true;
+                }
+            }
+            return runLength > BLZThreshold;
         }
     }
 }
