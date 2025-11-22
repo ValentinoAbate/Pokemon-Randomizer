@@ -70,6 +70,11 @@ namespace PokemonRandomizer.Backend.Utilities
         {
             WriteUInt(rom, offset, value, 4);
         }
+        /// <summary>Writes a Unit24 (3 bytes)</summary>
+        public static void WriteUInt24(this byte[] rom, int offset, int value)
+        {
+            WriteUInt(rom, offset, value, 3);
+        }
         /// <summary>Writes a Unit16 (2 bytes)</summary>
         public static void WriteUInt16(this byte[] rom, int offset, int value)
         {
@@ -79,7 +84,7 @@ namespace PokemonRandomizer.Backend.Utilities
         /// If the number given is a 24-bit ROM address, it is converted to a 32-bit RAM adress by adding 0x08000000 </summary>
         public static void WritePointer(this byte[] rom, int offset, int value, bool isRomAddy = true)
         {
-                WriteUInt(rom, offset, isRomAddy ? 0x08000000 + value : value, 4);
+            WriteUInt(rom, offset, isRomAddy ? 0x08000000 + value : value, 4);
         }
         #endregion
     }
