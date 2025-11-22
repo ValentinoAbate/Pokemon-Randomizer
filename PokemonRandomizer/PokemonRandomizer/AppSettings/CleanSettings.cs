@@ -7,6 +7,7 @@ namespace PokemonRandomizer.AppSettings
     public class CleanSettings : HardCodedSettings
     {
         public CleanSettings(ApplicationDataModel data) : base(data) { }
+        public override double TMRandChance => 0; // For tracking arm9 modifications
 
         public override bool WriteCatchingTutPokemon => false; // Method of writing works properly but causes known diffs
 
@@ -14,6 +15,8 @@ namespace PokemonRandomizer.AppSettings
         public override WeatherOption WeatherSetting => WeatherOption.Unchanged;
 
         public override bool SafeStarterMovesets => false;
+
+        public override bool RandomizeTrainerBattleType => false; // Don't apply trainer battle type fixes
 
         #region Misc
 
