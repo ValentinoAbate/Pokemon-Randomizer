@@ -1,4 +1,5 @@
 ﻿using System;
+﻿using PokemonRandomizer.Backend.Compression;
 using System.Collections.Generic;
 using System.Text;
 
@@ -204,7 +205,7 @@ namespace PokemonRandomizer.Backend.DataStructures.DS
                 Arm9Footer = Array.Empty<byte>();
             }
             // Read compressed data if compressed
-            if(rom.TryGetBLZHeaderData(arm9Offset, arm9Size, out _, out int incLength, out _, out _, out _ ) && incLength > 0)
+            if(BLZ.TryGetBLZHeaderData(rom, arm9Offset, arm9Size, out _, out int incLength, out _, out _, out _ ) && incLength > 0)
             {
                 decompressedArm9Data = new Rom(rom.ReadBLZCompressedData(arm9Offset, arm9Size));
             }
