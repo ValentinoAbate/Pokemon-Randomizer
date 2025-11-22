@@ -5,7 +5,7 @@ using System;
 namespace PokemonRandomizer.Backend.Compression
 {
     // All BLZ (Bottom LZ) Compression and Decompression methods are
-    // Based on BLZEncoder.java from Dabomstew's Universal Pokemon Randomizer
+    // Based on BLZCoder.java from Dabomstew's Universal Pokemon Randomizer
     // BLZEncoder.java is based on blz.c - Bottom LZ coding for Nintendo GBA/DS (Copyright (C) 2011 CUE)
     // Modified by Valentino Abate under the terms of the GPL
     public static class BLZ
