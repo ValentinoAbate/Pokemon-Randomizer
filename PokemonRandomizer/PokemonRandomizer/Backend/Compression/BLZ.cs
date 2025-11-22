@@ -66,52 +66,52 @@ namespace PokemonRandomizer.Backend.Compression
             // Copy uncompressed data to output file
             Array.Copy(rom.File, offset, output, 0, uncompressedLength);
             // Prepare input data
-            byte[] input = new byte[length - (headerLength + uncompressedLength)];
-            Array.Copy(rom.File, offset + uncompressedLength, input, 0, input.Length);
-            Array.Reverse(input);
+            byte[] compressed = new byte[length - (headerLength + uncompressedLength)];
+            Array.Copy(rom.File, offset + uncompressedLength, compressed, 0, compressed.Length);
+            Array.Reverse(compressed);
 
 
             // Iterate through input data
             uint mask = 0;
             int flags = 0;
-            for (int outputIndex = uncompressedLength, inputIndex = 0; outputIndex < output.Length && inputIndex < input.Length;)
+            for (int outputInd = uncompressedLength, compressedInd = 0; outputInd < output.Length && compressedInd < compressed.Length;)
             {
                 if ((mask >>= BLZShift) == 0)
                 {
-                    if (inputIndex + 1 >= input.Length)
+                    if (compressedInd + 1 >= compressed.Length)
                         break;
-                    flags = input[inputIndex++];
+                    flags = compressed[compressedInd++];
                     mask = BLZMask;
                 }
                 if ((flags & mask) == 0)
                 {
-                    if (inputIndex + 1 >= input.Length)
+                    if (compressedInd + 1 >= compressed.Length)
                     {
                         break;
                     }
-                    output[outputIndex++] = input[inputIndex++];
+                    output[outputInd++] = compressed[compressedInd++];
                 }
-                else if (inputIndex + 1 >= input.Length)
+                else if (compressedInd + 1 >= compressed.Length)
                 {
                     break;
                 }
                 else
                 {
-                    byte byte1 = input[inputIndex++];
-                    byte byte2 = input[inputIndex++];
+                    byte byte1 = compressed[compressedInd++];
+                    byte byte2 = compressed[compressedInd++];
                     // Length is the 4 Most significant bits of byte1
                     int len = (byte1 >> 4) + BLZThreshold + 1;
                     // Offset is the 4 Least significant bits of byte1 and byte2
                     int posOffset = ((byte1 << 8 | byte2) & 0x0FFF) + 3;
-                    if (outputIndex + len > output.Length)
+                    if (outputInd + len > output.Length)
                     {
-                        Logger.main.Warning($"BLZ Decompression warning: incorrect decoded length. Expected {output.Length}, got {outputIndex + len}");
-                        len = Math.Max(0, output.Length - outputIndex);
+                        Logger.main.Warning($"BLZ Decompression warning: incorrect decoded length. Expected {output.Length}, got {outputInd + len}");
+                        len = Math.Max(0, output.Length - outputInd);
                     }
                     while (len-- > 0)
                     {
-                        output[outputIndex] = output[outputIndex - posOffset];
-                        ++outputIndex;
+                        output[outputInd] = output[outputInd - posOffset];
+                        ++outputInd;
                     }
                 }
             }
