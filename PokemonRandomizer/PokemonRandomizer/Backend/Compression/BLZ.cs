@@ -70,8 +70,7 @@ namespace PokemonRandomizer.Backend.Compression
             Array.Copy(rom.File, offset + uncompressedLength, compressed, 0, compressed.Length);
             Array.Reverse(compressed);
 
-
-            // Iterate through input data
+            // Process compressed data
             uint mask = 0;
             int flags = 0;
             for (int outputInd = uncompressedLength, compressedInd = 0; outputInd < output.Length && compressedInd < compressed.Length;)
@@ -83,36 +82,40 @@ namespace PokemonRandomizer.Backend.Compression
                     flags = compressed[compressedInd++];
                     mask = BLZMask;
                 }
-                if ((flags & mask) == 0)
-                {
-                    if (compressedInd + 1 >= compressed.Length)
-                    {
-                        break;
-                    }
-                    output[outputInd++] = compressed[compressedInd++];
-                }
-                else if (compressedInd + 1 >= compressed.Length)
+                if (compressedInd + 1 >= compressed.Length)
                 {
                     break;
                 }
-                else
+                // If the flag is 0, read one byte from the input
+                if ((flags & mask) == 0)
                 {
-                    byte byte1 = compressed[compressedInd++];
-                    byte byte2 = compressed[compressedInd++];
-                    // Length is the 4 Most significant bits of byte1
-                    int len = (byte1 >> 4) + BLZThreshold + 1;
-                    // Offset is the 4 Least significant bits of byte1 and byte2
-                    int posOffset = ((byte1 << 8 | byte2) & 0x0FFF) + 3;
-                    if (outputInd + len > output.Length)
-                    {
-                        Logger.main.Warning($"BLZ Decompression warning: incorrect decoded length. Expected {output.Length}, got {outputInd + len}");
-                        len = Math.Max(0, output.Length - outputInd);
-                    }
-                    while (len-- > 0)
-                    {
-                        output[outputInd] = output[outputInd - posOffset];
-                        ++outputInd;
-                    }
+                    output[outputInd++] = compressed[compressedInd++];
+                    continue;
+                }
+                // Flag is 1, indicating a compressed run in the input
+                // A compressed run is a repeating sequence of bytes
+                // A compressed run is encoded as follows:
+                // 4 Most significant bits of byte1 is the modified length of the sequence (in bytes)
+                // To get the actual length of the sequence, add 3 (the minimum compressable sequence length)
+                // The 4 least significant bits of byte1 combined with byte2 is the modified offset of the sequence to repeat
+                // To get the actual offset of the sequence, add 3 (the minimum compressable sequence length)
+                // The +3 additions are done to maximize the value of the bits
+                // Look back offset bytes in the output to find the sequence and then write it to the output
+                byte byte1 = compressed[compressedInd++];
+                byte byte2 = compressed[compressedInd++];
+                // Length is the 4 Most significant bits of byte1
+                int len = (byte1 >> 4) + BLZThreshold + 1;
+                // Offset is the 4 Least significant bits of byte1 and byte2
+                int posOffset = ((byte1 << 8 | byte2) & 0x0FFF) + 3;
+                if (outputInd + len > output.Length)
+                {
+                    Logger.main.Warning($"BLZ Decompression warning: incorrect decoded length. Expected {output.Length}, got {outputInd + len}");
+                    len = Math.Max(0, output.Length - outputInd);
+                }
+                while (len-- > 0)
+                {
+                    output[outputInd] = output[outputInd - posOffset];
+                    ++outputInd;
                 }
             }
             Array.Reverse(output, uncompressedLength, output.Length - uncompressedLength);
