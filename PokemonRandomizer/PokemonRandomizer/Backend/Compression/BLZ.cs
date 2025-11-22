@@ -17,7 +17,6 @@ namespace PokemonRandomizer.Backend.Compression
         private const int BLZMask = 0x80;
         private const int BLZThreshold = 2;
 
-        private static bool TryGetBLZHeaderData(Rom rom, int offset, int length, out int headerLength, out int incLength, out int compressedLength, out int uncompressedLength, out int outputLength)
         public static bool TryGetBLZHeaderData(Rom rom, int offset, int length, out int headerLength, out int incLength, out int compressedLength, out int uncompressedLength, out int outputLength)
         {
             if (length < minBLZHeaderLength)
