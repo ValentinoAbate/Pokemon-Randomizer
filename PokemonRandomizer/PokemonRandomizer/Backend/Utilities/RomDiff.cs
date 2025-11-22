@@ -1,27 +1,33 @@
-﻿using System;
+﻿using PokemonRandomizer.Backend.DataStructures;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PokemonRandomizer.Backend.Utilities
 {
-    using DataStructures;
     public static class RomDiff
     {
         public static DiffData Diff(Rom original, Rom modified)
         {
-            var ret = new DiffData();
+            return Diff(original.File, modified.File);
+        }
+        public static DiffData Diff(byte[] original, byte[] modified)
+        {
+            var ret = new DiffData()
+            {
+                OriginalLength = original.Length,
+                ModifiedLength = modified.Length
+            };
             int minLength = Math.Min(original.Length, modified.Length);
             int lastDiff = int.MinValue;
-            for(int i = 0; i < minLength; ++i)
+            for (int i = 0; i < minLength; ++i)
             {
-                byte originalValue = original.ReadByte(i);
-                byte modifiedValue = modified.ReadByte(i);
-                if(originalValue != modifiedValue)
+                byte originalValue = original[i];
+                byte modifiedValue = modified[i];
+                if (originalValue != modifiedValue)
                 {
                     // New block diff
-                    if(i != lastDiff + 1)
+                    if (i != lastDiff + 1)
                     {
                         ret.BlockDiffs.Add(new DiffData.BlockDiff(i, originalValue, modifiedValue));
                     }
@@ -37,16 +43,32 @@ namespace PokemonRandomizer.Backend.Utilities
         }
         public class DiffData
         {
-            public List<string> Readout()
+            public int OriginalLength { get; set; }
+            public int ModifiedLength { get; set; }
+            public IEnumerable<string> Readout()
             {
                 // Readout blocks
                 var blockDiffText = BlockDiffs.SelectMany(d => d.Readout());
-                // Initialize list with proper capacity
-                var ret = new List<string>(blockDiffText.Count() + 1);
                 // Add diff data
-                ret.Add($"Block Diffs ({BlockDiffs.Count}):");
-                ret.AddRange(blockDiffText);
-                return ret;
+                if(OriginalLength != ModifiedLength)
+                {
+                    yield return $"Size Diff: {OriginalLength} -> {ModifiedLength} ({Math.Abs(OriginalLength - ModifiedLength)})";
+                }
+                if(BlockDiffs.Count == 0)
+                {
+                    yield return "No Data Diffs";
+                }
+                else
+                {
+                    yield return $"Block Diffs ({BlockDiffs.Count}):";
+                    foreach(var blockDiff in BlockDiffs)
+                    {
+                        foreach(var line in blockDiff.Readout())
+                        {
+                            yield return line;
+                        }
+                    }
+                }
             }
             public List<ByteDiff> ByteDiffs { get; } = new List<ByteDiff>();
             public BlockDiff CurrBlock => BlockDiffs.Count > 0 ? BlockDiffs[BlockDiffs.Count - 1] : null;
@@ -86,13 +108,14 @@ namespace PokemonRandomizer.Backend.Utilities
                     values.Add((original, changed));
                 }
 
-                public List<string> Readout()
+                public IEnumerable<string> Readout()
                 {
-                    var ret = new List<string>(values.Count + 2);
-                    ret.Add($"// Block: {offset:x2} - {offset + values.Count - 1:x2} ({values.Count} bytes)");
-                    ret.AddRange(values.Select(v => $"{v.Item1:x2} -> {v.Item2:x2}"));
-                    ret.Add(" ");
-                    return ret;
+                    yield return $"// Block: {offset:x2} - {offset + values.Count - 1:x2} ({values.Count} bytes)";
+                    foreach(var (item1, item2) in values)
+                    {
+                        yield return $"{item1:x2} -> {item2:x2}";
+                    }
+                    yield return string.Empty;
                 }
             }
         }
