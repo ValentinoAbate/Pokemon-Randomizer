@@ -33,10 +33,10 @@ namespace PokemonRandomizer.Backend.Utilities
         {
             return ReadUInt(rom, offset, 4);
         }
-        /// <summary>Reads a Unit24 (4 bytes)</summary>
+        /// <summary>Reads a Unit24 (3 bytes)</summary>
         public static int ReadUInt24(this byte[] rom, int offset)
         {
-            return ReadUInt(rom, offset, 4);
+            return ReadUInt(rom, offset, 3);
         }
         /// <summary>Reads a Unit16 (2 bytes)</summary>
         public static int ReadUInt16(this byte[] rom, int offset)
