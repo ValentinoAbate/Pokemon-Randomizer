@@ -66,15 +66,15 @@ namespace PokemonRandomizer.Backend.Compression
             // Copy uncompressed data to output file
             Array.Copy(rom.File, offset, output, 0, uncompressedLength);
             // Prepare input data
-            byte[] input = new byte[length - headerLength];
-            Array.Copy(rom.File, offset, input, 0, input.Length);
-            Array.Reverse(input, uncompressedLength, input.Length - uncompressedLength);
+            byte[] input = new byte[length - (headerLength + uncompressedLength)];
+            Array.Copy(rom.File, offset + uncompressedLength, input, 0, input.Length);
+            Array.Reverse(input);
 
 
             // Iterate through input data
             uint mask = 0;
             int flags = 0;
-            for (int outputIndex = uncompressedLength, inputIndex = uncompressedLength; outputIndex < output.Length && inputIndex < input.Length;)
+            for (int outputIndex = uncompressedLength, inputIndex = 0; outputIndex < output.Length && inputIndex < input.Length;)
             {
                 if ((mask >>= BLZShift) == 0)
                 {
