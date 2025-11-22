@@ -17,21 +17,22 @@ namespace PokemonRandomizer.Backend.Compression
         private const int BLZMask = 0x80;
         private const int BLZThreshold = 2;
 
-        public static bool TryGetBLZHeaderData(Rom rom, int offset, int length, out int headerLength, out int incLength, out int compressedLength, out int uncompressedLength, out int outputLength)
+        public static bool TryGetBLZHeaderData(Rom rom, int offset, int length, out int headerLength, out int compressionGain, out int compressedLength, out int uncompressedLength, out int outputLength)
         {
             if (length < minBLZHeaderLength)
             {
-                incLength = 0;
+                compressionGain = 0;
                 headerLength = 0;
                 compressedLength = 0;
                 uncompressedLength = 0;
                 outputLength = 0;
                 return false;
             }
+            int headerEndOffset = offset + length;
             // The difference between the length of the compressed portion of the data
             // And its length before compression
-            incLength = rom.ReadUInt32(offset + length - 4);
-            headerLength = rom.ReadByte(offset + length - 5);
+            compressionGain = rom.ReadUInt32(headerEndOffset - 4);
+            headerLength = rom.ReadByte(headerEndOffset - 5);
             if (headerLength > maxBLZHeaderLength || headerLength < minBLZHeaderLength || length < headerLength)
             {
                 compressedLength = 0;
@@ -40,11 +41,11 @@ namespace PokemonRandomizer.Backend.Compression
                 return false;
             }
             // The length of the compressed portion of the data
-            compressedLength = rom.ReadUInt24(offset + length - 8);
+            compressedLength = rom.ReadUInt24(headerEndOffset - 8);
             // The length of the uncompressed portion of the data
             uncompressedLength = length - compressedLength;
-            // The length of the output data (the already uncompressedLength + the currently compressed length + the compression gain
-            outputLength = uncompressedLength + compressedLength + incLength;
+            // The length of the output data (the already uncompressed length + the currently compressed length + the compression gain
+            outputLength = uncompressedLength + compressedLength + compressionGain;
             if (outputLength > maxBLZOutputLength)
             {
                 return false;
