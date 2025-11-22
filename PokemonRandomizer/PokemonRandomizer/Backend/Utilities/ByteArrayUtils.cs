@@ -43,6 +43,10 @@ namespace PokemonRandomizer.Backend.Utilities
         {
             return ReadUInt(rom, offset, 2);
         }
+        public static byte ReadByte(this byte[] rom, int offset)
+        {
+            return rom[offset];
+        }
         /// <summary> Reads a pointer from the rom.
         /// A pointer on gen 3 ROMs is stored as a 32-bit number which points to a location in RAM where the game would be running
         /// <para> However, the actual address in the ROM is the first 24 bits, because the ROM is loaded into RAM at 0x08000000 </para>

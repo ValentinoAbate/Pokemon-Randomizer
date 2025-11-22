@@ -1,4 +1,5 @@
 ﻿using PokemonRandomizer.Backend.DataStructures;
+﻿using PokemonRandomizer.Backend.Utilities;
 using PokemonRandomizer.Backend.Utilities.Debug;
 using System;
 
@@ -35,7 +36,7 @@ namespace PokemonRandomizer.Backend.Compression
         private const int BLZMask = 0x80;
         private const int BLZThreshold = 2;
 
-        public static bool TryGetBLZHeaderData(Rom rom, int offset, int length, out int headerLength, out int compressionGain, out int compressedLength, out int uncompressedLength, out int outputLength)
+        public static bool TryGetBLZHeaderData(byte[] data, int offset, int length, out int headerLength, out int compressionGain, out int compressedLength, out int uncompressedLength, out int outputLength)
         {
             if (length < minBLZHeaderLength)
             {
@@ -49,8 +50,8 @@ namespace PokemonRandomizer.Backend.Compression
             int headerEndOffset = offset + length;
             // The difference between the length of the compressed portion of the data
             // And its length before compression
-            compressionGain = rom.ReadUInt32(headerEndOffset - 4);
-            headerLength = rom.ReadByte(headerEndOffset - 5);
+            compressionGain = data.ReadUInt32(headerEndOffset - 4);
+            headerLength = data.ReadByte(headerEndOffset - 5);
             if (headerLength > maxBLZHeaderLength || headerLength < minBLZHeaderLength || length < headerLength)
             {
                 compressedLength = 0;
@@ -59,7 +60,7 @@ namespace PokemonRandomizer.Backend.Compression
                 return false;
             }
             // The length of the compressed portion of the data
-            compressedLength = rom.ReadUInt24(headerEndOffset - 8);
+            compressedLength = data.ReadUInt24(headerEndOffset - 8);
             // The length of the uncompressed portion of the data
             uncompressedLength = length - compressedLength;
             // The length of the output data (the already uncompressed length + the currently compressed length + the compression gain
@@ -71,9 +72,9 @@ namespace PokemonRandomizer.Backend.Compression
             return true;
         }
 
-        public static byte[] Decompress(Rom rom, int offset, int length)
+        public static byte[] Decompress(byte[] data, int offset, int length)
         {
-            if (!TryGetBLZHeaderData(rom, offset, length, out int headerLength, out _, out _, out int uncompressedLength, out int outputLength))
+            if (!TryGetBLZHeaderData(data, offset, length, out int headerLength, out _, out _, out int uncompressedLength, out int outputLength))
             {
                 Logger.main.Error($"Error attempting to decompress BLZ data at {offset}: unable to parse header");
                 return Array.Empty<byte>();
@@ -82,10 +83,10 @@ namespace PokemonRandomizer.Backend.Compression
             // Create output
             byte[] output = new byte[outputLength];
             // Copy uncompressed data to output file
-            Array.Copy(rom.File, offset, output, 0, uncompressedLength);
+            Array.Copy(data, offset, output, 0, uncompressedLength);
             // Prepare input data
             byte[] compressed = new byte[length - (headerLength + uncompressedLength)];
-            Array.Copy(rom.File, offset + uncompressedLength, compressed, 0, compressed.Length);
+            Array.Copy(data, offset + uncompressedLength, compressed, 0, compressed.Length);
             Array.Reverse(compressed);
 
             // Process compressed data
