@@ -758,28 +758,33 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
                 if (dsFileSystem.TryGetArm9OverlayByFileID(i, out Arm9Overlay overlay)) 
                 {  
                     byte[] data;
+                    int ramSize;
+                    int compressedSize;
                     if(fileOverrides.TryGetValue(i, out var overrideData))
                     {
                         data = overrideData.File;
-                        fileSize = data.Length;
+                        ramSize = data.Length;
+                        compressedSize = overlay.CompressedSize;
                     }
                     else
                     {
-                        data = dsFileSystem.GetOverlayContents(originalRom, overlay, out int fileStart, out fileSize).ReadBlock(fileStart, fileSize);
+                        data = originalRom.ReadBlock(overlay.Start, overlay.End - overlay.Start);
+                        ramSize = overlay.RamSize;
+                        compressedSize = overlay.CompressedSize;
                     }
-                    // TODO: Recompress data?
+                    fileSize = data.Length;
                     rom.WriteBlock(dataOffset, data);
                     // Write Header
                     rom.Seek(arm9OverlayTableOffset + (overlay.ID * DSFileSystemData.arm9OverlayHeaderSize));
                     rom.WriteUInt32(overlay.ID);
                     rom.WriteUInt32(overlay.RamAddress);
-                    rom.WriteUInt32(fileSize);
+                    rom.WriteUInt32(ramSize);
                     rom.WriteUInt32(overlay.BssSize);
                     rom.WriteUInt32(overlay.StaticStart);
                     rom.WriteUInt32(overlay.StaticEnd);
                     rom.WriteUInt32(overlay.FileID);
-                    rom.WriteUInt24(0); // Compressed size if compressed
-                    rom.WriteByte(0); // Compression flag if compressed
+                    rom.WriteUInt24(compressedSize); // Compressed size if compressed
+                    rom.WriteByte(overlay.CompressionFlag); // Compression flag if compressed
                 }
                 else if(fileOverrides.TryGetValue(i, out var fileOverride))
                 {
