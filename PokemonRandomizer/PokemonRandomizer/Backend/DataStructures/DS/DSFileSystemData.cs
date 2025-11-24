@@ -1,5 +1,7 @@
-﻿using System;
 ﻿using PokemonRandomizer.Backend.Compression;
+using PokemonRandomizer.Backend.Utilities;
+using PokemonRandomizer.Search;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -25,6 +27,8 @@ namespace PokemonRandomizer.Backend.DataStructures.DS
         public const int crcOffset = 0x15E;
         public const int bannerSize = 0x840;
 
+        public const int arm9SizeModifier = 0x4000;
+
         private const char pathSeparator = '/';
         private const int directoryOffset = 0xF000;
         public const int fileHeaderSize = 8;
@@ -42,8 +46,14 @@ namespace PokemonRandomizer.Backend.DataStructures.DS
         private readonly Arm9Overlay[] arm9Overlays;
         public bool Arm9Compressed => decompressedArm9Data != null;
         private readonly Rom decompressedArm9Data;
+        public int Arm9Offset => arm9Offset;
         private readonly int arm9Offset;
+        public int Arm9Size => arm9Size;
         private readonly int arm9Size;
+        public int Arm9SizeOffset { get; } = Rom.nullPointer;
+        public int Arm9SizeOffsetAddition { get; } = 0;
+        public int LeaveUncompressedArm9Size => leaveUncompressedArm9Size;
+        private readonly int leaveUncompressedArm9Size;
         public byte[] Arm9Footer { get; }
 
         public DSFileSystemData(Rom rom)
@@ -205,9 +215,28 @@ namespace PokemonRandomizer.Backend.DataStructures.DS
                 Arm9Footer = Array.Empty<byte>();
             }
             // Read compressed data if compressed
-            if(BLZ.TryGetBLZHeaderData(rom.File, arm9Offset, arm9Size, out _, out int compressionGain, out _, out _, out _ ) && compressionGain > 0)
+            if(BLZ.TryGetBLZHeaderData(rom.File, arm9Offset, arm9Size, out _, out int compressionGain, out int compressedSize, out leaveUncompressedArm9Size, out _ ) && compressionGain > 0)
             {
                 decompressedArm9Data = new Rom(rom.ReadBLZCompressedData(arm9Offset, arm9Size));
+                // Search for size offsets
+                var sizePattern = new byte[3];
+                sizePattern.WriteUInt24(0, arm9Size);        
+                var sizeOffsets = Kmp.SearchAll(rom.File, sizePattern, arm9Offset, arm9Offset + arm9Size);
+                if (sizeOffsets.Count == 1)
+                {
+                    Arm9SizeOffset = sizeOffsets[0] - arm9Offset;
+                    Arm9SizeOffsetAddition = 0;
+                }
+                else
+                {
+                    sizePattern.WriteUInt24(0, arm9Size + arm9SizeModifier);
+                    sizeOffsets = Kmp.SearchAll(rom.File, sizePattern, arm9Offset, arm9Offset + arm9Size);
+                    if (sizeOffsets.Count == 1)
+                    {
+                        Arm9SizeOffset = sizeOffsets[0] - arm9Offset;
+                        Arm9SizeOffsetAddition = arm9SizeModifier;
+                    }
+                }
             }
         }
 

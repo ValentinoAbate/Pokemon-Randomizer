@@ -1,4 +1,5 @@
-﻿using PokemonRandomizer.Backend.Constants;
+﻿using PokemonRandomizer.Backend.Compression;
+using PokemonRandomizer.Backend.Constants;
 using PokemonRandomizer.Backend.DataStructures;
 using PokemonRandomizer.Backend.DataStructures.DS;
 using PokemonRandomizer.Backend.DataStructures.Trainers;
@@ -567,29 +568,42 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
             var originalArm9Data = dsFileSystem.GetArm9Data(originalRom, out int arm9Start, out int originalArm9Size);
             var arm9Data = new Rom(originalArm9Data.ReadBlock(arm9Start, originalArm9Size));
 
+            bool modifiedArm9 = false;
             // Write RomData to new arm9 data
-            WriteTmMoves(arm9Data, data, info);
-            FixDoubleBattles(arm9Data, originalRom, dsFileSystem, info, fileOverrides, settings);
+            modifiedArm9 |= WriteTmMoves(arm9Data, data, info, settings);
+            modifiedArm9 |= FixDoubleBattles(arm9Data, originalRom, dsFileSystem, info, fileOverrides, settings);
 
             // Write arm9 data
             int arm9Size;
             if (dsFileSystem.Arm9Compressed)
             {
-                // TODO
-                // compress arm9 data
-                // write new compression header data if needed
-                // Size is compressed size
-                throw new System.NotImplementedException();
+                if (modifiedArm9)
+                {
+                    var compressedArm9 = BLZ.Compress(arm9Data.File, dsFileSystem.LeaveUncompressedArm9Size);
+                    // Update size
+                    if(dsFileSystem.Arm9SizeOffset != Rom.nullPointer)
+                    {
+                        compressedArm9.WriteUInt24(dsFileSystem.Arm9SizeOffset, compressedArm9.Length + dsFileSystem.Arm9SizeOffsetAddition);
+                    }
+                    rom.WriteBlock(offset, compressedArm9);
+                    arm9Size = compressedArm9.Length;
+                }
+                else
+                {
+                    // Write original uncompressed Arm9 data if no modifications made (recompressing arm9 takes a long time)
+                    arm9Size = dsFileSystem.Arm9Size;
+                    rom.WriteBlock(offset, originalRom.ReadBlock(dsFileSystem.Arm9Offset, dsFileSystem.Arm9Size));
+                }
             }
             else
             {
                 arm9Size = arm9Data.Length;
                 rom.WriteBlock(offset, arm9Data.File);
-                arm9EndOffset += arm9Size;
             }
+            arm9EndOffset += arm9Size;
 
             // Write arm9 footer (if necessary)
-            if(dsFileSystem.Arm9Footer.Length > 0)
+            if (dsFileSystem.Arm9Footer.Length > 0)
             {
                 rom.WriteBlock(arm9EndOffset, dsFileSystem.Arm9Footer);
                 arm9EndOffset += dsFileSystem.Arm9Footer.Length;
@@ -600,11 +614,11 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
             rom.WriteUInt32(DSFileSystemData.arm9SizeOffset, arm9Size);
         }
 
-        private void WriteTmMoves(Rom arm9, RomData data, XmlManager info)
+        private bool WriteTmMoves(Rom arm9, RomData data, XmlManager info, Settings settings)
         {
             if (!info.FindAndSeekOffset(ElementNames.tmMoves, arm9))
             {
-                return;
+                return false;
             }
             int numTms = info.Num(ElementNames.tmMoves);
             int numHms = info.Num(ElementNames.hmMoves);
@@ -616,6 +630,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
             {
                 arm9.WriteUInt16(MoveToInternalIndex(data.GetHmMove(i)));
             }
+            return settings.TMRandChance > 0;
         }
 
         // Code ported from universal pokemon randomizer ZX under the terms of the GPL-3
@@ -632,11 +647,11 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
         //
         // Then, also patch various subroutines that control the "Trainer Eye" event and text boxes
         // related to this in order to make double battles work on all trainers
-        private void FixDoubleBattles(Rom arm9, Rom originalRom, DSFileSystemData dsFileSystem, XmlManager info, Dictionary<int, Rom> fileOverrides, Settings settings)
+        private bool FixDoubleBattles(Rom arm9, Rom originalRom, DSFileSystemData dsFileSystem, XmlManager info, Dictionary<int, Rom> fileOverrides, Settings settings)
         {
             // Return if fix not needed (don't apply to avoid side-effects)
             if (!settings.RandomizeTrainerBattleType || settings.DoubleBattleChance <= 0)
-                return;
+                return false;
             if (!info.FindAndSeekOffset(ElementNames.doubleBattleFix, arm9))
             {
                 throw new NotSupportedException(doubleBattleFixFailureMessage);
@@ -683,6 +698,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
             trainerEndOverrideFile.WriteByte(0x00);
             // Write file override
             WriteNarcOverride(originalRom, battleSkillSubSeqNarc, trainerEndOverrideFile, trainerEndFileId, fileOverrides);
+            return true;
         }
 
         // For now, this just exactly copies the Arm7 data and overlay data (will modify if Arm7 data needs to be modified)
