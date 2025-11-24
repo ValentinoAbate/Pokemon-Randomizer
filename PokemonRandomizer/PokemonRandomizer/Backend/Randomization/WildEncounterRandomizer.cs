@@ -147,7 +147,7 @@ namespace PokemonRandomizer.Backend.Randomization
 
         private WeightedSet<PokemonType> EncounterTypeOccurence(EncounterSet encounter)
         {
-            return PokemonMetrics.TypeOccurence(encounter, e => dataT.GetBaseStats(e.Pokemon));
+            return PokemonMetrics.TypeOccurence(encounter.Where(e => e.IsReal), e => dataT.GetBaseStats(e.Pokemon));
         }
 
         private IEnumerable<Metric<Pokemon>> CreateMetrics(IEnumerable<Pokemon> all, Pokemon pokemon, EncounterSet.Type slotType, WeightedSet<PokemonType> typeOccurence, IReadOnlyList<MetricData> data)
