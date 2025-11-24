@@ -908,7 +908,12 @@ namespace PokemonRandomizer.Backend.DataStructures
 
         public byte[] ReadBLZCompressedData(int offset, int length)
         {
-            return Compression.BLZ.Decompress(File, offset, length);
+            return Compression.BLZ.Decompress(File, offset, length, out _);
+        }
+
+        public byte[] ReadBLZCompressedData(int offset, int length, out int uncompressedLength)
+        {
+            return Compression.BLZ.Decompress(File, offset, length, out uncompressedLength);
         }
 
         public byte[] ReadBLZCompressedData(int length)

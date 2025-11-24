@@ -762,9 +762,18 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
                     int compressedSize;
                     if(fileOverrides.TryGetValue(i, out var overrideData))
                     {
-                        data = overrideData.File;
-                        ramSize = data.Length;
-                        compressedSize = overlay.CompressedSize;
+                        if (overlay.IsCompressed)
+                        {
+                            data = BLZ.Compress(overrideData.File, overlay.LeaveUncompressedData);
+                            ramSize = overrideData.Length;
+                            compressedSize = data.Length;
+                        }
+                        else
+                        {
+                            data = overrideData.File;
+                            ramSize = data.Length;
+                            compressedSize = overlay.CompressedSize;
+                        }
                     }
                     else
                     {

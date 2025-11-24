@@ -21,6 +21,7 @@ namespace PokemonRandomizer.Backend.DataStructures.DS
         public int CompressedSize { get; set; }
         public bool IsCompressed => CompressionFlag > 0;
         public byte CompressionFlag { get; set; }
+        public int LeaveUncompressedData { get; set; }
         public Rom DecompressedData { get; set; }
     }
 }

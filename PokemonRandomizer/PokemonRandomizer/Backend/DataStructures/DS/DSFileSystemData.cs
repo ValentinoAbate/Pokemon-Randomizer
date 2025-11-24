@@ -358,7 +358,8 @@ namespace PokemonRandomizer.Backend.DataStructures.DS
             startOffset = 0;
             if(overlay.DecompressedData == null)
             {
-                overlay.DecompressedData = new Rom(rom.ReadBLZCompressedData(overlay.Start, overlay.Length));
+                overlay.DecompressedData = new Rom(rom.ReadBLZCompressedData(overlay.Start, overlay.Length, out int uncompressedLength));
+                overlay.LeaveUncompressedData = uncompressedLength;
             }
             length = overlay.DecompressedData.Length;
             overlay.DecompressedData.Seek(0);

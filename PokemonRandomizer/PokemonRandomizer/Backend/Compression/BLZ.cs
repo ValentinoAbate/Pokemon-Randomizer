@@ -74,9 +74,9 @@ namespace PokemonRandomizer.Backend.Compression
             return true;
         }
 
-        public static byte[] Decompress(byte[] data, int offset, int length)
+        public static byte[] Decompress(byte[] data, int offset, int length, out int uncompressedLength)
         {
-            if (!TryGetBLZHeaderData(data, offset, length, out int headerLength, out _, out _, out int uncompressedLength, out int outputLength))
+            if (!TryGetBLZHeaderData(data, offset, length, out int headerLength, out _, out _, out uncompressedLength, out int outputLength))
             {
                 Logger.main.Error($"Error attempting to decompress BLZ data at {offset}: unable to parse header");
                 return Array.Empty<byte>();
