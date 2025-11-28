@@ -103,15 +103,19 @@ namespace PokemonRandomizer.Backend.Compression
                     flags = compressed[compressedInd++];
                     mask = BLZMask;
                 }
-                if (compressedInd + 1 >= compressed.Length)
-                {
-                    break;
-                }
                 // If the flag is 0, read one byte from the input
                 if ((flags & mask) == 0)
                 {
+                    if (compressedInd >= compressed.Length)
+                    {
+                        break;
+                    }
                     output[outputInd++] = compressed[compressedInd++];
                     continue;
+                }
+                if (compressedInd + 1 >= compressed.Length)
+                {
+                    break;
                 }
                 // Flag is 1, indicating a compressed run in the input
                 // A compressed run is a repeating sequence of bytes
