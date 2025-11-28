@@ -36,6 +36,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
             WritePokemonBaseStats(data, originalRom, dsFileSystem, info, fileOverrides);
             WriteMoves(data, originalRom, dsFileSystem, info, fileOverrides);
             WriteStarters(data, originalRom, dsFileSystem, metadata, info, fileOverrides);
+            WriteInGameTrades(data, originalRom, dsFileSystem, info, fileOverrides);
             WriteTrainers(data, originalRom, dsFileSystem, metadata, info, fileOverrides);
             WriteTypeEffectivenessData(data, originalRom, dsFileSystem, info, fileOverrides);
             WriteEncounters(data, originalRom, dsFileSystem, metadata, info, fileOverrides);
@@ -263,6 +264,46 @@ namespace PokemonRandomizer.Backend.RomHandling.Writing
             }
             // TODO: Fix rival scripts
             // TODO: Fix starter picking screen
+        }
+
+        private void WriteInGameTrades(RomData data, Rom originalRom, DSFileSystemData dsFileSystem, XmlManager info, Dictionary<int, Rom> fileOverrides)
+        {
+            if (!dsFileSystem.GetNarcFile(originalRom, info.Path(ElementNames.trades), out var tradesNarc))
+            {
+                return;
+            }
+            var tradeOverrides = new List<Rom>(tradesNarc.FileCount);
+            for (int i = 0; i < tradesNarc.FileCount && i < data.Trades.Count; ++i)
+            {
+                if (!tradesNarc.GetFile(i, out int originalOffset, out int originalLength, out _))
+                    continue;
+                var trade = data.Trades[i];
+                var file = new Rom(originalLength);
+
+                // Copy original data
+                file.Copy(originalRom, originalOffset, 0, originalLength); 
+                // Write new data
+                file.WriteUInt32(PokemonToInternalIndex(trade.pokemonRecieved));
+                for (int iv = 0; iv < PokemonBaseStats.numStats; iv++)
+                {
+                    file.WriteUInt32(trade.IVs[iv]);
+                }
+                file.WriteUInt32(trade.abilityNum);
+                file.WriteUInt32(trade.trainerID);
+                for (int contestStat = 0; contestStat < 5; contestStat++)
+                {
+                    file.WriteUInt32(trade.contestStats[contestStat]);
+                }
+                file.WriteUInt32(trade.personality);
+                file.WriteUInt32(ItemToInternalIndex(trade.heldItem));
+                file.WriteUInt32(trade.trainerGender);
+                file.WriteUInt32(trade.sheen);
+                file.Skip(4); // TODO: OT Language
+                file.WriteUInt32(PokemonToInternalIndex(trade.pokemonWanted));
+
+                tradeOverrides.Add(file);
+            }
+            WriteNarcOverride(originalRom, tradesNarc, tradeOverrides, fileOverrides);
         }
 
         private void WriteTrainers(RomData data, Rom originalRom, DSFileSystemData dsFileSystem, RomMetadata metadata, XmlManager info, Dictionary<int, Rom> fileOverrides)

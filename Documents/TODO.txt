@@ -216,7 +216,6 @@ NEXT: then Text parsing: Trainer names / class names
 	- Weather
 - Pickup items
 - In game trades
-	- Writing
 	- Trainer / Nickname reading/writing
 	- Other text support?
 	- OT language reading/writing
