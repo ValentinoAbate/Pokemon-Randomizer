@@ -216,6 +216,10 @@ NEXT: then Text parsing: Trainer names / class names
 	- Weather
 - Pickup items
 - In game trades
+	- Writing
+	- Trainer / Nickname reading/writing
+	- Other text support?
+	- OT language reading/writing
 - Rival remap
 	- Support for third rival? Tommy + Dawn / Lucas
 - Pokemon palettes
@@ -235,6 +239,12 @@ NEXT: then Text parsing: Trainer names / class names
 - Consider Rotom legendary (Gen IV+) default false
 - Partner trainer double battle compat
 	- need to be set to ignore
+- HGSS Special trade logic handling
+	- shuckie
+	- kenya
+	- Lt. Surge pikachu
+	- Jasmine steelix
+	- Brock rhyhorn special move?
 
 CLEANUP /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

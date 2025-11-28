@@ -50,14 +50,14 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
             data.MoveData = ReadMoves(rom, dsFileSystem, info);
 
             data.Starters = ReadStarters(rom, dsFileSystem, info, metadata);
+            data.Trades = ReadInGameTrades(rom, dsFileSystem, info);
             data.Trainers = ReadTrainers(rom, dsFileSystem, info, metadata);//, data.TrainerClasses, data.TrainerSprites);
             data.TypeDefinitions = ReadTypeEffectivenessData(rom, dsFileSystem, info);
             data.MapBanks = Array.Empty<Map[]>(); // TODO: Map reading
             data.EncounterData = ReadEncounters(rom, dsFileSystem, info, metadata);
 
             // DEBUG: Read in the item data
-            data.ItemData = new List<ItemData>();
-            data.Trades = new List<InGameTrade>();
+            data.ItemData = new List<ItemData>();;
 
 
             // Calculate the balance metrics from the loaded data
@@ -341,6 +341,41 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
             overlay.Skip(2);
             starters.Add(InternalIndexToPokemon(overlay.ReadUInt16()));
             return starters;
+        }
+
+        private List<InGameTrade> ReadInGameTrades(Rom rom, DSFileSystemData dsFileSystem, XmlManager info)
+        {
+            if (!dsFileSystem.GetNarcFile(rom, info.Path(ElementNames.trades), out var tradesNarc))
+            {
+                return new List<InGameTrade>();
+            }
+            var trades = new List<InGameTrade>(tradesNarc.FileCount);
+            for (int i = 0; i < tradesNarc.FileCount; ++i)
+            {
+                tradesNarc.SeekFile(rom, i);
+                var trade = new InGameTrade();
+                trade.pokemonRecieved = InternalIndexToPokemon(rom.ReadUInt32());
+                trade.IVs = new byte[PokemonBaseStats.numStats];
+                for (int iv = 0; iv < PokemonBaseStats.numStats; iv++)
+                {
+                    trade.IVs[iv] = (byte)rom.ReadUInt32();
+                }
+                trade.abilityNum = rom.ReadUInt32(); // May be unused for DPPT
+                trade.trainerID = rom.ReadUInt32();
+                trade.contestStats = new byte[5];
+                for (int contestStat = 0; contestStat < 5; contestStat++)
+                {
+                    trade.contestStats[contestStat] = (byte)rom.ReadUInt32();
+                }
+                trade.personality = rom.ReadUInt32();
+                trade.heldItem = InternalIndexToItem(rom.ReadUInt32());
+                trade.trainerGender = (byte)rom.ReadUInt32();
+                trade.sheen = (byte)rom.ReadUInt32(); // May be unused for DPPT
+                rom.Skip(4); // TODO: OT Language
+                trade.pokemonWanted = InternalIndexToPokemon(rom.ReadUInt32());
+                trades.Add(trade);
+            }
+            return trades;
         }
 
         private List<BasicTrainer> ReadTrainers(Rom rom, DSFileSystemData dsFileSystem, XmlManager info, RomMetadata metadata)
