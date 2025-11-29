@@ -181,36 +181,36 @@ namespace PokemonRandomizer.Backend.Compression
 
                 #region Search For Runs
 
-                int runOffset = 0;
-                int runLength = BLZThreshold; // Ignore any runs of 2 or less bytes (they take up more space when compressed)
+                int bestRunOffset = 0;
+                int bestRunLength = BLZThreshold; // Ignore any runs of 2 or less bytes (they take up more space when compressed)
                 // Maximum run offest is the maximum storable offset, or the inputIndex, whichever is smaller
                 int maxOffset = Math.Min(maxRunOffset, inputIndex);
-                for (int potentialRunOffs = 3; potentialRunOffs <= maxOffset; potentialRunOffs++)
+                for (int runOffset = minRunLength; runOffset <= maxOffset; ++runOffset)
                 {
                     // Search for sequences at this offset
-                    int potentialRunLength = 0;
-                    while (potentialRunLength < maxRunLength && potentialRunLength < potentialRunOffs)
+                    int runLength = 0;
+                    while (runLength < maxRunLength && runLength < runOffset)
                     {
-                        int sequenceIndex = inputIndex + potentialRunLength;
+                        int sequenceIndex = inputIndex + runLength;
                         if (sequenceIndex >= input.Length)
                         {
                             break;
                         }
-                        if (input[sequenceIndex] != input[sequenceIndex - potentialRunOffs])
+                        if (input[sequenceIndex] != input[sequenceIndex - runOffset])
                         {
                             break;
                         }
-                        ++potentialRunLength;
+                        ++runLength;
                     }
                     // Prefer closer pos if same length
-                    if (potentialRunLength <= runLength)
+                    if (runLength <= bestRunLength)
                     {
                         continue;
                     }
-                    runOffset = potentialRunOffs;
-                    runLength = potentialRunLength;
+                    bestRunOffset = runOffset;
+                    bestRunLength = runLength;
                     // Maximum compressable sequence length, always take
-                    if (runLength == maxRunLength)
+                    if (bestRunLength == maxRunLength)
                     {
                         break;
                     }
@@ -218,12 +218,12 @@ namespace PokemonRandomizer.Backend.Compression
 
                 #endregion
 
-                if (runLength > BLZThreshold)
+                if (bestRunLength > BLZThreshold)
                 {
-                    inputIndex += runLength;
+                    inputIndex += bestRunLength;
                     buffer[flagsInd] |= 1; // Set sequence flag
-                    int encodedLength = runLength - minRunLength;
-                    int encodedOffset = runOffset - minRunLength;
+                    int encodedLength = bestRunLength - minRunLength;
+                    int encodedOffset = bestRunOffset - minRunLength;
                     buffer[bufferInd++] = (byte)((encodedLength << 4) | (encodedOffset >> 8)); // 4 bits of length, then 4 MSBs of offset
                     buffer[bufferInd++] = (byte)(encodedOffset & 0xFF); // 8 LSBs of offset
                 }
