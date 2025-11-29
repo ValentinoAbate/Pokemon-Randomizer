@@ -43,6 +43,7 @@ namespace PokemonRandomizer.Backend.Utilities
         }
         public class DiffData
         {
+            public bool HasDiff => BlockDiffs.Count > 0 || OriginalLength != ModifiedLength;
             public int OriginalLength { get; set; }
             public int ModifiedLength { get; set; }
             public IEnumerable<string> Readout()
