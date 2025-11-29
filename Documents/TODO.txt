@@ -225,6 +225,9 @@ NEXT: then Text parsing: Trainer names / class names
 - Palette markup
 
 - Fix BLZ compression / decompression
+	- Decompresser should now be correct (output matches cue BLZ output)
+	- Some recompressed overlays have a diff in the last flags byte, (not sure why this is happening)
+	- need to calc boundary naturally as an improvement
 
 // New to Gen IV
 
@@ -261,6 +264,7 @@ CLEANUP ////////////////////////////////////////////////////////////////////////
 - Move "Rom" class functions into a class that can operate on arbitrary collections of bytes
 - Make priority field of move data actually be parsed as a signed byte
 - Variant rand: optimize "gained types" as a pokemon can only gain 1 type at max
+- Change gen 4 override overlay code to properly use file ids
 
 FIXES ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
