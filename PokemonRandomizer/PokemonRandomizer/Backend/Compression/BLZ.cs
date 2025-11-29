@@ -129,15 +129,15 @@ namespace PokemonRandomizer.Backend.Compression
                 byte byte1 = compressed[compressedInd++];
                 byte byte2 = compressed[compressedInd++];
                 // Length is the 4 Most significant bits of byte1
-                int len = (byte1 >> 4) + BLZThreshold + 1;
+                int runLength = (byte1 >> 4) + minRunLength;
                 // Offset is the 4 Least significant bits of byte1 and byte2
-                int posOffset = ((byte1 << 8 | byte2) & 0x0FFF) + 3;
-                if (outputInd + len > output.Length)
+                int posOffset = ((byte1 << 8 | byte2) & 0x0FFF) + minRunLength;
+                if (outputInd + runLength > output.Length)
                 {
-                    Logger.main.Warning($"BLZ Decompression warning: incorrect decoded length. Expected {output.Length}, got {outputInd + len}");
-                    len = Math.Max(0, output.Length - outputInd);
+                    Logger.main.Warning($"BLZ Decompression warning: incorrect decoded length. Expected {output.Length}, got {outputInd + runLength}");
+                    runLength = Math.Max(0, output.Length - outputInd);
                 }
-                while (len-- > 0)
+                while (runLength-- > 0)
                 {
                     output[outputInd] = output[outputInd - posOffset];
                     ++outputInd;
