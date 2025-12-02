@@ -6,6 +6,9 @@ using System.Text;
 
 namespace PokemonRandomizer.Backend.Text
 {
+    // Code derived from the Universal Pokemon Randomizer, copyright (C) Dabomstew
+    // Dabomstew's implementation was derived from "thenewpoketext", copyright (C) loadingNOW
+    // Ported to C# and customized by Valentino Abate under the terms of the GPL3
     public static class Gen4TextHandler
     {
         private const string textVariableStr = "\\v";
