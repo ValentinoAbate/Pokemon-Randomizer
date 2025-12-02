@@ -20,6 +20,7 @@ namespace PokemonRandomizer.Backend.Utilities
         public const string lengthAttr = "length";
         public const string paddingAttr = "padding";
         public const string pathAttr = "filePath";
+        public const string fileIndexAttr = "fileIndex";
         public const string overlayAttr = "overlay";
         public const string constantsElt = "constants";
         public const string inheritanceElt = "inheritFrom";
@@ -197,6 +198,11 @@ namespace PokemonRandomizer.Backend.Utilities
         public string Path(string element)
         {
             return Attr(element, pathAttr);
+        }
+
+        public int Index(string element)
+        {
+            return IntAttr(element, fileIndexAttr);
         }
 
         public int Overlay(string element)

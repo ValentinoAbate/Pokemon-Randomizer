@@ -11,6 +11,7 @@
 <!-- prefix: a hex string that is a prefix to the data. useful for dealing with hacked roms (hex string) -->
 <!-- signature: a hex string that is the start of the data being searched for. useful for dealing with hacked roms (hex string) -->
 <!-- filePath: string name of a file in a DS ROM -->
+<!-- fileIndex: int name of a subfile in a DS ROM -->
 
 <gen4RomInfo>
 	<constants>
@@ -51,15 +52,15 @@
 		<typeEffectiveness overlay ="16" offset="0x33B94"/>
 		<text filePath="msgdata/pl_msg.narc"/>
 
-		<!-- Text Offsets -->
-		<pokemonNames offset="412" extra="true"/>
-		<trainerNames offset="618"/>
-		<trainerClassNames offset="619"/>
-		<moveDescriptions offset="646"/>
-		<moveNames offset="647"/>
-		<abilityNames offset="610"/>
-		<itemNames offset="392"/>
-		<itemDescriptions offset="391"/>
+		<!-- Text File Indices -->
+		<pokemonNames fileIndex="412" extra="true"/>
+		<trainerNames fileIndex="618"/>
+		<trainerClassNames fileIndex="619"/>
+		<moveDescriptions fileIndex="646"/>
+		<moveNames fileIndex="647"/>
+		<abilityNames fileIndex="610"/>
+		<itemNames fileIndex="392"/>
+		<itemDescriptions fileIndex="391"/>
 
 		<doubleBattleFix prefix="0x022919D90221214205" flagReturnPrefix="0x08B5092139F0C6FF" walkingPrefix1="0x16B00020F8BD1498" walkingPrefix2="0xC4FE16B00120F8BD" textBoxPrefix="0xF6F792FCF6F7ACFC"/>
 	</CPUE0>
@@ -76,6 +77,17 @@
 		<typeEffectiveness overlay ="11" offset="0x30DB8"/>
 		<text filePath="msgdata/msg.narc"/>
 		<doubleBattleFix prefix="0x022912D90221214201" flagReturnPrefix="0x08B5092131F020FB" walkingPrefix1="0x16B00020F8BD1498" walkingPrefix2="0x36FB16B00120F8BD" textBoxPrefix="0xF7F71AFEF7F734FE"/>
+
+		<!-- Text File Indices -->
+		<pokemonNames fileIndex="362" extra="true"/>
+		<trainerNames fileIndex="559"/>
+		<trainerClassNames fileIndex="560"/>
+		<moveDescriptions fileIndex="587"/>
+		<moveNames fileIndex="588"/>
+		<abilityNames fileIndex="552"/>
+		<itemNames fileIndex="344"/>
+		<itemDescriptions fileIndex="343"/>
+
 	</dpConstants>
 
 	<!-- Diamond / Pearl Rom Info -->
@@ -87,16 +99,6 @@
 		<pokemonBaseStats filePath="poketool/personal/personal.narc"/>
 		<wildPokemon filePath="fielddata/encountdata/d_enc_data.narc"/>
 		
-		<!-- Text Offsets -->
-		<pokemonNames offset="362" extra="true"/>
-		<trainerNames offset="559"/>
-		<trainerClassNames offset="560"/>
-		<moveDescriptions offset="587"/>
-		<moveNames offset="588"/>
-		<abilityNames offset="552"/>
-		<itemNames offset="344"/>
-		<itemDescriptions offset="343"/>
-
 	</ADAE0>
 	<ADAE5>
 		<!-- Metadata -->
@@ -141,6 +143,17 @@
 
 		<doubleBattleFix prefix="0x2C2815D00221214201" filePath="a/0/0/1" flagReturnPrefix="0x08B5092132F0B4FF" walkingPrefix1="0x16B00020F8BD1498" walkingPrefix2="0x9CFE16B00120F8BD" textBoxPrefix="0xF6F794FEF6F7AEFE"/>
 		<trades filePath="a/1/1/2"/>
+
+		<!-- Text File Indices -->
+		<pokemonNames fileIndex="237" extra="true"/>
+		<trainerNames fileIndex="729"/>
+		<trainerClassNames fileIndex="730"/>
+		<moveDescriptions fileIndex="749"/>
+		<moveNames fileIndex="750"/>
+		<abilityNames fileIndex="720"/>
+		<itemNames fileIndex="221"/>
+		<itemDescriptions fileIndex="222"/>
+		
 	</hgssConstants>
 
 	<!-- HGSS Rom Info -->
@@ -152,16 +165,6 @@
 		<inheritFrom>hgssConstants</inheritFrom>
 		
 		<wildPokemon filePath="a/0/3/7"/>
-
-		<!-- Text Offsets -->
-		<pokemonNames offset="237" extra="true"/>
-		<trainerNames offset="729"/>
-		<trainerClassNames offset="730"/>
-		<moveDescriptions offset="749"/>
-		<moveNames offset="750"/>
-		<abilityNames offset="720"/>
-		<itemNames offset="221"/>
-		<itemDescriptions offset="222"/>
 
 	</IPKE0>
 	<!-- SoulSilver -->

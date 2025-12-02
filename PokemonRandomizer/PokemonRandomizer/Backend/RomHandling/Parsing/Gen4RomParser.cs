@@ -4,6 +4,7 @@ using PokemonRandomizer.Backend.DataStructures.DS;
 using PokemonRandomizer.Backend.DataStructures.Trainers;
 using PokemonRandomizer.Backend.EnumTypes;
 using PokemonRandomizer.Backend.RomHandling.IndexTranslators;
+using PokemonRandomizer.Backend.Text;
 using PokemonRandomizer.Backend.Utilities;
 using PokemonRandomizer.Backend.Utilities.Debug;
 using System;
@@ -16,10 +17,14 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
     {
         private const int maxMovesPerLearnset = 20;
         protected override IIndexTranslator IndexTranslator => Gen4IndexTranslator.Main;
+
+        private NARCArchiveData textNarc;
+
         public override RomData Parse(Rom rom, RomMetadata metadata, XmlManager info)
         {
             // Parse the NDS file structure
             var dsFileSystem = new DSFileSystemData(rom);
+            dsFileSystem.GetNarcFile(rom, info.Path(ElementNames.GenIV.text), out textNarc);
             // Actually parse the ROM data
             RomData data = new RomData();
             // Type Definitions
@@ -68,6 +73,15 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
 #else
             return data;
 #endif
+        }
+
+        public List<string> ReadText(Rom rom, XmlManager info, string elementName)
+        {
+            if(textNarc.GetFile(info.Index(elementName), out int offset, out _, out _))
+            {
+                return Gen4TextHandler.ReadText(rom, offset);
+            }
+            return null;
         }
 
         private void DefineTypes(RomData data)
@@ -396,6 +410,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
                 var trainer = new BasicTrainer();
                 var dataType = (TrainerPokemon.DataType)rom.ReadByte();
                 trainer.trainerClass = rom.ReadByte();
+                trainer.Class = trainerClasses[trainer.trainerClass];
                 rom.Skip(); // not sure what is here
                 int numPokemon = rom.ReadByte();
                 for (int itemInd = 0; itemInd < 4; ++itemInd)
@@ -405,7 +420,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
                 // Read AI flags
                 trainer.AIFlags = new BitArray(new int[] { rom.ReadUInt32() });
                 trainer.IsDoubleBattle = rom.ReadUInt32() == 2;
-                trainer.Name = numPokemon > 0 ? i.ToString() : string.Empty; // TODO: remove when actual names are ready
+                trainer.Name = i < trainerNames.Count ? trainerNames[i] : Trainer.nullName;
 
                 if(!trainerPokemonNarc.SeekFile(rom, i))
                 {
