@@ -56,7 +56,8 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
 
             data.Starters = ReadStarters(rom, dsFileSystem, info, metadata);
             data.Trades = ReadInGameTrades(rom, dsFileSystem, info);
-            data.Trainers = ReadTrainers(rom, dsFileSystem, info, metadata);//, data.TrainerClasses, data.TrainerSprites);
+            data.TrainerClasses = ReadTrainerClasses(rom, info);
+            data.Trainers = ReadTrainers(rom, dsFileSystem, info, metadata, data.TrainerClasses);// data.TrainerSprites);
             data.TypeDefinitions = ReadTypeEffectivenessData(rom, dsFileSystem, info);
             data.MapBanks = Array.Empty<Map[]>(); // TODO: Map reading
             data.EncounterData = ReadEncounters(rom, dsFileSystem, info, metadata);
@@ -392,7 +393,22 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
             return trades;
         }
 
-        private List<BasicTrainer> ReadTrainers(Rom rom, DSFileSystemData dsFileSystem, XmlManager info, RomMetadata metadata)
+        private List<TrainerClass> ReadTrainerClasses(Rom rom, XmlManager info)
+        {
+            var trainerClassNames = ReadText(rom, info, ElementNames.trainerClassNames);
+            var trainerClasses = new List<TrainerClass>(trainerClassNames.Count);
+            for (int i = 0; i < trainerClassNames.Count; i++)
+            {
+                trainerClasses.Add(new TrainerClass()
+                {
+                    ClassNum = i,
+                    Name = trainerClassNames[i],
+                });
+            }
+            return trainerClasses;
+        }
+
+        private List<BasicTrainer> ReadTrainers(Rom rom, DSFileSystemData dsFileSystem, XmlManager info, RomMetadata metadata, List<TrainerClass> trainerClasses)
         {
             if (!dsFileSystem.GetNarcFile(rom, info.Path(ElementNames.trainerBattles), out var trainerNarc))
             {
@@ -404,6 +420,7 @@ namespace PokemonRandomizer.Backend.RomHandling.Parsing
                 return new List<BasicTrainer>();
             }
             var trainers = new List<BasicTrainer>(trainerNarc.FileCount);
+            var trainerNames = ReadText(rom, info, ElementNames.GenIV.trainerNames);
             for (int i = 0; i < trainerNarc.FileCount; i++)
             {
                 trainerNarc.SeekFile(rom, i);
