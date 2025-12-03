@@ -1221,8 +1221,7 @@ namespace PokemonRandomizer.Backend.Text
                 decompressedBuffer.Clear();
                 int tokenInd = 1;
                 int shift = 0;
-                int trans = 0;
-                int token;
+                int carry = 0;
                 while (true)
                 {
                     if (shift >= 0xF)
@@ -1232,27 +1231,29 @@ namespace PokemonRandomizer.Backend.Text
                         {
                             continue;
                         }
-                        token = trans | ((decryptedBuffer[tokenInd] << (9 - shift)) & compressionEnd);
+                        int token = carry | ((decryptedBuffer[tokenInd] << (9 - shift)) & compressionEnd);
                         if (token == compressionEnd)
                         {
                             break;
                         }
                         decompressedBuffer.Add(token);
-                        continue;
                     }
-                    token = (decryptedBuffer[tokenInd] >> shift) & compressionEnd;
-                    if (token == compressionEnd)
+                    else
                     {
-                        break;
-                    }
-                    decompressedBuffer.Add(token);
-                    shift += 9;
-                    if (shift < 0xF)
-                    {
-                        trans = (decryptedBuffer[tokenInd] >> shift) & compressionEnd;
+                        int token = (decryptedBuffer[tokenInd] >> shift) & compressionEnd;
+                        if (token == compressionEnd)
+                        {
+                            break;
+                        }
+                        decompressedBuffer.Add(token);
                         shift += 9;
+                        if (shift < 0xF)
+                        {
+                            carry = (decryptedBuffer[tokenInd] >> shift) & compressionEnd;
+                            shift += 9;
+                        }
+                        tokenInd++;
                     }
-                    tokenInd++;
                 }
                 tokenBuffer = decompressedBuffer;
             }
