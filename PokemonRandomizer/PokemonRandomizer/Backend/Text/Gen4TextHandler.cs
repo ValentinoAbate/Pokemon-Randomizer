@@ -1,6 +1,4 @@
 ﻿using PokemonRandomizer.Backend.DataStructures;
-using PokemonRandomizer.Backend.Utilities.Debug;
-using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -15,10 +13,11 @@ namespace PokemonRandomizer.Backend.Text
         private const string textVariableItemStr = "\\z";
         private const string textUnknownStr = "\\x";
         private const string numberFormat = "{0:x4}";
+        private const int compressionEnd = 0x1FF;
         private static readonly Dictionary<int, string> tokenIdToUnicode = new Dictionary<int, string>()
         {
-            { 0x0000,"\x0000"},
-            { 0x0001,"\x0001"},
+            { 0x0000,"\\x0000"},
+            { 0x0001,"\\x0001"},
             { 0x0002,"ぁ"},
             { 0x0003,"あ"},
             { 0x0004,"ぃ"},
@@ -284,27 +283,27 @@ namespace PokemonRandomizer.Backend.Text
             { 0x0108,"☁"},
             { 0x0109,"☂"},
             { 0x010A,"☃"},
-            { 0x010B,"\x010B"},
-            { 0x010C,"\x010C"},
-            { 0x010D,"\x010D"},
-            { 0x010E,"\x010E"},
+            { 0x010B,"\\x010B"},
+            { 0x010C,"\\x010C"},
+            { 0x010D,"\\x010D"},
+            { 0x010E,"\\x010E"},
             { 0x010F,"⤴"},
             { 0x0110,"⤵"},
-            { 0x0111,"\x0111"},
+            { 0x0111,"\\x0111"},
             { 0x0112," 円"},
-            { 0x0113,"\x0113"},
-            { 0x0114,"\x0114"},
-            { 0x0115,"\x0115"},
+            { 0x0113,"\\x0113"},
+            { 0x0114,"\\x0114"},
+            { 0x0115,"\\x0115"},
             { 0x0116,"✉"},
-            { 0x0117,"\x0117"},
-            { 0x0118,"\x0118"},
-            { 0x0119,"\x0119"},
-            { 0x011A,"\x011A"},
+            { 0x0117,"\\x0117"},
+            { 0x0118,"\\x0118"},
+            { 0x0119,"\\x0119"},
+            { 0x011A,"\\x011A"},
             { 0x011B,"←"},
             { 0x011C,"↑"},
             { 0x011D,"↓"},
             { 0x011E,"→"},
-            { 0x011F,"\x011F"},
+            { 0x011F,"\\x011F"},
             { 0x0120,"&"},
             { 0x0121,"0"},
             { 0x0122,"1"},
@@ -371,10 +370,10 @@ namespace PokemonRandomizer.Backend.Text
             { 0x015F, "À" },
             { 0x0160, "Á" },
             { 0x0161, "Â" },
-            { 0x0162, "\x0162" },
+            { 0x0162, "\\x0162" },
             { 0x0163, "Ä" },
-            { 0x0164, "\x0164" },
-            { 0x0165, "\x0165" },
+            { 0x0164, "\\x0164" },
+            { 0x0165, "\\x0165" },
             { 0x0166, "Ç" },
             { 0x0167, "È" },
             { 0x0168, "É" },
@@ -384,29 +383,29 @@ namespace PokemonRandomizer.Backend.Text
             { 0x016C, "Í" },
             { 0x016D, "Î" },
             { 0x016E, "Ï" },
-            { 0x016F, "\x016F" },
+            { 0x016F, "\\x016F" },
             { 0x0170, "Ñ" },
             { 0x0171, "Ò" },
             { 0x0172, "Ó" },
             { 0x0173, "Ô" },
-            { 0x0174, "\x0174" },
+            { 0x0174, "\\x0174" },
             { 0x0175, "Ö" },
             { 0x0176, "×" },
-            { 0x0177, "\x0177" },
+            { 0x0177, "\\x0177" },
             { 0x0178, "Ù" },
             { 0x0179, "Ú" },
             { 0x017A, "Û" },
             { 0x017B, "Ü" },
-            { 0x017C, "\x017C" },
-            { 0x017D, "\x017D" },
+            { 0x017C, "\\x017C" },
+            { 0x017D, "\\x017D" },
             { 0x017E, "ß" },
             { 0x017F, "à" },
             { 0x0180, "á" },
             { 0x0181, "â" },
-            { 0x0182, "\x0182" },
+            { 0x0182, "\\x0182" },
             { 0x0183, "ä" },
-            { 0x0184, "\x0184" },
-            { 0x0185, "\x0185" },
+            { 0x0184, "\\x0184" },
+            { 0x0185, "\\x0185" },
             { 0x0186, "ç" },
             { 0x0187, "è" },
             { 0x0188, "é" },
@@ -416,26 +415,26 @@ namespace PokemonRandomizer.Backend.Text
             { 0x018C, "í" },
             { 0x018D, "î" },
             { 0x018E, "ï" },
-            { 0x018F, "\x018F" },
+            { 0x018F, "\\x018F" },
             { 0x0190, "ñ" },
             { 0x0191, "ò" },
             { 0x0192, "ó" },
             { 0x0193, "ô" },
-            { 0x0194, "\x0194" },
+            { 0x0194, "\\x0194" },
             { 0x0195, "ö" },
             { 0x0196, "÷" },
-            { 0x0197, "\x0197" },
+            { 0x0197, "\\x0197" },
             { 0x0198, "ù" },
             { 0x0199, "ú" },
             { 0x019A, "û" },
             { 0x019B, "ü" },
-            { 0x019C, "\x019C" },
-            { 0x019D, "\x019D" },
-            { 0x019E, "\x019E" },
+            { 0x019C, "\\x019C" },
+            { 0x019D, "\\x019D" },
+            { 0x019E, "\\x019E" },
             { 0x019F, "Œ" },
             { 0x01A0, "œ" },
-            { 0x01A1, "\x01A1" },
-            { 0x01A2, "\x01A2" },
+            { 0x01A1, "\\x01A1" },
+            { 0x01A2, "\\x01A2" },
             { 0x01A3, "ª" },
             { 0x01A4, "º" },
             { 0x01A5, "ᵉʳ" },
@@ -468,7 +467,7 @@ namespace PokemonRandomizer.Backend.Text
             { 0x01BF, "*" },
             { 0x01C0, "#" },
             { 0x01C1, "=" },
-            { 0x01C2, "\and" },
+            { 0x01C2, "\\and" },
             { 0x01C3, "~" },
             { 0x01C4, ":" },
             { 0x01C5, ";" },
@@ -489,15 +488,15 @@ namespace PokemonRandomizer.Backend.Text
             { 0x01D4, "☁" },
             { 0x01D5, "☂" },
             { 0x01D6, "☃" },
-            { 0x01D7, "\x01D7" },
-            { 0x01D8, "\x01D8" },
-            { 0x01D9, "\x01D9" },
-            { 0x01DA, "\x01DA" },
+            { 0x01D7, "\\x01D7" },
+            { 0x01D8, "\\x01D8" },
+            { 0x01D9, "\\x01D9" },
+            { 0x01DA, "\\x01DA" },
             { 0x01DB, "⤴" },
             { 0x01DC, "⤵" },
-            { 0x01DD, "\x01DD" },
+            { 0x01DD, "\\x01DD" },
             { 0x01DE, " " },
-            { 0x01DF, "\x01DF" },
+            { 0x01DF, "\\x01DF" },
             { 0x01E0, "[PK]" },
             { 0x01E1, "[MN]" },
             { 0x0401, "가" },
@@ -1182,6 +1181,7 @@ namespace PokemonRandomizer.Backend.Text
             int baseTextEntryDecryptionKey = (data.ReadUInt16() * 0x2FD) & 0xFFFF;
             var text = new List<string>(numTexts);
             var buffer = new List<int>();
+            var decompBuffer = new List<int>();
             var builder = new StringBuilder();
             for (int i = 0; i < numTexts; i++)
             {
@@ -1189,7 +1189,7 @@ namespace PokemonRandomizer.Backend.Text
                 int offset = data.ReadUInt32() ^ entryKey;
                 int length = data.ReadUInt32() ^ entryKey;
                 int textKey = (0x91BD3 * (i + 1)) & 0xFFFF;
-                text.Add(ParseText(data, dataOffset + offset, length, textKey, ref buffer, ref builder));
+                text.Add(ParseText(data, dataOffset + offset, length, textKey, ref buffer, ref decompBuffer, ref builder));
             }
 
             data.LoadOffset();
@@ -1201,23 +1201,64 @@ namespace PokemonRandomizer.Backend.Text
             return indexAdjustedKey | (indexAdjustedKey << 16);
         }
 
-        private static string ParseText(Rom data, int offset, int length, int decryptionKey, ref List<int> tokenBuffer, ref StringBuilder builder)
+        private static string ParseText(Rom data, int offset, int length, int decryptionKey, ref List<int> decryptedBuffer, ref List<int> decompressedBuffer, ref StringBuilder builder)
         {
             // Decrypt
             data.SaveAndSeekOffset(offset);
-            tokenBuffer.Clear();
+            decryptedBuffer.Clear();
             int key = decryptionKey;
             for (int i = 0; i < length; ++i)
             {
-                tokenBuffer.Add(data.ReadUInt16() ^ key);
+                decryptedBuffer.Add(data.ReadUInt16() ^ key);
                 key = (key + 0x493D) & 0xFFFF;
             }
             data.LoadOffset();
 
-            if (tokenBuffer[0] == 0xF100)
+            List<int> tokenBuffer;
+            if (decryptedBuffer[0] == 0xF100) // Compressed
             {
-                Logger.main.Warning("Attempting to read compressed text. Returning empry string");
-                return string.Empty;
+                // Decompress
+                decompressedBuffer.Clear();
+                int tokenInd = 1;
+                int shift = 0;
+                int trans = 0;
+                int token;
+                while (true)
+                {
+                    if (shift >= 0xF)
+                    {
+                        shift -= 0xF;
+                        if (shift <= 0)
+                        {
+                            continue;
+                        }
+                        token = trans | ((decryptedBuffer[tokenInd] << (9 - shift)) & compressionEnd);
+                        if (token == compressionEnd)
+                        {
+                            break;
+                        }
+                        decompressedBuffer.Add(token);
+                        continue;
+                    }
+                    token = (decryptedBuffer[tokenInd] >> shift) & compressionEnd;
+                    if (token == compressionEnd)
+                    {
+                        break;
+                    }
+                    decompressedBuffer.Add(token);
+                    shift += 9;
+                    if (shift < 0xF)
+                    {
+                        trans = (decryptedBuffer[tokenInd] >> shift) & compressionEnd;
+                        shift += 9;
+                    }
+                    tokenInd++;
+                }
+                tokenBuffer = decompressedBuffer;
+            }
+            else
+            {
+                tokenBuffer = decryptedBuffer;
             }
 
             // Build string
