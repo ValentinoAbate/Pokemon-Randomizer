@@ -437,7 +437,7 @@ namespace PokemonRandomizer.Backend.Randomization
         
         private void CalculateMoveSynergyMetrics(Move[] currentMoves, IReadOnlyDictionary<Move, int> moveChoices, List<Func<Move, float>> synergyMetrics, List<Func<Move, float>> antiSynergyMetrics)
         {
-            void MissingMoveSynergy(Func<MoveData, bool> moveChoicePred, Func<MoveData, bool> requiredMovePred, float intensity, bool antiSynergy = false)
+            void MissingMoveSynergy(Func<MoveData, bool> moveChoicePred, Func<MoveData, bool> requiredMovePred, float intensity, bool antiSynergy)
             {
                 // If we already know the required move, return
                 foreach (var move in currentMoves)
@@ -609,7 +609,7 @@ namespace PokemonRandomizer.Backend.Randomization
                 return ret;
             }
 
-            // Choose third move - Attempt to choose a status move
+            // Choose third move - Attempt to choose a third attack move
             if (ChooseMoveForIndex(ret, 2, availableMoves.Keys, (m) => ChoiceItemMovesetFactor(m, pokemon, item) * SameTypeBonus(m) * RedundantTypeFactor(m) * LevelFactorLog(m), ref availableMoves) || maxMoves <= 3)
             {
                 return ret;
