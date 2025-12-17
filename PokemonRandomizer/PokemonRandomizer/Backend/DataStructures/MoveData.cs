@@ -402,6 +402,8 @@ namespace PokemonRandomizer.Backend.DataStructures
 
         public bool IsVeryLowAccuracy => accuracy > 0 && accuracy <= 50; // 0 accuracy moves always hit
 
+        public bool HasRecoil => effect is MoveEffect.DamageRecoilOneFourth or MoveEffect.RecoilOneThird or MoveEffect.DamageRecoilOneHalf or MoveEffect.DamageRecoilOneThirdBurnChanceThaw or MoveEffect.DamageRecoilOneThirdParalyzeChance;
+
         public int EffectivePower
         {
             get

@@ -118,6 +118,7 @@ FEATURES ///////////////////////////////////////////////////////////////////////
 	- Applys to trainer earnings
 	- Add cost to pokecenter
 - Min moves added randomization support
+- Choice item moveset shedinja antisynergies
 - Game corner randomization
 	- Game corner prize randomization
 - Battle frontier randomization
