@@ -558,7 +558,7 @@ namespace PokemonRandomizer.Backend.Randomization
             var moveData = dataT.GetMoveData(m);
             if(moveData.effect is MoveEffect.SwapItems)
             {
-                return 1f;
+                return 216000f; // Equivalent to a 60bp move
             }
             if (moveData.IsStatus)
             {
